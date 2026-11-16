@@ -1,8 +1,8 @@
 > Implements: infrastructure — moving development from the `henkhooft/SS3D` fork into `RE-SS3D/SS3D`, decided by the owner (now upstream maintainer) on 2026-11-15/16
-> Touches systems: networking-session (CI, releases, updaters), ui-shell-main-menu (release banner), application (bug reports), docs governance (`AGENTS.md`, `CLAUDE.md`, `Documents/SKILL.md`, `Documents/FORK_STATUS.md`, milestones)
+> Touches systems: networking-session (CI, releases, updaters), ui-shell-main-menu (release banner), application (bug reports), docs governance (`AGENTS.md`, `CLAUDE.md`, `Documents/SKILL.md`, `Documents/MERGE_GUIDE.md`, milestones)
 > Status: in-progress
 
-**Progress:** Phase 0 done on `upstream-prep` (#1491 recorded, repository setting, `.mailmap`, this doc). Phases 1–5 open.
+**Progress:** Phases 0–1 done on `upstream-prep`. Phases 2–5 open.
 
 # Upstream merge (Nov 2026)
 
@@ -22,7 +22,8 @@ regularly. `develop` keeps shipping to fork players until merge day.
 - 27 files name `henkhooft`: the release banner (`ReleaseCheck.cs`), the bug report link
   (`BugReportBundle.cs`), both updaters, the bootstrap launchers, issue templates, `README.md`,
   `Documents/CONTRIBUTING.md`, `Documents/CODE_OF_CONDUCT.md`, `Builds/TESTERS.md`, and fork PR links in milestones.
-- About 20 docs and the workflows name TomNAS, the owner's self-hosted runner and server host.
+- About 20 docs and the workflows named the owner's self-hosted runner and server host by its machine name;
+  the workflows also hardcode the runner user's home in stash paths.
 - CI: `editmodetestrunner.yml` runs on `pull_request` and picks the self-hosted runner for PRs by default.
   Secrets `UNITY_LICENSE`, `UNITY_SERIAL`, `UNITY_EMAIL`, `UNITY_PASSWORD`.
 - The fork deleted upstream's `.github/FUNDING.yml`, Feature/Other issue templates, milestone/project/Discord
@@ -32,7 +33,7 @@ regularly. `develop` keeps shipping to fork players until merge day.
   and not fixed. 648 commits are co-authored by Claude. 52 system-map `Verified:` stamps cite `develop` commits.
 - Release tags: the fork's `v0.1.0`–`v0.17.0` all sit on `develop`. Upstream has only unprefixed tags
   (`0.3.95o`), which `ReleaseCheck`, the updaters and `Tools/versioning/next_version.py` ignore.
-- 21 binary `.fbx` models embed `/home/rutger/...` export paths; `Testing/ui/README.md` says "Rutger's machine".
+- 21 binary `.fbx` models embed the owner's home directory in export paths; `Testing/ui/README.md` named the owner's machine.
 
 ## Decisions
 
@@ -61,11 +62,11 @@ Settled with the owner in a grilling session, 2026-11-15/16.
 10. **Releases keep the fork's numbering.** v0.17.1 ships from the fork after the merge and points the updaters
     and bug reports at upstream; v0.18.0 is then the first upstream release. Upstream's old builds stay as they
     are. MAJOR bumps are a team decision. ss3d.space links to upstream's releases page; the central team edits it.
-11. **`FORK_STATUS.md` becomes the reviewer guide** ("What the 2026 merge brought": Shipped-gameplay table,
-    engine and CI changes), linked from the PR and archived after the merge. All "this fork" wording is rewritten
+11. **`FORK_STATUS.md` became the reviewer guide** [MERGE_GUIDE.md](../MERGE_GUIDE.md) ("What the 2026 merge
+    brought": Shipped-gameplay table, engine and CI changes), linked from the PR and archived after the merge. All "this fork" wording is rewritten
     to describe the project.
-12. **Docs name roles, never hosts.** "The self-hosted runner", "the project test server"; no TomNAS anywhere.
-    One ops note lists the roles, who runs each, and what breaks without it.
+12. **Docs name roles, never hosts.** "The self-hosted runner", "the project test server"; no machine names anywhere.
+    [2026-11_project-infrastructure](2026-11_project-infrastructure.md) lists the roles, who runs each, and what breaks without it.
 13. **Fork issues:** the owner triages them, closes the irrelevant ones and recreates the rest upstream by hand.
     Fork PR links in docs stay as history. Issues and Discussions are then disabled on the fork.
 14. **Contributing steers toward agent-assisted work.** Root `CONTRIBUTING.md` (where GitHub finds it) names
@@ -89,13 +90,15 @@ Settled with the owner in a grilling session, 2026-11-15/16.
 - [x] `.mailmap` (decision 16)
 - [x] This effort doc
 
-### Phase 1: project framing and docs
+### Phase 1: project framing and docs — done
 
-- [ ] `FORK_STATUS.md` → reviewer guide (decision 11); retarget its citations in `AGENTS.md`, `CLAUDE.md`, `Documents/SKILL.md`
-- [ ] Rewrite "this fork" framing: `AGENTS.md`, `CLAUDE.md`, `Documents/SKILL.md` title and layer table, milestones, `Builds/README.txt`, `Builds/TESTERS.md`
-- [ ] Role wording for every TomNAS mention, including workflow comments, the `runner` input values and `Testing/ui/README.md`; add the ops note (decision 12)
-- [ ] GitBook mentions in code comments (`Actor.cs`, `NetworkActor.cs`, `Assets.cs`) → `Documents/`
-- [ ] `GasDefaults.cs:41` "henkhooft tuning values" → describe the source of the values
+- [x] `FORK_STATUS.md` → [MERGE_GUIDE.md](../MERGE_GUIDE.md); citations retargeted (`AGENTS.md`, `CLAUDE.md`, `Documents/SKILL.md`, `.cursor/skills/*`, maps, `TECH_DEBT.md`, `Tools/generate_roadmap.py`). The vendored-FishNet rule moved to [networking-session](systems/networking-session.md) § Extension points
+- [x] "This fork" framing rewritten in agent docs, efforts, maps, plans, code comments, rulesets, `Builds/README.txt`; "fork deviation" is now "design deviation" (TECH_DEBT §5 anchor updated)
+- [x] Bare fork `#N` references in active docs qualified as `henkhooft/SS3D#N`; `CLAUDE.md` tells agents how to read `#N` in pre-merge commits
+- [x] Role wording for every machine-name mention, including the workflows' `runner` input (`self-hosted` / `github`); [2026-11_project-infrastructure](2026-11_project-infrastructure.md) added (decision 12)
+- [x] GitBook mentions in code comments → `Documents/`; `GasDefaults.cs` wording
+- [x] MAJOR bumps described as a team decision (`AGENTS.md`, [2026-10_game-versioning](2026-10_game-versioning.md))
+- Left for the owner (design docs are owner-only): "fork" wording in `design/player-accounts.md` (lines 17, 44, 50) and `design/shuttles.md` (line 33)
 
 ### Phase 2: repository pages
 
@@ -109,6 +112,7 @@ Settled with the owner in a grilling session, 2026-11-15/16.
 - [ ] PR events never pick the self-hosted runner unless a maintainer label asks for it (decision 8)
 - [ ] Unity jobs on fork PRs skip with a clear status when secrets are absent (decision 9)
 - [ ] `docs-check.yml` fails on `henkhooft/SS3D` outside an allowlist (`Documents/archive/`, fork PR links in milestones, `ServerInfoTests.cs` inputs, `.mailmap`)
+- [ ] Self-hosted stash paths are hardcoded to the runner user's home (`SS3D_UNITY_LIBRARY_STASH` in three workflows, `persistent-upm-cache` default); derive them from the runner's `$HOME`
 - [ ] Sync [2026-07_ci-develop-release-pipeline](2026-07_ci-develop-release-pipeline.md) and [2026-07_multiplayer-testing-self-hosted-ci](2026-07_multiplayer-testing-self-hosted-ci.md)
 
 ### Phase 4: the switch commit
@@ -128,7 +132,8 @@ Settled with the owner in a grilling session, 2026-11-15/16.
 1. Announce on Discord and freeze fork `develop`. Final `develop` → `upstream-prep` merge; rerun Phase 5.
 2. Prepare upstream: create the labels (`nightly-failure`, `weekly-failure`, `editmode-nightly-failure`,
    `test:multiplayer`, `map-authoring`, `visual`, `blocker`); set the secrets (decision 9); require approval for
-   outside contributors; register the self-hosted runner for trusted events only.
+   outside contributors; register the self-hosted runner for trusted events only; give the nightly release
+   dispatcher ([2026-11_project-infrastructure](2026-11_project-infrastructure.md)) a token for upstream.
 3. Push the fork's `v*` tags to upstream (see Pitfalls). Open the PR from `upstream-prep`, linking the reviewer
    guide and stating the AI share; close #1525 in favour of it; close the outdated upstream PRs with a short note.
 4. Merge with **Create a merge commit**. Reopen #1494.
@@ -137,7 +142,8 @@ Settled with the owner in a grilling session, 2026-11-15/16.
    on the fork with `version_bump: patch`. Its updater and bug report link already point upstream.
 7. Fork: disable scheduled workflows and Actions, deregister the runner, disable Issues and Discussions.
 8. Upstream: cut **v0.18.0**. The central team points ss3d.space at upstream's releases page.
-9. The owner recreates the relevant fork issues upstream. Archive this effort and the reviewer guide.
+9. The owner recreates the relevant fork issues upstream. Archive this effort and the reviewer guide; point
+   `Tools/generate_roadmap.py`'s "what already works" link at the [coverage table](INDEX.md) and regenerate.
 
 ## Pitfalls
 
@@ -149,6 +155,8 @@ Settled with the owner in a grilling session, 2026-11-15/16.
   on a mismatch. Use the owner/name casing GitHub puts in upstream's release URLs, not a lowercase clone URL.
 - **A merge with history closes upstream #1494** via the quoted "closes #1494" in `bdd12c395`. Reopen it.
 - **`updater-e2e.yml` needs two upstream stable releases** (previous → latest); before v0.19.0 it has only one.
+- **`develop` merges that touch `Documents/FORK_STATUS.md` conflict** (deleted on `upstream-prep`). Carry the change into
+  [MERGE_GUIDE.md](../MERGE_GUIDE.md) if it matters to reviewers, then keep the deletion.
 - **GitHub's contributor graph ignores `.mailmap`;** it only affects `git log`, `shortlog` and blame.
 
 ## Open questions

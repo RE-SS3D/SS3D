@@ -2,7 +2,7 @@
 > Touches systems: core-subsystems, combat, entities, interactions-runtime, inventory, health, tile, map-editor-creative-hooks, area, structural-destruction, atmospherics, electricity, persistence, rounds-lobby, ui-shell, machine-interface, examine, ingame-console, networking-session, application
 > Status: in-progress
 
-**Progress:** Planned on 2026-11-09 from the code audit that refreshed [TECH_DEBT.md](TECH_DEBT.md) §1.19–§1.30; the owner answered Decisions 9–12 the same day and 13–16 on 2026-11-10. Phases 0–2 started 2026-11-10 as one stacked PR per item. Shipped: Phase 0; Phase 1 except the P1.1 aim cone and P1.9 steps 2–3 (both wait on playtest numbers, Decision 13), with `mppm:late-join` passed at its end; Phase 2 (P2.7 awaits an owner hand check). On 2026-11-11, G2 and the console half of P1.3 closed (the console rework #223 covered them; G2 is a guard test), and Phase 3 was done in one branch with them. The animation pass shipped, so Phase 4's dependency is met. The owner pulled Phases 4–8 forward the same day (no longer waiting for Playtest 1), in the order 6, 4, 5, 7, 8, with one branch per batch. Phase 6 shipped on `debt/phase-6` (P6.1–P6.6), after fixing `mppm:breach-budget`, which had stopped finding a wall to breach; its one `sandbox` run found two failures that develop has too (see Implementation notes). No open questions remain.
+**Progress:** Planned on 2026-11-09 from the code audit that refreshed [TECH_DEBT.md](TECH_DEBT.md) §1.19–§1.30; the owner answered Decisions 9–12 the same day and 13–16 on 2026-11-10. Phases 0–2 started 2026-11-10 as one stacked PR per item. Shipped: Phase 0; Phase 1 except the P1.1 aim cone and P1.9 steps 2–3 (both wait on playtest numbers, Decision 13), with `mppm:late-join` passed at its end; Phase 2 (P2.7 awaits an owner hand check). On 2026-11-11, G2 and the console half of P1.3 closed (the console rework henkhooft/SS3D#223 covered them; G2 is a guard test), and Phase 3 was done in one branch with them. The animation pass shipped, so Phase 4's dependency is met. The owner pulled Phases 4–8 forward the same day (no longer waiting for Playtest 1), in the order 6, 4, 5, 7, 8, with one branch per batch. Phase 6 shipped on `debt/phase-6` (P6.1–P6.6), after fixing `mppm:breach-budget`, which had stopped finding a wall to breach; its one `sandbox` run found two failures that develop has too (see Implementation notes). No open questions remain.
 
 # Tech-debt paydown (Nov 2026)
 
@@ -25,7 +25,7 @@ The ranked findings, with file and line evidence, are in [TECH_DEBT.md](TECH_DEB
 
 Proposed by the agent; the owner confirms or overrides them in the [open questions](#open-questions-for-the-owner).
 
-1. **The server derives every position it acts on.** Clients send intent: a target, an aim direction, a clicked object. The server works out origins (eye, muzzle, hand) from its own copy of the body and validates against them with an explicit, named lag margin. This one rule fixes both the trust holes and #192 (combat §3; networking §10).
+1. **The server derives every position it acts on.** Clients send intent: a target, an aim direction, a clicked object. The server works out origins (eye, muzzle, hand) from its own copy of the body and validates against them with an explicit, named lag margin. This one rule fixes both the trust holes and henkhooft/SS3D#192 (combat §3; networking §10).
 2. **One writer per piece of state.** For each of hand-action scheduling, upper-body activity, item holder and world-sim suspension, exactly one component writes it and everything else reads it. A second writer is a review blocker.
 3. **Delete before refactoring.** Dead and duplicate code goes first (Phases 1 and 3), so the later phases refactor less.
 4. **Split assemblies by edge, not by domain.** The core simulation domains form one dependency cycle. Pulling the outer layers off (automation, Map Editor, console, bug reports, UI views) is cheap and removes ~25k lines from the recompile set. A domain split of the core is out of scope ([TECH_DEBT §1.24](TECH_DEBT.md#124-ss3dsystems-is-one-tangled-assembly)).
@@ -82,7 +82,7 @@ Cheap checks that stop the debt regrowing while it is paid down, plus fixes for 
   - `interactions-runtime.md:177`: "thin router" → name the hand-action scheduling it now owns.
   - `tile.md:48`, `:71`: "admin-gated" is true only off the sandbox. Say: admin, or any non-Restricted player on `-sandbox` (sandbox-server §5). `-openbuild` goes in P1.11.
   - `ui-shell.md`: add the Map Editor and `FpsCounterView` to the not-migrated table.
-  - `FORK_STATUS.md:544`: "ECS world" → Burst jobs on native buffers.
+  - `FORK_STATUS.md:544` (since replaced by [MERGE_GUIDE.md](../MERGE_GUIDE.md)): "ECS world" → Burst jobs on native buffers.
 - **Tests:** G1–G5 are tier 1. `validate.sh --steps compile,editmode`.
 - **Done when:** G1–G4 run in the EditMode CI job, and the D1 statements match code.
 
@@ -107,8 +107,8 @@ Public servers are the Playtest 1 enabler, so trust holes are gameplay bugs ther
 - **P1.7 — Dead tile edit RPCs.**
   - Delete `TileSubSystem.RpcPlaceObject` / `RpcClearTileObject` / `RpcClearItemObject` / `RpcSetFloorDecal` / `RpcClearFloorDecal` (`:192-261`) and `ConstructionHologramManager.RpcSendCanBuild` / `RpcReceiveCanBuild` (`:1373-1418`). They have zero callers.
   - Send `RpcMoveObject` through `MapEditorRateLimiter` (sandbox §6), or fold it into `RpcExecuteCommands` (P5.9).
-- **P1.8 — Server status rate limit.** Per-endpoint token bucket and a global cap in the vendored Tugboat unconnected-message path (`Assets/FishNet/.../Tugboat/Core/ServerSocket.cs:139-145`, `:378-395`; `ServerStatusPublisher.cs:86-95`). Record the patch in [FORK_STATUS.md](../FORK_STATUS.md) next to the existing vendored change.
-- **P1.9 — Interaction re-validation margin (#192).**
+- **P1.8 — Server status rate limit.** Per-endpoint token bucket and a global cap in the vendored Tugboat unconnected-message path (`Assets/FishNet/.../Tugboat/Core/ServerSocket.cs:139-145`, `:378-395`; `ServerStatusPublisher.cs:86-95`). Mark it `SS3D patch` like the existing vendored change ([networking-session](systems/networking-session.md) § Extension points).
+- **P1.9 — Interaction re-validation margin (henkhooft/SS3D#192).**
   - Step 1, diagnostics: when `TryResolveDispatchedInteraction` fails, log which check failed (no entry with that name vs. `CanInteract` false). For Drop, also log the LOS hit distance and the server/client `ViewPoint` delta.
   - Step 2: give server re-validation a named margin (Decision 13). The LOS hit counts if it is on the same collider (ships first) or within the margin, and range gets a margin; both numbers come from step 1's logs.
   - Step 3: `TargetRejectInteraction` shows the hint "Can't reach that." (Decision 13).
@@ -193,7 +193,7 @@ Independent small PRs. Each fixes a bug that exists today or is one feature away
 
 ### Phase 4 — Gameplay ownership contracts
 
-The biggest correctness win and the riskiest phase: it touches Human's composition and the animation pipeline. Start only after the [humanoid animation pass](2026-11_humanoid-animation-pass.md) ships, so the two efforts don't rewrite the same files at once. Write characterization tests first: `InteractionAnimationScenarios`, `ThrowScenarios`, the melee timing tests in `scenarios:Combat`, and the container tests from #208.
+The biggest correctness win and the riskiest phase: it touches Human's composition and the animation pipeline. Start only after the [humanoid animation pass](2026-11_humanoid-animation-pass.md) ships, so the two efforts don't rewrite the same files at once. Write characterization tests first: `InteractionAnimationScenarios`, `ThrowScenarios`, the melee timing tests in `scenarios:Combat`, and the container tests from henkhooft/SS3D#208.
 
 - **P4.1 — `HandActionScheduler` (server, one per body).**
   - One pending hand action at a time (animation-pass Decision 15) and one `CanAct(hand)` rule, replacing:
@@ -217,10 +217,10 @@ The biggest correctness win and the riskiest phase: it touches Human's compositi
   - A replicated holder on `Item` (container NetworkObject + container index, or none), written only by the server's container add and remove.
   - On every peer, one `ItemPlacementApplier` applies the holder: parenting, freeze, NetworkTransform toggles, visibility of the item and of nested containers.
   - `AttachedContainer` (`:338-432`), `ContainerItemDisplay`, `DisposalSubSystem` and `DisposalOutlet` stop writing parenting or visibility themselves.
-  - `Item.LocalHolder` (the #208 guard) goes away, because out-of-order arrival can't disagree with one replicated value.
+  - `Item.LocalHolder` (the henkhooft/SS3D#208 guard) goes away, because out-of-order arrival can't disagree with one replicated value.
   - One `ServerReleaseToWorld(item, position, velocity, reason)` replaces `Hand.PlaceHeldItemOutOfHand`, `HumanInventory.ServerPlaceItemInWorld` and `Hand.Dump`, including TileMap tracking, which `Dump` skips today.
   - Bump `ProtocolVersion.Current`.
-  - Test: EditMode on the applier given out-of-order add/remove sequences (the #208 cases); `mppm:late-join` (holder state for late joiners).
+  - Test: EditMode on the applier given out-of-order add/remove sequences (the henkhooft/SS3D#208 cases); `mppm:late-join` (holder state for late joiners).
 - **P4.5 — Components instead of partials.**
   - `ThrowController` out of `CombatInteractionNetwork.Throw.cs` (input, overlay feed, server release through P4.1).
   - Split `Ragdoll` (1,224 lines with partials) along presentation, wind and get-up.
@@ -291,7 +291,7 @@ Remote editing is the sandbox's core activity (sandbox-server §5), and today it
 Follows the order the [UI shell consolidation](2026-07_ui-shell-consolidation.md#explicit-non-goals-deferred-to-later-phases) set: Main HUD next, Machine UI last. No condemned view is migrated as a bridge (AGENTS.md); condemned surfaces are replaced per their design doc or left alone. Every item here runs `visual`.
 
 - **P7.1 — `SS3D.UI.Widgets` assembly.** Move `InventorySlot` out of `UI/MachineInterface/Components`. Add one window-drag manipulator, replacing `StoragePanelView.cs:180-252`, `MachineWindow.cs:71-130` and `PanelDragManipulator`, and one item press-to-drag manipulator with a single threshold constant (today 5 px and 6 px). MainHud, StoragePanel and Examine then drop their reference to the MI assembly.
-- **P7.2 — `HudVisibilityArbiter`.** One owner of "which HUD surfaces show" (menu, machine UI, map editor, ghost), replacing the copies in `MainHudSubSystem.cs:757-892` and `StoragePanelHost.cs:204-306`. P2.7's stop-gap goes. Main HUD fully hiding under machine UI stays as an accepted deviation ([TECH_DEBT §5](TECH_DEBT.md#5-accepted-fork-deviations-not-debt--do-not-fix-without-a-design-change)).
+- **P7.2 — `HudVisibilityArbiter`.** One owner of "which HUD surfaces show" (menu, machine UI, map editor, ghost), replacing the copies in `MainHudSubSystem.cs:757-892` and `StoragePanelHost.cs:204-306`. P2.7's stop-gap goes. Main HUD fully hiding under machine UI stays as an accepted deviation ([TECH_DEBT §5](TECH_DEBT.md#5-accepted-design-deviations-not-debt--do-not-fix-without-a-design-change)).
 - **P7.3 — Split `MainHudSubSystem`** (1,627 lines): `HudLocalPlayerBinder` (also feeds `StoragePanel.BindContainerViewer`), `ZoneReticlePresenter` on `ICombatReadout` (P2.1), `AlertStackPresenter`, `HudInventoryActions`, and a thin host.
 - **P7.4 — Split the lobby.**
   - `LobbyShellView` (2,022 + 542 lines) → one `ILobbyTab` per tab: Server Info, Jobs, Chat, Players, Settings.
@@ -358,7 +358,7 @@ Mechanical once Phases 5–7 have cut the reverse references. Each new assembly 
 - **P3.4:** the two debug tools are created only when `Debug.isDebugBuild`, matching the F1 menu that is their only way in. `FloorDecalView` and `AreaFloorStripeView` expose a static `Instance` instead of being found by scene scan. The debug tools' `s_bootstrapped` flags now reset on `SubsystemRegistration`, so Play Mode without a domain reload recreates them.
 - **P3.5:** `HumanoidBodyStateMachine.ApplyKnockback` (the plan said `HumanHealthController`; the health controller was the only caller, passing 0) and the knockback parameters of `HumanoidCombatController.OnHitReceived` were deleted. The `ConstructionHologramManager` comment was already gone with P1.7.
 
-- **`mppm:breach-budget`** had failed since the map's air started sleeping before the breach: `breach_hull` counted only `Active`/`Semiactive` cells as air, and a sealed map's cells settle to `Inactive` within seconds. Sleeping air counts now. Its baseline on tomnas (editor, Burst safety checks on, one remote client, 64 loose items): tick p50/max 30–33 / 61–68 ms, `AtmosSimulation.Tick` 25–29 / 57–62 ms, patch traffic 218/241 KB/s, the client received p50/p90 255/306 KB/s. That is about ten times the edge-flow doc's sim times, which came from another machine; the capture also showed Burst JIT-compiling jobs during the sample, so treat it as this machine's baseline, not a regression.
+- **`mppm:breach-budget`** had failed since the map's air started sleeping before the breach: `breach_hull` counted only `Active`/`Semiactive` cells as air, and a sealed map's cells settle to `Inactive` within seconds. Sleeping air counts now. Its baseline on the self-hosted runner (editor, Burst safety checks on, one remote client, 64 loose items): tick p50/max 30–33 / 61–68 ms, `AtmosSimulation.Tick` 25–29 / 57–62 ms, patch traffic 218/241 KB/s, the client received p50/p90 255/306 KB/s. That is about ten times the edge-flow doc's sim times, which came from another machine; the capture also showed Burst JIT-compiling jobs during the sample, so treat it as this machine's baseline, not a regression.
 - **P6.1:** the channels are `atmos` (5 Hz, plus the air alarms, which had their own `InvokeRepeating`), `electricity` (5 Hz) and `health` (1 Hz, every body on one channel, not paused by map loads, as before). The atmos debug pause is now the channel's own `Paused`. Each fire runs inside an `SS3D.Clock.<name>` Profiler marker, and `mppm:breach-budget` logs fires per channel as `[clock-budget]` (226/226/45 over 45 s). Deleting `RpcInvokeOnTick` bumped the protocol to 44.
 - **P6.2:** measured with a Profiler capture of `mppm:breach-budget`, reading GC under each `SS3D.Clock.*` marker; [TECH_DEBT §2](TECH_DEBT.md#2-hot-path-gc--performance-debt-tracked-partially-paid-down) has the before/after numbers and what is left (host HUD alerts, host atmos visuals, and the remote-client patch path during a breach). The biggest find was general: struct `[SyncVar]`s without `IEquatable<T>` allocate on every set.
 - **P6.3:** the switch's fallback (return the raw JSON for an unknown contributor) had no users; every contributor now names its type.

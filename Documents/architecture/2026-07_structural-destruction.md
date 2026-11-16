@@ -40,7 +40,7 @@ Ship per-tile structural integrity for Turf walls/doors/windows and hop-based bl
 - `PlacedTileObject` integrity SyncVar OnChange + explicit host `Apply` from `ServerSetIntegrity`
 - `StructuralIntegrityExaminable` — Damaged/Cracked examine sections (fallback English; table keys via Examine menu)
 - Editor: **SS3D → Structural Damage → Setup Wall Integrity Presentation** (walls/windows with baked `PlacedTileObject`)
-- Atmos slow-leak **deferred** — keep binary `IsAirtight`; BlockedEdges still seal room↔room flow (documented fork)
+- Atmos slow-leak **deferred** — keep binary `IsAirtight`; BlockedEdges still seal room↔room flow (documented design deviation)
 
 ## Blast detonation VFX (post Phase 4)
 

@@ -83,4 +83,4 @@ A pair of magboots is one Item. It needs both feet, and the switch turns off whe
 
 ## Tests
 
-EditMode first: resolver, breach order, tank drain and storage rules. A remote scenario through `run_smoketest.sh` covers toggle sync and magboot wind on a real client. Visual checks happen in the editor, because graphical release clients crash on tomnas after embark.
+EditMode first: resolver, breach order, tank drain and storage rules. A remote scenario through `run_smoketest.sh` covers toggle sync and magboot wind on a real client. Visual checks happen in the editor, because graphical release clients crash on the self-hosted runner host after embark.

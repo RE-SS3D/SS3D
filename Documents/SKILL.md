@@ -1,6 +1,6 @@
-# RE:SS3D Fork — Documentation Skill
+# SS3D — Documentation Skill
 
-This fork maintains its own documentation layer, independent of upstream's GitBook.
+SS3D's documentation lives in `Documents/`; the GitBook is background on generic Unity and FishNet concepts.
 Read this before writing or editing anything in `Documents/`.
 
 ## Live-reference principle
@@ -17,7 +17,6 @@ run as evidence for the current checkout. Keep accepted design deviations explic
 
 Completed efforts leave the active index after useful contracts and follow-ups are harvested.
 Avoid creating a new history document just to preserve prose already recoverable from git.
-`Documents/FORK_STATUS.md` remains the explicit upstream-divergence log, not a session changelog.
 
 ## Structure
 
@@ -31,7 +30,6 @@ Avoid creating a new history document just to preserve prose already recoverable
 | `Documents/milestones/` | What to focus on next; dependency trees toward a playable goal | Agents + owner — update slice status when child work ships; refresh hub current focus |
 | `ROADMAP.md` + README roadmap block | Where the game is at, for players and visitors | Generated from `Documents/milestones/` by `python3 Tools/generate_roadmap.py`; never edit by hand |
 | `Documents/archive/` | WHY something was built that way: shipped efforts, completed plans | Agents move docs here on ship (see [Archive](#archive-documentsarchive)); never maintained afterwards |
-| `Documents/FORK_STATUS.md` | Upstream divergence log | Owner + agents — keep it a log of divergences, not a changelog |
 
 This table is canonical. `AGENTS.md` inlines only the hard prohibitions drawn from it; it does not restate the table, so the two cannot drift.
 
@@ -114,7 +112,7 @@ Hub: [milestones/INDEX.md](milestones/INDEX.md) (current focus + list of gates).
 
 ### System maps (`Documents/architecture/systems/`)
 
-Navigation docs: entry points, key files, dependencies. One file per domain (kebab-case, e.g. `tile.md`). Status reflects code navigation coverage, not upstream divergence (that stays in `FORK_STATUS.md`).
+Navigation docs: entry points, key files, dependencies. One file per domain (kebab-case, e.g. `tile.md`). Status reflects code navigation coverage.
 
 **Status values:** `shipped | partial | stub | condemned`, one word with no parenthetical. What is and isn't built goes in **Overview**.
 

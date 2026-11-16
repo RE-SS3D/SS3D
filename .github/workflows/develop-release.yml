@@ -4,7 +4,7 @@
 # Linux, EditMode, and smoke are opt-in. tag_suffix gives an unversioned develop-<suffix> test cut.
 # Nightly (05:17 UTC): Windows + Linux client + Linux dedicated server → floating develop-nightly,
 # started by an external workflow_dispatch (GitHub's `schedule` trigger was delayed/dropped).
-# Runs on TomNAS (dispatch runner=github for GitHub-hosted). Not triggered on every develop merge.
+# Runs on the self-hosted runner (dispatch runner=github for GitHub-hosted). Not triggered on every develop merge.
 # See Documents/architecture/2026-07_ci-develop-release-pipeline.md.
 name: Develop Release
 on:
@@ -40,12 +40,12 @@ on:
         type: string
         default: ''
       runner:
-        description: Runner (TomNAS self-hosted by default; github = GitHub-hosted ubuntu-latest)
+        description: Runner (self-hosted by default; github = GitHub-hosted ubuntu-latest)
         type: choice
         options:
-          - tomnas
+          - self-hosted
           - github
-        default: tomnas
+        default: self-hosted
 
 concurrency:
   group: develop-release
@@ -134,19 +134,19 @@ jobs:
           echo "release_tag=v${version}" >> "$GITHUB_OUTPUT"
           echo "versioned=true" >> "$GITHUB_OUTPUT"
           echo "::notice::Releasing v${version} ($(echo "$out" | sed -n 's/^bump=//p'): $(echo "$out" | sed -n 's/^reasons=//p')"
-      - name: Pick TomNAS unless GitHub-hosted is requested
+      - name: Pick the self-hosted runner unless GitHub-hosted is requested
         id: pick
         env:
-          RUNNER_PREF: ${{ github.event_name == 'workflow_dispatch' && inputs.runner || 'tomnas' }}
+          RUNNER_PREF: ${{ github.event_name == 'workflow_dispatch' && inputs.runner || 'self-hosted' }}
         run: |
           set -euo pipefail
-          tomnas_json='["self-hosted","linux","x64","unity"]'
+          self_hosted_json='["self-hosted","linux","x64","unity"]'
           github_json='["ubuntu-latest"]'
 
-          pick_tomnas() {
-            echo "runs_on=${tomnas_json}" >> "$GITHUB_OUTPUT"
+          pick_self_hosted() {
+            echo "runs_on=${self_hosted_json}" >> "$GITHUB_OUTPUT"
             echo "self_hosted=true" >> "$GITHUB_OUTPUT"
-            echo "Selected TomNAS-unity (self-hosted)"
+            echo "Selected the self-hosted Unity runner"
           }
           pick_github() {
             echo "runs_on=${github_json}" >> "$GITHUB_OUTPUT"
@@ -154,13 +154,13 @@ jobs:
             echo "Selected ubuntu-latest (GitHub-hosted)"
           }
 
-          # Always TomNAS unless GitHub-hosted is asked for explicitly. There is no online check:
+          # Always self-hosted unless GitHub-hosted is asked for explicitly. There is no online check:
           # github.token cannot list repo runners (HTTP 403), so an "auto" check always fell back.
-          # If TomNAS is offline, the job queues until it is back.
+          # If the self-hosted runner is offline, the job queues until it is back.
           if [ "$RUNNER_PREF" = "github" ]; then
             pick_github
           else
-            pick_tomnas
+            pick_self_hosted
           fi
 
   editmode:
@@ -225,7 +225,7 @@ jobs:
       name: unity_tests
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-      # Share smoke's warm build Library on TomNAS (same FS as runner workdir — mv is rename).
+      # Share smoke's warm build Library on the self-hosted runner (same FS as runner workdir — mv is rename).
       SS3D_UNITY_LIBRARY_STASH: /home/cu6e/.cache/ss3d/Library
       SERVER_BUILD_DIR: ${{ github.workspace }}/build/GameServer/StandaloneLinux64
       CLIENT_BUILD_DIR: ${{ github.workspace }}/build/Game/StandaloneLinux64
@@ -274,7 +274,7 @@ jobs:
             missing=1
           fi
           exit $missing
-      # One Editor session — two sequential unity-builder steps race PackageCache on TomNAS.
+      # One Editor session — two sequential unity-builder steps race PackageCache on the self-hosted runner.
       - name: Keep the Unity package cache between jobs
         if: needs.prepare.outputs.self_hosted == 'true'
         uses: ./.github/actions/persistent-upm-cache

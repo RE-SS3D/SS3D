@@ -13,7 +13,7 @@ namespace SS3D.Data
     /// <summary>
     /// A class to get specific assets on the project, without having to assign them on the inspector or hardcoding Resources.Load.
     ///
-    /// A more concise and in depth explanation on how this system works and how to use is present on the GitBook page for AssetData.
+    /// How this system works and how to use it: Documents/architecture/systems/data-codegen.md.
     /// </summary>
     public static class Assets
     {

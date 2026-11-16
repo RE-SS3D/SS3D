@@ -2,7 +2,7 @@
 # pull_request (not pull_request_target): checkout and workflow YAML come from the PR head.
 # Same-repo PRs still get unity_tests secrets; fork PRs would need a separate trusted path.
 #
-# Runs on TomNAS (self-hosted, labels self-hosted/linux/x64/unity); dispatch with runner=github
+# Runs on the self-hosted runner (labels self-hosted/linux/x64/unity); dispatch with runner=github
 # for GitHub-hosted ubuntu-latest. See
 # Documents/architecture/2026-07_multiplayer-testing-self-hosted-ci.md.
 #
@@ -22,17 +22,17 @@ on:
       - "Documents/**"
       - "**/*.md"
   schedule:
-    # Before the 04:00 smoke nightly, which shares the TomNAS runner.
+    # Before the 04:00 smoke nightly, which shares the self-hosted runner.
     - cron: "30 2 * * *"
   workflow_dispatch:
     inputs:
       runner:
-        description: "Runner (TomNAS self-hosted by default; github = GitHub-hosted ubuntu-latest)"
+        description: "Runner (self-hosted by default; github = GitHub-hosted ubuntu-latest)"
         type: choice
         options:
-          - tomnas
+          - self-hosted
           - github
-        default: tomnas
+        default: self-hosted
 concurrency:
   # One group per PR, so a new push cancels the older run. An edit that is not a base change gets a
   # group of its own, so it cannot cancel a real run before its jobs are skipped.
@@ -72,19 +72,19 @@ jobs:
           else
             echo "run=true" >> "$GITHUB_OUTPUT"
           fi
-      - name: Pick TomNAS unless GitHub-hosted is requested
+      - name: Pick the self-hosted runner unless GitHub-hosted is requested
         id: pick
         env:
-          RUNNER_PREF: ${{ github.event_name == 'workflow_dispatch' && inputs.runner || 'tomnas' }}
+          RUNNER_PREF: ${{ github.event_name == 'workflow_dispatch' && inputs.runner || 'self-hosted' }}
         run: |
           set -euo pipefail
-          tomnas_json='["self-hosted","linux","x64","unity"]'
+          self_hosted_json='["self-hosted","linux","x64","unity"]'
           github_json='["ubuntu-latest"]'
 
-          pick_tomnas() {
-            echo "runs_on=${tomnas_json}" >> "$GITHUB_OUTPUT"
+          pick_self_hosted() {
+            echo "runs_on=${self_hosted_json}" >> "$GITHUB_OUTPUT"
             echo "self_hosted=true" >> "$GITHUB_OUTPUT"
-            echo "Selected TomNAS-unity (self-hosted)"
+            echo "Selected the self-hosted Unity runner"
           }
           pick_github() {
             echo "runs_on=${github_json}" >> "$GITHUB_OUTPUT"
@@ -92,13 +92,13 @@ jobs:
             echo "Selected ubuntu-latest (GitHub-hosted)"
           }
 
-          # Always TomNAS unless GitHub-hosted is asked for explicitly. There is no online check:
+          # Always self-hosted unless GitHub-hosted is asked for explicitly. There is no online check:
           # github.token cannot list repo runners (HTTP 403), so an "auto" check always fell back.
-          # If TomNAS is offline, the job queues until it is back.
+          # If the self-hosted runner is offline, the job queues until it is back.
           if [ "$RUNNER_PREF" = "github" ]; then
             pick_github
           else
-            pick_tomnas
+            pick_self_hosted
           fi
 
   run_tests:
@@ -183,7 +183,7 @@ jobs:
           testMode: editmode
           unityVersion: 6000.3.28f1
           customParameters: -testFilter ImportPassMatchesNoTest
-          # Host UID for Docker mounts on TomNAS; unused/harmless on GitHub-hosted.
+          # Host UID for Docker mounts on the self-hosted runner; unused/harmless on GitHub-hosted.
           runAsHostUser: ${{ needs.pick_runner.outputs.self_hosted == 'true' }}
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -200,7 +200,7 @@ jobs:
         with:
           testMode: editmode
           unityVersion: 6000.3.28f1
-          # Host UID for Docker mounts on TomNAS; unused/harmless on GitHub-hosted.
+          # Host UID for Docker mounts on the self-hosted runner; unused/harmless on GitHub-hosted.
           runAsHostUser: ${{ needs.pick_runner.outputs.self_hosted == 'true' }}
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}

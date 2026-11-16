@@ -114,7 +114,7 @@ def cmd_next(requested):
     tag = last_release_tag()
     if tag is None:
         version = FIRST_RELEASE if requested in ("auto", "patch", "minor") else (1, 0, 0)
-        emit(version=fmt(version), previous="", bump="initial", reasons="first release of the fork's own scheme")
+        emit(version=fmt(version), previous="", bump="initial", reasons="first release of the numbered scheme")
         return 0
 
     commits = int(git("rev-list", "--count", f"{tag}..HEAD"))

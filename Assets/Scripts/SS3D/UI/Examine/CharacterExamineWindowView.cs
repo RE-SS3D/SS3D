@@ -14,7 +14,7 @@ namespace SS3D.UI.Examine
     /// Persistent character-examine window — a paperdoll grid inside a <see cref="MachineWindow"/>.
     /// Unlike every other examine surface, it stays open until the × closes it (no auto-close on
     /// mouse-leave) — a deliberate departure from examine.md §4's hold-to-peek/no-click-lock rule,
-    /// scoped to character examine only (see examine.md fork-deviations).
+    /// scoped to character examine only (see the Deviations list in 2026-11_examine-and-action-feedback.md).
     /// <para>
     /// Click-to-take: click a filled slot (when <see cref="TakeAllowed"/>) raises
     /// <see cref="TakeHoldStarted"/>; the owning overlay starts a server delayed interaction.

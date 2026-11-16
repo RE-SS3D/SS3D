@@ -7,7 +7,7 @@
 
 ## Overview
 
-FishNet session management — host/join, network type and port settings. Distinct from tile AOI helpers under `Systems/Networking/`. Includes a genuine headless dedicated-server build (`UNITY_SERVER` subtarget), not just a client build launched with `-serveronly` — see [2026-07_headless-dedicated-server](../../archive/architecture/2026-07_headless-dedicated-server.md). A multi-process test harness exercises scripted session paths — see [Multiplayer testing](networking-session-testing.md). Manual CI prerelease + nightly `develop-nightly` (EditMode/smoke opt-in on dispatch): [2026-07_ci-develop-release-pipeline](../2026-07_ci-develop-release-pipeline.md). Self-hosted TomNAS runner (smoke + EditMode/release with GitHub fallback): [2026-07_multiplayer-testing-self-hosted-ci](../2026-07_multiplayer-testing-self-hosted-ci.md).
+FishNet session management — host/join, network type and port settings. Distinct from tile AOI helpers under `Systems/Networking/`. Includes a genuine headless dedicated-server build (`UNITY_SERVER` subtarget), not just a client build launched with `-serveronly` — see [2026-07_headless-dedicated-server](../../archive/architecture/2026-07_headless-dedicated-server.md). A multi-process test harness exercises scripted session paths — see [Multiplayer testing](networking-session-testing.md). Manual CI prerelease + nightly `develop-nightly` (EditMode/smoke opt-in on dispatch): [2026-07_ci-develop-release-pipeline](../2026-07_ci-develop-release-pipeline.md). Self-hosted runner (smoke + EditMode/release; `runner: github` for GitHub-hosted): [2026-07_multiplayer-testing-self-hosted-ci](../2026-07_multiplayer-testing-self-hosted-ci.md).
 
 ## Start here
 
@@ -32,6 +32,7 @@ FishNet session management — host/join, network type and port settings. Distin
 
 - Boot.unity's `ServerManager._startOnHeadless` must stay `0`.
 - Breaking wire change (NetworkBehaviour/SyncVar/RPC/broadcast shape, FishNet upgrade): bump `ProtocolVersion.Current`. Pre-auth broadcasts must register with `requireAuthentication: false`.
+- Changes to vendored FishNet (`Assets/FishNet/`) carry an `// SS3D patch:` comment saying why. Before upgrading FishNet, `git grep -n "SS3D patch" -- Assets/FishNet` lists every change to carry over.
 - Boot.unity `DefaultScene._offlineScene` stays Boot for cold start; CCR arms Empty after first Online.
 - Prefer `SessionState` / `ClientConnectionRecovery.Instance` over inferring session status from subsystem presence.
 - New networked SubSystem: add to hub rebuild (**SS3D → Bootstrap → Rebuild NetworkSystemsHub Prefab**) — never hand-edit Game.unity.
@@ -89,4 +90,4 @@ FishNet session management — host/join, network type and port settings. Distin
   server build, runtime guards, known issues, testing-harness gap
 - [Multiplayer testing](networking-session-testing.md) — current smoke/load reference and coverage gaps
 - [2026-07_ci-develop-release-pipeline](../2026-07_ci-develop-release-pipeline.md) — manual + nightly CI prerelease (EditMode/smoke opt-in on dispatch)
-- [2026-07_multiplayer-testing-self-hosted-ci](../2026-07_multiplayer-testing-self-hosted-ci.md) — TomNAS self-hosted runner + warm Library stash + harness coverage growth
+- [2026-07_multiplayer-testing-self-hosted-ci](../2026-07_multiplayer-testing-self-hosted-ci.md) — self-hosted runner + warm Library stash + harness coverage growth

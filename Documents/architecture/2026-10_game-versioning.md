@@ -6,13 +6,13 @@
 
 ## Goal
 
-Give the fork its own version line, worked out from git so no human edits a version field, with
-bump rules precise enough that CI and agents apply them. The owner's only manual call is 1.0
-(any MAJOR bump).
+Give SS3D its own version line, worked out from git so no human edits a version field, with
+bump rules precise enough that CI and agents apply them. The only manual call is 1.0
+(any MAJOR bump), which the team decides.
 
-Upstream RE:SS3D tags (`0.0.7.6`, `0.3.95o`, …) stay in the repo but are ignored: fork tags are
+The older unprefixed tags (`0.0.7.6`, `0.3.95o`, …) stay in the repo but are ignored: release tags are
 `vMAJOR.MINOR.PATCH` and every lookup matches `v[0-9]*`. The line starts at `v0.1.0`, above
-upstream's last `0.0.7.6`.
+the old `0.0.7.6`.
 
 ## Version strings
 
@@ -40,7 +40,7 @@ strongest signal wins:
 | MINOR | A milestone slice shipped | Slice row status in `Documents/milestones/*.md` became `shipped` |
 | MINOR | A milestone gate reached | Milestone header `> Status:` became `shipped` |
 | MINOR | Agent/owner judgement | Commit trailer `Version-Bump: minor` |
-| MAJOR | Owner only (1.0 and beyond) | Commit trailer `Version-Bump: major`, or dispatch `version_bump=major` |
+| MAJOR | Team decision (1.0 and beyond) | Commit trailer `Version-Bump: major`, or dispatch `version_bump=major` |
 | PATCH | Anything else | default |
 
 The dispatch input `version_bump` (`auto` default) overrides the computed level. A dispatch with

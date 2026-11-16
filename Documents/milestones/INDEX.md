@@ -28,7 +28,7 @@ M4 (win/lose) and M5 (end screen, restart) shipped: [round-end loop](../archive/
 **Enabler** — [test-server.md](test-server.md), serves Playtest 1:
 
 - **T3** — exit line: the scheduled Multiplayer Smoke Test is red and needs to go green; 8 clients through a breach gets its real check at Playtest 1 (doors for remote clients, force-end and disk teleport work)
-- ~~**T8**~~ — shipped: the 24/7 Nuke Ops server is live on TomNAS. Announcing it publicly closes the gate (T5)
+- ~~**T8**~~ — shipped: the 24/7 Nuke Ops server is live. Announcing it publicly closes the gate (T5)
 
 **Maintenance** — [map-authoring.md](map-authoring.md): testers are building Nuke Ops maps (A6); triage their reports. A9 object setup shipped in [#277](https://github.com/henkhooft/SS3D/pull/277). A6 is off the critical path.
 

@@ -1,4 +1,4 @@
-# Agent guide — SS3D fork
+# Agent guide — SS3D
 
 Instructions for AI agents working in this repository.
 
@@ -52,7 +52,7 @@ Canonical layer table (what each folder answers, who updates it): [Documents/SKI
 
 - **Never edit `Documents/design/*`** unless the owner explicitly asks. If code diverges from a design spec, record the divergence in the system map, plan, or architecture effort doc — **do not change the design file to match code.**
 - **Design docs are WHAT/WHY only** — no prototyping prompts, no build-status field. Need a Cursor or Claude Design prompt for a system? Generate it fresh from the design doc plus the current system map; don't expect one written into the design doc. Need to know what's built vs. only designed? Read the coverage table in [INDEX.md](Documents/architecture/INDEX.md), not the design doc.
-- **Plans, system maps, milestones and `Documents/FORK_STATUS.md` are yours to update; design specs are not.** When your feature ships, sync the maps (below) — and bump any matching milestone slice / hub current focus — an unsynced map is the drift this whole system exists to prevent.
+- **Plans, system maps and milestones are yours to update; design specs are not.** When your feature ships, sync the maps (below) — and bump any matching milestone slice / hub current focus — an unsynced map is the drift this whole system exists to prevent.
 
 ## When code search is still appropriate
 
@@ -70,9 +70,9 @@ Run the **`update-system-docs`** skill (`.cursor/skills/update-system-docs/SKILL
 - Architecture effort doc status, if applicable, and archiving of the effort or plan once it ships (harvest its live items first; see [Documents/SKILL.md](Documents/SKILL.md) Archive)
 - Milestone slice status and hub current focus under `Documents/milestones/`, if the work advanced a playable gate
 
-**Versioning** — when a change breaks old saves or old clients, bump `PersistenceEnvelope.CurrentSchemaVersion` or `ProtocolVersion.Current`; when a commit completes a player-visible feature end to end, end its message with a `Version-Bump: minor` trailer. MAJOR stays the owner's call. Rules: [2026-10_game-versioning](Documents/architecture/2026-10_game-versioning.md).
+**Versioning** — when a change breaks old saves or old clients, bump `PersistenceEnvelope.CurrentSchemaVersion` or `ProtocolVersion.Current`; when a commit completes a player-visible feature end to end, end its message with a `Version-Bump: minor` trailer. MAJOR is a team decision. Rules: [2026-10_game-versioning](Documents/architecture/2026-10_game-versioning.md).
 
-**Testing** — run targeted checks, not the full suite: `Testing/ui/validate.sh --steps compile,editmode` plus the focused steps for the systems you touched. Add `visual` (and read its screenshots) only for visual changes. Never run `--nightly` or `--weekly` unless the owner asks; they take ~25 min and run on TomNAS anyway. Which tier a test belongs in, and what expensive tests must justify: [2026-11_testing-philosophy.md](Documents/architecture/2026-11_testing-philosophy.md). Runbook: [Testing/ui/README.md](Testing/ui/README.md).
+**Testing** — run targeted checks, not the full suite: `Testing/ui/validate.sh --steps compile,editmode` plus the focused steps for the systems you touched. Add `visual` (and read its screenshots) only for visual changes. Never run `--nightly` or `--weekly` unless the owner asks; they take ~25 min and run on the self-hosted runner anyway. Which tier a test belongs in, and what expensive tests must justify: [2026-11_testing-philosophy.md](Documents/architecture/2026-11_testing-philosophy.md). Runbook: [Testing/ui/README.md](Testing/ui/README.md).
 
 ## Composition, prefabs, and UI
 
@@ -93,4 +93,4 @@ See [Documents/SKILL.md](Documents/SKILL.md) for header blocks, linking rules, s
 - Unity 6 / URP multiplayer game using FishNet.
 - Gameplay code under `Assets/Scripts/SS3D/`.
 - Subsystem pattern: `SubSystem` / `NetworkSubSystem` via `SubSystems.Get<T>()`.
-- Upstream GitBook may help with generic Unity/FishNet concepts; fork direction lives in `Documents/`.
+- The GitBook may help with generic Unity/FishNet concepts; project direction lives in `Documents/`.

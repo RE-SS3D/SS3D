@@ -21,7 +21,7 @@ do end to end. Each goal is split into **slices**, the smaller pieces that have 
 | [Station round](#station-round) | Play a short, bare-bones SS13 shift with jobs and antagonists | 1 of 7 done, 2 partial |
 
 What already works, system by system, is listed in
-[FORK_STATUS](Documents/FORK_STATUS.md#shipped-gameplay).
+[the merge guide](Documents/MERGE_GUIDE.md#shipped-gameplay).
 
 ## Test server
 

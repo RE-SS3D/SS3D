@@ -82,7 +82,7 @@ If the fix touches shared infrastructure, run the full suite once more before cl
 
 - Treat PlayMode / multiplayer smoke as part of this skill (use **run-multiplayer-smoke** /
   **triage-multiplayer-smoke**).
-- Edit `Documents/design/*` or `Documents/FORK_STATUS.md` unless the owner asks.
+- Edit `Documents/design/*` unless the owner asks.
 - Commit `artifacts/` or Unity mat/font/URP dirt from opening the Editor.
 - Loop forever on the same failure — after two unsuccessful fix attempts, stop and report
   hypothesis + evidence.

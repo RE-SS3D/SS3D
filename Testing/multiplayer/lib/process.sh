@@ -6,7 +6,7 @@ SS3D_TRACKED_PIDS=()
 
 # Linux client players need a video backend even with -nographics: without DISPLAY and
 # without SDL_VIDEODRIVER, Unity 6 selects window backend (null) and SIGSEGVs in PlayerMain
-# (TomNAS self-hosted CI). Dummy is enough for headless smoke; override if needed.
+# (self-hosted CI). Dummy is enough for headless smoke; override if needed.
 export SDL_VIDEODRIVER="${SDL_VIDEODRIVER:-dummy}"
 
 # Prints a free UDP port on 127.0.0.1. Avoids the hardcoded port the old PlayMode harness used,

@@ -38,7 +38,7 @@ namespace SS3D.Systems.Atmospherics
     public static class GasDefaults
     {
         /// <summary>
-        /// Core SS13 gases. Molar mass and specific heat follow the henkhooft tuning values.
+        /// Core SS13 gases. Molar mass and specific heat follow the project's established tuning values.
         /// </summary>
         public static readonly GasDefault[] Core =
         {

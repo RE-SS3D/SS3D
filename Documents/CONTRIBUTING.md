@@ -3,14 +3,14 @@
 This document covers contributing to **[henkhooft/SS3D](https://github.com/henkhooft/SS3D)**. For upstream RE:SS3D
 community and official releases, see [RE-SS3D/SS3D](https://github.com/RE-SS3D/SS3D).
 
-Read [FORK_STATUS.md](FORK_STATUS.md) first if you are new here — it explains how this repo diverges from upstream.
+Read [MERGE_GUIDE.md](MERGE_GUIDE.md) first if you worked on the project before the 2026 merge.
 
 ## Documentation
 
 This fork maintains its own docs in `Documents/`, independent of upstream's GitBook.
 
 - [SKILL.md](SKILL.md) — conventions for all documentation layers (read before writing)
-- [FORK_STATUS.md](FORK_STATUS.md) — upstream divergence log
+- [MERGE_GUIDE.md](MERGE_GUIDE.md) — what the 2026 merge changed
 - [milestones/](milestones/) — playable gates and current focus
 - [architecture/INDEX.md](architecture/INDEX.md) — navigation hub for finding code by system
 - [architecture/systems/](architecture/systems/) — per-domain system maps (entry points, key files)

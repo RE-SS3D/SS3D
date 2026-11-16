@@ -2,11 +2,11 @@
 > Touches systems: networking-session, electricity, area, ingame-console, logging
 > Status: in-progress
 
-**Progress:** Phase 0 runner online; EditMode and develop-release prefer TomNAS with GitHub fallback. Todos (folded in from the archived [self_hosted_ci_smoke plan](../archive/plans/self_hosted_ci_smoke.plan.md)):
+**Progress:** Phase 0 runner online; EditMode and develop-release default to the self-hosted runner; `runner: github` dispatches GitHub-hosted. Todos (folded in from the archived [self_hosted_ci_smoke plan](../archive/plans/self_hosted_ci_smoke.plan.md)):
 
 - [x] Register the runner, Library stash, pull the Unity image
 - [x] `multiplayer-smoke-test.yml` on self-hosted + Library stash + nightly
-- [ ] `workflow_dispatch` smoke on TomNAS; confirm a warm second run
+- [ ] `workflow_dispatch` smoke on the self-hosted runner; confirm a warm second run
 - [ ] Phase 1: harness SIGKILL + DSL + server-kill scenarios
 - [x] Phase 2: folded into the `observer-sync` smoke scenario (2026-11): `lights off` switches the area lights, the observing client checks with `observesync lights-off` ([testing philosophy](2026-11_testing-philosophy.md#harness-contracts) D5)
 
@@ -49,37 +49,40 @@ tool. CI pays ~45 min because every run re-imports assets and does a full IL2CPP
 an empty `Library`; on a persistent box with a cached Library, server+client rebuilds drop to
 minutes.
 
-### Ops (TomNAS — provisioned Jul 2026)
+### Ops (self-hosted runner — provisioned Jul 2026)
+
+Who runs the runner host and what stops without it: [2026-11_project-infrastructure](2026-11_project-infrastructure.md).
+Paths below are under the runner user's home (`~`).
 
 | Item | Value |
 |------|--------|
-| SSH | `ssh tomnas` (user `cu6e`) |
-| Runner name | `TomNAS-unity` |
+| Access | SSH to the runner host as the runner user (the maintainer has it) |
+| Runner name | any; jobs select it by labels |
 | Labels | `self-hosted`, `linux`/`Linux`, `x64`/`X64`, `unity` |
-| Install dir | `/home/cu6e/actions-runner` |
+| Install dir | `~/actions-runner` |
 | Service | user systemd `github-actions-runner.service` (`systemctl --user …`) |
-| Library stash (smoke) | `/home/cu6e/.cache/ss3d/Library` (restore copies it into the workspace, ~20 s; only a green job moves its Library back, so a failed or cancelled run keeps the last green stash) |
-| Library stash (EditMode) | `/home/cu6e/.cache/ss3d/Library-editmode` (separate so EditMode and builds don't overwrite each other's cache) |
-| UPM package cache | `/home/cu6e/.cache/ss3d/upm`, shared by every game-ci Unity container (`.github/actions/persistent-upm-cache`), so registry packages are downloaded once, not on every job |
-| game-ci CLI cache | `/home/tmp -> /tmp` symlink on TomNAS. The cache entry is saved by GitHub-hosted runners with paths relative to a workspace one level shallower, so without it the restore fails and every job downloads the CLI from GitHub |
-| Manual clone slot | `/home/cu6e/Dev/` (optional; CI checks out into runner `_work`) |
+| Library stash (smoke) | `~/.cache/ss3d/Library` (restore copies it into the workspace, ~20 s; only a green job moves its Library back, so a failed or cancelled run keeps the last green stash) |
+| Library stash (EditMode) | `~/.cache/ss3d/Library-editmode` (separate so EditMode and builds don't overwrite each other's cache) |
+| UPM package cache | `~/.cache/ss3d/upm`, shared by every game-ci Unity container (`.github/actions/persistent-upm-cache`), so registry packages are downloaded once, not on every job |
+| game-ci CLI cache | `/home/tmp -> /tmp` symlink on the runner host. The cache entry is saved by GitHub-hosted runners with paths relative to a workspace one level shallower, so without it the restore fails and every job downloads the CLI from GitHub |
+| Manual clone slot | `~/Dev/` (optional; CI checks out into runner `_work`) |
 
 Still required once was: docker group + linger + image pull (done Jul 2026). Pre-pull:
 
 ```bash
-ssh tomnas 'docker pull unityci/editor:ubuntu-6000.3.28f1-linux-il2cpp-3'
+ssh <runner-host> 'docker pull unityci/editor:ubuntu-6000.3.28f1-linux-il2cpp-3'
 ```
 
 Without the docker group, `game-ci/unity-builder` fails on the daemon socket. Without linger,
-the user systemd unit dies when all `cu6e` sessions end.
+the user systemd unit dies when all of the runner user's sessions end.
 
 The PlayMode job (`multiplayer-smoke-test.yml` and `weekly-graphical.yml`) does not use Docker. It
-runs a host editor at `~/Unity/Hub/Editor/<ProjectVersion>/Editor/Unity` on TomNAS, which has no
+runs a host editor at `~/Unity/Hub/Editor/<ProjectVersion>/Editor/Unity` on the runner host, which has no
 Unity Hub. Every editor bump needs that install as well as the image pull, or PlayMode fails at
 once with `Unity Editor not found/executable`:
 
 ```bash
-ssh tomnas 'v=6000.3.28f1; c=8f082d2fe476; d=~/Unity/Hub/Editor/$v; mkdir -p $d.partial &&
+ssh <runner-host> 'v=6000.3.28f1; c=8f082d2fe476; d=~/Unity/Hub/Editor/$v; mkdir -p $d.partial &&
   curl -fsSL https://download.unity3d.com/download_unity/$c/LinuxEditorInstaller/Unity-$v.tar.xz |
   tar -xJ -C $d.partial && mv $d.partial $d && echo $v > $d/version'
 ```
@@ -94,16 +97,16 @@ The changeset `c` is the hash in `m_EditorVersionWithRevision` in `ProjectSettin
   `runAsHostUser: true`; nightly `cron: "0 4 * * *"`.
 - [`.github/workflows/editmodetestrunner.yml`](../../.github/workflows/editmodetestrunner.yml):
   `run_tests` runs on `[self-hosted, linux, x64, unity]` + `Library-editmode` stash +
-  `runAsHostUser: true`; `workflow_dispatch` input `runner: tomnas|github` can pick
+  `runAsHostUser: true`; `workflow_dispatch` input `runner: self-hosted|github` can pick
   `ubuntu-latest` instead. There is no automatic fallback: `github.token` cannot list repo
-  runners (HTTP 403), so the old online probe always fell back. While TomNAS is offline, jobs
+  runners (HTTP 403), so the old online probe always fell back. While the runner is offline, jobs
   queue until it returns.
   Triggers follow [testing D12](2026-11_testing-philosophy.md#harness-contracts): PRs into
   `develop` (not docs-only, newer push cancels the older run) and a 02:30 UTC nightly on
   `develop` that skips an unchanged `develop`; no run per merge.
 - [`.github/workflows/develop-release.yml`](../../.github/workflows/develop-release.yml):
-  same TomNAS default in `prepare`; Linux via **one** `BuildBothForCi` step; shares
-  smoke’s `/home/cu6e/.cache/ss3d/Library` stash on self-hosted; nightly `workflow_dispatch`
+  same self-hosted default in `prepare`; Linux via **one** `BuildBothForCi` step; shares
+  smoke’s `~/.cache/ss3d/Library` stash on self-hosted; nightly `workflow_dispatch`
   at 05:17 UTC (Windows + Linux client/server → floating `develop-nightly`). Manual dispatch stays
   Windows-default with opt-in Linux.
 - Build methods for isolated server/client still exist for local/menu use; smoke / release
@@ -195,12 +198,10 @@ try/catch turns into a `ScriptFailed` the harness already fails on — no new DS
   secrets ([2026-07_ci-develop-release-pipeline.md](2026-07_ci-develop-release-pipeline.md)
   Pitfalls) — a self-hosted runner does not change that a job without `environment: unity_tests`
   sees empty `UNITY_LICENSE`/`UNITY_SERIAL`.
-- **EditMode fallback needs an online probe, not a second `runs-on`.** A job pinned only to
-  TomNAS queues forever when the runner is offline (`timeout-minutes` starts after assign).
-  `editmodetestrunner.yml` therefore has a cheap `pick_runner` on `ubuntu-latest` that reads
-  `TomNAS-unity`'s Actions status and chooses self-hosted vs hosted. If GitHub marks the
-  runner offline while the systemd unit is still up, force `runner=tomnas` via
-  `workflow_dispatch` or restart `github-actions-runner.service` on TomNAS.
+- **A job pinned to the self-hosted runner queues until it is back online** (`timeout-minutes`
+  starts after assign). `pick_runner` cannot probe the runner (`github.token` gets HTTP 403 listing
+  runners), so dispatch `runner=github` to run without it. If GitHub marks the runner offline while
+  the systemd unit is still up, restart `github-actions-runner.service` on the runner host.
 - **Separate EditMode Library stash.** EditMode uses `Library-editmode`; smoke uses `Library`.
   Sharing would let a failed EditMode discard wipe the warm build cache.
 - **Keep downloads out of the job.** The NAS reaches the internet through a VPN with bursty

@@ -78,4 +78,4 @@ Keep the reply short unless the user asks for a deep dive.
 - Treat Editor Game-view draw counts as a release blocker without noting `source: Editor Frame Debugger`.
 - “Fix” condemned uGUI / grow `Human.prefab` as the first rendering lever
   ([agent-first composition](../../../Documents/architecture/2026-07_agent-first-composition.md)).
-- Edit `Documents/design/*` or `Documents/FORK_STATUS.md`.
+- Edit `Documents/design/*`.

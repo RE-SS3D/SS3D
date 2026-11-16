@@ -55,7 +55,7 @@ isProject: false
 
 **Current fork state (gaps):**
 
-- URP 17 Forward+ foundation shipped ([FORK_STATUS.md](Documents/FORK_STATUS.md) § URP migration); [rendering.md](Documents/architecture/systems/rendering.md) is `partial`.
+- URP 17 Forward+ foundation shipped ([MERGE_GUIDE.md](Documents/MERGE_GUIDE.md) § URP migration); [rendering.md](Documents/architecture/systems/rendering.md) is `partial`.
 - [Simple Toon URP port](Assets/Content/Resources/Simple%20Toon/Shaders/STDefault.shader) exists but uses procedural step bands with **hard black** shadow color (`STCore.hlsl` line 25) — not the half-toon ramp + tinted shadows the design calls for.
 - Station materials are mostly **URP Lit**; characters use Simple Toon (~7 mats). Hybrid look, not unified station aesthetic.
 - Post-processing exists for **lobby/intro cameras only** ([SS3D_LobbyVolumeProfile.asset](Assets/Settings/URP/VolumeProfiles/SS3D_LobbyVolumeProfile.asset)); no in-round gameplay volume.
@@ -152,7 +152,7 @@ Add a shared ramp texture asset (e.g. `Assets/Art/Graphics/ToonRamp.png`) and re
 
 Migrate high-visibility station materials from URP Lit → half-toon shader in batches:
 
-1. **Floors/tiles** — highest surface area; PR 857 touched `TileGrey`, `TilePlating`, etc. (paths changed in fork; find equivalents under `Assets/Content/`).
+1. **Floors/tiles** — highest surface area; PR 857 touched `TileGrey`, `TilePlating`, etc. (paths changed since; find equivalents under `Assets/Content/`).
 2. **Walls/structures** — plating, windows (glass may stay a dedicated transparent toon variant).
 3. **Fixtures** — emissive bulb meshes already use Simple Toon `_Lumin` / `_EmissionColor`.
 

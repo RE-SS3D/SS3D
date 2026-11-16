@@ -152,7 +152,7 @@ def render_roadmap(gates):
     out += [
         "",
         "What already works, system by system, is listed in",
-        "[FORK_STATUS](Documents/FORK_STATUS.md#shipped-gameplay).",
+        "[the merge guide](Documents/MERGE_GUIDE.md#shipped-gameplay).",
     ]
     for g in gates:
         out += [

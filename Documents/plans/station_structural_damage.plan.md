@@ -159,7 +159,7 @@ Optional this phase: Effect-tier flash hook if lighting API is ready; else stub 
 
 1. Visual stages on wall/door meshes (material variants, decals, or cracked mesh swap) — start with wall/window content only; doors as follow-up if art-heavy.
 2. Optional hiss/particle at Cracked.
-3. If binary `IsAirtight=false` is too harsh, introduce a slow leak path in atmos for Cracked tiles only (document fork until then).
+3. If binary `IsAirtight=false` is too harsh, introduce a slow leak path in atmos for Cracked tiles only (document the design deviation until then).
 4. Examine strings for damage stage (via existing examine providers).
 
 ---
