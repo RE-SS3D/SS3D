@@ -206,6 +206,9 @@ a manual release check.
 - **An offline self-hosted runner queues jobs until it returns.** There is no online probe: `github.token`
   cannot list repo runners (HTTP 403). Dispatch with `runner: github` to build without it; job
   `timeout-minutes` does not cover queue wait.
+- **`updater-e2e.yml` needs two stable releases on this repository** (previous → latest). With fewer,
+  `Tools/updater/e2e-windows.ps1` skips with a notice. After the 2026 move its first real run is
+  v0.17.2 → the release after it.
 
 ## Out of scope
 

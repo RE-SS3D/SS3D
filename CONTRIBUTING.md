@@ -5,7 +5,7 @@ agent: the repository is laid out so an agent can find the right code, follow th
 check its own work. You stay the author. You choose the work, steer the agent, and own every line you
 submit.
 
-New here after working on SS3D before November 2026? Read the [merge guide](Documents/MERGE_GUIDE.md) first.
+New here after working on SS3D before November 2026? Read the [merge guide](Documents/archive/architecture/2026-11_merge-guide.md) first.
 
 ## Before you start
 

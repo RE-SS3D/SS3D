@@ -20,8 +20,8 @@ do end to end. Each goal is split into **slices**, the smaller pieces that have 
 | [Nuclear Operatives round](#nuclear-operatives-round) | Play a full Nuke Ops round from spawn to end screen | 11 of 14 done, 2 partial |
 | [Station round](#station-round) | Play a short, bare-bones SS13 shift with jobs and antagonists | 1 of 7 done, 2 partial |
 
-What already works, system by system, is listed in
-[the merge guide](Documents/MERGE_GUIDE.md#shipped-gameplay).
+What already works, system by system, is in the
+[coverage table](Documents/architecture/INDEX.md#coverage-table).
 
 ## Test server
 

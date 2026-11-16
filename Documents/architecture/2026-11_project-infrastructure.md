@@ -37,3 +37,24 @@ from `develop`.
    [2026-07_multiplayer-testing-self-hosted-ci](2026-07_multiplayer-testing-self-hosted-ci.md).
 2. Move the nightly dispatcher and its token, and redeploy the test servers from the latest release.
 3. Update the **Run by** column here. No other doc names the host.
+
+If the repository itself moves, as it did in 2026 ([merge effort](../archive/architecture/2026-11_upstream-merge.md)):
+
+1. Push every `v*` tag to the new repository before its first release. Version numbers come from local tags
+   ([2026-10_game-versioning](2026-10_game-versioning.md)); without them the first release numbers itself v0.1.0.
+2. Run `python3 Tools/updater/set_project_repo.py <Owner/Name>` with the casing GitHub uses in release URLs,
+   because the updaters compare those URLs case-sensitively.
+3. Cut one patch release from the old repository with the switched slug, so installed updaters follow the move,
+   and push its tag to the new repository too. The new repository's releases then continue from that number.
+
+## After the 2026 move
+
+Steps left open when the merge effort was archived (2026-11-16):
+
+- [ ] Cut v0.17.2 on this repository (`version_bump: patch`, or `auto`). The central team then points ss3d.space at
+  this repository's releases page.
+- [ ] Protect `develop` with the EditMode run as a required check.
+- [ ] Give the nightly release dispatcher a token for this repository.
+- [ ] Old fork: disable Actions, Issues and Discussions. The scheduled workflows are already off.
+- [ ] Decide what happens to the bounties on issues the merge completed (#1464, #1394, #1377, #1373, #1333,
+  #1283, #1280, #1258, #1246, #1184).
