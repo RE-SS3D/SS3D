@@ -21,6 +21,16 @@ set up lives in the linked doc.
 | **ss3d.space** | Project website; its download link points at this repository's releases page | Central team | Players find releases through GitHub instead. |
 | **Discord** | Community, playtest announcements ([milestones](../milestones/INDEX.md)) | Central team | Playtests have no announcement channel. |
 
+## Keeping the runner safe
+
+The self-hosted runner executes whatever a workflow tells it to, on the maintainer's machine and network.
+Our workflows keep PRs from forks off it, but on `pull_request` events GitHub runs the workflow files from
+the PR's own branch, so a fork PR could edit those gates away. What stops that is the repository setting
+that holds every outside contributor's workflow run until a maintainer approves it. **Before approving a
+run on an outside PR, check whether it changes anything under `.github/`.** If it does, read that change
+first, or test the PR with a maintainer dispatch (`-f pr=<number>`) instead, which runs the workflow files
+from `develop`.
+
 ## When hosting changes hands
 
 1. Register a new runner with the same labels and work through the § Ops setup in
