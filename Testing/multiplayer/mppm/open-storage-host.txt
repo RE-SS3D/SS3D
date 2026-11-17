@@ -1,0 +1,12 @@
+# Guards: a remote client opens its own worn storage (the HUD open button's ServerRpc) and the server opens it back (#1531) · Not cheaper because: the bug only shows when the client is not also the server
+# Main editor (host) side. Player2 runs scenarios/open-storage-client.txt.
+wait_timeout 180
+wait_connected
+wait_clients 1
+ready
+start_round
+wait_round Ongoing
+embark
+assert_embarked
+wait_players 2
+wait_seconds 20

@@ -552,6 +552,11 @@ namespace SS3D.Systems.Testing
                     TestSignal.Emit(this, "ActionLineReceived", instruction.ArgsJoined);
                     break;
 
+                // Client: asks the server to open a worn storage container (a bag on the back, else a pocket) and waits for the open to come back (#1531).
+                case "assert_open_storage":
+                    yield return StorageAutomation.AssertOpenWornStorage(_waitTimeoutSeconds);
+                    break;
+
                 // Host: the next round loads this map and mode. Map names may not contain spaces here.
                 case "use_station":
                     UseStation(instruction.Args[0], instruction.Args[1]);
