@@ -130,6 +130,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6f578c04c3e4952efba925637a7727d3
+    m_Address: ExternalAirlockOpen
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6fab86354b054a54b8b4828f689970e4
     m_Address: Assets/Art/Sound/Entities/Humanoid/Combat/Punch1.ogg
     m_ReadOnly: 0
@@ -242,6 +247,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c71b390cba490a1af818076d0edd59f2
     m_Address: NukeWireCut
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cddae0473d895fe0f9fe3abc25059a14
+    m_Address: ExternalAirlockClose
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

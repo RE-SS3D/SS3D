@@ -242,7 +242,10 @@ namespace SS3D.Tests
             gear.ClientToggleInternals();
             yield return WaitFor(() => gear.InternalsOn, "a healthy body works the switch");
 
-            while (health.Snapshot.State != HealthState.Critical)
+            // Go well past the line: the toggles land a tick later, and a natural tick on internals pays off ~0.012 debt,
+            // which would lift a body sitting right at the threshold out of Critical and give it its arms back.
+            while (health.Snapshot.State != HealthState.Critical
+                || health.Snapshot.Pools.OxyDebt < HealthConstants.CriticalOxyDebt + 0.1f)
             {
                 health.TickHealth(atmosphereO2: 0f);
             }
