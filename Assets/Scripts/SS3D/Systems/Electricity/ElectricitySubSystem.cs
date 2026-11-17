@@ -520,6 +520,8 @@ namespace SS3D.Systems.Electricity
             _electricityGraph.Clear();
             TileMap map = SubSystems.TryGet(out TileSubSystem tileSystem) ? tileSystem.CurrentMap : null;
 
+            // The map holds still for the whole rebuild, so each cable run is walked once for all its grid devices.
+            using ElectricCableConnectivity.RebuildCacheScope cache = ElectricCableConnectivity.BeginRebuildCache();
             for (int i = _registeredDevices.Count - 1; i >= 0; i--)
             {
                 IElectricDevice device = _registeredDevices[i];

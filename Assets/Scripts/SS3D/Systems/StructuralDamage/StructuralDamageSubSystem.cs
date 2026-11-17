@@ -1,5 +1,6 @@
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Logging;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Health;
@@ -97,6 +98,7 @@ namespace SS3D.Systems.StructuralDamage
             TileSubSystem tiles = Announce(epicenter, falloff > 0f ? yield / falloff : yield);
             _lastBlastForces = null;
             blast.Resolve(epicenter, yield, falloff);
+            LogBlast(epicenter, yield);
             tiles?.ServerNotifyBlastDetonated(_boundQuery.TileToWorld(epicenter), yield, smallSound,
                 BlastFlameTiles.Pack(epicenter, _lastBlastForces));
         }
@@ -109,7 +111,15 @@ namespace SS3D.Systems.StructuralDamage
             TileSubSystem tiles = Announce(target, Mathf.Max(240f / 60f, 180f / 40f));
             _lastBlastForces = null;
             _blast.ResolveShaped(target, 240f, 60f, 180f, 40f, direction);
+            LogBlast(target, 240f);
             tiles?.ServerNotifyBlastDetonated(_boundQuery.TileToWorld(target), 300f, flameTiles: BlastFlameTiles.Pack(target, _lastBlastForces));
+        }
+
+        private void LogBlast(TileCoord epicenter, float yield)
+        {
+            int destroyed = _service?.TakeBlastDestroyedCount() ?? 0;
+            Log.Information(this, "Blast at {epicenter} (yield {yield}) destroyed {destroyed} structures, reached {tiles} tiles",
+                Logs.Generic, epicenter, yield, destroyed, _lastBlastForces?.Count ?? 0);
         }
 
         /// <summary>Sends the blast-started notice; null when there is no server tile system to send through.</summary>

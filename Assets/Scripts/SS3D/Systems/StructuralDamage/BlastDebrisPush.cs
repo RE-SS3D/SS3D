@@ -26,6 +26,8 @@ namespace SS3D.Systems.StructuralDamage
         private const int Slots = 4;
         private static readonly Vector3[] Epicenters = new Vector3[Slots];
         private static readonly float[] Reaches = new float[Slots];
+        private static readonly int[] Ids = new int[Slots];
+        private static int _lastId;
         private static readonly float[] Times = { float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity };
         private static int _next;
 
@@ -35,6 +37,7 @@ namespace SS3D.Systems.StructuralDamage
             Epicenters[_next] = epicenter;
             Reaches[_next] = Mathf.Max(1f, reach);
             Times[_next] = Time.time;
+            Ids[_next] = ++_lastId;
             _next = (_next + 1) % Slots;
         }
 
@@ -42,8 +45,13 @@ namespace SS3D.Systems.StructuralDamage
         /// The launch for debris at <paramref name="point"/> if a blast was announced within <see cref="Window"/> and
         /// reaches it: away from the nearest such epicenter, tilted up, faster closer in.
         /// </summary>
-        public static bool TryGetPush(Vector3 point, out Vector3 direction, out float speed)
+        public static bool TryGetPush(Vector3 point, out Vector3 direction, out float speed) =>
+            TryGetPush(point, out direction, out speed, out _);
+
+        /// <param name="blast">Which announced blast it is, so its debris can share one emitter.</param>
+        public static bool TryGetPush(Vector3 point, out Vector3 direction, out float speed, out int blast)
         {
+            blast = 0;
             direction = default;
             speed = 0f;
             float best = float.PositiveInfinity;
@@ -57,6 +65,7 @@ namespace SS3D.Systems.StructuralDamage
                     continue;
 
                 best = distance;
+                blast = Ids[i];
                 Launch(Epicenters[i], Reaches[i], point, out direction, out speed);
             }
 
