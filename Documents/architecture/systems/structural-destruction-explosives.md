@@ -43,7 +43,7 @@ Remote triggers, a proximity alert, other grenades and separate-client acceptanc
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/Editor/SyndicateBombPrefabSetup.cs` — bomb and beacon prefabs, map-editor entries, sounds, examine text (batch: `SetupBatch`); meshes from `Tools/export_syndicate_bomb.py <Syndicate_Bomb.blend>`
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/Editor/ExplosivePrefabSetup.cs` — repeatable FBX mesh bake, prefabs, item/sound database registration and examine text
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/StructuralDamageSubSystem.cs` — radial blast and `ResolveShapedCharge`
-- `Assets/Scripts/SS3D/Systems/StructuralDamage/BlastResolutionService.cs` — common BFS and `ResolveCone`
+- `Assets/Scripts/SS3D/Systems/StructuralDamage/BlastResolutionService.cs` — common spread (round, rough-edged) and `ResolveCone`
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/BlastPush.cs` — force to body velocity and knockdown; dispatched from `StructuralDamageSubSystem.ApplyCrewBlastPush`
 - `Assets/Scripts/SS3D/Systems/Entities/Humanoid/Ragdoll.Blast.cs` — server knockdown, owner RPC, bone launch and upright shove
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/StructuralAudioPresenter.cs` — near/small/far explosion sound selection

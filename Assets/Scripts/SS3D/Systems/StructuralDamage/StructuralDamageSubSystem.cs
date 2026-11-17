@@ -156,7 +156,8 @@ namespace SS3D.Systems.StructuralDamage
             _boundQuery = tiles.QueryService;
             _boundConstruction = tiles.Construction;
             _service = new StructuralDamageService(_boundQuery, _boundConstruction);
-            _blast = new BlastResolutionService(_boundQuery, _service, ApplyCrewBlastBrute, _service.ApplyBlastFloorDamage, ApplyCrewBlastPush);
+            _blast = new BlastResolutionService(_boundQuery, _service, ApplyCrewBlastBrute, _service.ApplyBlastFloorDamage,
+                ApplyCrewBlastPush, BlastResolutionService.GameRoughness);
         }
 
         /// <summary>
