@@ -68,12 +68,13 @@ Remote triggers, a proximity alert, other grenades and separate-client acceptanc
 - **Breaks reach clients before the blast's own RPC:** the BFS applies structural damage, and sends its break RPCs, while it resolves. Anything a break needs to know about the blast must go in the blast-started notice, which is sent before `Resolve`.
 - **FBX root scale/axis conversion is part of the pose:** bake the source's full `localToWorldMatrix` into the mesh. Dropping the imported root makes a tiny upright charge.
 
-- **Draggable has no despawn cleanup:** the dragger's `HumanoidLivingController.IsDragging` is a client flag set by `DragInteraction`. If a bomb detonates or is deleted mid-drag, the flag stays set until the next drag. That is unlikely to matter next to a bomb this size.
+- **A drag can end without a Drop click:** the bomb blowing up, a delete or the server letting go all end it. `HumanoidLivingController.IsDragging` therefore reads the remembered `Draggable` (null once destroyed, or `Dragged` false) rather than a stored flag (#1535). `DragInteraction.Start` runs only on the server, so only the server's and host's controllers know the target. A remote owner's body never gets the drag turn lock.
 
 ## Tests
 
 - `TimedChargeTests`: profile fuse lengths, physical model size, LED presence, registered countdown clips, defuse tool and expiry gates, interface priority.
 - `SyndicateBombTests` (EditMode): timer floor and cap, arming, bolts locking while armed, the two-step defuse and re-arm, spent state, beep rate, the prefab is draggable and too heavy for any container, the beacon reference, and the beacon in the operative kit's first-holder contents only.
+- `SyndicateBombScenarios.Detonation_MidDrag_ReleasesTheDragger`: a bomb that detonates mid-drag frees its dragger to turn (#1535).
 - `SyndicateBombScenarios` (`scenarios:Explosives`): the beacon calls the bomb down, Pick up is refused, timer up/down, drag and let go, arm, bolt while armed, unbolt refused, drag refused while bolted, screwdriver then wirecutters defuse, unbolt after the defuse; and one detonation opens the hull under it. `NukeOpsScenarios` checks that the host operative spawns with the beacon in their bag.
 - `BlastPushTests`: direction, force scaling and cap, the on-epicenter fallback, the knockdown line and one push from X4's two passes.
 - `ExplosivesScenarios`: owner floored and thrown then recovered, upright shove, unowned body, and a launch at `MaxSpeed` stopping at a wall. `EvaGearScenarios` covers boots against a shove. `Testing/ui/validate.sh --steps mppm:blast` proves the shove, throw and recovery on a remote owner. Its throw check is peak planar speed: a plain collapse can end half a metre to the side.
