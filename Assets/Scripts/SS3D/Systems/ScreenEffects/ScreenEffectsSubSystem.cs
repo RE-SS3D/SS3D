@@ -50,6 +50,7 @@ namespace SS3D.Systems.ScreenEffects
         private float _hitFlashTimer = -1f;
         private float _blastFlashTimer = -1f;
         private float _blastFlashStrength = 1f;
+        private float _blastFlashDecay = BlastFlashDecay;
         private float _whiteoutTimer = -1f;
         private float _whiteoutSeconds;
         private float _uiBackdropBlurTarget;
@@ -172,7 +173,8 @@ namespace SS3D.Systems.ScreenEffects
         /// <summary>
         /// White-hot blast flash. <paramref name="strength"/> scales vignette intensity (0..1+).
         /// </summary>
-        public void TriggerBlastFlash(float strength = 1f)
+        /// <param name="length">Stretches the fade; a violent blast's flash lingers.</param>
+        public void TriggerBlastFlash(float strength = 1f, float length = 1f)
         {
             if (_gameplayFeedbackSuppressed)
             {
@@ -181,6 +183,7 @@ namespace SS3D.Systems.ScreenEffects
 
             _blastFlashTimer = 0f;
             _blastFlashStrength = Mathf.Clamp(strength, 0.05f, 1.5f);
+            _blastFlashDecay = BlastFlashDecay * Mathf.Clamp(length, 0.5f, 3f);
         }
 
         /// <summary>
@@ -547,7 +550,7 @@ namespace SS3D.Systems.ScreenEffects
             }
 
             _blastFlashTimer += deltaTime;
-            const float total = BlastFlashAttack + BlastFlashDecay;
+            float total = BlastFlashAttack + _blastFlashDecay;
 
             if (_blastFlashTimer >= total)
             {
@@ -562,7 +565,7 @@ namespace SS3D.Systems.ScreenEffects
             }
             else
             {
-                envelope = 1f - (_blastFlashTimer - BlastFlashAttack) / BlastFlashDecay;
+                envelope = 1f - (_blastFlashTimer - BlastFlashAttack) / _blastFlashDecay;
             }
 
             return envelope * _blastFlashStrength;

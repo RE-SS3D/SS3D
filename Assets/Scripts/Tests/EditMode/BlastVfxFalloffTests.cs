@@ -28,6 +28,16 @@ namespace EditorTests
         }
 
         [Test]
+        public void Violence_OnlyGrowsPastTheBiggestCharge()
+        {
+            Assert.AreEqual(1f, BlastVfxFalloff.Violence(90f), "Minibomb");
+            Assert.AreEqual(1f, BlastVfxFalloff.Violence(BlastVfxFalloff.ViolentYield), "X4");
+            Assert.AreEqual(500f / BlastVfxFalloff.ViolentYield, BlastVfxFalloff.Violence(SyndicateBomb.BlastYield), 0.001f,
+                "The Syndicate bomb hits harder than any charge");
+            Assert.AreEqual(BlastVfxFalloff.MaxViolence, BlastVfxFalloff.Violence(5000f));
+        }
+
+        [Test]
         public void YieldScale_ClampsAroundReference()
         {
             Assert.AreEqual(1f, BlastVfxFalloff.YieldScale(120f), 0.001f);

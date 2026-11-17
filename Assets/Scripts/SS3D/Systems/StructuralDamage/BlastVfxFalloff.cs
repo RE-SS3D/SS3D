@@ -26,6 +26,19 @@ namespace SS3D.Systems.StructuralDamage
             return 1f - (distance - fullRange) / (maxRange - fullRange);
         }
 
+        /// <summary>Yield at and below which <see cref="Violence"/> is 1: X4's single detonation event.</summary>
+        public const float ViolentYield = 300f;
+
+        /// <summary>Cap on <see cref="Violence"/>; the Syndicate bomb (500) reaches about 1.67.</summary>
+        public const float MaxViolence = 2f;
+
+        /// <summary>
+        /// Extra punch for blasts bigger than any charge, past where <see cref="YieldScale"/> stops growing: 1 up to
+        /// <see cref="ViolentYield"/>, then in proportion, capped at <see cref="MaxViolence"/>. It stretches the shake,
+        /// the flash and their reach, and swells the fireball.
+        /// </summary>
+        public static float Violence(float yield) => Mathf.Clamp(yield / ViolentYield, 1f, MaxViolence);
+
         /// <summary>Scales presentation from yield relative to a reference grenade-sized blast.</summary>
         public static float YieldScale(float yield, float referenceYield = ReferenceYield)
         {
