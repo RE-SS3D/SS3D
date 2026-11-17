@@ -31,6 +31,16 @@ namespace SS3D.Systems.Entities
 
         public static void ClearServer(int clientId) => ServerClientIds.Remove(clientId);
 
+        /// <summary>
+        /// Forget every flag. The set is static, so without this a host that stops and starts again in the same process
+        /// (or the next editor PlayMode run, with domain reload off) inherits the last session's invincible builders.
+        /// </summary>
+        public static void ResetAll()
+        {
+            ServerClientIds.Clear();
+            LocalPlayerInvincible = false;
+        }
+
         /// <summary>Cheap early-out for per-tick callers.</summary>
         public static bool AnyActive => LocalPlayerInvincible || ServerClientIds.Count > 0;
 
