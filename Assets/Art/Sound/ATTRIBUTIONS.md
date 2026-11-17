@@ -145,3 +145,5 @@ Project-owned art defaults to [Documents/LICENSE-ASSETS.md](../../Documents/LICE
 | `Assets/Art/Sound/Items/Weapons/Explosive/SS14/BeaconArrival.ogg` | CC-BY-SA-3.0 | tgstation; via SS14 `Effects/teleport_arrival.ogg` (unmodified; the Syndicate bomb arriving at its beacon) | [tgstation commit 906fb06](https://github.com/tgstation/tgstation/commit/906fb0682bab6a0975b45036001c54f021f58ae7) |
 
 | `Assets/Art/Sound/Items/Weapons/Flamethrower/FlameJet.ogg` | CC0-1.0 | raremess, "Cardboard burning 2", edited for SS14; SS14 `Resources/Audio/Effects/fire.ogg` (unmodified) | [Freesound 222557](https://freesound.org/people/raremess/sounds/222557/) |
+| `Assets/Art/Sound/World/Airlocks/ExternalAirlockOpen.ogg` | CC-BY-SA-3.0 | SS14 default (no `attributions.yml` entry) | SS14 `Resources/Audio/Machines/airlock_ext_open.ogg` |
+| `Assets/Art/Sound/World/Airlocks/ExternalAirlockClose.ogg` | CC-BY-SA-3.0 | SS14 default (no `attributions.yml` entry) | SS14 `Resources/Audio/Machines/airlock_ext_close.ogg` |

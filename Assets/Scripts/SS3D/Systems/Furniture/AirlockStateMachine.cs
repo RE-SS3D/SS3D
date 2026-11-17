@@ -47,7 +47,7 @@ namespace SS3D.Systems.Furniture
 
                 if (playSound)
                 {
-                    SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, Sounds.AirlockOpen, position, null);
+                    SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, opener != null ? opener.OpenSoundId : Sounds.AirlockOpen, position, null);
                 }
             }
 
@@ -60,7 +60,7 @@ namespace SS3D.Systems.Furniture
 
                 if (playSound)
                 {
-                    SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, Sounds.AirlockClose, position, null);
+                    SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, opener != null ? opener.CloseSoundId : Sounds.AirlockClose, position, null);
                 }
             }
         }

@@ -26,12 +26,21 @@ namespace SS3D.Systems.Tile.MapEditor
         public override void OnStopServer()
         {
             base.OnStopServer();
+            // Invincibility outlives closing the editor, but not the session.
+            EntityInvincibility.ResetAll();
             ResetAuthoringState();
             SystemsViews.Clear();
             SystemsViewServer.ServerStopped();
             ServerInteractionSteps.Wrap = null;
             ServerManager.OnRemoteConnectionState -= HandleRemoteConnectionState;
             LightingDevBypass.MapEditorOverride = false;
+        }
+
+        public override void OnStopClient()
+        {
+            base.OnStopClient();
+            // A client that leaves must not carry its mirror into the next server it joins.
+            EntityInvincibility.LocalPlayerInvincible = false;
         }
 
         private void HandleRemoteConnectionState(NetworkConnection conn, RemoteConnectionStateArgs args)
