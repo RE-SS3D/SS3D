@@ -17,6 +17,7 @@ namespace SS3D.Systems.StructuralDamage
     {
         private StructuralDamageService _service;
         private BlastResolutionService _blast;
+        private IReadOnlyDictionary<TileCoord, float> _lastBlastForces;
         private ITileQueryService _boundQuery;
         private IConstructionService _boundConstruction;
 
@@ -84,7 +85,8 @@ namespace SS3D.Systems.StructuralDamage
 
         /// <summary>
         /// Server blast BFS from <paramref name="epicenter"/>. No-op if tile services are unbound.
-        /// Broadcasts client VFX via <see cref="TileSubSystem"/> after resolution.
+        /// Announces the blast via <see cref="TileSubSystem"/> before resolution (debris direction) and broadcasts the
+        /// detonation VFX, with the tiles it reached, after.
         /// </summary>
         public void ResolveBlast(TileCoord epicenter, float yield, float falloff, bool smallSound = false)
         {
@@ -92,17 +94,11 @@ namespace SS3D.Systems.StructuralDamage
             if (blast == null)
                 return;
 
+            TileSubSystem tiles = Announce(epicenter, falloff > 0f ? yield / falloff : yield);
+            _lastBlastForces = null;
             blast.Resolve(epicenter, yield, falloff);
-
-            if (_boundQuery == null
-                || !SubSystems.TryGet(out TileSubSystem tiles)
-                || !tiles.IsServer)
-            {
-                return;
-            }
-
-            Vector3 world = _boundQuery.TileToWorld(epicenter);
-            tiles.ServerNotifyBlastDetonated(world, yield, smallSound);
+            tiles?.ServerNotifyBlastDetonated(_boundQuery.TileToWorld(epicenter), yield, smallSound,
+                BlastFlameTiles.Pack(epicenter, _lastBlastForces));
         }
 
         /// <summary>X4's stronger radial blast plus extra force beyond its attached target; one audiovisual event.</summary>
@@ -110,9 +106,20 @@ namespace SS3D.Systems.StructuralDamage
         {
             EnsureServiceBound();
             if (_blast == null) return;
+            TileSubSystem tiles = Announce(target, Mathf.Max(240f / 60f, 180f / 40f));
+            _lastBlastForces = null;
             _blast.ResolveShaped(target, 240f, 60f, 180f, 40f, direction);
-            if (SubSystems.TryGet(out TileSubSystem tiles) && tiles.IsServer)
-                tiles.ServerNotifyBlastDetonated(_boundQuery.TileToWorld(target), 300f);
+            tiles?.ServerNotifyBlastDetonated(_boundQuery.TileToWorld(target), 300f, flameTiles: BlastFlameTiles.Pack(target, _lastBlastForces));
+        }
+
+        /// <summary>Sends the blast-started notice; null when there is no server tile system to send through.</summary>
+        private TileSubSystem Announce(TileCoord epicenter, float reach)
+        {
+            if (_boundQuery == null || !SubSystems.TryGet(out TileSubSystem tiles) || !tiles.IsServer)
+                return null;
+
+            tiles.ServerNotifyBlastStarted(_boundQuery.TileToWorld(epicenter), reach);
+            return tiles;
         }
 
         private void EnsureServiceBound()
@@ -165,6 +172,8 @@ namespace SS3D.Systems.StructuralDamage
         /// <summary>Runs once all passes are done, so a body gets one push from one detonation.</summary>
         private void ApplyCrewBlastPush(TileCoord epicenter, IReadOnlyDictionary<TileCoord, float> forces)
         {
+            // The detonation RPC sends these tiles as flames once the blast has finished resolving.
+            _lastBlastForces = forces;
             if (_boundQuery == null)
             {
                 return;

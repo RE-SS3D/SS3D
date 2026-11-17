@@ -11,12 +11,14 @@ namespace SS3D.Systems.StructuralDamage
     /// </summary>
     public static class BlastVfxPresenter
     {
-        public static void Play(Vector3 epicenter, float yield)
+        /// <param name="flameTiles">The tiles the blast reached, from <see cref="BlastFlameTiles.Pack"/>; empty for none.</param>
+        public static void Play(Vector3 epicenter, float yield, byte[] flameTiles = null)
         {
             BlastVfxCatalog catalog = BlastVfxCatalog.Instance;
             float yieldScale = BlastVfxFalloff.YieldScale(yield);
 
             SpawnBurst(epicenter, yieldScale, catalog);
+            BlastFlameFront.Spawn(epicenter, flameTiles);
             BlastScorchSpawner.SpawnAt(epicenter, yieldScale, catalog);
             ApplyLocalFeedback(epicenter, yieldScale, catalog);
         }

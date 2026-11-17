@@ -116,6 +116,15 @@ namespace SS3D.Systems.StructuralDamage
             if (count <= 0 || !EnsureMaterial())
                 return null;
 
+            // Debris from a fresh blast is thrown away from the epicenter instead of dropping where it broke.
+            if (BlastDebrisPush.TryGetPush(origin, out Vector3 thrown, out float thrownSpeed))
+            {
+                direction = thrown;
+                speed = Mathf.Max(speed, thrownSpeed);
+                spread = Mathf.Min(spread, BlastDebrisPush.Spread);
+                lifetime = Mathf.Max(lifetime, 2.4f);
+            }
+
             GameObject emitter = new($"{kind} debris");
             emitter.SetActive(false);
             Quaternion rotation = direction.sqrMagnitude > 0.0001f ? Quaternion.LookRotation(direction) : Quaternion.identity;
