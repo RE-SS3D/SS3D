@@ -53,6 +53,9 @@ prefixes:
   - match: /obj/machinery/door/airlock/public
     kind: door
     so: CivillianAirlock
+  - match: /obj/machinery/door/airlock/external
+    kind: door
+    so: ExternalAirlock
   - match: /obj/machinery/door/airlock/public/glass
     kind: door
     so: CivillianAirlockGlass

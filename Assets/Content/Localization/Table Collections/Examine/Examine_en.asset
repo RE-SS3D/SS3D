@@ -2428,6 +2428,16 @@ MonoBehaviour:
     m_Localized: A station airlock for cargo staff. Its window lets you see through.
     m_Metadata:
       m_Items: []
+  - m_Id: 300186129876099072
+    m_Localized: External Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300186129892876288
+    m_Localized: A heavy airlock that seals the station off from space. It opens
+      only when someone works it by hand, sinking into the floor, and shuts again
+      on its own once the doorway is clear.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

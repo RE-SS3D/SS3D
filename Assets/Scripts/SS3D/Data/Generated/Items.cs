@@ -60,6 +60,7 @@ namespace SS3D.Data.Generated
         public const string ElectricalWire = "cc71128d4bcc0c548ac11481000ac424";
         public const string EngineeringAirlock = "896ec393918780a7fad3f8324a49e9c3";
         public const string EngineeringAirlockGlass = "d020a8373bed0a51795a08585ccb70e3";
+        public const string ExternalAirlock = "1cacaf5444f18ce04bc8c1ccf53553f2";
         public const string FacewearGasMask = "bf177f8bab26bc84b87fd9a971004418";
         public const string FancyCarpetRed = "9b8a1328991fc2846bc55a3d9a82e5c0";
         public const string FireAlarm = "50dd6be959d44844ab1abf8a3f2adb01";

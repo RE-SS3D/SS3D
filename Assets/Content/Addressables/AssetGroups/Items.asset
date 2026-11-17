@@ -150,6 +150,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1cacaf5444f18ce04bc8c1ccf53553f2
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/ExternalAirlock.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1ccc3cf742cb80680b05529457e5b64c
     m_Address: GlassesSecurityHud
     m_ReadOnly: 0

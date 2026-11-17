@@ -506,6 +506,14 @@ MonoBehaviour:
     VariantLabel: Glass
     SearchTags:
     - doors
+  - AssetName: ExternalAirlock
+    Mode: 0
+    Subcategory: 102
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - doors
   - AssetName: FacewearGasMask
     Mode: 2
     Subcategory: 302

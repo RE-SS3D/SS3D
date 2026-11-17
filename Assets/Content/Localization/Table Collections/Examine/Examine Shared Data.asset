@@ -2359,6 +2359,14 @@ MonoBehaviour:
     m_Key: structures.doors.supply_airlock_glass.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 300186129876099072
+    m_Key: structures.doors.external_airlock.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300186129892876288
+    m_Key: structures.doors.external_airlock.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -1,6 +1,6 @@
 {
     "Version": 1,
-    "ExportedAt": "2026-11-16T22:07:17.9898560Z",
+    "ExportedAt": "2026-11-16T22:24:36.2543140Z",
     "Entries": [
         {
             "AssetPath": "Assets/Content/Data/Examine/String/Entities/Humanoids/Human.asset",
@@ -1170,6 +1170,13 @@
             "DescriptionKey": "structures.doors.engineering_airlock_glass.desc",
             "EnName": "Engineering Glass Airlock",
             "EnDescription": "A station airlock for engineering staff. Its window lets you see through."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/ExternalAirlock.asset",
+            "NameKey": "structures.doors.external_airlock.name",
+            "DescriptionKey": "structures.doors.external_airlock.desc",
+            "EnName": "External Airlock",
+            "EnDescription": "A heavy airlock that seals the station off from space. It opens only when someone works it by hand, sinking into the floor, and shuts again on its own once the doorway is clear."
         },
         {
             "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/GeneticsAirlock.asset",
