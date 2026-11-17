@@ -56,6 +56,7 @@ Testing/ui/validate.sh --steps mppm:reconnect
 Testing/ui/validate.sh --steps mppm:breach   # breach wind on a remote owner: pushed body and streaks
 Testing/ui/validate.sh --steps mppm:blast   # blast on a remote owner: shoved upright, then floored and thrown
 Testing/ui/validate.sh --steps mppm:action-line   # a target-only action line (examine cue) reaches a remote owner and is formatted there
+Testing/ui/validate.sh --steps mppm:open-storage   # a remote client opens its worn backpack through the server (HUD open button path)
 Testing/ui/validate.sh --steps mppm:systems-view   # a remote client in the map editor gets the Atmos view, traces a valve and sees its pressures meet once it opens; it is refused the pause, and sees the host admin's pause, steps and resume in its trace
 Testing/ui/validate.sh --steps mppm:breach-budget   # atmos tick cost and traffic during a hull breach with loose items, logged as [atmos-budget]
 Testing/ui/compile.sh             # = --steps compile
