@@ -31,6 +31,14 @@ run on an outside PR, check whether it changes anything under `.github/`.** If i
 first, or test the PR with a maintainer dispatch (`-f pr=<number>`) instead, which runs the workflow files
 from `develop`.
 
+**Trusted authors' fork PRs.** `trusted-pr-editmode.yml` dispatches that same `-f pr=<number>` EditMode run
+by itself when a fork PR's author has write access here and the PR comes from the author's own fork. It
+trusts no one new: those authors can already push branches here, which run on the runner, and dispatch any
+workflow. It runs from the default branch on `workflow_run`, checks out nothing, and the dispatched run uses
+`develop`'s workflow files, so a PR can't edit it away. Two limits follow from trusting the author: commits
+someone else pushed to that fork (its own collaborators) run too, and removing a person's write access here
+is what stops it. The multiplayer smoke set still needs a maintainer's dispatch.
+
 ## When hosting changes hands
 
 1. Register a new runner with the same labels and work through the § Ops setup in
