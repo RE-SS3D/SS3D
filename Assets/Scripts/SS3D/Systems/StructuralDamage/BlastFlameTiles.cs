@@ -35,8 +35,11 @@ namespace SS3D.Systems.StructuralDamage
                 Strength = strength;
             }
 
-            /// <summary>When this tile catches, after the blast: one hop per tile of grid distance.</summary>
-            public float Delay => (Mathf.Abs(Offset.x) + Mathf.Abs(Offset.y)) * HopSeconds;
+            /// <summary>
+            /// When this tile catches, after the blast: one hop per tile of straight-line distance, so the front
+            /// grows as a circle like the blast's own spread.
+            /// </summary>
+            public float Delay => Offset.magnitude * HopSeconds;
         }
 
         public static byte[] Pack(TileCoord epicenter, IReadOnlyDictionary<TileCoord, float> forces)

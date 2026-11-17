@@ -28,7 +28,8 @@ namespace EditorTests
             Assert.AreEqual(new Vector2Int(2, 0), flames[1].Offset);
             Assert.AreEqual(0.5f, flames[1].Strength, 0.01f);
             Assert.AreEqual(new Vector2Int(-3, -5), flames[2].Offset, "Negative offsets survive the signed bytes");
-            Assert.AreEqual(8 * BlastFlameTiles.HopSeconds, flames[2].Delay, 0.0001f, "Catches one hop per tile of grid distance");
+            Assert.AreEqual(Mathf.Sqrt(34f) * BlastFlameTiles.HopSeconds, flames[2].Delay, 0.0001f,
+                "Catches one hop per tile of straight-line distance");
         }
 
         [Test]
