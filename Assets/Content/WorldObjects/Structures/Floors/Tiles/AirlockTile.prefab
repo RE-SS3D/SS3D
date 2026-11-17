@@ -31,7 +31,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6602983258733381799}
+  m_Father: {fileID: 6745463052541861222}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2089056624214145463
 MeshFilter:
@@ -116,12 +116,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1803711163317537567}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6595247209031127673}
+  m_Father: {fileID: 6745463052541861222}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!33 &3580768236265012903
 MeshFilter:
@@ -210,8 +210,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 3374962219647041766}
+  m_Children: []
   m_Father: {fileID: 6745463052541861222}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1917681373135577797
@@ -286,6 +285,7 @@ GameObject:
   - component: {fileID: -6887884230110343619}
   - component: {fileID: -4582053232594063701}
   - component: {fileID: -6016574257445858844}
+  - component: {fileID: 8126809458399114977}
   m_Layer: 0
   m_Name: AirlockTile
   m_TagString: Untagged
@@ -308,6 +308,8 @@ Transform:
   m_Children:
   - {fileID: 6602983258733381799}
   - {fileID: 6595247209031127673}
+  - {fileID: 5638515706385961053}
+  - {fileID: 3374962219647041766}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &7808292210134878818
@@ -402,6 +404,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: fa7a95c97c43eb14f842266b51fd1b51, type: 2}
+--- !u!114 &8126809458399114977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28a5347c70e82eb4da2ea7dc1f163e45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Tile.Connections.AirlockFloorVisual
+  northSouthTile: {fileID: 9151466709775079307}
+  eastWestTile: {fileID: 1006199665706146462}
+  northSouthTrack: {fileID: 1325367632250080904}
+  eastWestTrack: {fileID: 1803711163317537567}
+  atlasMaterials:
+  - {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
 --- !u!1 &7227881070782284271
 GameObject:
   m_ObjectHideFlags: 0
@@ -432,8 +452,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 5638515706385961053}
+  m_Children: []
   m_Father: {fileID: 6745463052541861222}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4234967658103045867

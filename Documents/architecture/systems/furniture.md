@@ -16,6 +16,7 @@ Steel tables leave procedural collapsed tops and legs through [structural-destru
 - `Assets/Scripts/SS3D/Systems/Furniture/Locker.cs` — door + ID lock; implements `IStorageAccessGate` so view/store only while open; closing door closes storage panels; door petal shows Open/Close by state, lock/unlock use the `Lock`/`Unlock` padlock icons
 - `Assets/Scripts/SS3D/Systems/Furniture/AirLockProximityService.cs` — server HashGrid index; player-centric proximity tick (not per-door FixedUpdate); hoists MapEditor/EntitySubSystem + passes `SpawnedPlayers` into each door
 - `Assets/Scripts/SS3D/Systems/Furniture/AirLockOpener.cs` — padded proximity auto-open; click Open/Close (`AirLockDoorInteraction`); access-denied SFX + door-light blink; SyncVar→local Animator (no NetworkAnimator); power-gated; `IDynamicTileOccupant` notifies [atmospherics](atmospherics.md)
+- Airlock floor (half tiles copying the floors either side, plenum showing through an open half): owned by [tile](tile.md), `DoorAdjacencyConnector` + `AirlockFloorVisual`
 - `Assets/Scripts/SS3D/Systems/Furniture/AirLockDoorInteraction.cs` — Open requires ID; Close does not; manual open still auto-closes
 - `Assets/Scripts/SS3D/Systems/Furniture/AirlockAudioTrackIds.cs` — `AirlockDeny` clip id ([audio](audio.md))
 - `Assets/Scripts/SS3D/Systems/Furniture/AirlockStateMachine.cs` — open/close SFX + door-light colors via `AirLockOpener.SetDoorLightColor`
