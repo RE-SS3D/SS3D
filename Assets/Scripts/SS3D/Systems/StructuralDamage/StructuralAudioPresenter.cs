@@ -104,15 +104,15 @@ namespace SS3D.Systems.StructuralDamage
             if (AudioSourceOcclusion.TryGetListenerPosition(out Vector3 listener)
                 && IsDistantBlast(Vector3.Distance(listener, epicenter)))
             {
-                PlayClip(StructuralAudioTrackIds.BlastFar, epicenter, volume * BlastFarVolume,
-                    BlastFarMinRange, BlastFarMaxRange, 1f);
+                PlayClip(smallSound ? StructuralAudioTrackIds.BlastSmallFar : StructuralAudioTrackIds.BlastFar, epicenter,
+                    volume * BlastFarVolume, BlastFarMinRange, BlastFarMaxRange, 1f);
                 return;
             }
 
             if (smallSound)
-                PlayClip(StructuralAudioTrackIds.BlastSmall, epicenter, volume, 5f, 45f, 1f);
+                Play(StructuralAudioTrackIds.BlastSmall, epicenter, volume, 5f, 45f);
             else
-                PlayClip(StructuralAudioTrackIds.BlastNear[0], epicenter, volume, BlastNearMinRange, BlastNearMaxRange, 1f);
+                Play(StructuralAudioTrackIds.BlastNear, epicenter, volume, BlastNearMinRange, BlastNearMaxRange);
         }
 
         private void Update()
