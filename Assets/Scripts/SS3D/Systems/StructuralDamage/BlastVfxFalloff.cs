@@ -29,7 +29,7 @@ namespace SS3D.Systems.StructuralDamage
         /// <summary>Yield at and below which <see cref="Violence"/> is 1: X4's single detonation event.</summary>
         public const float ViolentYield = 300f;
 
-        /// <summary>Cap on <see cref="Violence"/>; the Syndicate bomb (500) reaches about 1.67.</summary>
+        /// <summary>Cap on <see cref="Violence"/>; the Syndicate bomb (600) sits at it.</summary>
         public const float MaxViolence = 2f;
 
         /// <summary>

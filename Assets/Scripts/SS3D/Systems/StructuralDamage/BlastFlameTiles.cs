@@ -15,8 +15,11 @@ namespace SS3D.Systems.StructuralDamage
     {
         public const int BytesPerTile = 3;
 
-        /// <summary>A bigger blast keeps its strongest tiles; one Syndicate bomb in open space reaches about 300.</summary>
-        public const int MaxTiles = 600;
+        /// <summary>
+        /// A bigger blast keeps its strongest tiles (3 KB at most). A Syndicate bomb in open space reaches about 840, so
+        /// its faint outer ring goes unlit.
+        /// </summary>
+        public const int MaxTiles = 1000;
 
         /// <summary>Seconds the flame front takes to cross one tile, so the fire spreads out from the epicenter.</summary>
         public const float HopSeconds = 0.035f;

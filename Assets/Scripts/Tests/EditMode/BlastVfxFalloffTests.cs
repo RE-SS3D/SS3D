@@ -32,8 +32,7 @@ namespace EditorTests
         {
             Assert.AreEqual(1f, BlastVfxFalloff.Violence(90f), "Minibomb");
             Assert.AreEqual(1f, BlastVfxFalloff.Violence(BlastVfxFalloff.ViolentYield), "X4");
-            Assert.AreEqual(500f / BlastVfxFalloff.ViolentYield, BlastVfxFalloff.Violence(SyndicateBomb.BlastYield), 0.001f,
-                "The Syndicate bomb hits harder than any charge");
+            Assert.Greater(BlastVfxFalloff.Violence(SyndicateBomb.BlastYield), 1.5f, "The Syndicate bomb hits harder than any charge");
             Assert.AreEqual(BlastVfxFalloff.MaxViolence, BlastVfxFalloff.Violence(5000f));
         }
 

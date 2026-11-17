@@ -58,7 +58,8 @@ namespace EditorTests
             List<BlastFlameTiles.Flame> flames = BlastFlameTiles.Unpack(BlastFlameTiles.Pack(Epicenter, forces));
 
             Assert.AreEqual(BlastFlameTiles.MaxTiles, flames.Count);
-            Assert.That(flames.TrueForAll(f => Mathf.Abs(f.Offset.x) + Mathf.Abs(f.Offset.y) <= 17));
+            // 2k² + 2k + 1 tiles lie within k hops: 1013 at k = 22.
+            Assert.That(flames.TrueForAll(f => Mathf.Abs(f.Offset.x) + Mathf.Abs(f.Offset.y) <= 22));
         }
 
         [Test]
