@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SS3D.Core;
 using SS3D.Interactions;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
@@ -118,6 +119,39 @@ namespace SS3D.Tests
                 Assert.IsTrue(bomb == null || !bomb.IsSpawned, "The bomb is gone");
                 Assert.IsTrue(Tiles.QueryService.TryGetOccupancy(epicenter, out TileOccupancy occupancy) && !occupancy.HasPlenum,
                     "One bomb opens the hull beneath it");
+            }
+            finally
+            {
+                EntityInvincibility.ClearServer(Body.Owner.ClientId);
+            }
+        }
+
+        // Guards: #1535, a bomb that blows up mid-drag no longer leaves its dragger unable to turn
+        [UnityTest]
+        public IEnumerator Detonation_MidDrag_ReleasesTheDragger()
+        {
+            ChangesRoom = true;
+            EntityInvincibility.SetServer(Body.Owner.ClientId, true);
+            try
+            {
+                Teleport(Body, new Vector3(RoomCentre.x, Body.transform.position.y, RoomCentre.z));
+                EmptyHands(Body);
+                yield return Hold(0.3f);
+                Vector3 front = Body.transform.position + Body.transform.forward * 0.9f;
+                Item bomb = ItemSpawner.SpawnItemAtRest(Bomb, new Vector3(front.x, 0.2f, front.z));
+                yield return Hold(0.5f);
+
+                HumanoidLivingController controller = Body.GetComponent<HumanoidLivingController>();
+                Draggable draggable = bomb.GetComponent<Draggable>();
+                Assert.IsNull(Run(bomb.gameObject, "Drag"), "The bomb drags");
+                yield return WaitFor(() => draggable.Dragged, "the drag starts", 2f);
+                Assert.IsTrue(controller.IsDragging, "The dragger is dragging");
+
+                bomb.GetComponent<SyndicateBomb>().Detonate();
+                yield return Hold(0.5f);
+
+                Assert.IsTrue(bomb == null || !bomb.IsSpawned, "The bomb is gone");
+                Assert.IsFalse(controller.IsDragging, "Nothing is left to drag, so the body turns again");
             }
             finally
             {

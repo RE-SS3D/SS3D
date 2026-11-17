@@ -2,8 +2,10 @@
 
 Exports the Syndicate bomb and its delivery beacon into Assets/Art/Models/Items/Weapons/Explosive/.
 
-- SyndicateBomb.fbx: the contributed model (object `Syndicate_Bomb.001`), baked into world space and
-  shifted so its bounds centre is the origin. The modelers-kit room planes in the same file are dropped.
+- SyndicateBomb.fbx: the contributed model (the object named `Syndicate_Bomb*`), with its modifiers applied,
+  baked into world space and shifted so its bounds centre is the origin. The modelers-kit room planes in the
+  same file are dropped. Faces on its `Palette05 Emission` material keep that material, so the Unity recipe
+  gives them PaletteEmission.mat.
 - SyndicateBombBeacon.fbx: a placeholder handheld beacon generated here (a dark box, a stub antenna and a
   red lamp), until someone models one. Its faces take their colours from the bomb's own Palette05 UVs:
   the body from the bomb's casing, the lamp from its red core.
@@ -21,14 +23,19 @@ root = Path(__file__).resolve().parents[1]
 out = root / 'Assets/Art/Models/Items/Weapons/Explosive'
 
 bpy.ops.wm.open_mainfile(filepath=str(source))
-bomb = bpy.data.objects['Syndicate_Bomb.001']
+bomb = next(o for o in bpy.data.objects if o.type == 'MESH' and o.name.startswith('Syndicate_Bomb'))
 for obj in list(bpy.data.objects):
     if obj is not bomb:
         bpy.data.objects.remove(obj)
 
 
 def bake(obj):
-    """Writes world-space geometry relative to the bounds centre into the mesh and clears the transform."""
+    """Applies modifiers, writes world-space geometry relative to the bounds centre into the mesh and clears the transform."""
+    if obj.modifiers:
+        evaluated = obj.evaluated_get(bpy.context.evaluated_depsgraph_get())
+        mesh = bpy.data.meshes.new_from_object(evaluated)
+        obj.modifiers.clear()
+        obj.data = mesh
     world = [obj.matrix_world @ v.co for v in obj.data.vertices]
     centre = Vector([(min(p[i] for p in world) + max(p[i] for p in world)) / 2 for i in range(3)])
     obj.parent = None

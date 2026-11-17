@@ -1,7 +1,7 @@
 > Code paths: Assets/Scripts/SS3D/Systems/StructuralDamage/ (plus integrity stage, occupancy and blast VFX Rpc hooks in Systems/Tile/, mapped by [tile](tile.md))
 > Entry points: StructuralDamageSubSystem, StructuralDamageService, BlastResolutionService, BlastVfxPresenter, StructuralIntegrityPresenter, HurtStructureCommand, BlastCommand
 > Status: partial
-> Verified: 6c49dab49 — 2026-11-11
+> Verified: de24ec185 — 2026-11-17
 
 # Structural destruction
 
@@ -26,7 +26,7 @@ Blast floors and the hull beneath them now take independent accumulated damage: 
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/StructuralDamageService.cs` — server apply + Destroyed clear
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/SteelWreckageRecord.cs` / `SteelWreckageView.cs` — pre-clear bounds capture, procedural folded steel and collapse animation
 - `Assets/Scripts/SS3D/Systems/Tile/TileSubSystem.Wreckage.cs` — session wreckage SyncList, unbuffered breakup RPC, placement cleanup
-- `Assets/Scripts/SS3D/Systems/StructuralDamage/BlastResolutionService.cs` — BFS blast spread
+- `Assets/Scripts/SS3D/Systems/StructuralDamage/BlastResolutionService.cs` — blast spread, strongest force first, with √2 diagonals and edge roughness
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/BlastVfxPresenter.cs` — client detonation FX (catalog-driven); `Assets/Resources/StructuralDamage/BlastFire.shader` supplies the additive fireball, `CollapseDust.shader` the smoke
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/BlastVfxCatalog.cs` — Resources catalog + falloff tuning
 - `Assets/Scripts/SS3D/Systems/StructuralDamage/StructuralAudioPresenter.cs` — client sounds for impacts, breaks and blasts, added by `TileSubSystem`; clip ids in `StructuralAudioTrackIds.cs`
@@ -79,7 +79,9 @@ Blast floors and the hull beneath them now take independent accumulated damage: 
 - **Cracked is not a slow room↔room leak yet:** design wants a slow vent; `IsAirtight=false` only changes the wall cell's atmos state. Neighbour `CanFlow` still uses binary `BlockedEdges` — real permeability deferred (document fork until ShareGasJob / edge rate exists).
 - **Do not bind TileQueryService at Awake:** `StructuralDamageSubSystem` self-bootstraps before `TileSubSystem` creates its map. Resolve query/construction lazily from the current `TileSubSystem` or `TryApplyStructuralDamage` / `ResolveBlast` always miss.
 - **Structural melee ray length ≠ hand range:** camera aim rays must cast ~8m (like living zones), then check `RangeLimit` from the **entity root** (not the swinging hand bone) to the hit/closest point. Hand-bone reach during windup often fails adjacent walls; cardinal-ahead is the last fallback.
-- **Blast BFS keeps max force per tile:** weaker revisit paths are skipped; a stronger cascade path must still enqueue.
+- **The blast spreads strongest force first (a max-heap), so each tile is entered once at its best force:** each open tile takes `TryApplyStructuralDamage` once. A wall is still struck once from each reached neighbour, and those hits add up.
+- **Four-way spread draws diamonds:** with equal-cost cardinal hops, force contours are diamonds (force falls with |x| + |y|), and players read the hull hole as one. Diagonal hops cost `DiagonalCost` (√2) of the falloff, which makes them near-circular octagons. A diagonal needs both straight routes round its corner open, with plenum on all three tiles, so two walls meeting at a corner still seal it. Diagonals only travel; walls take force from straight hops. In open space a blast now covers about 1.5× the area at the same reach along a corridor. Yields were not retuned.
+- **Edge roughness is per hop and skips point blank:** game blasts pass `GameRoughness` (0.12): each hop's falloff varies by up to ±12%, hashed from the tile and epicenter, so a blast is deterministic but its edge frays. Hops into tiles within `SmoothRadius` (2) of the epicenter are exact, so point-blank rules such as force 90 knocking someone down hold. Tests construct the service without roughness to keep exact forces.
 - **Crew damage runs once per detonation, after every pass:** `BlastResolutionService` calls `applyCrewBrute` once per tile with the final (summed) force from `FinishBlast`, like the push. It used to run on each BFS visit, so a shaped charge's radial and cone passes hit a body twice. Bodies come from `HumanHealthController.ServerInstances`, not `FindObjectsByType` (tech-debt P2.5).
 - **Blast hop checks mirror atmos `CanFlow` locally:** do not call `AtmosNeighbourBuilder` (`internal`); keep the BlockedEdges bit test in `BlastResolutionService`.
 - **Open blast hops require `HasPlenum`:** empty chunk cells still return occupancy with `BlockedEdges=0`; without a plenum gate the BFS floods the void and flanks doors/walls from the side (EditMode: door took 30+10, thin wall 65+35→Destroyed).

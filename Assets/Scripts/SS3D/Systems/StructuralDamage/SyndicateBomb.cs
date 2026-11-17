@@ -36,9 +36,13 @@ namespace SS3D.Systems.StructuralDamage
         public const float OpenPanelSeconds = 5f;
         public const float CutWiresSeconds = 10f;
 
-        /// <summary>Provisional tuning: the biggest blast in the game, holing the hull for several tiles around.</summary>
-        public const float BlastYield = 500f;
-        public const float BlastFalloff = 40f;
+        /// <summary>
+        /// Provisional tuning: the biggest blast in the game, meant to take out a whole department. The force keeps
+        /// going through each wall it breaks, so walls (100) fall out to 16 tiles, reinforced walls (160) to 14, and
+        /// the hull (plenum, 200) opens to space out to 13.
+        /// </summary>
+        public const float BlastYield = 600f;
+        public const float BlastFalloff = 30f;
 
         /// <summary>Loud enough to carry into the rooms next door.</summary>
         public const float BeepRange = 25f;

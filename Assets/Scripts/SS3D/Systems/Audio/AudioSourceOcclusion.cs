@@ -57,6 +57,7 @@ namespace SS3D.Systems.Audio
         private AudioSource _source;
         private AudioLowPassFilter _lowPass;
         private float _baseVolume = 1f;
+        private float _heldAir;
         private float _cutoffCurrent = AudioOcclusionState.ClearCutoffHz;
         private float _volumeScaleCurrent = 1f;
         private float _nextSampleTime;
@@ -136,6 +137,7 @@ namespace SS3D.Systems.Audio
         {
             CacheComponents();
             _baseVolume = volume;
+            _heldAir = 0f;
             _isOccluded = false;
             _cutoffCurrent = AudioOcclusionState.ClearCutoffHz;
             _volumeScaleCurrent = 1f;
@@ -145,17 +147,29 @@ namespace SS3D.Systems.Audio
             _lowPass.enabled = false;
         }
 
+        /// <summary>
+        /// Keeps the listener's air as it is now for the rest of this clip, so the air leaving later doesn't muffle it.
+        /// For a blast: its boom reaches the listener before the breach it made empties the room. Cleared on the next play.
+        /// </summary>
+        public void HoldStartAir()
+        {
+            _heldAir = ListenerAir;
+        }
+
         /// <summary>Changes the unoccluded volume of a source that is already playing, as in a fade.</summary>
         public void SetBaseVolume(float volume)
         {
             _baseVolume = volume;
         }
 
+        /// <summary>The air this clip is heard through: the listener's, or what <see cref="HoldStartAir"/> kept if more.</summary>
+        public float Air => Mathf.Max(ListenerAir, _heldAir);
+
         private float HearingNow()
         {
             return TryGetListenerPosition(out Vector3 listenerPosition)
-                ? AudioAirState.Hearing(ListenerAir, Vector3.Distance(listenerPosition, transform.position))
-                : ListenerAir;
+                ? AudioAirState.Hearing(Air, Vector3.Distance(listenerPosition, transform.position))
+                : Air;
         }
 
         private void Update()
@@ -204,7 +218,7 @@ namespace SS3D.Systems.Audio
             _cutoffCurrent = AudioOcclusionState.LerpCutoffHz(_cutoffCurrent, _isOccluded, lerpFactor);
             _volumeScaleCurrent = AudioOcclusionState.LerpVolumeScale(_volumeScaleCurrent, _isOccluded, lerpFactor);
 
-            float hearing = AudioAirState.Hearing(ListenerAir, distance);
+            float hearing = AudioAirState.Hearing(Air, distance);
             float cutoff = Mathf.Min(_cutoffCurrent, AudioAirState.CutoffHz(hearing));
 
             // Disable the filter when fully clear — a 22kHz lowpass still colors some clips.
