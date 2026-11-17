@@ -2211,7 +2211,231 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 299262962143830023
-    m_Localized: 'A gas storage chamber''s intake. Draws in <k=warn>every gas</k>, air included: placed in a room, it empties it.'
+    m_Localized: 'A gas storage chamber''s intake. Draws in <k=warn>every gas</k>,
+      air included: placed in a room, it empties it.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300177990510419968
+    m_Localized: Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300177990539780096
+    m_Localized: A plain station airlock with no department markings.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300177994654392320
+    m_Localized: Maintenance Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300177994654392321
+    m_Localized: A station airlock for maintenance access.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300177996999008256
+    m_Localized: Command Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300177997003202560
+    m_Localized: A station airlock for command staff.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178000505446400
+    m_Localized: Engineering Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178000505446401
+    m_Localized: A station airlock for engineering staff.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178002799730688
+    m_Localized: Atmospherics Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178002799730689
+    m_Localized: A station airlock for atmospheric technicians.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178005131763712
+    m_Localized: Medical Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178005131763713
+    m_Localized: A station airlock for medical staff.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178007438630912
+    m_Localized: Chemistry Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178007438630913
+    m_Localized: A station airlock for chemists.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178009741303808
+    m_Localized: Genetics Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178009745498112
+    m_Localized: A station airlock for geneticists.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178012052365312
+    m_Localized: Virology Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178012056559616
+    m_Localized: A station airlock for virologists.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178014455701504
+    m_Localized: Surgery Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178014455701505
+    m_Localized: A station airlock for surgeons.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178016821288960
+    m_Localized: Science Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178016821288961
+    m_Localized: A station airlock for science staff.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178019186876416
+    m_Localized: Supply Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178019191070720
+    m_Localized: A station airlock for cargo staff.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181904991428608
+    m_Localized: Glass Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181905008205824
+    m_Localized: A plain station airlock with no department markings. Its window
+      lets you see through.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181905213726720
+    m_Localized: Civilian Glass Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181905213726721
+    m_Localized: A public station airlock, open to all crew. Its window lets you
+      see through.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181905972895744
+    m_Localized: Maintenance Glass Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181905972895745
+    m_Localized: A station airlock for maintenance access. Its window lets you see
+      through.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181906727870464
+    m_Localized: Command Glass Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181906727870465
+    m_Localized: A station airlock for command staff. Its window lets you see through.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181907122135040
+    m_Localized: Security Glass Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181907122135041
+    m_Localized: A station airlock for security staff. Its window lets you see through.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181907893886976
+    m_Localized: Engineering Glass Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181907893886977
+    m_Localized: A station airlock for engineering staff. Its window lets you see
+      through.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181908653056000
+    m_Localized: Atmospherics Glass Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181908653056001
+    m_Localized: A station airlock for atmospheric technicians. Its window lets you
+      see through.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181909433196544
+    m_Localized: Medical Glass Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181909433196545
+    m_Localized: A station airlock for medical staff. Its window lets you see through.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181910183976960
+    m_Localized: Chemistry Glass Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181910183976961
+    m_Localized: A station airlock for chemists. Its window lets you see through.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181910968311808
+    m_Localized: Genetics Glass Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181910968311809
+    m_Localized: A station airlock for geneticists. Its window lets you see through.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181911756840960
+    m_Localized: Virology Glass Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181911756840961
+    m_Localized: A station airlock for virologists. Its window lets you see through.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181912511815680
+    m_Localized: Surgery Glass Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181912511815681
+    m_Localized: A station airlock for surgeons. Its window lets you see through.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181913258401792
+    m_Localized: Science Glass Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181913258401793
+    m_Localized: A station airlock for science staff. Its window lets you see through.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181914009182208
+    m_Localized: Supply Glass Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181914009182209
+    m_Localized: A station airlock for cargo staff. Its window lets you see through.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300186129876099072
+    m_Localized: External Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300186129892876288
+    m_Localized: A heavy airlock that seals the station off from space. It opens
+      only when someone works it by hand, sinking into the floor, and shuts again
+      on its own once the doorway is clear.
     m_Metadata:
       m_Items: []
   references:

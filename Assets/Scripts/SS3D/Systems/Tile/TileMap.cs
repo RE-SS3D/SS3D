@@ -648,7 +648,11 @@ namespace SS3D.Systems.Tile
                 NotifyTilePlaced(placedObject, placePosition);
 
                 if (tileObjectSo.layer == TileLayer.Turf)
+                {
                     TileUnderfloorVisibility.RefreshUnderfloorForTurf(this, placedObject);
+                    if (!skipAdjacency)
+                        AirlockFloorSides.RefreshDoorsBeside(this, placedObject);
+                }
             }
 
             return canBuild;
@@ -705,9 +709,13 @@ namespace SS3D.Systems.Tile
             if (underfloorRefreshCells != null)
             {
                 for (int i = 0; i < underfloorRefreshCells.Count; i++)
+                {
                     TileUnderfloorVisibility.RefreshUnderfloorAt(this, underfloorRefreshCells[i]);
+                    AirlockFloorSides.RefreshDoorsBeside(this, underfloorRefreshCells[i]);
+                }
             }
         }
+
 
         private void ClearLocations(List<ITileLocation> toClearLocations, Vector3 placePosition)
         {

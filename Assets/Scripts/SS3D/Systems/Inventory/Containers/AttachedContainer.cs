@@ -310,6 +310,13 @@ namespace SS3D.Systems.Inventory.Containers
         /// <param name="newItem">Element after the change</param>
         private void HandleStoredItemsChanged(SyncListOperation op, int index, StoredItem oldItem, StoredItem newItem, bool asServer)
         {
+            // A late read after a same-tick despawn hands the client prefab assets; hiding, freezing or reparenting
+            // one would write into the asset (inventory.md pitfall), so drop the change.
+            if (!asServer && (IsPrefabAsset(oldItem.Item) || IsPrefabAsset(newItem.Item)))
+            {
+                return;
+            }
+
             ContainerChangeType changeType = ContainerChangeType.None;
 
             switch (op)
@@ -359,6 +366,8 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         [ServerOrClient]
+        private static bool IsPrefabAsset(Item item) => item != null && !item.IsSceneInstance;
+
         private void handleItemRemoved(Item item)
         {
 

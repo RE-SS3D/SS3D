@@ -1,4 +1,5 @@
 using FishNet;
+using SS3D.Systems.Tile.Connections;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -56,12 +57,24 @@ namespace SS3D.Systems.Tile
         }
 
         /// <summary>
-        /// A floor, wall or door hides what is under it, except a wall that is not airtight: a girder
-        /// stage is open framework, so the plating under it shows instead of space.
+        /// A floor, wall or door hides what is under it, except a wall that is not airtight (a girder
+        /// stage is open framework, so the plating under it shows instead of space) and an airlock with
+        /// an open half tile (no floor to copy on one side, so its plenum shows through).
         /// </summary>
-        public static bool CoversUnderfloor(PlacedTileObject turf) =>
-            IsCoveringTurfGenericType(turf.GenericType)
-            && (turf.GenericType != TileObjectGenericType.Wall || turf.tileObjectSO == null || turf.tileObjectSO.airtight);
+        public static bool CoversUnderfloor(PlacedTileObject turf)
+        {
+            TileObjectGenericType genericType = turf.GenericType;
+            if (!IsCoveringTurfGenericType(genericType))
+                return false;
+
+            if (genericType == TileObjectGenericType.Wall)
+                return turf.tileObjectSO == null || turf.tileObjectSO.airtight;
+
+            if (genericType == TileObjectGenericType.Door && turf.TryGetComponent(out DoorAdjacencyConnector door))
+                return door.CoversPlenum;
+
+            return true;
+        }
 
         /// <summary>
         /// Whether play-mode should hide underfloor MeshRenderers of <paramref name="layer"/> at this cell.

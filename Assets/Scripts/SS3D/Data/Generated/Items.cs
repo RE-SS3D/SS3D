@@ -4,6 +4,8 @@ namespace SS3D.Data.Generated
     public static class Items
     {
         public const string AirAlarm = "11a2276338ebc64429dfc565b491e437";
+        public const string Airlock = "9e0718cc443147808a320e0b743b37e4";
+        public const string AirlockGlass = "0c0cae8961a5eeb349497cbd45a5c0e2";
         public const string APC = "4c966398d6624164c910cd29c1faa980";
         public const string AtmosFilterL = "f662bf52ef0cc6e64866de255913b88d";
         public const string AtmosFilterL2 = "e833d4cec8da5e6abaddd92b3829ad9c";
@@ -15,6 +17,8 @@ namespace SS3D.Data.Generated
         public const string AtmosMeter = "56a01152a193a795c8bd85889e556118";
         public const string AtmosMixerL = "1c71957ab86ed6acaacd79fb484b1fa2";
         public const string AtmosMixerR = "24f10fc508009b222a4dd482d4f5fb28";
+        public const string AtmosphericsAirlock = "56b95b886827304408e01eca54e51caf";
+        public const string AtmosphericsAirlockGlass = "0cdb8cffb4be07964abe2229843ab06e";
         public const string AtmosPipesMixed = "251dc2a5fbda518429c8205c3b62165f";
         public const string AtmosPipesSupply = "de6f06ad18d50134295959f438ba9c5d";
         public const string AtmosPipesSurface = "48efd00c91c310e4bb965d025c63b3ba";
@@ -38,7 +42,12 @@ namespace SS3D.Data.Generated
         public const string Cables = "92d3eb280886ba74cb1e19f4e01669a7";
         public const string Catwalk = "a28267798293970468ab30803632a3f7";
         public const string ChemicalDispenser = "829e74fee2b909242821055cc2b096e0";
+        public const string ChemistryAirlock = "27b21cef08daec17cb2dd1b8ee0f44f1";
+        public const string ChemistryAirlockGlass = "4e6ce5548d9592e03bce67dcb697d10d";
         public const string CivillianAirlock = "84a5596b28f449e49bb34741abf89d30";
+        public const string CivillianAirlockGlass = "6e5eb55f1bdb70eefba047eaa48efb2f";
+        public const string CommandAirlock = "46c6ba5f143125480a10482f39324592";
+        public const string CommandAirlockGlass = "3338069aeb4d4cca1940eb0ddd2a4291";
         public const string Crowbar = "7becfab153276864f9fc7636a839d837";
         public const string Cryotube = "081d9ee3e54295d49a4970a88f4943a9";
         public const string DinnerBooth = "85fa4c9b76b4b23458dcf24a745a1dfe";
@@ -49,6 +58,9 @@ namespace SS3D.Data.Generated
         public const string Doodad = "f6528d8afa18fa14998a0158260ef26c";
         public const string ElectricalCable = "0e69918696f58e04f846e985ec7405fe";
         public const string ElectricalWire = "cc71128d4bcc0c548ac11481000ac424";
+        public const string EngineeringAirlock = "896ec393918780a7fad3f8324a49e9c3";
+        public const string EngineeringAirlockGlass = "d020a8373bed0a51795a08585ccb70e3";
+        public const string ExternalAirlock = "1cacaf5444f18ce04bc8c1ccf53553f2";
         public const string FacewearGasMask = "bf177f8bab26bc84b87fd9a971004418";
         public const string FancyCarpetRed = "9b8a1328991fc2846bc55a3d9a82e5c0";
         public const string FireAlarm = "50dd6be959d44844ab1abf8a3f2adb01";
@@ -56,6 +68,8 @@ namespace SS3D.Data.Generated
         public const string FloorTile = "404443f7c306fc8469698745624fa3bf";
         public const string FuelTank = "852d57bdb0508494fb6047f36e813c69";
         public const string GasPump = "cb3c5f7550674ca4895c24c93c9a7eb4";
+        public const string GeneticsAirlock = "9cdf15c03c5be96bd9cad80217e28dbb";
+        public const string GeneticsAirlockGlass = "0f80140a583023498806daee19953c47";
         public const string Gibber = "ad055c3d74a711a4b9d9b31217883a03";
         public const string GlassReinforcedSheet = "a1a7407e08bb2914c97f431063bf83e2";
         public const string GlassShard = "5cab1a9f6c7f74948b84d0d625319efe";
@@ -101,7 +115,11 @@ namespace SS3D.Data.Generated
         public const string LockerSecure = "330d85a67a5891145bd8037dde90f37b";
         public const string M4 = "b25f51097d8c9b35ba76f8697fefa2ca";
         public const string MachineFrame = "bdeac5e9a27546348a584caa74f00ec7";
+        public const string MaintenanceAirlock = "cbb69e5fd0188c074b6d0729dc2e1c3f";
+        public const string MaintenanceAirlockGlass = "db3cfce179d76313a8e4099a4bb08ede";
         public const string MatterBin = "ed77d98d3e75b7946b404face1fe8f82";
+        public const string MedicalAirlock = "d586c32e3fd5312c8a1a9bc633c7db8b";
+        public const string MedicalAirlockGlass = "0aa92b8443a89b7db9c67cc91ffe857e";
         public const string MedicalPatch = "2332a158259900e4f8a237fa8daff266";
         public const string Medkit = "1e64a1c37be1f7c44a5d242d6ec6da10";
         public const string MicroLaser = "84cec183559b4954c883b11f20f767c9";
@@ -130,10 +148,13 @@ namespace SS3D.Data.Generated
         public const string PowerCell = "de67200a4c96d444f800399a033ddfef";
         public const string PowerCellAdmin = "c69ed93dc225ea049bbf1a02662c48c0";
         public const string PowerCellCharger = "d32855055305ce5489c69379e2219a7d";
+        public const string ScienceAirlock = "c3da5210125827b9a9dabc7443118c6d";
+        public const string ScienceAirlockGlass = "7e85976b50e3a49b9929c8546023653d";
         public const string ScrewdriverBlue = "9c8363ee7f934bd4b8ee5a2e30da1269";
         public const string Scrubber = "be5174cd6c3daf64a9739aff0f747a91";
         public const string ScrubberIntake = "8612d44a1543bec729e78a0ec8d626c0";
         public const string SecurityAirlock = "d25b39d1e2379b64cba47629530ada78";
+        public const string SecurityAirlockGlass = "26603097dba0a9e92b72e280fdfef336";
         public const string SecurityIDCard = "ff95abc9c2b779340a1b50f1a128a934";
         public const string SecurityLocker = "dd3ce5340ed4aba4babae7020f737084";
         public const string SecurityPDA = "2a63163a4db141744a802f3ff67087db";
@@ -162,6 +183,10 @@ namespace SS3D.Data.Generated
         public const string SteelWindow = "b9c224febb4233f4e912745553097652";
         public const string SteelWindowReinforced = "f2493b5478dd8e946ba98861f533362e";
         public const string Sunglasses = "9b9f6bd470226a74b903e74dbe9e423a";
+        public const string SupplyAirlock = "df4fadad2e440b678a6498464062c064";
+        public const string SupplyAirlockGlass = "c1bc9e998c907032baffafeada44c893";
+        public const string SurgeryAirlock = "0c31beba7ae1c9eb09d4198d0eab5a8d";
+        public const string SurgeryAirlockGlass = "feea20a91ee07ca20931c4c3e4f152de";
         public const string SyndicateHardsuit = "e5e035169e67c766b8bc119007b84634";
         public const string SyndicateHardsuitHelmet = "9ae653f88306f6f55bc8000fcbfc2b67";
         public const string TableBoozeDispenser = "7b74e45100446b440b4b0a12cd6d05ef";
@@ -189,6 +214,8 @@ namespace SS3D.Data.Generated
         public const string VendorSecTech = "6f2976f635940684da7f7f4ed7855a8d";
         public const string VendorYouTool = "cc1b7e8558e50594089a64af537ff781";
         public const string Vent = "bb2ccbe283c7a7d459f283a7483e04b9";
+        public const string VirologyAirlock = "b036e1d2871e93a3faa1d40edffafc26";
+        public const string VirologyAirlockGlass = "3818082d63f8f1af4a0e63e38810587d";
         public const string WaterCooler = "0188e95eec8518246940499957802de9";
         public const string WaterTank = "d675e0c37e3147a4b8501314b5106f13";
         public const string Welder = "06d944205e6b6dd489af078fa85fb878";

@@ -114,8 +114,10 @@ namespace EditorTests
             IEnumerable<string> ids = cues
                 .SelectMany(cue => materials.SelectMany(material => StructuralAudioPresenter.ClipsFor(cue, material)))
                 .Concat(StructuralAudioTrackIds.BlastNear)
+                .Concat(StructuralAudioTrackIds.BlastSmall)
                 .Concat(StructuralAudioTrackIds.WreckageThud)
-                .Append(StructuralAudioTrackIds.BlastFar);
+                .Append(StructuralAudioTrackIds.BlastFar)
+                .Append(StructuralAudioTrackIds.BlastSmallFar);
 
             foreach (string id in ids.Distinct())
                 StringAssert.Contains("_key: " + id, database);

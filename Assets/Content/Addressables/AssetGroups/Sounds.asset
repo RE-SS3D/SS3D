@@ -80,6 +80,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3a5984a0303a4ec9d96d5b1ace85452e
+    m_Address: ExplosionSmall3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3a9db0b2c069b71a6906d15d98b6ddb7
     m_Address: C20RFire
     m_ReadOnly: 0
@@ -97,6 +102,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 47b8a3c6738094074a602366c4c50448
     m_Address: WrenchRatchet
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 48d53dbaa801ee2e2a58b85c940cac6c
+    m_Address: Explosion5
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -130,6 +140,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6f578c04c3e4952efba925637a7727d3
+    m_Address: ExternalAirlockOpen
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6fab86354b054a54b8b4828f689970e4
     m_Address: Assets/Art/Sound/Entities/Humanoid/Combat/Punch1.ogg
     m_ReadOnly: 0
@@ -150,6 +165,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 88c2ffcafae7ab51bb740ba19bfe36a5
+    m_Address: ExplosionSmallFar
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8c8823796bbcb23438fcf68260070383
     m_Address: Assets/Art/Sound/Items/Cosmetic/BikeHorn.ogg
     m_ReadOnly: 0
@@ -157,6 +177,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8d93fdf9dcada204a952e29213f0293f
     m_Address: Assets/Art/Sound/World/Collisions/can2.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 96a94c7fb5eac356b85970cfa0acf5c6
+    m_Address: Explosion6
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -182,6 +207,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a0598fa17bfcb815fad7408b6c60f9e0
     m_Address: NukeDiskInsert
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a320b9fb4ed255f388a483ffff0c5ad6
+    m_Address: ExplosionSmall2
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -245,6 +275,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cddae0473d895fe0f9fe3abc25059a14
+    m_Address: ExternalAirlockClose
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ceabe1eeefec121739e2ad2ed67bfcb7
     m_Address: NukeTick
     m_ReadOnly: 0
@@ -282,6 +317,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: df444e0d1e054fc2adf0962a9fff737b
     m_Address: Assets/Art/Sound/Entities/Humanoids/Human/Vocal/Choke&Gasp/Choke2.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e00666a785ce61efebb3b9ef5c73cf2e
+    m_Address: Explosion4
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

@@ -22,7 +22,7 @@ namespace SS3D.Tests.EditMode
         // layers only — whether the asset sits under a furniture folder.
         [TestCase(TileLayer.Turf, TileObjectGenericType.Floor, "Structures/Floors/Tiles/TileWhite.asset", MapEditorSubcategory.Floors)]
         [TestCase(TileLayer.Turf, TileObjectGenericType.Wall, "Structures/Walls/SteelWindow.asset", MapEditorSubcategory.WallsAndWindows)]
-        [TestCase(TileLayer.Turf, TileObjectGenericType.Door, "Structures/Doors/AirlockCivilian.asset", MapEditorSubcategory.Doors)]
+        [TestCase(TileLayer.Turf, TileObjectGenericType.Door, "Structures/Doors/CivilianAirlockVariants/AirlockCivilian.asset", MapEditorSubcategory.Doors)]
         [TestCase(TileLayer.WallMountLow, TileObjectGenericType.None, "Structures/WallMounts/APC.asset", MapEditorSubcategory.WallMounts)]
         [TestCase(TileLayer.WallMountHigh, TileObjectGenericType.None, "Structures/WallMounts/Lights/LightTubeFixture.asset", MapEditorSubcategory.WallMounts)]
         [TestCase(TileLayer.FurnitureBase, TileObjectGenericType.None, "Furniture/Generic/Sink.asset", MapEditorSubcategory.Furniture)]
@@ -229,14 +229,28 @@ namespace SS3D.Tests.EditMode
             CollectionAssert.AreEqual(
                 new[]
                 {
+                    "Airlock: Standard, Glass",
+                    "Atmospherics Airlock: Standard, Glass",
+                    "Chemistry Airlock: Standard, Glass",
+                    "Civilian Airlock: Standard, Glass",
+                    "Command Airlock: Standard, Glass",
+                    "Engineering Airlock: Standard, Glass",
                     "Filter: Left, Right",
+                    "Genetics Airlock: Standard, Glass",
                     "Inline Filter: Left, Right",
+                    "Maintenance Airlock: Standard, Glass",
+                    "Medical Airlock: Standard, Glass",
                     "Mixer: Left, Right",
                     "Office Chair: Standard, Blue, Grey",
                     "Plant: Earth, Exotic",
                     "Plastic Chair: Standard, Blue, Grey",
+                    "Science Airlock: Standard, Glass",
+                    "Security Airlock: Standard, Glass",
                     "Soda Can: Beeps Soda, Beepy Lime, Canned Air, Canned Laughter, Cola, Duke Purple Tea, Tonic",
+                    "Supply Airlock: Standard, Glass",
                     "Surface Pipe: Standard, Blue, Cyan, Green, Orange, Purple, Red, Yellow",
+                    "Surgery Airlock: Standard, Glass",
+                    "Virology Airlock: Standard, Glass",
                 },
                 families);
         }

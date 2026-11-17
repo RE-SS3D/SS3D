@@ -125,7 +125,7 @@ namespace SS3D.Tests.EditMode.MapImport
                 Assert.GreaterOrEqual(cell.Placements.Count, 2);
             }
 
-            MapImportCellPlan doorCell = plan.Cells.Find(c => c.Placements[1].SoName == "CivillianAirlock");
+            MapImportCellPlan doorCell = plan.Cells.Find(c => c.Placements[1].SoName == "Airlock");
             Assert.IsNotNull(doorCell);
             Assert.AreEqual(Direction.East, doorCell.Placements[1].Direction);
 
@@ -169,7 +169,7 @@ namespace SS3D.Tests.EditMode.MapImport
             MapImportPlan plan = MapImportPlanner.Build(map, mapper);
 
             List<MapImportCellPlan> doors = plan.Cells
-                .Where(c => c.Placements.Count >= 2 && c.Placements[1].SoName == "CivillianAirlock")
+                .Where(c => c.Placements.Count >= 2 && c.Placements[1].SoName == "Airlock")
                 .OrderBy(c => c.WorldX)
                 .ToList();
             Assert.AreEqual(3, doors.Count);
@@ -239,7 +239,7 @@ namespace SS3D.Tests.EditMode.MapImport
 
             // Door between E/W walls on the same row, no dir → inferred South (N–S passage).
             MapImportCellPlan doorCell = plan.Cells.Find(c =>
-                c.Placements.Count >= 2 && c.Placements[1].SoName == "CivillianAirlock");
+                c.Placements.Count >= 2 && c.Placements[1].SoName == "Airlock");
             Assert.IsNotNull(doorCell);
             Assert.AreEqual(Direction.South, doorCell.Placements[1].Direction);
 
