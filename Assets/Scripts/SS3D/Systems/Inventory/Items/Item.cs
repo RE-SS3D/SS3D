@@ -159,6 +159,12 @@ namespace SS3D.Systems.Inventory.Items
         /// <summary>No hand, slot or container takes this item; it moves only by dragging or physics.</summary>
         public bool TooHeavyToLift => _tooHeavyToLift;
 
+        /// <summary>
+        /// False for a prefab asset. When the server despawns an item in the tick it changed a SyncList holding it,
+        /// FishNet writes the item's PrefabId and the host's client reads back the prefab asset itself.
+        /// </summary>
+        public bool IsSceneInstance => gameObject.scene.IsValid();
+
         public int MaxStackSize => _maxStackSize;
 
         public bool IsStackable => _maxStackSize > 1;
