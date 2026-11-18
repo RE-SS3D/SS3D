@@ -16,7 +16,7 @@ using UnityEngine.TestTools;
 namespace SS3D.Tests
 {
     // Guards: the cursor's hover target (examine, outlines, interactions) is the floor, wall or item under it, also
-    // after a renderer rebuild (a quality change) · Not cheaper because: the pick is a URP render pass over the
+    // after renderer rebuilds (quality changes) · Not cheaper because: the pick is a URP render pass over the
     // live station renderers, read back through the player camera and the selection system
     [Category(TestCategories.Scenarios)]
     public class SelectionHoverScenarios : ScenarioFixture
@@ -27,7 +27,7 @@ namespace SS3D.Tests
         private static readonly FieldInfo CurrentDistance = typeof(CameraFollow).GetField("_currentDistance", Private);
 
         [UnityTest]
-        public IEnumerator Hover_FindsFloorWallAndItem_AfterAQualityChange()
+        public IEnumerator Hover_FindsFloorWallAndItem_AcrossQualityChanges()
         {
             int quality = QualitySettings.GetQualityLevel();
             Mouse mouse = InputSystem.AddDevice<Mouse>("SelectionHoverScenarioMouse");
@@ -36,12 +36,9 @@ namespace SS3D.Tests
             float distance = (float)CameraDistance.GetValue(follow);
             try
             {
-                // Zoom out from the 3 m default so wall tops are on screen as well as the floor around the body.
+                // Zoom out from the default so wall tops are on screen as well as the floor around the body.
                 CameraDistance.SetValue(follow, OverviewDistance);
                 CurrentDistance.SetValue(follow, OverviewDistance);
-
-                // Rebuilds the renderer: every renderer feature is disposed and created again.
-                QualitySettings.SetQualityLevel((quality + 1) % QualitySettings.names.Length, true);
                 yield return Hold(0.3f);
 
                 Camera camera = Camera.main;
@@ -54,14 +51,25 @@ namespace SS3D.Tests
 
                 PlacedTileObject[] tiles = Object.FindObjectsByType<PlacedTileObject>(FindObjectsSortMode.None);
                 PlacedTileObject floor = Nearest(tiles, TileObjectGenericType.Floor, camera,
-                    body - (camera.transform.right * 1.5f));
-                PlacedTileObject wall = Nearest(tiles, TileObjectGenericType.Wall, camera, body);
+                    body - (camera.transform.right * 1.5f), body);
+                PlacedTileObject wall = Nearest(tiles, TileObjectGenericType.Wall, camera, body, body);
                 Assert.IsNotNull(floor, "A floor tile is on screen: " + Describe(tiles, TileObjectGenericType.Floor, camera, body));
                 Assert.IsNotNull(wall, "A wall is on screen: " + Describe(tiles, TileObjectGenericType.Wall, camera, body));
 
-                yield return ExpectHover(mouse, camera, floor.gameObject, "the floor");
-                yield return ExpectHover(mouse, camera, wall.gameObject, "a wall");
-                yield return ExpectHover(mouse, camera, item.gameObject, "an item");
+                // Each quality change rebuilds the renderer: every renderer feature is disposed and created again.
+                // Without the fix the pick material dies on one rebuild and is recreated on the next, and Play may
+                // already have started with a rebuild (PlayerDisplayApplier), so check after two in a row.
+                int[] levels = { (quality + 1) % QualitySettings.names.Length, quality };
+                foreach (int level in levels)
+                {
+                    QualitySettings.SetQualityLevel(level, true);
+                    yield return Hold(0.3f);
+                    string tier = QualitySettings.names[level];
+
+                    yield return ExpectHover(mouse, camera, floor.gameObject, $"the floor on {tier}");
+                    yield return ExpectHover(mouse, camera, wall.gameObject, $"a wall on {tier}");
+                    yield return ExpectHover(mouse, camera, item.gameObject, $"an item on {tier}");
+                }
             }
             finally
             {
@@ -71,15 +79,23 @@ namespace SS3D.Tests
             }
         }
 
-        // The on-screen tile of this kind whose top centre is nearest `near`.
+        // The on-screen tile of this kind whose top centre is nearest `near`, skipping the tile the body stands on
+        // (the body covers it, so the pick correctly returns the body).
         private static PlacedTileObject Nearest(PlacedTileObject[] tiles, TileObjectGenericType type, Camera camera,
-            Vector3 near)
+            Vector3 near, Vector3 body)
         {
             return tiles
                 .Where(tile => tile.GenericType == type && tile.GetComponentInChildren<Selectable>() != null)
                 .Where(tile => OnScreen(camera, TopCentre(tile.gameObject)))
+                .Where(tile => !UnderBody(tile, body))
                 .OrderBy(tile => (TopCentre(tile.gameObject) - near).sqrMagnitude)
                 .FirstOrDefault();
+        }
+
+        private static bool UnderBody(PlacedTileObject tile, Vector3 body)
+        {
+            Vector3 offset = tile.transform.position - body;
+            return Mathf.Abs(offset.x) < 0.75f && Mathf.Abs(offset.z) < 0.75f;
         }
 
         private static string Describe(PlacedTileObject[] tiles, TileObjectGenericType type, Camera camera, Vector3 near)
