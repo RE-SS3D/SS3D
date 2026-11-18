@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Health.Interactions
 {
-    public sealed class TransfusionItemExtension : MonoBehaviour, IInteractionSourceExtension
+    public sealed class TransfusionItemExtension : MonoBehaviour, IInteractionSourceExtension, IZoneTargetedTreatment
     {
         private static readonly TransfusionInteraction Interaction = new();
 

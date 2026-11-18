@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Health.Interactions
 {
-    public sealed class AntitoxinItemExtension : MonoBehaviour, IInteractionSourceExtension
+    public sealed class AntitoxinItemExtension : MonoBehaviour, IInteractionSourceExtension, IZoneTargetedTreatment
     {
         private static readonly AntitoxinInteraction Interaction = new();
 

@@ -8,7 +8,7 @@ namespace SS3D.Systems.Health.Interactions
     /// <summary>
     /// Adds bandage interactions when this item is used on viable targets.
     /// </summary>
-    public class BandageItemExtension : MonoBehaviour, IInteractionSourceExtension
+    public class BandageItemExtension : MonoBehaviour, IInteractionSourceExtension, IZoneTargetedTreatment
     {
         private static readonly BandageInteraction Interaction = new();
 
