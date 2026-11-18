@@ -45,6 +45,8 @@ namespace SS3D.UI.MachineInterface
 
         public const string DefaultDeviceTitle = "VSU-5R";
 
+        public string Title { get; set; } = "VITALS SCAN · MEDICAL";
+
         public string ModelLabel { get; set; } = DefaultModelLabel;
 
         public string DeviceTitle { get; set; } = DefaultDeviceTitle;

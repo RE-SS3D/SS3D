@@ -280,6 +280,7 @@ MonoBehaviour:
   _name: Health Scanner
   _weight: 0.4
   _sizeClass: 1
+  _tooHeavyToLift: 0
   _maxStackSize: 1
   _initialStackCount: 1
   _stackCount: 1
@@ -288,6 +289,7 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 8869951128713715569}
   AttachmentPointAlt: {fileID: 7904818470334036375}
   _restRotation: {x: 270, y: 0, z: 0}
+  _restsUpright: 0
   _overrideIconRotation: 1
   _iconRotation: {x: 0, y: 0, z: 0}
   _container: {fileID: 0}
