@@ -8,7 +8,7 @@ namespace SS3D.Systems.Health.Interactions
     /// <summary>
     /// Adds defibrillator interactions when this item is used on viable targets.
     /// </summary>
-    public class DefibrillatorItemExtension : MonoBehaviour, IInteractionSourceExtension
+    public class DefibrillatorItemExtension : MonoBehaviour, IInteractionSourceExtension, IZoneTargetedTreatment
     {
         private static readonly DefibrillatorInteraction Interaction = new();
 

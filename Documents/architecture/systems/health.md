@@ -50,6 +50,7 @@ Phase 0d strips legacy health components from `Human.prefab` and rewires a thinn
 - `Assets/Scripts/SS3D/Systems/Health/BleedingVfxCatalog.cs` — Resources catalog; tints white mask splatters for Decal `Base_Map`
 - `Assets/Scripts/SS3D/Rendering/URP/DecalRenderingLayers.cs` — floor vs character DecalProjector rendering-layer masks
 - `Assets/Content/WorldObjects/World/VFX/Health/BloodDecal.mat` + `BloodFloorDecal.prefab` — URP Decal assets (keep **Opaque**)
+- `Assets/Scripts/SS3D/Systems/Health/Interactions/IZoneTargetedTreatment.cs` — marker on every zone-targeted medical item extension; the Main HUD shows the zone reticle + body-part label in Help while one is in the selected hand ([inventory](inventory.md)). New zone-targeted treatment items must implement it.
 - `Assets/Scripts/SS3D/Systems/Health/Interactions/BurnDressingInteraction.cs` — zone burn heal (Phase 5)
 - `Assets/Scripts/SS3D/Systems/Health/Interactions/SplintInteraction.cs` — limb splint (Phase 5)
 - `Assets/Scripts/SS3D/Systems/Health/Interactions/OxygenTreatmentInteraction.cs` — oxy debt relief (Phase 5)
