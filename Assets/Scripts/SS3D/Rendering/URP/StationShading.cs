@@ -8,7 +8,7 @@ namespace SS3D.Rendering.URP
     /// <summary>
     /// Volume override for the station's flat-with-lighting shading (STDefault / STTransparent, see
     /// <c>StationFlatLighting.hlsl</c>): <c>albedo × (ambient × AO + lights) + emission</c>. Published to shaders
-    /// each camera by <see cref="CortaoAmbientOcclusionFeature"/>; the shader falls back to these same defaults when
+    /// each camera by <see cref="StationShadingFeature"/>; the shader falls back to these same defaults when
     /// nothing is published.
     /// </summary>
     [Serializable]

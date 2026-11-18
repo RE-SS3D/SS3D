@@ -5,14 +5,15 @@ using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.Universal;
+using static SS3D.Rendering.URP.CortaoShaderIds;
 
 namespace SS3D.Rendering.URP
 {
     /// <summary>
     /// Screen-space ambient occlusion with CORTAO (https://github.com/theagentd/CORTAO, MIT), replacing URP's
-    /// SSAO. Runs after the depth-normals prepass and publishes <c>_SS3DOcclusionTexture</c> plus the
-    /// <see cref="StationShading"/> volume values (<c>_SS3DStationAmbient</c>, <c>_SS3DStationLights</c>) for the
-    /// station shaders (<c>StationFlatLighting.hlsl</c>).
+    /// SSAO. Runs after the depth-normals prepass and publishes <c>_SS3DOcclusionTexture</c> for the station
+    /// shaders (<c>StationFlatLighting.hlsl</c>). The <see cref="StationShading"/> values are published by
+    /// <see cref="StationShadingFeature"/>, so the look does not depend on this feature being on.
     /// </summary>
     /// <remarks>
     /// Deliberately not URP's <c>_SCREEN_SPACE_OCCLUSION</c> keyword: URP strips that keyword's variants from
@@ -62,11 +63,6 @@ namespace SS3D.Rendering.URP
                 BlurRadius = blurRadius;
             }
         }
-
-        private static readonly int OcclusionTextureId = Shader.PropertyToID("_SS3DOcclusionTexture");
-        private static readonly int StationAmbientId = Shader.PropertyToID("_SS3DStationAmbient");
-        private static readonly int StationLightsId = Shader.PropertyToID("_SS3DStationLights");
-        private static readonly int StationFalloffId = Shader.PropertyToID("_SS3DStationFalloff");
 
         [SerializeField] private ComputeShader _prepassShader;
         [SerializeField] private ComputeShader _mainPassShader;
@@ -176,16 +172,6 @@ namespace SS3D.Rendering.URP
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
             StationShading shading = VolumeManager.instance.stack?.GetComponent<StationShading>();
-            Shader.SetGlobalVector(
-                StationAmbientId,
-                shading != null ? shading.ToAmbientParams() : StationShading.DefaultAmbientParams);
-            Shader.SetGlobalVector(
-                StationLightsId,
-                shading != null ? shading.ToLightParams() : StationShading.DefaultLightParams);
-            Shader.SetGlobalVector(
-                StationFalloffId,
-                shading != null ? shading.ToFalloffParams() : StationShading.DefaultFalloffParams);
-
             QualityLevelSettings level = ResolveLevel(_qualityLevels, QualitySettings.GetQualityLevel());
             if (!level.Enabled || !ShouldRunOcclusion(renderingData.cameraData, shading))
             {
@@ -244,53 +230,6 @@ namespace SS3D.Rendering.URP
         private sealed class CortaoPass : ScriptableRenderPass
         {
             private const int MaxPackedMips = 8;
-
-            private static readonly int DepthTextureId = Shader.PropertyToID("_CortaoDepthTexture");
-            private static readonly int NormalsTextureId = Shader.PropertyToID("_CortaoNormalsTexture");
-            private static readonly int WorldToViewId = Shader.PropertyToID("_CortaoWorldToView");
-            private static readonly int PackedResolutionId = Shader.PropertyToID("_CortaoPackedResolution");
-            private static readonly int DepthScaleId = Shader.PropertyToID("_CortaoDepthScale");
-            private static readonly int DepthOffsetId = Shader.PropertyToID("_CortaoDepthOffset");
-            private static readonly int RandomSeedId = Shader.PropertyToID("_CortaoRandomSeed");
-            private static readonly int MipCountId = Shader.PropertyToID("_CortaoMipCount");
-            private static readonly int PackedDataId = Shader.PropertyToID("_CortaoPackedData");
-            private static readonly int OccluderTableId = Shader.PropertyToID("_CortaoOccluderTable");
-            private static readonly int OcclusionInputId = Shader.PropertyToID("_CortaoOcclusionInput");
-            private static readonly int OcclusionOutputId = Shader.PropertyToID("_CortaoOcclusionOutput");
-            private static readonly int NormalBiasId = Shader.PropertyToID("_CortaoNormalBias");
-            private static readonly int RadiusId = Shader.PropertyToID("_CortaoRadius");
-            private static readonly int UnprojectParamsId = Shader.PropertyToID("_CortaoUnprojectParams");
-            private static readonly int ProjectionParamsId = Shader.PropertyToID("_CortaoProjectionParams");
-            private static readonly int MaxApparentCircleRadiusCoefficientId =
-                Shader.PropertyToID("_CortaoMaxApparentCircleRadiusCoefficient");
-            private static readonly int MipBiasId = Shader.PropertyToID("_CortaoMipBias");
-            private static readonly int InverseMaxSlopeCompensationId =
-                Shader.PropertyToID("_CortaoInverseMaxSlopeCompensation");
-            private static readonly int BackfaceThresholdId = Shader.PropertyToID("_CortaoBackfaceThreshold");
-            private static readonly int BackfaceBoostId = Shader.PropertyToID("_CortaoBackfaceBoost");
-            private static readonly int MaxMipId = Shader.PropertyToID("_CortaoMaxMip");
-            private static readonly int IntensityId = Shader.PropertyToID("_CortaoIntensity");
-            private static readonly int DepthSensitivityId = Shader.PropertyToID("_CortaoDepthSensitivity");
-            private static readonly int NormalSensitivityId = Shader.PropertyToID("_CortaoNormalSensitivity");
-            private static readonly int TexelSizeId = Shader.PropertyToID("_CortaoTexelSize");
-            private static readonly int BlurDirectionId = Shader.PropertyToID("_CortaoBlurDirection");
-            private static readonly int BlurRadiusId = Shader.PropertyToID("_CortaoBlurRadius");
-            private static readonly int BlurDepthSensitivityId = Shader.PropertyToID("_CortaoBlurDepthSensitivity");
-            private static readonly int BlurNormalPowerId = Shader.PropertyToID("_CortaoBlurNormalPower");
-            private static readonly int InputScaleId = Shader.PropertyToID("_CortaoInputScale");
-            private static readonly int OutputResolutionId = Shader.PropertyToID("_CortaoOutputResolution");
-
-            private static readonly int[] PackedMipIds =
-            {
-                Shader.PropertyToID("_CortaoPackedMip0"),
-                Shader.PropertyToID("_CortaoPackedMip1"),
-                Shader.PropertyToID("_CortaoPackedMip2"),
-                Shader.PropertyToID("_CortaoPackedMip3"),
-                Shader.PropertyToID("_CortaoPackedMip4"),
-                Shader.PropertyToID("_CortaoPackedMip5"),
-                Shader.PropertyToID("_CortaoPackedMip6"),
-                Shader.PropertyToID("_CortaoPackedMip7"),
-            };
 
             private static readonly string[] MainKernelNames =
             {
@@ -884,6 +823,8 @@ namespace SS3D.Rendering.URP
                 return renderGraph.CreateTexture(desc);
             }
 
+            // OpenGL and Vulkan compile the compute passes' RWTexture2D<float> to an r32f image, which must match
+            // the bound texture's format; D3D and Metal convert typed stores, so R8 is enough there.
             private static GraphicsFormat GetOcclusionFormat()
             {
                 if (CachedOcclusionFormat.HasValue)
@@ -891,9 +832,21 @@ namespace SS3D.Rendering.URP
                     return CachedOcclusionFormat.Value;
                 }
 
-                CachedOcclusionFormat = SystemInfo.IsFormatSupported(GraphicsFormat.R8_UNorm, GraphicsFormatUsage.LoadStore)
-                    ? GraphicsFormat.R8_UNorm
-                    : GraphicsFormat.R16_SFloat;
+                GraphicsDeviceType api = SystemInfo.graphicsDeviceType;
+                bool formatQualifiedImages = api == GraphicsDeviceType.OpenGLCore
+                    || api == GraphicsDeviceType.OpenGLES3
+                    || api == GraphicsDeviceType.Vulkan;
+                if (formatQualifiedImages)
+                {
+                    CachedOcclusionFormat = GraphicsFormat.R32_SFloat;
+                }
+                else
+                {
+                    CachedOcclusionFormat = SystemInfo.IsFormatSupported(GraphicsFormat.R8_UNorm, GraphicsFormatUsage.LoadStore)
+                        ? GraphicsFormat.R8_UNorm
+                        : GraphicsFormat.R16_SFloat;
+                }
+
                 return CachedOcclusionFormat.Value;
             }
 

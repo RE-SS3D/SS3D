@@ -15,7 +15,7 @@
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
-// Globals published per camera by CortaoAmbientOcclusionFeature (StationShading volume).
+// Globals published per camera by StationShadingFeature (StationShading volume).
 // CORTAO occlusion; white when AO is off.
 TEXTURE2D(_SS3DOcclusionTexture);
 // x = ambient level, y = AO on ambient, z = AO on lights, w = 1 once published.
