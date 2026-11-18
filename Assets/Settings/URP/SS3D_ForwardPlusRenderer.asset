@@ -178,7 +178,28 @@ MonoBehaviour:
   _prepassShader: {fileID: 7200000, guid: b07644f2cd4d4c9e814d6efd88087016, type: 3}
   _mainPassShader: {fileID: 7200000, guid: 324df5fa0b524f98870cfd283d239b22, type: 3}
   _filterShader: {fileID: 7200000, guid: 604607ead16843da8fd39abd4351e3f8, type: 3}
-  _quality: 2
+  _upsampleShader: {fileID: 7200000, guid: e85c12e28f5f4a2d8e5f670e4de9b21e, type: 3}
+  _qualityLevels:
+  - Level: Low
+    Enabled: 0
+    Samples: 0
+    HalfResolution: 1
+    BlurRadius: 6
+  - Level: Medium
+    Enabled: 1
+    Samples: 1
+    HalfResolution: 1
+    BlurRadius: 6
+  - Level: High
+    Enabled: 1
+    Samples: 2
+    HalfResolution: 0
+    BlurRadius: 6
+  - Level: Ultra
+    Enabled: 1
+    Samples: 2
+    HalfResolution: 0
+    BlurRadius: 6
   _radius: 1
   _maxScreenRadius: 0.05
   _intensity: 1.316
@@ -190,6 +211,5 @@ MonoBehaviour:
   _filterDepthSensitivity: 512
   _filterNormalSensitivity: 128
   _blurShader: {fileID: 7200000, guid: c9b39e5ec78142aabfafb82c880516fd, type: 3}
-  _blurRadius: 6
   _blurDepthSensitivity: 48
   _blurNormalPower: 8

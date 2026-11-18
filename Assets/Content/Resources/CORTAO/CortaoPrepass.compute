@@ -32,7 +32,7 @@ uint _CortaoMipCount;
 
 float cortao_loadDepth(int2 pixelCoords)
 {
-    return _CortaoDepthTexture.Load(int3(pixelCoords, 0));
+    return _CortaoDepthTexture.Load(int3(CortaoInputPixel(pixelCoords), 0));
 }
 
 float3 cortao_loadNormal(int2 pixelCoords)

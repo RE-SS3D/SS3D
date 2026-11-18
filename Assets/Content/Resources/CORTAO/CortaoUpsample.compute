@@ -1,0 +1,103 @@
+// Joint bilateral upsample of half-resolution CORTAO occlusion to screen
+// resolution, for quality levels that run CORTAO at half resolution.
+//
+// Half-res texel i holds screen pixel 2i (CortaoInputPixel), so screen pixel p
+// sits at p / 2 in texel units: even pixels land on a texel, odd ones between
+// two. Each of the (up to) four surrounding texels is weighted bilinearly, then
+// by how far it lies off this pixel's surface plane and how much its normal
+// differs, the same edge test as CortaoBlur. Where every texel is rejected (a
+// thin surface the half-res grid missed), the texel nearest this pixel's plane
+// is used as is.
+#pragma kernel CortaoUpsample
+
+#define CORTAO_HLSL 1
+#include "Assets/Scripts/External/CORTAO/CORTAOBase.hlsl"
+#include "CortaoCommon.hlsl"
+
+Texture2D<float> _CortaoDepthTexture;
+Texture2D<float> _CortaoPackedData;
+Texture2D<float> _CortaoOcclusionInput;
+RWTexture2D<float> _CortaoOcclusionOutput;
+
+uint _CortaoPackedResolution; // half-res CORTAO size, packed as width | height << 16
+uint _CortaoOutputResolution; // screen size, packed the same way
+float _CortaoDepthScale;
+float _CortaoDepthOffset;
+float4 _CortaoUnprojectParams;
+float _CortaoBlurDepthSensitivity;
+float _CortaoBlurNormalPower;
+
+float3 CortaoUpsampleViewPosition(float2 screenPosition, float linearDepth, float2 inverseResolution)
+{
+    float2 texCoords = screenPosition * inverseResolution;
+    float2 direction = texCoords * _CortaoUnprojectParams.xy + _CortaoUnprojectParams.zw;
+    return float3(direction, -1.0) * linearDepth;
+}
+
+[numthreads(8, 8, 1)]
+void CortaoUpsample(uint3 dispatchId : SV_DispatchThreadID)
+{
+    uint2 resolution = cortao_getResolution(_CortaoOutputResolution);
+    if (dispatchId.x >= resolution.x || dispatchId.y >= resolution.y)
+    {
+        return;
+    }
+
+    int2 pixel = int2(dispatchId.xy);
+    float rawDepth = _CortaoDepthTexture.Load(int3(pixel, 0));
+    float skyDepth = float(_CortaoDepthScale < 0.0); // as CORTAO's prepass: handles reversed Z
+    if (rawDepth == skyDepth)
+    {
+        _CortaoOcclusionOutput[pixel] = 1.0;
+        return;
+    }
+
+    float linearDepth = 1.0 / (rawDepth * _CortaoDepthScale + _CortaoDepthOffset);
+    float3 normal = CortaoLoadViewNormalAt(pixel);
+    float2 inverseResolution = 1.0 / float2(resolution);
+    float3 position = CortaoUpsampleViewPosition(float2(pixel) + 0.5, linearDepth, inverseResolution);
+    float inverseDepth = 1.0 / linearDepth;
+
+    float2 texelPosition = float2(pixel) * 0.5;
+    int2 baseTexel = int2(floor(texelPosition));
+    float2 fraction = texelPosition - float2(baseTexel);
+    int2 maxTexel = int2(cortao_getResolution(_CortaoPackedResolution)) - 1;
+
+    float occlusionSum = 0.0;
+    float weightSum = 0.0;
+    float nearestPlaneDistance = 3.402823e38;
+    float nearestOcclusion = 1.0;
+
+    [unroll]
+    for (int i = 0; i < 4; i++)
+    {
+        int2 offset = int2(i & 1, i >> 1);
+        int2 texel = min(baseTexel + offset, maxTexel);
+        uint packed = asuint(_CortaoPackedData.Load(int3(texel, 0)));
+        if (packed == 0u)
+        {
+            continue; // sky
+        }
+
+        float occlusion = _CortaoOcclusionInput.Load(int3(texel, 0));
+        float depth = cortao_unpackDepth(packed);
+        float3 sampleNormal = float3(cortao_decodeNormal(packed));
+        float3 samplePosition = CortaoUpsampleViewPosition(float2(texel * 2) + 0.5, depth, inverseResolution);
+
+        float planeDistance = abs(dot(samplePosition - position, normal)) * inverseDepth;
+        float2 bilinear = lerp(1.0 - fraction, fraction, float2(offset));
+        float weight = bilinear.x * bilinear.y;
+        weight *= exp2(-planeDistance * _CortaoBlurDepthSensitivity);
+        weight *= pow(saturate(dot(sampleNormal, normal)), _CortaoBlurNormalPower);
+
+        occlusionSum += occlusion * weight;
+        weightSum += weight;
+        if (planeDistance < nearestPlaneDistance)
+        {
+            nearestPlaneDistance = planeDistance;
+            nearestOcclusion = occlusion;
+        }
+    }
+
+    _CortaoOcclusionOutput[pixel] = weightSum > 1e-4 ? occlusionSum / weightSum : nearestOcclusion;
+}

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
@@ -15,6 +17,8 @@ namespace SS3D.Rendering.URP
     /// <remarks>
     /// Deliberately not URP's <c>_SCREEN_SPACE_OCCLUSION</c> keyword: URP strips that keyword's variants from
     /// player builds unless its own SSAO feature is active, so the station shaders sample this texture directly.
+    /// The four quality tiers share one renderer, so the per-tier cost settings live in
+    /// <see cref="QualityLevels"/>, indexed by the active <see cref="QualitySettings"/> level.
     /// </remarks>
     public sealed class CortaoAmbientOcclusionFeature : ScriptableRendererFeature
     {
@@ -25,6 +29,40 @@ namespace SS3D.Rendering.URP
             High = 2,
         }
 
+        /// <summary>What CORTAO costs at one <see cref="QualitySettings"/> level.</summary>
+        [Serializable]
+        public struct QualityLevelSettings
+        {
+            [Tooltip("The QualitySettings level this entry is for. Only labels the entry: levels are matched by "
+                + "index, and CortaoQualityLevelTests checks the labels against QualitySettings.names.")]
+            public string Level;
+
+            [Tooltip("Off skips CORTAO and binds a white occlusion texture, so the station shaders read no AO.")]
+            public bool Enabled;
+
+            [Tooltip("Samples per pixel: Low 8, Medium 12, High 16.")]
+            public SampleQuality Samples;
+
+            [Tooltip("Run CORTAO and the blur on a quarter of the pixels, then upsample bilaterally.")]
+            public bool HalfResolution;
+
+            [Tooltip("Bilateral blur radius in screen pixels (halved in CORTAO pixels at half resolution); 0 "
+                + "disables it. CORTAO's own noise is meant for TAA, which the player can turn off, and the "
+                + "station look wants soft AO.")]
+            [Range(0, 16)]
+            public int BlurRadius;
+
+            public QualityLevelSettings(string level, bool enabled, SampleQuality samples, bool halfResolution,
+                int blurRadius)
+            {
+                Level = level;
+                Enabled = enabled;
+                Samples = samples;
+                HalfResolution = halfResolution;
+                BlurRadius = blurRadius;
+            }
+        }
+
         private static readonly int OcclusionTextureId = Shader.PropertyToID("_SS3DOcclusionTexture");
         private static readonly int StationAmbientId = Shader.PropertyToID("_SS3DStationAmbient");
         private static readonly int StationLightsId = Shader.PropertyToID("_SS3DStationLights");
@@ -33,9 +71,11 @@ namespace SS3D.Rendering.URP
         [SerializeField] private ComputeShader _prepassShader;
         [SerializeField] private ComputeShader _mainPassShader;
         [SerializeField] private ComputeShader _filterShader;
+        [SerializeField] private ComputeShader _upsampleShader;
 
-        [Tooltip("Samples per pixel: Low 8, Medium 12, High 16.")]
-        [SerializeField] private SampleQuality _quality = SampleQuality.High;
+        [Tooltip("One entry per QualitySettings level, in order (Low, Medium, High, Ultra); levels past the end "
+            + "use the last entry. Measured costs: Documents/architecture/systems/rendering-quality-tiers.md.")]
+        [SerializeField] private QualityLevelSettings[] _qualityLevels = DefaultQualityLevels();
 
         [Tooltip("Maximum world-space occlusion radius, in metres.")]
         [SerializeField, Min(0.01f)] private float _radius = 0.75f;
@@ -61,18 +101,41 @@ namespace SS3D.Rendering.URP
 
         [SerializeField] private ComputeShader _blurShader;
 
-        [Tooltip("Bilateral blur radius in pixels after CORTAO's filter; 0 disables it. CORTAO's own noise is "
-            + "meant for TAA, which the player can turn off, and the station look wants soft AO.")]
-        [SerializeField, Range(0, 16)] private int _blurRadius = 6;
-
-        [Tooltip("Rejects samples off the centre pixel's surface plane (distance relative to depth).")]
+        [Tooltip("Blur and upsample: rejects samples off the centre pixel's surface plane (distance relative "
+            + "to depth).")]
         [SerializeField, Min(0f)] private float _blurDepthSensitivity = 48f;
 
-        [Tooltip("Rejects samples whose normal differs from the centre pixel's.")]
+        [Tooltip("Blur and upsample: rejects samples whose normal differs from the centre pixel's.")]
         [SerializeField, Min(0f)] private float _blurNormalPower = 8f;
 
         private CortaoPass _pass;
         private GraphicsBuffer _occluderTable;
+
+        /// <summary>Per-<see cref="QualitySettings"/>-level settings, in level order.</summary>
+        public IReadOnlyList<QualityLevelSettings> QualityLevels => _qualityLevels;
+
+        /// <summary>
+        /// Low skips AO (it also has no fixture shadows), Medium runs 12 samples at half resolution, High and
+        /// Ultra run the full-resolution 16-sample look.
+        /// </summary>
+        public static QualityLevelSettings[] DefaultQualityLevels() => new[]
+        {
+            new QualityLevelSettings("Low", false, SampleQuality.Low, true, 6),
+            new QualityLevelSettings("Medium", true, SampleQuality.Medium, true, 6),
+            new QualityLevelSettings("High", true, SampleQuality.High, false, 6),
+            new QualityLevelSettings("Ultra", true, SampleQuality.High, false, 6),
+        };
+
+        /// <summary>The entry for a <see cref="QualitySettings"/> level; past the end, the last entry.</summary>
+        public static QualityLevelSettings ResolveLevel(IReadOnlyList<QualityLevelSettings> levels, int qualityLevel)
+        {
+            if (levels == null || levels.Count == 0)
+            {
+                return new QualityLevelSettings("Fallback", true, SampleQuality.High, false, 6);
+            }
+
+            return levels[Mathf.Clamp(qualityLevel, 0, levels.Count - 1)];
+        }
 
         public override void Create()
         {
@@ -94,6 +157,11 @@ namespace SS3D.Rendering.URP
             if (_blurShader == null)
             {
                 _blurShader = Resources.Load<ComputeShader>("CORTAO/CortaoBlur");
+            }
+
+            if (_upsampleShader == null)
+            {
+                _upsampleShader = Resources.Load<ComputeShader>("CORTAO/CortaoUpsample");
             }
 
             _pass ??= new CortaoPass
@@ -118,14 +186,15 @@ namespace SS3D.Rendering.URP
                 StationFalloffId,
                 shading != null ? shading.ToFalloffParams() : StationShading.DefaultFalloffParams);
 
-            if (!ShouldRunOcclusion(renderingData.cameraData, shading))
+            QualityLevelSettings level = ResolveLevel(_qualityLevels, QualitySettings.GetQualityLevel());
+            if (!level.Enabled || !ShouldRunOcclusion(renderingData.cameraData, shading))
             {
                 Shader.SetGlobalTexture(OcclusionTextureId, Texture2D.whiteTexture);
                 return;
             }
 
             EnsureOccluderTable();
-            _pass.Setup(this, _occluderTable);
+            _pass.Setup(this, _occluderTable, level);
             _pass.ConfigureInput(ScriptableRenderPassInput.Depth | ScriptableRenderPassInput.Normal);
             renderer.EnqueuePass(_pass);
         }
@@ -208,6 +277,8 @@ namespace SS3D.Rendering.URP
             private static readonly int BlurRadiusId = Shader.PropertyToID("_CortaoBlurRadius");
             private static readonly int BlurDepthSensitivityId = Shader.PropertyToID("_CortaoBlurDepthSensitivity");
             private static readonly int BlurNormalPowerId = Shader.PropertyToID("_CortaoBlurNormalPower");
+            private static readonly int InputScaleId = Shader.PropertyToID("_CortaoInputScale");
+            private static readonly int OutputResolutionId = Shader.PropertyToID("_CortaoOutputResolution");
 
             private static readonly int[] PackedMipIds =
             {
@@ -234,9 +305,11 @@ namespace SS3D.Rendering.URP
             private readonly ProfilingSampler _mainSampler = new("CORTAO Main Pass");
             private readonly ProfilingSampler _filterSampler = new("CORTAO Filter");
             private readonly ProfilingSampler _blurSampler = new("CORTAO Bilateral Blur");
+            private readonly ProfilingSampler _upsampleSampler = new("CORTAO Upsample");
 
             private CortaoAmbientOcclusionFeature _feature;
             private GraphicsBuffer _occluderTable;
+            private QualityLevelSettings _level;
 
             private sealed class PrepassData
             {
@@ -247,6 +320,7 @@ namespace SS3D.Rendering.URP
                 public TextureHandle Packed;
                 public Matrix4x4 WorldToView;
                 public int PackedResolution;
+                public int InputScale;
                 public float DepthScale;
                 public float DepthOffset;
                 public int RandomSeed;
@@ -265,6 +339,7 @@ namespace SS3D.Rendering.URP
                 public GraphicsBuffer OccluderTable;
                 public Matrix4x4 WorldToView;
                 public int PackedResolution;
+                public int InputScale;
                 public int RandomSeed;
                 public float NormalBias;
                 public float Radius;
@@ -313,10 +388,33 @@ namespace SS3D.Rendering.URP
                 public int GroupsY;
             }
 
-            public void Setup(CortaoAmbientOcclusionFeature feature, GraphicsBuffer occluderTable)
+            private sealed class UpsampleData
+            {
+                public ComputeShader Shader;
+                public int Kernel;
+                public TextureHandle Depth;
+                public TextureHandle Normals;
+                public TextureHandle Packed;
+                public TextureHandle Input;
+                public TextureHandle Output;
+                public Matrix4x4 WorldToView;
+                public int PackedResolution;
+                public int OutputResolution;
+                public float DepthScale;
+                public float DepthOffset;
+                public Vector4 UnprojectParams;
+                public float DepthSensitivity;
+                public float NormalPower;
+                public int GroupsX;
+                public int GroupsY;
+            }
+
+            public void Setup(CortaoAmbientOcclusionFeature feature, GraphicsBuffer occluderTable,
+                QualityLevelSettings level)
             {
                 _feature = feature;
                 _occluderTable = occluderTable;
+                _level = level;
             }
 
             public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
@@ -349,41 +447,81 @@ namespace SS3D.Rendering.URP
                 Matrix4x4 projection = cameraData.GetProjectionMatrix();
                 Matrix4x4 inverseProjection = projection.inverse;
 
-                int packedResolution = width | (height << 16);
-                int mipCount = GetPackedMipCount(width, height);
+                // CORTAO's own resolution: the screen, or every other pixel on each axis at half resolution
+                // (the prepass and main pass read screen pixel 2p, see CortaoCommon.hlsl).
+                bool halfResolution = _level.HalfResolution && _feature._upsampleShader != null;
+                int inputScale = halfResolution ? 2 : 1;
+                int aoWidth = DivideRoundUp(width, inputScale);
+                int aoHeight = DivideRoundUp(height, inputScale);
+
+                int packedResolution = aoWidth | (aoHeight << 16);
+                int mipCount = GetPackedMipCount(aoWidth, aoHeight);
                 int randomSeed = GetRandomSeed(cameraData);
+                GetDepthLinearization(camera, out float depthScale, out float depthOffset);
 
-                TextureHandle packed = CreatePackedTexture(renderGraph, width, height);
-                TextureHandle rawOcclusion = CreateOcclusionTexture(renderGraph, width, height, "_CortaoOcclusionRaw");
+                TextureHandle packed = CreatePackedTexture(renderGraph, aoWidth, aoHeight);
+                TextureHandle rawOcclusion = CreateOcclusionTexture(renderGraph, aoWidth, aoHeight, "_CortaoOcclusionRaw");
 
-                RecordPrepass(renderGraph, depth, normals, packed, worldToView, camera, packedResolution, randomSeed,
-                    mipCount, width, height);
+                RecordPrepass(renderGraph, depth, normals, packed, worldToView, depthScale, depthOffset,
+                    packedResolution, inputScale, randomSeed, mipCount, aoWidth, aoHeight);
 
                 bool filter = _feature._filter;
-                bool blur = _feature._blurRadius > 0 && _feature._blurShader != null;
+                // The blur radius is in screen pixels; at half resolution each CORTAO pixel spans two.
+                int blurRadius = (_level.BlurRadius + inputScale - 1) / inputScale;
+                bool blur = blurRadius > 0 && _feature._blurShader != null;
                 Vector4 unprojectParams = GetUnprojectParams(inverseProjection);
 
                 // Only the last pass in the chain publishes _SS3DOcclusionTexture.
                 TextureHandle occlusion = rawOcclusion;
                 RecordMainPass(renderGraph, packed, normals, rawOcclusion, worldToView, projection, inverseProjection,
-                    unprojectParams, packedResolution, randomSeed, mipCount, width, height, publish: !filter && !blur);
+                    unprojectParams, packedResolution, inputScale, randomSeed, mipCount, aoWidth, aoHeight,
+                    publish: !filter && !blur && !halfResolution);
 
                 if (filter)
                 {
-                    TextureHandle filtered = CreateOcclusionTexture(renderGraph, width, height, "_CortaoOcclusionFiltered");
-                    RecordFilter(renderGraph, packed, occlusion, filtered, packedResolution, width, height, publish: !blur);
+                    TextureHandle filtered =
+                        CreateOcclusionTexture(renderGraph, aoWidth, aoHeight, "_CortaoOcclusionFiltered");
+                    RecordFilter(renderGraph, packed, occlusion, filtered, packedResolution, aoWidth, aoHeight,
+                        publish: !blur && !halfResolution);
                     occlusion = filtered;
                 }
 
                 if (blur)
                 {
-                    TextureHandle horizontal = CreateOcclusionTexture(renderGraph, width, height, "_CortaoOcclusionBlurH");
+                    TextureHandle horizontal =
+                        CreateOcclusionTexture(renderGraph, aoWidth, aoHeight, "_CortaoOcclusionBlurH");
                     RecordBlur(renderGraph, packed, occlusion, horizontal, new Vector4(1f, 0f, 0f, 0f),
-                        unprojectParams, packedResolution, width, height, publish: false);
+                        unprojectParams, packedResolution, blurRadius, aoWidth, aoHeight, publish: false);
 
-                    TextureHandle vertical = CreateOcclusionTexture(renderGraph, width, height, "_CortaoOcclusion");
+                    TextureHandle vertical = CreateOcclusionTexture(renderGraph, aoWidth, aoHeight,
+                        halfResolution ? "_CortaoOcclusionBlurV" : "_CortaoOcclusion");
                     RecordBlur(renderGraph, packed, horizontal, vertical, new Vector4(0f, 1f, 0f, 0f),
-                        unprojectParams, packedResolution, width, height, publish: true);
+                        unprojectParams, packedResolution, blurRadius, aoWidth, aoHeight, publish: !halfResolution);
+                    occlusion = vertical;
+                }
+
+                if (halfResolution)
+                {
+                    TextureHandle upsampled = CreateOcclusionTexture(renderGraph, width, height, "_CortaoOcclusion");
+                    RecordUpsample(renderGraph, depth, normals, packed, occlusion, upsampled, worldToView, depthScale,
+                        depthOffset, unprojectParams, packedResolution, width, height);
+                }
+            }
+
+            // CORTAO linearises depth as 1 / (depth * scale + offset); these match URP's _ZBufferParams.zw.
+            private static void GetDepthLinearization(Camera camera, out float scale, out float offset)
+            {
+                float near = camera.nearClipPlane;
+                float far = camera.farClipPlane;
+                if (SystemInfo.usesReversedZBuffer)
+                {
+                    scale = (far - near) / (near * far);
+                    offset = 1f / far;
+                }
+                else
+                {
+                    scale = (near - far) / (near * far);
+                    offset = 1f / near;
                 }
             }
 
@@ -401,8 +539,10 @@ namespace SS3D.Rendering.URP
                 TextureHandle normals,
                 TextureHandle packed,
                 Matrix4x4 worldToView,
-                Camera camera,
+                float depthScale,
+                float depthOffset,
                 int packedResolution,
+                int inputScale,
                 int randomSeed,
                 int mipCount,
                 int width,
@@ -411,9 +551,6 @@ namespace SS3D.Rendering.URP
                 using IComputeRenderGraphBuilder builder =
                     renderGraph.AddComputePass("CORTAO Prepass", out PrepassData data, _prepassSampler);
 
-                float near = camera.nearClipPlane;
-                float far = camera.farClipPlane;
-
                 data.Shader = _feature._prepassShader;
                 data.Kernel = data.Shader.FindKernel("CortaoPrepass");
                 data.Depth = depth;
@@ -421,18 +558,9 @@ namespace SS3D.Rendering.URP
                 data.Packed = packed;
                 data.WorldToView = worldToView;
                 data.PackedResolution = packedResolution;
-                // CORTAO linearises depth as 1 / (depth * scale + offset); these match URP's _ZBufferParams.zw.
-                if (SystemInfo.usesReversedZBuffer)
-                {
-                    data.DepthScale = (far - near) / (near * far);
-                    data.DepthOffset = 1f / far;
-                }
-                else
-                {
-                    data.DepthScale = (near - far) / (near * far);
-                    data.DepthOffset = 1f / near;
-                }
-
+                data.InputScale = inputScale;
+                data.DepthScale = depthScale;
+                data.DepthOffset = depthOffset;
                 data.RandomSeed = randomSeed;
                 data.MipCount = mipCount;
                 data.GroupsX = DivideRoundUp(width, 8);
@@ -457,6 +585,7 @@ namespace SS3D.Rendering.URP
 
                     cmd.SetComputeMatrixParam(d.Shader, WorldToViewId, d.WorldToView);
                     cmd.SetComputeIntParam(d.Shader, PackedResolutionId, d.PackedResolution);
+                    cmd.SetComputeIntParam(d.Shader, InputScaleId, d.InputScale);
                     cmd.SetComputeFloatParam(d.Shader, DepthScaleId, d.DepthScale);
                     cmd.SetComputeFloatParam(d.Shader, DepthOffsetId, d.DepthOffset);
                     cmd.SetComputeIntParam(d.Shader, RandomSeedId, d.RandomSeed);
@@ -475,6 +604,7 @@ namespace SS3D.Rendering.URP
                 Matrix4x4 inverseProjection,
                 Vector4 unprojectParams,
                 int packedResolution,
+                int inputScale,
                 int randomSeed,
                 int mipCount,
                 int width,
@@ -490,13 +620,14 @@ namespace SS3D.Rendering.URP
                 float maxApparentCircleRadius = invY * feature._maxScreenRadius * 2f;
 
                 data.Shader = feature._mainPassShader;
-                data.Kernel = data.Shader.FindKernel(MainKernelNames[(int)feature._quality]);
+                data.Kernel = data.Shader.FindKernel(MainKernelNames[(int)_level.Samples]);
                 data.Packed = packed;
                 data.Normals = normals;
                 data.Output = output;
                 data.OccluderTable = _occluderTable;
                 data.WorldToView = worldToView;
                 data.PackedResolution = packedResolution;
+                data.InputScale = inputScale;
                 data.RandomSeed = randomSeed;
                 // Port of CORTAOParameters.h populateMainPassParameters (flipY = false).
                 data.NormalBias = invX / width * Mathf.Sqrt(2f);
@@ -536,6 +667,7 @@ namespace SS3D.Rendering.URP
                     cmd.SetComputeBufferParam(d.Shader, d.Kernel, OccluderTableId, d.OccluderTable);
                     cmd.SetComputeMatrixParam(d.Shader, WorldToViewId, d.WorldToView);
                     cmd.SetComputeIntParam(d.Shader, PackedResolutionId, d.PackedResolution);
+                    cmd.SetComputeIntParam(d.Shader, InputScaleId, d.InputScale);
                     cmd.SetComputeIntParam(d.Shader, RandomSeedId, d.RandomSeed);
                     cmd.SetComputeFloatParam(d.Shader, NormalBiasId, d.NormalBias);
                     cmd.SetComputeFloatParam(d.Shader, RadiusId, d.Radius);
@@ -610,6 +742,7 @@ namespace SS3D.Rendering.URP
                 Vector4 direction,
                 Vector4 unprojectParams,
                 int packedResolution,
+                int radius,
                 int width,
                 int height,
                 bool publish)
@@ -625,7 +758,7 @@ namespace SS3D.Rendering.URP
                 data.PackedResolution = packedResolution;
                 data.UnprojectParams = unprojectParams;
                 data.Direction = direction;
-                data.Radius = _feature._blurRadius;
+                data.Radius = radius;
                 data.DepthSensitivity = _feature._blurDepthSensitivity;
                 data.NormalPower = _feature._blurNormalPower;
                 data.GroupsX = DivideRoundUp(width, 8);
@@ -650,6 +783,70 @@ namespace SS3D.Rendering.URP
                     cmd.SetComputeVectorParam(d.Shader, UnprojectParamsId, d.UnprojectParams);
                     cmd.SetComputeVectorParam(d.Shader, BlurDirectionId, d.Direction);
                     cmd.SetComputeIntParam(d.Shader, BlurRadiusId, d.Radius);
+                    cmd.SetComputeFloatParam(d.Shader, BlurDepthSensitivityId, d.DepthSensitivity);
+                    cmd.SetComputeFloatParam(d.Shader, BlurNormalPowerId, d.NormalPower);
+                    cmd.DispatchCompute(d.Shader, d.Kernel, d.GroupsX, d.GroupsY, 1);
+                });
+            }
+
+            private void RecordUpsample(
+                RenderGraph renderGraph,
+                TextureHandle depth,
+                TextureHandle normals,
+                TextureHandle packed,
+                TextureHandle input,
+                TextureHandle output,
+                Matrix4x4 worldToView,
+                float depthScale,
+                float depthOffset,
+                Vector4 unprojectParams,
+                int packedResolution,
+                int width,
+                int height)
+            {
+                using IComputeRenderGraphBuilder builder =
+                    renderGraph.AddComputePass("CORTAO Upsample", out UpsampleData data, _upsampleSampler);
+
+                data.Shader = _feature._upsampleShader;
+                data.Kernel = data.Shader.FindKernel("CortaoUpsample");
+                data.Depth = depth;
+                data.Normals = normals;
+                data.Packed = packed;
+                data.Input = input;
+                data.Output = output;
+                data.WorldToView = worldToView;
+                data.PackedResolution = packedResolution;
+                data.OutputResolution = width | (height << 16);
+                data.DepthScale = depthScale;
+                data.DepthOffset = depthOffset;
+                data.UnprojectParams = unprojectParams;
+                data.DepthSensitivity = _feature._blurDepthSensitivity;
+                data.NormalPower = _feature._blurNormalPower;
+                data.GroupsX = DivideRoundUp(width, 8);
+                data.GroupsY = DivideRoundUp(height, 8);
+
+                builder.UseTexture(depth, AccessFlags.Read);
+                builder.UseTexture(normals, AccessFlags.Read);
+                builder.UseTexture(packed, AccessFlags.Read);
+                builder.UseTexture(input, AccessFlags.Read);
+                builder.UseTexture(output, AccessFlags.Write);
+                builder.AllowPassCulling(false);
+                builder.SetGlobalTextureAfterPass(output, OcclusionTextureId);
+
+                builder.SetRenderFunc(static (UpsampleData d, ComputeGraphContext context) =>
+                {
+                    ComputeCommandBuffer cmd = context.cmd;
+                    cmd.SetComputeTextureParam(d.Shader, d.Kernel, DepthTextureId, d.Depth);
+                    cmd.SetComputeTextureParam(d.Shader, d.Kernel, NormalsTextureId, d.Normals);
+                    cmd.SetComputeTextureParam(d.Shader, d.Kernel, PackedDataId, d.Packed);
+                    cmd.SetComputeTextureParam(d.Shader, d.Kernel, OcclusionInputId, d.Input);
+                    cmd.SetComputeTextureParam(d.Shader, d.Kernel, OcclusionOutputId, d.Output);
+                    cmd.SetComputeMatrixParam(d.Shader, WorldToViewId, d.WorldToView);
+                    cmd.SetComputeIntParam(d.Shader, PackedResolutionId, d.PackedResolution);
+                    cmd.SetComputeIntParam(d.Shader, OutputResolutionId, d.OutputResolution);
+                    cmd.SetComputeFloatParam(d.Shader, DepthScaleId, d.DepthScale);
+                    cmd.SetComputeFloatParam(d.Shader, DepthOffsetId, d.DepthOffset);
+                    cmd.SetComputeVectorParam(d.Shader, UnprojectParamsId, d.UnprojectParams);
                     cmd.SetComputeFloatParam(d.Shader, BlurDepthSensitivityId, d.DepthSensitivity);
                     cmd.SetComputeFloatParam(d.Shader, BlurNormalPowerId, d.NormalPower);
                     cmd.DispatchCompute(d.Shader, d.Kernel, d.GroupsX, d.GroupsY, 1);
