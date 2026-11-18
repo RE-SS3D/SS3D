@@ -1,8 +1,8 @@
 /* Body doll for the health scanner. Every layer is a full 296×585 Harm* mask from SS3D-Art,
-   drawn at 0.75 scale and tinted from code (HealthScanDoll). */
+   drawn at 0.64 scale and tinted from code (HealthScanDoll). */
 .health-scan-doll {
-    width: 222px;
-    height: 439px;
+    width: 190px;
+    height: 376px;
     flex-shrink: 0;
 }
 
@@ -31,10 +31,10 @@
 
 .health-scan-doll__heart {
     position: absolute;
-    left: 112px;
-    top: 118px;
-    width: 26px;
-    height: 26px;
+    left: 50.45%;
+    top: 26.88%;
+    width: 11.7%;
+    height: 5.92%;
     -unity-background-scale-mode: scale-to-fit;
     background-image: url("project://database/Assets/Art/Icons/External/lorc/heart-organ.svg");
     -unity-background-image-tint-color: #7fbf6b;

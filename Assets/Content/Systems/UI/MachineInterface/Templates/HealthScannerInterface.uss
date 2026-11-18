@@ -1,11 +1,11 @@
 /* VSU-5R vitals screen, laid out after the "Vitals Scan Result Spec" design page. */
 
 .health-scan-header {
-    margin-bottom: 14px;
+    margin-bottom: 8px;
 }
 
 .health-scan-header__title {
-    font-size: 26px;
+    font-size: 22px;
     letter-spacing: 2px;
     padding: 0;
     color: var(--ss3d-text-primary);
@@ -17,7 +17,7 @@
     flex-direction: row;
     align-items: center;
     flex-wrap: wrap;
-    margin-top: 8px;
+    margin-top: 4px;
 }
 
 .health-scan-header__badge {
@@ -34,7 +34,7 @@
 }
 
 .health-scan-section {
-    margin-top: 12px;
+    margin-top: 8px;
 }
 
 .health-scan-monitor {
@@ -60,7 +60,7 @@
     flex-direction: column;
     flex-shrink: 0;
     align-items: center;
-    margin: 0 22px;
+    margin: 0 18px;
 }
 
 .health-scan-column--right {
@@ -189,8 +189,8 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    max-width: 222px;
-    margin-top: 10px;
+    max-width: 200px;
+    margin-top: 6px;
 }
 
 .health-scan-legend__item {
@@ -238,10 +238,10 @@
 }
 
 .health-scan-hint {
-    font-size: 10px;
+    font-size: 11px;
     padding: 0;
-    margin-top: 4px;
-    max-width: 222px;
+    margin-top: 2px;
+    max-width: 200px;
     white-space: normal;
     -unity-text-align: upper-center;
     color: var(--ss3d-text-tertiary);
@@ -359,7 +359,7 @@
 .health-scan-shock__label {
     position: absolute;
     top: 0;
-    font-size: 10px;
+    font-size: 11px;
     padding: 0 4px;
     white-space: nowrap;
     background-color: rgba(0, 0, 0, 0);
@@ -409,32 +409,35 @@
 }
 
 .health-scan-wound__zone {
-    width: 52px;
+    width: 56px;
     flex-shrink: 0;
-    font-size: 10px;
+    font-size: 12px;
+    -unity-font-style: bold;
     padding: 0;
     color: var(--ss3d-text-primary);
     background-color: rgba(0, 0, 0, 0);
 }
 
 .health-scan-wound__tier {
-    width: 64px;
+    width: 72px;
     flex-shrink: 0;
-    font-size: 10px;
+    font-size: 12px;
+    -unity-font-style: bold;
     padding: 0;
     background-color: rgba(0, 0, 0, 0);
 }
 
 .health-scan-wound__numbers {
     flex-grow: 1;
-    font-size: 10px;
+    font-size: 12px;
     padding: 0;
     color: var(--ss3d-text-secondary);
     background-color: rgba(0, 0, 0, 0);
 }
 
 .health-scan-wound__flags {
-    font-size: 10px;
+    font-size: 12px;
+    -unity-font-style: bold;
     padding: 0;
     white-space: nowrap;
     color: var(--ss3d-text-secondary);
@@ -442,7 +445,7 @@
 }
 
 .health-scan-wounds__empty {
-    font-size: 10px;
+    font-size: 12px;
     padding: 4px 6px;
     color: var(--ss3d-text-secondary);
     background-color: var(--ss3d-surface-inset);

@@ -18,7 +18,7 @@
         class="diegetic-device-shell--health-scanner"
         model-label="VSU-5R · anatomical scan unit"
         power-ok="true"
-        style="align-self: center; margin-top: 24px;">
+        style="align-self: center; margin-top: 8px;">
 
         <ui:VisualElement class="health-scan-header">
             <ui:Label name="title" text="Vitals Scan — Unknown Subject" class="health-scan-header__title font-titling" />
@@ -76,7 +76,7 @@
                                 <ui:Label text="Failing" class="health-scan-legend__text font-terminal" />
                             </ui:VisualElement>
                         </ui:VisualElement>
-                        <ui:Label text="Hover a zone or organ, or pick a wound below — bone shows through at high brute" class="health-scan-hint font-terminal" />
+                        <ui:Label text="Hover a zone or organ, or pick a wound below" class="health-scan-hint font-body" />
                     </ui:VisualElement>
 
                     <ui:VisualElement class="health-scan-column health-scan-column--right">
@@ -131,12 +131,11 @@
                     <ui:VisualElement class="health-scan-wounds">
                         <ui:Label text="WOUNDS" class="health-scan-label font-body" />
                         <ui:VisualElement name="wound-list" class="health-scan-wounds__list" />
-                        <ui:Label name="no-wounds" text="No wounds detected" class="health-scan-wounds__empty font-terminal" />
+                        <ui:Label name="no-wounds" text="No wounds detected" class="health-scan-wounds__empty font-body" />
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <ss3d:DeviceFooter name="footer" text="SS3D Vitals Scan Unit — Model VSU-5R" />
     </ss3d:DiegeticDeviceShell>
 </ui:UXML>

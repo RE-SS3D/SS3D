@@ -373,7 +373,7 @@ namespace SS3D.UI.MachineInterface.Bindings
             {
                 Label label = new();
                 label.AddToClassList(className);
-                label.AddToClassList("font-terminal");
+                label.AddToClassList("font-body");
                 label.pickingMode = PickingMode.Ignore;
                 Root.Add(label);
                 return label;
