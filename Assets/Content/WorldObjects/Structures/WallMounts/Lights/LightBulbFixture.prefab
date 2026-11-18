@@ -374,7 +374,7 @@ MonoBehaviour:
   _applyDepartmentalLightTint: 0
   _fixtureCapability: 1
   _emergencyIntensityMultiplier: 0.1
-  _emergencyRangeMultiplier: 0.353
+  _emergencyRangeMultiplier: 0.65
   _emergencyTint: {r: 1, g: 0.25, b: 0.2, a: 1}
   _bulb: {fileID: 8084387858195731502}
   _cellRunSeconds: 120
