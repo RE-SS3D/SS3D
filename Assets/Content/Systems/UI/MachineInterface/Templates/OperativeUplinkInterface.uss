@@ -241,7 +241,7 @@
 }
 
 .uplink__grid-scroll {
-    height: 372px;
+    height: 300px;
 }
 
 .uplink__grid {
@@ -575,6 +575,17 @@
     border-top-left-radius: var(--ss3d-radius-md);
     border-top-right-radius: var(--ss3d-radius-md);
     background-color: var(--ss3d-diegetic-panel-raised);
+}
+
+.uplink__ledger-heading {
+    flex-direction: row;
+    align-items: center;
+}
+
+.uplink__ledger-chevron {
+    font-size: 9px;
+    color: var(--ss3d-text-primary);
+    margin-right: 6px;
 }
 
 .uplink__ledger-body {

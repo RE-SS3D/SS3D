@@ -17,7 +17,7 @@ namespace SS3D.Systems.StructuralDamage.Editor
             DebrisVfxSetup.SetupAll();
             ExplosivePrefabSetup.SetupAll();
             // Cut from the Syndicate bomb beacon, so it runs after it.
-            Gamemodes.Uplink.Editor.OperativeUplinkPrefabSetup.SetupAll();
+            OperativeUplinkPrefabSetup.SetupAll();
             int integrity = StructuralIntegrityPrefabSetup.SetupAll();
 
             EditorUtility.DisplayDialog(
@@ -33,7 +33,7 @@ namespace SS3D.Systems.StructuralDamage.Editor
             DebrisVfxSetup.SetupAll();
             ExplosivePrefabSetup.SetupAll();
             // Cut from the Syndicate bomb beacon, so it runs after it.
-            Gamemodes.Uplink.Editor.OperativeUplinkPrefabSetup.SetupAll();
+            OperativeUplinkPrefabSetup.SetupAll();
             int integrity = StructuralIntegrityPrefabSetup.SetupAll();
             Debug.Log($"[StructuralDamageContentPrefabRecipes] Blast and debris VFX done; integrity {integrity}.");
 

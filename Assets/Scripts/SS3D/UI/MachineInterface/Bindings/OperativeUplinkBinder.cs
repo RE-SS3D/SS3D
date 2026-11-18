@@ -50,7 +50,7 @@ namespace SS3D.UI.MachineInterface.Bindings
         private readonly Label _deliveryWhere;
         private readonly Label _deliveryNote;
         private readonly VisualElement _ledger;
-        private readonly Label _ledgerTitle;
+        private readonly Label _ledgerChevron;
         private readonly Label _ledgerSummary;
         private readonly VisualElement _ledgerRows;
 
@@ -96,7 +96,7 @@ namespace SS3D.UI.MachineInterface.Bindings
             _deliveryWhere = content.Q<Label>("delivery-where");
             _deliveryNote = content.Q<Label>("delivery-note");
             _ledger = content.Q<Button>("ledger-toggle")?.parent;
-            _ledgerTitle = content.Q<Label>("ledger-title");
+            _ledgerChevron = content.Q<Label>("ledger-chevron");
             _ledgerSummary = content.Q<Label>("ledger-summary");
             _ledgerRows = content.Q<VisualElement>("ledger-rows");
 
@@ -558,9 +558,10 @@ namespace SS3D.UI.MachineInterface.Bindings
         private void BindLedger(OperativeUplinkViewModel model)
         {
             _ledger?.EnableInClassList("uplink__ledger--collapsed", !_ledgerOpen);
-            if (_ledgerTitle != null)
+            if (_ledgerChevron != null)
             {
-                _ledgerTitle.text = (_ledgerOpen ? "▾" : "▸") + " PURCHASE LEDGER";
+                // Body font: the titling and terminal fonts have no triangle glyphs.
+                _ledgerChevron.text = _ledgerOpen ? "▼" : "►";
             }
 
             if (_ledgerSummary != null)

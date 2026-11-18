@@ -50,6 +50,8 @@ namespace SS3D.UI.MachineInterface
 
     public sealed class OperativeUplinkViewModel : IMachineInterfaceViewModel
     {
+        public string Title => "UPLINK";
+
         public string ModelLabel { get; set; } = "SYN-UL · encrypted telecrystal uplink";
 
         public string OwnerLine { get; set; } = "Syndicate field uplink";

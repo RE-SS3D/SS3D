@@ -8,6 +8,7 @@ using SS3D.Systems.Comms;
 using SS3D.Systems.Examine;
 using SS3D.Systems.Furniture;
 using SS3D.Systems.Gamemodes;
+using SS3D.Systems.Gamemodes.Uplink;
 using SS3D.Systems.Health;
 using SS3D.Interactions;
 using SS3D.Systems.Interactions;
@@ -176,6 +177,65 @@ namespace SS3D.Tests
             StringAssert.Contains("not armed", Examine(nuke));
             cutters.Delete();
         }
+
+        // The operative uplink (antagonist-content.md §4): opens from hand, one click buys into the free hand, a full
+        // pair of hands drops the item at the feet, and the squad's one bomb sells out with no TC spent.
+        [UnityTest]
+        public IEnumerator Uplink_OpensFromHand_BuysDeliversAndRefusesSoldOut()
+        {
+            // The body loses its gun and gains items; the next scenario reboots.
+            ChangesRoom = true;
+            SS3D.UI.MachineInterface.OperativeUplinkController uplink =
+                Object.FindFirstObjectByType<SS3D.UI.MachineInterface.OperativeUplinkController>();
+            Assert.IsNotNull(uplink, "The operative carries an uplink");
+
+            EmptyHands(Body);
+            Hands hands = Body.GetComponent<Hands>();
+            Hand hand = hands.SelectedHand;
+            Assert.IsTrue(hand.Container.AddItem(uplink.GetComponent<Item>()), "The uplink comes out of the bag into the hand");
+            yield return Hold(0.3f);
+
+            SS3D.UI.MachineInterface.MachineInterfaceSubSystem panels = SubSystems.Get<SS3D.UI.MachineInterface.MachineInterfaceSubSystem>();
+            Assert.IsNull(Run(uplink.gameObject, "OpenUplink"), "Use in hand opens the uplink");
+            yield return WaitFor(() => panels.IsOpen, "the uplink panel opens", 3f);
+
+            int start = uplink.Account.Balance;
+            Assert.AreEqual(OperativeUplinkCatalog.StartingBalance, start);
+            Hand other = hands.PlayerHands.First(h => h != hand);
+
+            Assert.AreEqual(UplinkRefusal.None, uplink.ServerBuy(Index("c4"), hands.Owner), "C4 is affordable");
+            Assert.AreEqual(start - 2, uplink.Account.Balance);
+            Assert.IsNotNull(other.ItemInHand, "The C4 lands in the free hand");
+            Assert.AreEqual(1, uplink.Account.Ledger.Count);
+
+            Item[] before = Object.FindObjectsByType<Item>(FindObjectsSortMode.None);
+            Assert.AreEqual(UplinkRefusal.None, uplink.ServerBuy(Index("gauze"), hands.Owner), "Gauze with both hands full");
+            yield return Hold(0.2f);
+            Item dropped = Object.FindObjectsByType<Item>(FindObjectsSortMode.None).Except(before).SingleOrDefault();
+            Assert.IsNotNull(dropped, "The gauze spawns");
+            Assert.IsNull(dropped.Container, "Both hands are full, so it lands at the feet");
+            Assert.Less(Vector3.Distance(dropped.transform.position, Body.transform.position), 1.5f, "At the operative's feet");
+
+            Assert.AreEqual(UplinkRefusal.None, uplink.ServerBuy(Index("synbomb"), hands.Owner), "The squad's one bomb");
+            int afterBomb = uplink.Account.Balance;
+            Assert.AreEqual(UplinkRefusal.SoldOut, uplink.ServerBuy(Index("synbomb"), hands.Owner), "Only one per squad");
+            Assert.AreEqual(afterBomb, uplink.Account.Balance, "A refusal spends nothing");
+            Assert.AreEqual(3, uplink.Account.Ledger.Count);
+
+            panels.Close();
+            yield return WaitFor(() => !panels.IsOpen, "the uplink panel closes", 3f);
+        }
+
+        private static int Index(string listingId)
+        {
+            for (int i = 0; i < OperativeUplinkCatalog.Listings.Count; i++)
+                if (OperativeUplinkCatalog.Listings[i].Id == listingId) return i;
+            throw new System.ArgumentException(listingId);
+        }
+
+        private string Run(GameObject target, string genericName) =>
+            Body.GetComponent<InteractionController>()
+                .RunInteractionForTesting(target, target.transform.position, genericName, IntentType.Help);
 
         // Down is not out (health.md §4): the crew-win check needs operatives dead, so a Downed or Critical one keeps the
         // round going and can still be rescued by the squad.

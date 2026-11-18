@@ -48,7 +48,7 @@ Remote triggers, a proximity alert, other grenades and separate-client acceptanc
 
 ## Extension points
 
-- Run **SS3D → Structural Damage → Run Content Prefab Recipes** to rebuild content. It creates `C4`, `X4`, `SyndicateMiniBomb`, `SyndicateBomb`, `SyndicateBombBeacon` and the `OperativeUplink` cut from the beacon (`Gamemodes/Uplink/Editor/OperativeUplinkPrefabSetup.cs`) under `Assets/Content/WorldObjects/Items/Weapons/` and registers their item refs/Addressables. After the bomb recipe, run `JobKitSetup.Apply` (operative kit) and `ExamineIdentificationKeySetup.AddExamineFeedbackKeys` (examine and action strings); they live in other editor assemblies.
+- Run **SS3D → Structural Damage → Run Content Prefab Recipes** to rebuild content. It creates `C4`, `X4`, `SyndicateMiniBomb`, `SyndicateBomb`, `SyndicateBombBeacon` and the `OperativeUplink` cut from the beacon (`OperativeUplinkPrefabSetup.cs`) under `Assets/Content/WorldObjects/Items/Weapons/` and registers their item refs/Addressables. After the bomb recipe, run `JobKitSetup.Apply` (operative kit) and `ExamineIdentificationKeySetup.AddExamineFeedbackKeys` (examine and action strings); they live in other editor assemblies.
 - Bomb tuning: `SyndicateBomb.BlastYield`/`BlastFalloff`, the step times on `SyndicateBomb`, and the timer range on `SyndicateBombState`. The defuse tools are matched by item id (`Items.Wrench`, `Items.ScrewdriverBlue`, `Items.Wirecutters`), as on the nuke.
 - The admin console can give any of them with `spawn <name> hand`. Map Editor uses the same registered items.
 - New sound files belong under `Assets/Art/Sound/Items/Weapons/Explosive/SS14/`, with source/licence rows in Sound ATTRIBUTIONS. Registration lives in the recipe.

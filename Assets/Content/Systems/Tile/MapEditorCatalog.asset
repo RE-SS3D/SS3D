@@ -912,6 +912,15 @@ MonoBehaviour:
     VariantLabel: Grey
     SearchTags:
     - furniture
+  - AssetName: OperativeUplink
+    Mode: 2
+    Subcategory: 306
+    Heading: 
+    Family: 
+    VariantLabel: 
+    SearchTags:
+    - item
+    - weapons
   - AssetName: OxygenTank
     Mode: 2
     Subcategory: 307

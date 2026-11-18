@@ -2211,7 +2211,19 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 299262962143830023
-    m_Localized: 'A gas storage chamber''s intake. Draws in <k=warn>every gas</k>, air included: placed in a room, it empties it.'
+    m_Localized: 'A gas storage chamber''s intake. Draws in <k=warn>every gas</k>,
+      air included: placed in a room, it empties it.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300880094745042944
+    m_Localized: Syndicate uplink
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300880094766014464
+    m_Localized: 'An encrypted Syndicate telecrystal uplink. Use it in hand to spend
+      its telecrystals: what you buy appears in your free hand, or at your feet if
+      both are full. The balance is this device''s own, and anyone holding it can
+      spend it.'
     m_Metadata:
       m_Items: []
   references:

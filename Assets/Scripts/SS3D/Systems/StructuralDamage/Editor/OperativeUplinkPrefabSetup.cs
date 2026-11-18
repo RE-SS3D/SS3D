@@ -3,12 +3,11 @@ using System;
 using SS3D.Data.AssetDatabases;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.StructuralDamage;
-using SS3D.Systems.StructuralDamage.Editor;
 using UnityEditor;
 using UnityEngine;
 using DB = UnityEditor.AssetDatabase;
 
-namespace SS3D.Systems.Gamemodes.Uplink.Editor
+namespace SS3D.Systems.StructuralDamage.Editor
 {
     /// <summary>
     /// Tier-B recipe for the operative uplink item (antagonist-content.md §4, §6 later pass), run by

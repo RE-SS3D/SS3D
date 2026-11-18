@@ -95,7 +95,10 @@
 
         <ui:VisualElement class="uplink__ledger">
             <ui:Button name="ledger-toggle" class="uplink__ledger-toggle">
-                <ui:Label name="ledger-title" class="uplink__panel-title font-titling" text="▾ PURCHASE LEDGER" />
+                <ui:VisualElement class="uplink__ledger-heading">
+                    <ui:Label name="ledger-chevron" class="uplink__ledger-chevron font-body" text="▼" />
+                    <ui:Label class="uplink__panel-title font-titling" text="PURCHASE LEDGER" />
+                </ui:VisualElement>
                 <ui:Label name="ledger-summary" class="uplink__panel-readout font-terminal" text="" />
             </ui:Button>
             <ui:VisualElement name="ledger-body" class="uplink__ledger-body">
