@@ -18,6 +18,7 @@ Shader "SS3D/StructuralDamage/SteelWreckage"
             #pragma vertex Vert
             #pragma fragment Frag
             #pragma multi_compile _ _ADDITIONAL_LIGHTS
+            #pragma multi_compile _ _CLUSTER_LIGHT_LOOP
             #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -40,13 +41,16 @@ Shader "SS3D/StructuralDamage/SteelWreckage"
                 half3 steel = lerp(half3(.19,.22,.24), half3(.34,.38,.4), variation * .35 + saturate(n.y) * .45);
                 half3 illumination = SampleSH(n) + light.color * diffuse * light.shadowAttenuation;
                 #if defined(_ADDITIONAL_LIGHTS)
-                uint count = GetAdditionalLightsCount();
-                for (uint i = 0u; i < count; i++)
-                {
-                    Light localLight = GetAdditionalLight(i, input.positionWS);
+                // LIGHT_LOOP_BEGIN reads inputData: per-object lights on Forward, the pixel's cluster on Forward+.
+                InputData inputData = (InputData)0;
+                inputData.positionWS = input.positionWS;
+                inputData.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(input.positionCS);
+                uint pixelLightCount = GetAdditionalLightsCount();
+                LIGHT_LOOP_BEGIN(pixelLightCount)
+                    Light localLight = GetAdditionalLight(lightIndex, input.positionWS);
                     illumination += localLight.color * saturate(dot(n, localLight.direction))
                         * localLight.distanceAttenuation * localLight.shadowAttenuation;
-                }
+                LIGHT_LOOP_END
                 #endif
                 return half4(steel * illumination, 1);
             }

@@ -90,7 +90,7 @@ StationLightingParams Station_GetLightingParams()
 // and the gaps between them go dark (old SS3D); 1/d² concentrates everything
 // in a hot spot at the fixture. Reads the same per-light data as URP's
 // GetAdditionalPerObjectLight; shadows and colour still come from URP's Light.
-float Station_AdditionalLightAttenuation(uint i, float3 positionWS, half falloffBlend)
+float Station_AdditionalLightAttenuation(uint i, float3 positionWS, half falloffBlend, out half3 lightDirection)
 {
 #if USE_CLUSTER_LIGHT_LOOP
     int lightIndex = i;
@@ -111,7 +111,7 @@ float Station_AdditionalLightAttenuation(uint i, float3 positionWS, half falloff
     // Directional lights: w = 0 and attenuation.x = 0, so both falloffs are 1.
     float3 lightVector = lightPositionWS.xyz - positionWS * lightPositionWS.w;
     float distanceSqr = max(dot(lightVector, lightVector), HALF_MIN);
-    half3 lightDirection = half3(lightVector * rsqrt(distanceSqr));
+    lightDirection = half3(lightVector * rsqrt(distanceSqr));
 
     // attenuation.x = 1 / range², so this is (d / range)².
     float rangeFraction = distanceSqr * float(distanceAndSpotAttenuation.x);
@@ -125,12 +125,37 @@ float Station_AdditionalLightAttenuation(uint i, float3 positionWS, half falloff
     return distanceAttenuation * AngleAttenuation(spotDirection.xyz, lightDirection, distanceAndSpotAttenuation.zw);
 }
 
+// Wrapped diffuse: soft, but zero for light arriving from straight behind the surface.
+half Station_WrappedDiffuse(float3 normalWS, half3 lightDirection, half wrap)
+{
+    return saturate((dot(normalWS, lightDirection) + wrap) / (1.0 + wrap));
+}
+
 half3 Station_LightRadiance(Light light, float attenuation, float3 normalWS, half wrap)
 {
-    // Wrapped diffuse: soft, but still zero on back faces, so unshadowed fill
-    // lights do not shine through walls.
-    half diffuse = saturate((dot(normalWS, light.direction) + wrap) / (1.0 + wrap));
+    half diffuse = Station_WrappedDiffuse(normalWS, light.direction, wrap);
     return light.color * (attenuation * light.shadowAttenuation * diffuse);
+}
+
+// One additional light, by the loop's index (cluster or per-object). Forward+ walks every
+// light whose range reaches the pixel's cluster, most of which miss it: outside a spot's
+// cone, past the range window, or arriving from behind. Those return before URP's
+// GetAdditionalLight, which samples (and filters) the light's shadow map.
+half3 Station_AdditionalLightRadiance(uint lightIndex, InputData inputData, half4 shadowMask,
+    AmbientOcclusionFactor aoFactor, float3 normalWS, StationLightingParams p)
+{
+    half3 lightDirection;
+    float attenuation = Station_AdditionalLightAttenuation(lightIndex, inputData.positionWS, p.lightFalloff, lightDirection);
+    float unshadowed = attenuation * Station_WrappedDiffuse(normalWS, lightDirection, p.lightWrap);
+
+    half3 radiance = 0.0;
+    UNITY_BRANCH
+    if (unshadowed > 0.0)
+    {
+        Light light = GetAdditionalLight(lightIndex, inputData, shadowMask, aoFactor);
+        radiance = light.color * (unshadowed * light.shadowAttenuation);
+    }
+    return radiance;
 }
 
 half3 Station_Shade(StationSurface surface)
@@ -179,16 +204,12 @@ half3 Station_Shade(StationSurface surface)
     {
         CLUSTER_LIGHT_LOOP_SUBTRACTIVE_LIGHT_CHECK
 
-        Light light = GetAdditionalLight(lightIndex, inputData, shadowMask, aoFactor);
-        float attenuation = Station_AdditionalLightAttenuation(lightIndex, inputData.positionWS, p.lightFalloff);
-        radiance += Station_LightRadiance(light, attenuation, normalWS, p.lightWrap);
+        radiance += Station_AdditionalLightRadiance(lightIndex, inputData, shadowMask, aoFactor, normalWS, p);
     }
     #endif
 
     LIGHT_LOOP_BEGIN(pixelLightCount)
-        Light light = GetAdditionalLight(lightIndex, inputData, shadowMask, aoFactor);
-        float attenuation = Station_AdditionalLightAttenuation(lightIndex, inputData.positionWS, p.lightFalloff);
-        radiance += Station_LightRadiance(light, attenuation, normalWS, p.lightWrap);
+        radiance += Station_AdditionalLightRadiance(lightIndex, inputData, shadowMask, aoFactor, normalWS, p);
     LIGHT_LOOP_END
 #endif
 
