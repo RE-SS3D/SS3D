@@ -17,7 +17,9 @@ namespace EditorTests
             HealthScanViewModel model = HealthScanSnapshotMapper.ToViewModel(Scan(HealthSnapshot.Default, Zones(), HealthyOrgans));
 
             Assert.AreEqual(StatusTone.Success, model.StatusTone);
-            Assert.AreEqual("No Anomalies Detected", model.StatusHeadline);
+            Assert.AreEqual("Stable", model.StatusText);
+            Assert.AreEqual(HealthScanRhythm.Steady, model.Rhythm);
+            CollectionAssert.IsEmpty(model.WoundZones);
             Assert.AreEqual("100%", model.BloodText);
             Assert.AreEqual("100%", model.SpO2Text);
             Assert.AreEqual(StatusTone.Success, model.Organs[(int)OrganType.Liver].Tone);
@@ -28,7 +30,7 @@ namespace EditorTests
         public void Builder_ReadsZonesAndOrgansOffTheBody()
         {
             ZoneDamageState[] zones = Zones();
-            zones[(int)BodyZone.LeftArm] = new ZoneDamageState { Brute = 80f, IsDisabled = true, BleedingRate = 1f };
+            zones[(int)BodyZone.LeftArm] = new ZoneDamageState { Brute = 80f, Severity = WoundSeverity.Disabled, IsDisabled = true, BleedingRate = 1f };
             zones[(int)BodyZone.RightLeg] = new ZoneDamageState { Burn = 30f, IsSplinted = true, IsDisabled = true };
             float[] organs = { 100f, 60f, 20f, 90f, 100f };
 
@@ -39,6 +41,7 @@ namespace EditorTests
             Assert.AreEqual(HealthScanZoneFlags.Bleeding | HealthScanZoneFlags.Disabled, scan.ZoneFlags[(int)BodyZone.LeftArm]);
             Assert.AreEqual(HealthScanZoneFlags.Disabled | HealthScanZoneFlags.Splinted, scan.ZoneFlags[(int)BodyZone.RightLeg]);
             Assert.AreEqual(20f, scan.OrganFunction[(int)OrganType.LeftLung]);
+            Assert.AreEqual(WoundSeverity.Disabled, scan.ZoneSeverity[(int)BodyZone.LeftArm]);
             Assert.AreEqual("Ada", scan.SubjectName);
         }
 
@@ -46,18 +49,20 @@ namespace EditorTests
         public void Mapper_FlagsInjuriesAndOrgansOnTheSimulationsThresholds()
         {
             ZoneDamageState[] zones = Zones();
-            zones[(int)BodyZone.Chest] = new ZoneDamageState { Brute = 78f, BleedingRate = 0.5f };
+            zones[(int)BodyZone.Chest] = new ZoneDamageState { Brute = 78f, Severity = WoundSeverity.Severe, BleedingRate = 0.5f };
             float[] organs = { 100f, 60f, 20f, 90f, 100f };
 
             HealthScanViewModel model = HealthScanSnapshotMapper.ToViewModel(Scan(HealthSnapshot.Default, zones, organs));
 
             Assert.AreEqual(StatusTone.Warning, model.StatusTone);
-            Assert.AreEqual("Injuries Detected", model.StatusHeadline);
+            StringAssert.StartsWith("Injured", model.StatusText);
             Assert.AreEqual(StatusTone.Warning, model.Organs[(int)OrganType.Heart].Tone);
             Assert.AreEqual(StatusTone.Danger, model.Organs[(int)OrganType.LeftLung].Tone);
             Assert.AreEqual(StatusTone.Success, model.Organs[(int)OrganType.RightLung].Tone);
-            Assert.AreEqual(model.Organs[(int)OrganType.LeftLung].Fill, model.LungsOverlay.Fill, "the lungs drawing takes the worse lung");
-            StringAssert.Contains("[BLEEDING]", model.Zones[(int)BodyZone.Chest].Tooltip);
+            Assert.AreEqual(model.Organs[(int)OrganType.LeftLung].Fill, model.Lungs.Fill, "the lungs drawing takes the worse lung");
+            Assert.AreEqual("Severe", model.Zones[(int)BodyZone.Chest].TierLabel);
+            StringAssert.Contains("BLEEDING", model.Zones[(int)BodyZone.Chest].FlagsText);
+            CollectionAssert.AreEqual(new[] { (int)BodyZone.Chest }, model.WoundZones);
             Assert.Greater(model.Zones[(int)BodyZone.Chest].BoneOpacity, 0f, "bone shows through at high brute");
         }
 
@@ -91,8 +96,43 @@ namespace EditorTests
             HealthScanViewModel model = HealthScanSnapshotMapper.ToViewModel(Scan(vitals, Zones(), HealthyOrgans));
 
             Assert.AreEqual(StatusTone.Danger, model.StatusTone);
-            Assert.AreEqual("Cardiac Arrest", model.StatusHeadline);
-            Assert.IsTrue(model.NoCardiacOutput);
+            StringAssert.StartsWith("Cardiac Arrest", model.StatusText);
+            Assert.AreEqual(HealthScanRhythm.Arrest, model.Rhythm);
+        }
+
+        [Test]
+        public void DisabledLimb_DrawsBlackWithARim_AndSeveredOnlyAsAGhost()
+        {
+            ZoneDamageState[] zones = Zones();
+            zones[(int)BodyZone.LeftArm] = new ZoneDamageState { Brute = 90f, Severity = WoundSeverity.Disabled, IsDisabled = true };
+            zones[(int)BodyZone.RightLeg] = new ZoneDamageState { Brute = 100f, Severity = WoundSeverity.Severed, IsSevered = true };
+
+            HealthScanViewModel model = HealthScanSnapshotMapper.ToViewModel(Scan(HealthSnapshot.Default, zones, HealthyOrgans));
+
+            Assert.AreEqual(HealthScanSnapshotMapper.DisabledFill, model.Zones[(int)BodyZone.LeftArm].Fill);
+            Assert.Greater(model.Zones[(int)BodyZone.LeftArm].Glow.a, 0f);
+            Assert.AreEqual(WoundSeverity.Severed, model.Zones[(int)BodyZone.RightLeg].Tier);
+            Assert.Less(model.Zones[(int)BodyZone.RightLeg].Opacity, 1f);
+            Assert.AreEqual(0f, model.Zones[(int)BodyZone.RightLeg].BoneOpacity);
+        }
+
+        [Test]
+        public void Shock_MarksTheGamesThresholdsAndPendingPain()
+        {
+            HealthSnapshot vitals = HealthSnapshot.Default;
+            vitals.Shock = 62f;
+            vitals.IncomingPain = 9f;
+            vitals.TotalBleedingRate = 1.5f;
+
+            HealthScanViewModel model = HealthScanSnapshotMapper.ToViewModel(Scan(vitals, Zones(), HealthyOrgans));
+
+            Assert.AreEqual(StatusTone.Warning, model.ShockTone);
+            Assert.AreEqual("62  (+9 incoming)", model.ShockText);
+            Assert.AreEqual(HealthConstants.ShockDownedThreshold / HealthScanSnapshotMapper.ShockBarMax, model.DownedMarker, 1e-5f);
+            Assert.Greater(model.IncomingFraction, 0f);
+            Assert.AreEqual(HealthScanRhythm.Rapid, model.Rhythm);
+            Assert.AreEqual(StatusTone.Danger, model.BleedTone);
+            StringAssert.EndsWith("%/MIN", model.BleedText);
         }
 
         [Test]
@@ -103,6 +143,8 @@ namespace EditorTests
             HealthSnapshot vitals = HealthSnapshot.Default;
             vitals.State = HealthState.Downed;
             vitals.Shock = 72f;
+            vitals.IncomingPain = 4f;
+            vitals.TotalBleedingRate = 0.5f;
             vitals.Pools.OxyDebt = 0.3f;
             vitals.CriticalFlags = HealthCriticalFlags.HighShock;
             HealthScanSnapshot original = Scan(vitals, zones, new[] { 90f, 80f, 70f, 60f, 50f });
@@ -124,12 +166,15 @@ namespace EditorTests
             CollectionAssert.AreEqual(original.ZoneBurn, read.ZoneBurn);
             CollectionAssert.AreEqual(original.ZoneFlags, read.ZoneFlags);
             CollectionAssert.AreEqual(original.OrganFunction, read.OrganFunction);
+            CollectionAssert.AreEqual(original.ZoneSeverity, read.ZoneSeverity);
+            Assert.AreEqual(4f, read.IncomingPain);
+            Assert.AreEqual(0.5f, read.TotalBleedingRate);
         }
 
         [Test]
         public void Preview_BuildsBothScenarios()
         {
-            Assert.AreEqual("No Anomalies Detected", HealthScanViewModel.CreatePreview(false).StatusHeadline);
+            Assert.AreEqual("Stable", HealthScanViewModel.CreatePreview(false).StatusText);
             Assert.AreEqual(StatusTone.Danger, HealthScanViewModel.CreatePreview(true).StatusTone);
         }
 

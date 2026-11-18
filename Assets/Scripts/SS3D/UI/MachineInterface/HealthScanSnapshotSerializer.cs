@@ -20,6 +20,8 @@ namespace SS3D.UI.MachineInterface
             writer.WriteSingle(snapshot.OxyDebt);
             writer.WriteSingle(snapshot.Toxin);
             writer.WriteSingle(snapshot.Shock);
+            writer.WriteSingle(snapshot.IncomingPain);
+            writer.WriteSingle(snapshot.TotalBleedingRate);
             WriteFloats(writer, snapshot.ZoneBrute);
             WriteFloats(writer, snapshot.ZoneBurn);
 
@@ -31,6 +33,13 @@ namespace SS3D.UI.MachineInterface
             }
 
             WriteFloats(writer, snapshot.OrganFunction);
+
+            int severityCount = snapshot.ZoneSeverity?.Length ?? 0;
+            writer.WriteByte((byte)severityCount);
+            for (int i = 0; i < severityCount; i++)
+            {
+                writer.WriteByte((byte)snapshot.ZoneSeverity[i]);
+            }
         }
 
         public static HealthScanSnapshot ReadHealthScanSnapshot(this Reader reader)
@@ -50,6 +59,8 @@ namespace SS3D.UI.MachineInterface
                 OxyDebt = reader.ReadSingle(),
                 Toxin = reader.ReadSingle(),
                 Shock = reader.ReadSingle(),
+                IncomingPain = reader.ReadSingle(),
+                TotalBleedingRate = reader.ReadSingle(),
                 ZoneBrute = ReadFloats(reader),
                 ZoneBurn = ReadFloats(reader),
             };
@@ -61,6 +72,13 @@ namespace SS3D.UI.MachineInterface
             }
 
             snapshot.OrganFunction = ReadFloats(reader);
+
+            snapshot.ZoneSeverity = new WoundSeverity[reader.ReadByte()];
+            for (int i = 0; i < snapshot.ZoneSeverity.Length; i++)
+            {
+                snapshot.ZoneSeverity[i] = (WoundSeverity)reader.ReadByte();
+            }
+
             return snapshot;
         }
 

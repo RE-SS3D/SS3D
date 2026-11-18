@@ -1,26 +1,40 @@
 using SS3D.Systems.Health;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace SS3D.UI.MachineInterface.Components
 {
     /// <summary>
-    /// The scan's body doll: the SS3D-Art <c>Harm*</c> masks (white, all on one 296×585 canvas) stacked
-    /// as tinted layers. Hovering a zone or organ shows its readout; clicking pins it. Hit testing reads
-    /// the masks' alpha, so the textures must be Read/Write enabled.
+    /// The scan's body doll ("Vitals Scan Result Spec" design): the SS3D-Art <c>Harm*</c> masks (white, all on
+    /// one 296×585 canvas, drawn at 0.75 scale) stacked as tinted layers, with a heart icon on the chest.
+    /// Hovering a zone or organ shows a card anchored to it; clicking pins it, as does <see cref="PinZone"/>.
+    /// Hit testing reads the masks' alpha, so the Harm textures must be Read/Write enabled.
+    /// UI Toolkit has no blur filter, so a zone's glow is a rim: four copies of its mask offset under it.
     /// </summary>
     [UxmlElement]
     public partial class HealthScanDoll : VisualElement
     {
         private const float AlphaHit = 0.5f;
+        private const float RimOffset = 1.5f;
 
-        private readonly VisualElement[][] _zoneLayers = new VisualElement[HealthConstants.ZoneCount][];
+        private static readonly Vector2[] RimOffsets =
+        {
+            new(-RimOffset, 0f), new(RimOffset, 0f), new(0f, -RimOffset), new(0f, RimOffset),
+        };
+
+        private readonly List<VisualElement>[] _zoneLayers = new List<VisualElement>[HealthConstants.ZoneCount];
+        private readonly List<VisualElement>[] _zoneRims = new List<VisualElement>[HealthConstants.ZoneCount];
         private readonly VisualElement _skull;
         private readonly VisualElement _ribs;
         private readonly VisualElement _lungs;
         private readonly VisualElement _liver;
         private readonly VisualElement _heart;
-        private readonly Label _tooltip;
+        private readonly VisualElement _card;
+        private readonly Label _cardTitle;
+        private readonly Label _cardTag;
+        private readonly Label _cardDetail;
+        private readonly Label _cardFlags;
         private readonly Target[] _targets;
 
         private HealthScanViewModel _model;
@@ -31,47 +45,62 @@ namespace SS3D.UI.MachineInterface.Components
         {
             AddToClassList("health-scan-doll");
 
-            _zoneLayers[(int)BodyZone.Head] = new[] { AddLayer("head") };
-            _zoneLayers[(int)BodyZone.Chest] = new[] { AddLayer("chest") };
-            _zoneLayers[(int)BodyZone.Groin] = new[] { AddLayer("pelvis") };
-            _zoneLayers[(int)BodyZone.LeftArm] = new[] { AddLayer("arm-l1"), AddLayer("arm-l2") };
-            _zoneLayers[(int)BodyZone.RightArm] = new[] { AddLayer("arm-r1"), AddLayer("arm-r2") };
-            _zoneLayers[(int)BodyZone.LeftLeg] = new[] { AddLayer("leg-l1"), AddLayer("leg-l2") };
-            _zoneLayers[(int)BodyZone.RightLeg] = new[] { AddLayer("leg-r1"), AddLayer("leg-r2") };
+            AddZone(BodyZone.Head, "head");
+            AddZone(BodyZone.Chest, "chest");
+            AddZone(BodyZone.Groin, "pelvis");
+            AddZone(BodyZone.LeftArm, "arm-l1", "arm-l2");
+            AddZone(BodyZone.RightArm, "arm-r1", "arm-r2");
+            AddZone(BodyZone.LeftLeg, "leg-l1", "leg-l2");
+            AddZone(BodyZone.RightLeg, "leg-r1", "leg-r2");
 
             _skull = AddLayer("skull");
             _ribs = AddLayer("ribs");
-            _heart = AddLayer("heart");
             _lungs = AddLayer("lungs");
             _liver = AddLayer("liver");
+            _heart = new VisualElement();
+            _heart.AddToClassList("health-scan-doll__heart");
+            _heart.pickingMode = PickingMode.Ignore;
+            Add(_heart);
             AddLayer("outline");
 
-            _tooltip = new Label();
-            _tooltip.AddToClassList("health-scan-doll__tooltip");
-            _tooltip.AddToClassList("font-terminal");
-            _tooltip.pickingMode = PickingMode.Ignore;
-            _tooltip.style.display = DisplayStyle.None;
-            Add(_tooltip);
+            _card = new VisualElement();
+            _card.AddToClassList("health-scan-doll__card");
+            _card.pickingMode = PickingMode.Ignore;
+            VisualElement header = new();
+            header.AddToClassList("health-scan-doll__card-header");
+            _cardTitle = CardLabel(header, "health-scan-doll__card-title");
+            _cardTag = CardLabel(header, "health-scan-doll__card-tag");
+            _card.Add(header);
+            _cardDetail = CardLabel(_card, "health-scan-doll__card-detail");
+            _cardFlags = CardLabel(_card, "health-scan-doll__card-flags");
+            _card.style.display = DisplayStyle.None;
+            Add(_card);
 
-            // Organs sit on top of the torso, so they are tested first.
+            // Organs sit on top of the torso, so they are tested first. Anchors are where the card points,
+            // in the doll's 222×439 frame (the design's tooltip positions).
             _targets = new[]
             {
-                new Target(TargetKind.Lungs, -1, _lungs),
-                new Target(TargetKind.Liver, -1, _liver),
-                new Target(TargetKind.Heart, -1, _heart),
-                ZoneTarget(BodyZone.Head),
-                ZoneTarget(BodyZone.Chest),
-                ZoneTarget(BodyZone.Groin),
-                ZoneTarget(BodyZone.LeftArm),
-                ZoneTarget(BodyZone.RightArm),
-                ZoneTarget(BodyZone.LeftLeg),
-                ZoneTarget(BodyZone.RightLeg),
+                Target.Organ(TargetKind.Heart, _heart, new Vector2(125f, 118f)),
+                Target.Organ(TargetKind.Lungs, _lungs, new Vector2(112f, 100f)),
+                Target.Organ(TargetKind.Liver, _liver, new Vector2(101f, 157f)),
+                Target.Zone(BodyZone.Head, _zoneLayers[(int)BodyZone.Head], new Vector2(111f, 15f)),
+                Target.Zone(BodyZone.Chest, _zoneLayers[(int)BodyZone.Chest], new Vector2(111f, 90f)),
+                Target.Zone(BodyZone.Groin, _zoneLayers[(int)BodyZone.Groin], new Vector2(111f, 189f)),
+                Target.Zone(BodyZone.LeftArm, _zoneLayers[(int)BodyZone.LeftArm], new Vector2(177f, 92f)),
+                Target.Zone(BodyZone.RightArm, _zoneLayers[(int)BodyZone.RightArm], new Vector2(45f, 92f)),
+                Target.Zone(BodyZone.LeftLeg, _zoneLayers[(int)BodyZone.LeftLeg], new Vector2(135f, 217f)),
+                Target.Zone(BodyZone.RightLeg, _zoneLayers[(int)BodyZone.RightLeg], new Vector2(87f, 218f)),
             };
 
-            RegisterCallback<PointerMoveEvent>(OnPointerMove);
+            RegisterCallback<PointerMoveEvent>(evt => SetHovered(HitTest(evt.localPosition)));
             RegisterCallback<PointerLeaveEvent>(_ => SetHovered(-1));
-            RegisterCallback<PointerDownEvent>(OnPointerDown);
+            RegisterCallback<PointerDownEvent>(evt => TogglePin(HitTest(evt.localPosition)));
         }
+
+        /// <summary>The zone the pinned card shows, or −1 when nothing (or an organ) is pinned.</summary>
+        public int PinnedZone => _pinned >= 0 && _targets[_pinned].Kind == TargetKind.Zone ? _targets[_pinned].ZoneIndex : -1;
+
+        public event System.Action PinChanged;
 
         public void Bind(HealthScanViewModel model)
         {
@@ -87,16 +116,60 @@ namespace SS3D.UI.MachineInterface.Components
                 foreach (VisualElement layer in _zoneLayers[i])
                 {
                     layer.style.unityBackgroundImageTintColor = zone.Fill;
-                    layer.EnableInClassList("health-scan-doll__layer--severed", zone.Severed);
+                    layer.style.opacity = zone.Opacity;
+                }
+
+                foreach (VisualElement rim in _zoneRims[i])
+                {
+                    rim.style.unityBackgroundImageTintColor = zone.Glow;
+                    rim.style.display = zone.Glow.a > 0f ? DisplayStyle.Flex : DisplayStyle.None;
                 }
             }
 
             _skull.style.opacity = model.Zones[(int)BodyZone.Head].BoneOpacity;
             _ribs.style.opacity = model.Zones[(int)BodyZone.Chest].BoneOpacity;
-            _lungs.style.unityBackgroundImageTintColor = model.LungsOverlay.Fill;
+            _lungs.style.unityBackgroundImageTintColor = model.Lungs.Fill;
             _liver.style.unityBackgroundImageTintColor = model.Organs[(int)OrganType.Liver].Fill;
             _heart.style.unityBackgroundImageTintColor = model.Organs[(int)OrganType.Heart].Fill;
-            RefreshTooltip(Vector2.zero, false);
+            RefreshCard();
+        }
+
+        /// <summary>Pins (or, if already pinned, unpins) a body zone's card — the wound list's click.</summary>
+        public void PinZone(int zone)
+        {
+            for (int i = 0; i < _targets.Length; i++)
+            {
+                if (_targets[i].Kind == TargetKind.Zone && _targets[i].ZoneIndex == zone)
+                {
+                    TogglePin(i);
+                    return;
+                }
+            }
+        }
+
+        private void AddZone(BodyZone zone, params string[] parts)
+        {
+            var layers = new List<VisualElement>();
+            var rims = new List<VisualElement>();
+            foreach (string part in parts)
+            {
+                foreach (Vector2 offset in RimOffsets)
+                {
+                    VisualElement rim = AddLayer(part);
+                    rim.AddToClassList("health-scan-doll__rim");
+                    rim.style.translate = new Translate(offset.x, offset.y);
+                    rim.style.display = DisplayStyle.None;
+                    rims.Add(rim);
+                }
+            }
+
+            foreach (string part in parts)
+            {
+                layers.Add(AddLayer(part));
+            }
+
+            _zoneLayers[(int)zone] = layers;
+            _zoneRims[(int)zone] = rims;
         }
 
         private VisualElement AddLayer(string part)
@@ -109,22 +182,13 @@ namespace SS3D.UI.MachineInterface.Components
             return layer;
         }
 
-        private Target ZoneTarget(BodyZone zone)
+        private static Label CardLabel(VisualElement parent, string className)
         {
-            return new Target(TargetKind.Zone, (int)zone, _zoneLayers[(int)zone]);
-        }
-
-        private void OnPointerMove(PointerMoveEvent evt)
-        {
-            SetHovered(HitTest(evt.localPosition));
-            RefreshTooltip(evt.localPosition, true);
-        }
-
-        private void OnPointerDown(PointerDownEvent evt)
-        {
-            int hit = HitTest(evt.localPosition);
-            _pinned = hit == _pinned ? -1 : hit;
-            RefreshTooltip(evt.localPosition, true);
+            Label label = new();
+            label.AddToClassList(className);
+            label.pickingMode = PickingMode.Ignore;
+            parent.Add(label);
+            return label;
         }
 
         private void SetHovered(int index)
@@ -135,10 +199,14 @@ namespace SS3D.UI.MachineInterface.Components
             }
 
             _hovered = index;
-            if (index < 0)
-            {
-                RefreshTooltip(Vector2.zero, false);
-            }
+            RefreshCard();
+        }
+
+        private void TogglePin(int index)
+        {
+            _pinned = index == _pinned ? -1 : index;
+            RefreshCard();
+            PinChanged?.Invoke();
         }
 
         private int HitTest(Vector2 local)
@@ -149,16 +217,9 @@ namespace SS3D.UI.MachineInterface.Components
                 return -1;
             }
 
-            float u = local.x / rect.width;
-            float v = 1f - local.y / rect.height;
-            if (u < 0f || u > 1f || v < 0f || v > 1f)
-            {
-                return -1;
-            }
-
             for (int i = 0; i < _targets.Length; i++)
             {
-                if (_targets[i].Contains(u, v))
+                if (_targets[i].Contains(local, rect))
                 {
                     return i;
                 }
@@ -167,23 +228,48 @@ namespace SS3D.UI.MachineInterface.Components
             return -1;
         }
 
-        private void RefreshTooltip(Vector2 pointer, bool pointerKnown)
+        private void RefreshCard()
         {
-            int shown = _pinned >= 0 ? _pinned : _hovered;
-            string text = shown >= 0 && _model != null ? _targets[shown].Tooltip(_model) : null;
-            if (string.IsNullOrEmpty(text))
+            int shown = _hovered >= 0 ? _hovered : _pinned;
+            if (shown < 0 || _model == null)
             {
-                _tooltip.style.display = DisplayStyle.None;
+                _card.style.display = DisplayStyle.None;
                 return;
             }
 
-            _tooltip.text = text;
-            _tooltip.style.display = DisplayStyle.Flex;
-            if (pointerKnown && (_pinned < 0 || shown == _hovered))
+            Target target = _targets[shown];
+            if (target.Kind == TargetKind.Zone)
             {
-                _tooltip.style.left = pointer.x;
-                _tooltip.style.top = pointer.y;
+                HealthScanZoneView zone = _model.Zones[target.ZoneIndex];
+                SetCard(zone.Label, zone.TierLabel, zone.TierTone, zone.NumbersText, zone.FlagsText,
+                    zone.Bleeding ? StatusTone.Danger : StatusTone.Neutral);
             }
+            else
+            {
+                HealthScanOrganView organ = target.Kind switch
+                {
+                    TargetKind.Lungs => _model.Lungs,
+                    TargetKind.Liver => _model.Organs[(int)OrganType.Liver],
+                    _ => _model.Organs[(int)OrganType.Heart],
+                };
+                SetCard(organ.Label, organ.StatusWord, organ.Tone, organ.Detail, string.Empty, StatusTone.Neutral);
+            }
+
+            Rect rect = contentRect;
+            _card.style.left = target.Anchor.x / 222f * rect.width;
+            _card.style.top = target.Anchor.y / 439f * rect.height;
+            _card.style.display = DisplayStyle.Flex;
+        }
+
+        private void SetCard(string title, string tag, StatusTone tagTone, string detail, string flags, StatusTone flagTone)
+        {
+            _cardTitle.text = title.ToUpperInvariant();
+            _cardTag.text = tag;
+            StatusToneUtility.ApplyTone(_cardTag, tagTone);
+            _cardDetail.text = detail;
+            _cardFlags.text = flags;
+            _cardFlags.style.display = string.IsNullOrEmpty(flags) ? DisplayStyle.None : DisplayStyle.Flex;
+            StatusToneUtility.ApplyTone(_cardFlags, flagTone);
         }
 
         private enum TargetKind
@@ -196,52 +282,68 @@ namespace SS3D.UI.MachineInterface.Components
 
         private readonly struct Target
         {
-            private readonly TargetKind _kind;
-            private readonly int _zone;
-            private readonly VisualElement[] _layers;
+            private readonly IReadOnlyList<VisualElement> _layers;
 
-            public Target(TargetKind kind, int zone, params VisualElement[] layers)
+            private Target(TargetKind kind, int zone, IReadOnlyList<VisualElement> layers, Vector2 anchor)
             {
-                _kind = kind;
-                _zone = zone;
+                Kind = kind;
+                ZoneIndex = zone;
                 _layers = layers;
+                Anchor = anchor;
             }
 
-            public bool Contains(float u, float v)
+            public TargetKind Kind { get; }
+
+            public int ZoneIndex { get; }
+
+            public Vector2 Anchor { get; }
+
+            public static Target Zone(BodyZone zone, IReadOnlyList<VisualElement> layers, Vector2 anchor)
+            {
+                return new Target(TargetKind.Zone, (int)zone, layers, anchor);
+            }
+
+            public static Target Organ(TargetKind kind, VisualElement layer, Vector2 anchor)
+            {
+                return new Target(kind, -1, new[] { layer }, anchor);
+            }
+
+            public bool Contains(Vector2 local, Rect rect)
             {
                 foreach (VisualElement layer in _layers)
                 {
-                    Texture2D texture = layer.resolvedStyle.backgroundImage.texture;
-                    if (texture == null || !texture.isReadable)
+                    if (layer.resolvedStyle.opacity < 0.5f)
                     {
                         continue;
                     }
 
-                    try
+                    Background background = layer.resolvedStyle.backgroundImage;
+                    Texture2D texture = background.texture;
+                    if (texture == null)
                     {
-                        if (texture.GetPixelBilinear(u, v).a >= AlphaHit)
+                        // A vector icon (the heart) has no pixels to read: its box is the hit area.
+                        if (layer.layout.Contains(local))
                         {
                             return true;
                         }
+
+                        continue;
                     }
-                    catch (UnityException)
+
+                    if (!texture.isReadable)
                     {
-                        return false;
+                        continue;
+                    }
+
+                    float u = local.x / rect.width;
+                    float v = 1f - local.y / rect.height;
+                    if (u >= 0f && u <= 1f && v >= 0f && v <= 1f && texture.GetPixelBilinear(u, v).a >= AlphaHit)
+                    {
+                        return true;
                     }
                 }
 
                 return false;
-            }
-
-            public string Tooltip(HealthScanViewModel model)
-            {
-                return _kind switch
-                {
-                    TargetKind.Lungs => model.LungsOverlay.Tooltip,
-                    TargetKind.Liver => model.Organs[(int)OrganType.Liver].Tooltip,
-                    TargetKind.Heart => model.Organs[(int)OrganType.Heart].Tooltip,
-                    _ => _zone >= 0 && _zone < model.Zones.Length ? model.Zones[_zone].Tooltip : string.Empty,
-                };
             }
         }
     }

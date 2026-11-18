@@ -50,6 +50,14 @@ namespace SS3D.UI.MachineInterface
         /// <summary>Whole-body shock, 0–100+.</summary>
         public float Shock;
 
+        /// <summary>Pain from recent hits that has not become shock yet.</summary>
+        public float IncomingPain;
+
+        /// <summary>Summed bleed rate of every zone (the simulation's per-tick units).</summary>
+        public float TotalBleedingRate;
+
+        public WoundSeverity[] ZoneSeverity;
+
         public float[] ZoneBrute;
 
         public float[] ZoneBurn;

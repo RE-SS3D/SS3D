@@ -28,6 +28,9 @@ namespace SS3D.UI.MachineInterface
                 OxyDebt = vitals.Pools.OxyDebt,
                 Toxin = vitals.Pools.ToxinConcentration,
                 Shock = vitals.Shock,
+                IncomingPain = vitals.IncomingPain,
+                TotalBleedingRate = vitals.TotalBleedingRate,
+                ZoneSeverity = new WoundSeverity[HealthConstants.ZoneCount],
                 ZoneBrute = new float[HealthConstants.ZoneCount],
                 ZoneBurn = new float[HealthConstants.ZoneCount],
                 ZoneFlags = new HealthScanZoneFlags[HealthConstants.ZoneCount],
@@ -40,6 +43,9 @@ namespace SS3D.UI.MachineInterface
                 ZoneDamageState state = detail.GetZone(zone);
                 snapshot.ZoneBrute[i] = state.Brute;
                 snapshot.ZoneBurn[i] = state.Burn;
+                snapshot.ZoneSeverity[i] = state.IsSevered || vitals.IsZoneSevered(zone)
+                    ? WoundSeverity.Severed
+                    : state.Severity;
 
                 HealthScanZoneFlags flags = HealthScanZoneFlags.None;
                 if (vitals.IsZoneBleeding(zone) || state.BleedingRate > 0f)

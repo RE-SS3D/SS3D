@@ -13,12 +13,9 @@
     right: 0;
     bottom: 0;
     -unity-background-scale-mode: stretch-to-fill;
-    -unity-background-image-tint-color: #3a3a3f;
+    -unity-background-image-tint-color: #55555c;
 }
 
-.health-scan-doll__layer--severed {
-    opacity: 0.15;
-}
 
 .health-scan-doll__layer--skull,
 .health-scan-doll__layer--ribs {
@@ -26,20 +23,73 @@
     opacity: 0;
 }
 
+
+/* Faint full-body silhouette drawn over the parts, as in the design. */
 .health-scan-doll__layer--outline {
-    -unity-background-image-tint-color: rgba(0, 0, 0, 0.35);
+    -unity-background-image-tint-color: rgba(0, 0, 0, 0.18);
 }
 
-.health-scan-doll__tooltip {
+.health-scan-doll__heart {
     position: absolute;
-    translate: -50% -130%;
-    padding: 5px 9px;
-    font-size: 11px;
-    white-space: nowrap;
-    color: var(--ss3d-text-primary);
-    background-color: var(--ss3d-surface-panel-raised);
+    left: 112px;
+    top: 118px;
+    width: 26px;
+    height: 26px;
+    -unity-background-scale-mode: scale-to-fit;
+    background-image: url("project://database/Assets/Art/Icons/External/lorc/heart-organ.svg");
+    -unity-background-image-tint-color: #7fbf6b;
+}
+
+.health-scan-doll__card {
+    position: absolute;
+    translate: -50% -100%;
+    flex-direction: column;
+    padding: 7px 10px;
     border-width: 1px;
     border-color: var(--ss3d-border-default);
+    background-color: var(--ss3d-surface-panel-raised);
+}
+
+.health-scan-doll__card-header {
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.health-scan-doll__card-title {
+    font-size: 12px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+    padding: 0;
+    margin-right: 14px;
+    white-space: nowrap;
+    color: var(--ss3d-text-primary);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-doll__card-tag {
+    font-size: 12px;
+    -unity-font-style: bold;
+    padding: 0;
+    white-space: nowrap;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-doll__card-detail {
+    font-size: 11px;
+    padding: 0;
+    margin-top: 3px;
+    white-space: nowrap;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/SpessmanFontSDF.asset");
+    color: var(--ss3d-text-secondary);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-doll__card-flags {
+    font-size: 11px;
+    padding: 0;
+    margin-top: 3px;
+    white-space: nowrap;
+    background-color: rgba(0, 0, 0, 0);
 }
 
 .health-scan-doll__layer--head {
@@ -92,10 +142,6 @@
 
 .health-scan-doll__layer--ribs {
     background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmBoneRibs.png");
-}
-
-.health-scan-doll__layer--heart {
-    background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmCirculatoryTorso.png");
 }
 
 .health-scan-doll__layer--lungs {
