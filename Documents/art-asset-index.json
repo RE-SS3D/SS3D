@@ -13,13 +13,13 @@
     }
   },
   "summary": {
-    "in_game_files": 5499,
+    "in_game_files": 5517,
     "ss3d_art_files": 2480,
     "unique_assets": 7696,
-    "imported": 283,
+    "imported": 301,
     "in_game_only": 5226,
-    "ss3d_art_only": 2187,
-    "available_for_import": 1972,
+    "ss3d_art_only": 2169,
+    "available_for_import": 1954,
     "artwork_only": 215
   },
   "categories": [
@@ -8922,66 +8922,66 @@
       "stem": "harmbase",
       "extension": "png",
       "category": "Graphics/UI/Harm",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Graphics/UI/Harm/HarmBase.png",
       "ss3d_art_path": "Assets/Graphics/UI/Harm/HarmBase.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Graphics/UI/Harm/HarmBase.png",
       "import_target_path": "Assets/Art/Graphics/UI/Harm/HarmBase.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "HarmBaseArmL1.png",
       "stem": "harmbasearml1",
       "extension": "png",
       "category": "Graphics/UI/Harm",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Graphics/UI/Harm/HarmBaseArmL1.png",
       "ss3d_art_path": "Assets/Graphics/UI/Harm/HarmBaseArmL1.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Graphics/UI/Harm/HarmBaseArmL1.png",
       "import_target_path": "Assets/Art/Graphics/UI/Harm/HarmBaseArmL1.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "HarmBaseArmL2.png",
       "stem": "harmbasearml2",
       "extension": "png",
       "category": "Graphics/UI/Harm",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Graphics/UI/Harm/HarmBaseArmL2.png",
       "ss3d_art_path": "Assets/Graphics/UI/Harm/HarmBaseArmL2.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Graphics/UI/Harm/HarmBaseArmL2.png",
       "import_target_path": "Assets/Art/Graphics/UI/Harm/HarmBaseArmL2.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "HarmBaseArmR1.png",
       "stem": "harmbasearmr1",
       "extension": "png",
       "category": "Graphics/UI/Harm",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Graphics/UI/Harm/HarmBaseArmR1.png",
       "ss3d_art_path": "Assets/Graphics/UI/Harm/HarmBaseArmR1.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Graphics/UI/Harm/HarmBaseArmR1.png",
       "import_target_path": "Assets/Art/Graphics/UI/Harm/HarmBaseArmR1.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "HarmBaseArmR2.png",
       "stem": "harmbasearmr2",
       "extension": "png",
       "category": "Graphics/UI/Harm",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Graphics/UI/Harm/HarmBaseArmR2.png",
       "ss3d_art_path": "Assets/Graphics/UI/Harm/HarmBaseArmR2.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Graphics/UI/Harm/HarmBaseArmR2.png",
       "import_target_path": "Assets/Art/Graphics/UI/Harm/HarmBaseArmR2.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "HarmBaseChest.png",
       "stem": "harmbasechest",
       "extension": "png",
       "category": "Graphics/UI/Harm",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Graphics/UI/Harm/HarmBaseChest.png",
       "ss3d_art_path": "Assets/Graphics/UI/Harm/HarmBaseChest.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Graphics/UI/Harm/HarmBaseChest.png",
       "import_target_path": "Assets/Art/Graphics/UI/Harm/HarmBaseChest.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "HarmBaseEars.png",
@@ -9010,55 +9010,55 @@
       "stem": "harmbasehead",
       "extension": "png",
       "category": "Graphics/UI/Harm",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Graphics/UI/Harm/HarmBaseHead.png",
       "ss3d_art_path": "Assets/Graphics/UI/Harm/HarmBaseHead.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Graphics/UI/Harm/HarmBaseHead.png",
       "import_target_path": "Assets/Art/Graphics/UI/Harm/HarmBaseHead.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "HarmBaseLegL1.png",
       "stem": "harmbaselegl1",
       "extension": "png",
       "category": "Graphics/UI/Harm",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Graphics/UI/Harm/HarmBaseLegL1.png",
       "ss3d_art_path": "Assets/Graphics/UI/Harm/HarmBaseLegL1.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Graphics/UI/Harm/HarmBaseLegL1.png",
       "import_target_path": "Assets/Art/Graphics/UI/Harm/HarmBaseLegL1.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "HarmBaseLegL2.png",
       "stem": "harmbaselegl2",
       "extension": "png",
       "category": "Graphics/UI/Harm",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Graphics/UI/Harm/HarmBaseLegL2.png",
       "ss3d_art_path": "Assets/Graphics/UI/Harm/HarmBaseLegL2.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Graphics/UI/Harm/HarmBaseLegL2.png",
       "import_target_path": "Assets/Art/Graphics/UI/Harm/HarmBaseLegL2.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "HarmBaseLegR1.png",
       "stem": "harmbaselegr1",
       "extension": "png",
       "category": "Graphics/UI/Harm",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Graphics/UI/Harm/HarmBaseLegR1.png",
       "ss3d_art_path": "Assets/Graphics/UI/Harm/HarmBaseLegR1.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Graphics/UI/Harm/HarmBaseLegR1.png",
       "import_target_path": "Assets/Art/Graphics/UI/Harm/HarmBaseLegR1.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "HarmBaseLegR2.png",
       "stem": "harmbaselegr2",
       "extension": "png",
       "category": "Graphics/UI/Harm",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Graphics/UI/Harm/HarmBaseLegR2.png",
       "ss3d_art_path": "Assets/Graphics/UI/Harm/HarmBaseLegR2.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Graphics/UI/Harm/HarmBaseLegR2.png",
       "import_target_path": "Assets/Art/Graphics/UI/Harm/HarmBaseLegR2.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "HarmBaseMouth.png",
@@ -9076,11 +9076,11 @@
       "stem": "harmbasepelvis",
       "extension": "png",
       "category": "Graphics/UI/Harm",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Graphics/UI/Harm/HarmBasePelvis.png",
       "ss3d_art_path": "Assets/Graphics/UI/Harm/HarmBasePelvis.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Graphics/UI/Harm/HarmBasePelvis.png",
       "import_target_path": "Assets/Art/Graphics/UI/Harm/HarmBasePelvis.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "HarmBoneArmL1.png",
@@ -9131,22 +9131,22 @@
       "stem": "harmboneribs",
       "extension": "png",
       "category": "Graphics/UI/Harm",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Graphics/UI/Harm/HarmBoneRibs.png",
       "ss3d_art_path": "Assets/Graphics/UI/Harm/HarmBoneRibs.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Graphics/UI/Harm/HarmBoneRibs.png",
       "import_target_path": "Assets/Art/Graphics/UI/Harm/HarmBoneRibs.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "HarmBoneSkull.png",
       "stem": "harmboneskull",
       "extension": "png",
       "category": "Graphics/UI/Harm",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Graphics/UI/Harm/HarmBoneSkull.png",
       "ss3d_art_path": "Assets/Graphics/UI/Harm/HarmBoneSkull.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Graphics/UI/Harm/HarmBoneSkull.png",
       "import_target_path": "Assets/Art/Graphics/UI/Harm/HarmBoneSkull.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "HarmBoneSpine.png",
@@ -9208,11 +9208,11 @@
       "stem": "harmcirculatorytorso",
       "extension": "png",
       "category": "Graphics/UI/Harm",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Graphics/UI/Harm/HarmCirculatoryTorso.png",
       "ss3d_art_path": "Assets/Graphics/UI/Harm/HarmCirculatoryTorso.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Graphics/UI/Harm/HarmCirculatoryTorso.png",
       "import_target_path": "Assets/Art/Graphics/UI/Harm/HarmCirculatoryTorso.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "HarmOrganIntestines.png",
@@ -9230,33 +9230,33 @@
       "stem": "harmorganliver",
       "extension": "png",
       "category": "Graphics/UI/Harm",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Graphics/UI/Harm/HarmOrganLiver.png",
       "ss3d_art_path": "Assets/Graphics/UI/Harm/HarmOrganLiver.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Graphics/UI/Harm/HarmOrganLiver.png",
       "import_target_path": "Assets/Art/Graphics/UI/Harm/HarmOrganLiver.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "HarmOrganLungs.png",
       "stem": "harmorganlungs",
       "extension": "png",
       "category": "Graphics/UI/Harm",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Graphics/UI/Harm/HarmOrganLungs.png",
       "ss3d_art_path": "Assets/Graphics/UI/Harm/HarmOrganLungs.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Graphics/UI/Harm/HarmOrganLungs.png",
       "import_target_path": "Assets/Art/Graphics/UI/Harm/HarmOrganLungs.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "HarmOrganNerves.png",
       "stem": "harmorgannerves",
       "extension": "png",
       "category": "Graphics/UI/Harm",
-      "in_game_path": null,
+      "in_game_path": "Assets/Art/Graphics/UI/Harm/HarmOrganNerves.png",
       "ss3d_art_path": "Assets/Graphics/UI/Harm/HarmOrganNerves.png",
       "github_url": "https://github.com/RE-SS3D/SS3D-Art/blob/main/Assets/Graphics/UI/Harm/HarmOrganNerves.png",
       "import_target_path": "Assets/Art/Graphics/UI/Harm/HarmOrganNerves.png",
-      "status": "ss3d_art_only"
+      "status": "imported"
     },
     {
       "name": "HarmOrgans.png",

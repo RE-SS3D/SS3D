@@ -25,6 +25,7 @@ UI Toolkit panels for station machines, networked via FishNet snapshots. Templat
 - `Assets/Scripts/SS3D/UI/MachineInterface/Components/DiegeticDeviceShell.cs` — diegetic chassis shell
 - `Assets/Scripts/SS3D/UI/MachineInterface/GasPanelReadings.cs` / `GasPanelViews.cs` — gas table, line readings and mix text shared by gas panels; `Components/GasPortCard.cs`, `GasMixBar.cs`, `GasFilterRow.cs`, `GasCompositionRow.cs`, `GasHistoryBars.cs` draw them
 - `Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss` — diegetic design tokens
+- `Assets/Scripts/SS3D/UI/MachineInterface/HealthScannerInterfaceController.cs` — the one handheld panel: sits on the `HealthScanner` item, offers `HealthScanInteraction` ("Scan vitals", Help, Targeted) as a source extension, remembers each viewer's patient and opens the VSU-5R screen, then re-reads the patient every 0.5 s on the panel tick while they stay within 3 m (else the screen freezes on "Out of Range · Last Reading"). `HealthScanSnapshotBuilder` (health state → snapshot, pure) / `HealthScanSnapshotMapper` (thresholds, colours) / `Bindings/HealthScanBinder.cs`; `Components/HealthScanDoll.cs` stacks the `Assets/Art/Graphics/UI/Harm/` masks and hit-tests their alpha, `HealthScanGauge` / `HealthScanTrace` draw with Painter2D
 - `Assets/Scripts/SS3D/UI/MachineInterface/MachineAreaLabel.cs` — server-side panel location label: `"{room name} — {device kind}"` from the device's [area](area.md) (wall mounts use the tile in front); APC title `"APC · {ROOM}"`, air alarm `ZONE {ROOM}` line
 
 ## Extension points
@@ -40,6 +41,8 @@ UI Toolkit panels for station machines, networked via FishNet snapshots. Templat
 
 **Engineering ID gate (two UI variants):** subclass `AccessGatedMachineInterfaceBehaviour`; wire `ReadId` action in binder. Full-screen: `AccessGatedRegion` + `AccessGatePanel` + `AccessStrip` (APC/SMES). Inline: `AtmosIdReaderRow` in a `panel-section` (pump/vent/scrubber/air alarm). Snapshots must include `AccessGranted`, `AccessScanning`, and `AccessDenied`.
 
+**Handheld devices:** put the controller on the item root (it is an `InteractionTargetNetworkBehaviour` on the item's NetworkObject), return no target interactions, and open from a source interaction via `ServerHandleOpenRequest(interactionEvent)` — the viewer resolves from the holding hand (`TryResolveViewerConnection`). Override `OnInterfaceTick` to refresh what the device reads (it runs on the 5 Hz electricity tick, so throttle it). Wire the component with a tier-B recipe (`MedicalItemPrefabSetup.SetupHealthScanner`).
+
 **Panel location labels:** prefabs author only the device kind (`_deviceKind`, e.g. "Atmospheric Vent"); never bake a room name into a prefab. Build the subtitle in the server snapshot with `MachineAreaLabel.ComposeForDevice(this, _deviceKind)` so the panel follows the room the device sits in, and falls back to the kind alone outside any room. Renaming a room shows on the next open/refresh.
 Connection-row text comes from `MachineStatusLine` (APC/SMES grid feed, vending power) — do not author invented node/port ids.
 
@@ -49,6 +52,7 @@ Dev harness: `MachineInterfaceDevHarness.cs`; editor previews via `SS3D → Mach
 
 ## Pitfalls
 
+- **Scanner doll hover does nothing:** `HealthScanDoll` hit-tests with `GetPixelBilinear`, which needs the `Harm*.png` imports Read/Write enabled (their metas set `isReadable: 1`, uncompressed). Reimporting them with default settings silently disables hover and pinning; the tints still draw.
 - **The preview window can't show the game's fonts:** `SS3D → Machine Interface → Preview …` logs `Advanced text system cannot render using static font asset` and draws Terminal, Arcade and Titling text blank, on every panel. Layout reads true; check text in Play Mode. Leave no preview open before `validate.sh`: its untitled window fails a step as a modal dialog. Hit 2026-11-06.
 - **Missing catalog in builds:** host loads `Resources/MachineUiAssetCatalog`. If the asset was never rebuilt/committed, Play Mode and builds fail at awake with an explicit error — not a silent null at panel open (that was the old `EnsureEditorAssets` trap). Main HUD now has the same trap/fix class (`MainHudAssetCatalog`); do not grow a third copy — see [ui-shell-consolidation](../2026-07_ui-shell-consolidation.md) § Explicit non-goals.
 - **New UXML without rebuild:** adding paths in C# without running **SS3D → Data → Rebuild All UI Catalogs** leaves the committed SO stale; Editor Play Mode uses the SO, not `AssetDatabase` path strings.
@@ -63,11 +67,12 @@ Dev harness: `MachineInterfaceDevHarness.cs`; editor previews via `SS3D → Mach
 ## Tests
 
 - EditMode: `MachineInterfaceSnapshotTests`, `GasPanelSnapshotTests`, `MachineInterfaceAccessReaderTests`, `AirAlarmInterfaceInteractionTests`.
+- EditMode: `HealthScanSnapshotTests` (builder, thresholds, arrest flat line, round trip).
 - PlayMode: `AtmosDeviceScenarios` opens the filter, mixer and meter panels through their snapshot RPCs.
 
 ## Depends on / Used by
 
-- **Depends on:** [electricity](electricity.md), [area](area.md), [atmospherics](atmospherics.md), [id-access](id-access.md), [interactions-framework](interactions-framework.md), [selection](selection.md), [inventory](inventory.md), [screen-effects](screen-effects.md) (diegetic backdrop blur)
+- **Depends on:** [health](health.md) (scanner reads `Snapshot`, `DebugDetail`, organ function), [electricity](electricity.md), [area](area.md), [atmospherics](atmospherics.md), [id-access](id-access.md), [interactions-framework](interactions-framework.md), [selection](selection.md), [inventory](inventory.md), [screen-effects](screen-effects.md) (diegetic backdrop blur)
 - **Used by:** `ApcController`, `SmesController`, `VendingMachineController`, `IdConsoleController` (debug ID console, [id-access](id-access.md)), `AirAlarmInterfaceController`, `ScrubberInterfaceController`, `VentInterfaceController`, `PumpInterfaceController`, `FilterInterfaceController`, `MixerInterfaceController`, `MeterInterfaceController`; Main HUD observes open/close for suppress
 
 ## Related docs

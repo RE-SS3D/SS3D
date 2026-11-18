@@ -23,5 +23,7 @@ namespace SS3D.UI.MachineInterface
         public const string Mixer = "atmos.gas-mixer";
 
         public const string Meter = "atmos.gas-meter";
+
+        public const string HealthScanner = "medical.health-scanner";
     }
 }
