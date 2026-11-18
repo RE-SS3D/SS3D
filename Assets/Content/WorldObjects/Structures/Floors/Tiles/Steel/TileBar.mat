@@ -8,14 +8,11 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: TileBar
-  m_Shader: {fileID: 4800000, guid: 7cd5de0b884b14f88ab763ef465e1799, type: 3}
+  m_Shader: {fileID: 4800000, guid: aa0515e3ebb249f1a9ddafc24e661f44, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords:
-  - _HALFTOON_ON
-  - _NORMALMAP
-  - _SEGMENTED_ON
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
@@ -27,7 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BumpMap:
-        m_Texture: {fileID: 2800000, guid: 7fbb27092ffe64b489ecd2b5cd832daf, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
@@ -38,36 +35,19 @@ Material:
         m_Texture: {fileID: 2800000, guid: 0a9752e38343fdc4d9d1d0a340e90c8b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _ToonRamp:
-        m_Texture: {fileID: 2800000, guid: a8f3c2e19b4d4a6f9c1e7d2053ab8f42, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AmbientCol: 0
     - _BumpScale: 0
-    - _Clipped: 0
-    - _ColBright: 0
-    - _ColIntense: 1
-    - _HalfToon: 1
-    - _Lumin: 0
-    - _MaxLight: 1
-    - _MinLight: 0
-    - _Offset: 0
-    - _RampStrength: 0
-    - _Segmented: 1
-    - _ShnIntense: 0
-    - _ShnOverlap: 0
-    - _ShnRange: 0.45
-    - _ShnSmooth: 0.55
-    - _SpecIntensity: 0.14
-    - _SpecPower: 24
-    - _Steps: 4.23
-    - _StpSmooth: 0
+    - _Checker: 1
+    - _Cutoff: 0.5
+    - _DiamondSize: 0.25
+    - _LineWidth: 0.025
+    - _TilesPerCell: 2
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _ShadowTint: {r: 0.3, g: 0.35, b: 0.44, a: 1}
-    - _ShnColor: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
+    - _GroutColor: {r: 0.3372549, g: 0.3372549, b: 0.3372549, a: 1}
+    - _TileColor: {r: 0.5254902, g: 0.5137255, b: 0.5137255, a: 1}
+    - _TileColorB: {r: 0.7254902, g: 0.2823529, b: 0.2823529, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

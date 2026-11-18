@@ -6,8 +6,16 @@
 // Property names match the old Simple Toon set so existing materials keep their
 // texture, colour, normal map and emission. Every pass includes this file, so
 // all passes share one UnityPerMaterial layout (SRP Batcher).
+//
+// Custom albedo: a shader that defines STATION_CUSTOM_INPUT before including
+// this file supplies its own textures, UnityPerMaterial and Station_Albedo, and
+// reuses every pass below (StationFloorTile.hlsl does). It must still declare
+// the inputs these passes read: _MainTex, _BumpMap, _EmissionMap (textures and
+// samplers), _MainTex_ST, _BumpMap_ST, _Color, _EmissionColor, _BumpScale, _Cutoff.
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+#if !defined(STATION_CUSTOM_INPUT)
 
 TEXTURE2D(_MainTex);
 SAMPLER(sampler_MainTex);
@@ -25,13 +33,20 @@ CBUFFER_START(UnityPerMaterial)
     half _Cutoff;
 CBUFFER_END
 
+// Albedo (rgb) and alpha before lighting, from the mesh UV.
+half4 Station_Albedo(float2 meshUV)
+{
+    return SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, TRANSFORM_TEX(meshUV, _MainTex)) * _Color;
+}
+
+#endif
+
 // Alpha Clip: every pass discards the same texels, so depth, normals (CORTAO),
 // decal layers and shadows all match the visible cutout.
 void Station_AlphaClip(float2 uv)
 {
 #if defined(_ALPHATEST_ON)
-    half alpha = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, TRANSFORM_TEX(uv, _MainTex)).a * _Color.a;
-    clip(alpha - _Cutoff);
+    clip(Station_Albedo(uv).a - _Cutoff);
 #endif
 }
 
@@ -109,7 +124,7 @@ half4 StationForwardFragment(StationVaryings input) : SV_Target
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
     float2 uv = TRANSFORM_TEX(input.uv, _MainTex);
-    half4 albedoAlpha = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv) * _Color;
+    half4 albedoAlpha = Station_Albedo(input.uv);
 #if defined(_ALPHATEST_ON)
     clip(albedoAlpha.a - _Cutoff);
 #endif
