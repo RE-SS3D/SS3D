@@ -11,6 +11,13 @@ namespace SS3D.Systems.Atmospherics
     /// </summary>
     public static class AtmosWind
     {
+        /// <summary>
+        /// Server-wide debug switch (the <c>wind</c> console command). When true, wind pushes and knocks
+        /// down no humanoid and moves no loose item. The gas sim, streaks and audio are unchanged, and items
+        /// in space still drift to rest.
+        /// </summary>
+        public static bool BodiesIgnoreWind { get; set; }
+
         /// <summary>Run speed. Below this, wind adds to movement and can be fought.</summary>
         public const float KnockdownSpeed = 5f;
 
