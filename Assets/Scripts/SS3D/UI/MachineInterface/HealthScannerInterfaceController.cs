@@ -13,8 +13,9 @@ namespace SS3D.UI.MachineInterface
 {
     /// <summary>
     /// The handheld health scanner (virology.md §5, live scan): used on a character, it reads their
-    /// health state on the server and opens the VSU-5R vitals screen for the user. The reading is
-    /// fixed at the moment of the scan; scan again for a fresh one.
+    /// health state on the server and opens the VSU-5R vitals screen for the user. While the screen is
+    /// open the reading follows the patient live, as long as they stay within <see cref="LiveRange"/> of
+    /// the scanner; past that it freezes on the last reading until the next scan.
     /// </summary>
     public sealed class HealthScannerInterfaceController : MachineInterfaceBehaviour, IInteractionSourceExtension
     {
@@ -26,7 +27,15 @@ namespace SS3D.UI.MachineInterface
         [SerializeField]
         private string _deviceTitle = HealthScanViewModel.DefaultDeviceTitle;
 
+        /// <summary>How far the patient may be from the scanner and still update the screen (metres).</summary>
+        public const float LiveRange = 3f;
+
+        /// <summary>Seconds between live updates: health ticks at 1 Hz, and hits land between ticks.</summary>
+        private const float LiveInterval = 0.5f;
+
         private readonly Dictionary<NetworkConnection, HealthScanSnapshot> _scans = new();
+        private readonly Dictionary<NetworkConnection, HumanHealthController> _patients = new();
+        private float _nextLiveUpdate;
 
         public override string InterfaceId => MachineInterfaceIds.HealthScanner;
 
@@ -56,21 +65,56 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
-            _scans[conn] = BuildSnapshot(patient);
+            _patients[conn] = patient;
+            _scans[conn] = BuildSnapshot(patient, true);
             ServerHandleOpenRequest(interactionEvent);
         }
 
         public override void OnStopServer()
         {
             _scans.Clear();
+            _patients.Clear();
             base.OnStopServer();
         }
 
         protected override bool ApplyControl(byte controlId, bool value) => false;
 
-        /// <summary>A scan is a still reading: no refresh while the screen is open.</summary>
+        /// <summary>Re-reads each viewer's patient and pushes it, every <see cref="LiveInterval"/>.</summary>
         protected override void OnInterfaceTick()
         {
+            if (Time.time < _nextLiveUpdate)
+            {
+                return;
+            }
+
+            _nextLiveUpdate = Time.time + LiveInterval;
+            var viewers = new List<NetworkConnection>(_patients.Keys);
+            foreach (NetworkConnection conn in viewers)
+            {
+                HumanHealthController patient = _patients[conn];
+                if (!conn.IsValid || patient == null)
+                {
+                    _patients.Remove(conn);
+                    continue;
+                }
+
+                if (Vector3.Distance(patient.transform.position, transform.position) <= LiveRange)
+                {
+                    _scans[conn] = BuildSnapshot(patient, true);
+                }
+                else if (_scans.TryGetValue(conn, out HealthScanSnapshot last) && last.Live)
+                {
+                    _scans[conn] = WithLive(last, false);
+                }
+            }
+
+            base.OnInterfaceTick();
+        }
+
+        private static HealthScanSnapshot WithLive(HealthScanSnapshot snapshot, bool live)
+        {
+            snapshot.Live = live;
+            return snapshot;
         }
 
         protected override void SendOpenToViewer(NetworkConnection conn)
@@ -101,7 +145,7 @@ namespace SS3D.UI.MachineInterface
             DispatchClientRefresh(conn, snapshot);
         }
 
-        private HealthScanSnapshot BuildSnapshot(HumanHealthController patient)
+        private HealthScanSnapshot BuildSnapshot(HumanHealthController patient, bool live)
         {
             float[] organs = new float[HealthScanSnapshotBuilder.OrganCount];
             for (int i = 0; i < organs.Length; i++)
@@ -118,6 +162,7 @@ namespace SS3D.UI.MachineInterface
             snapshot.InterfaceId = InterfaceId;
             snapshot.ModelLabel = _modelLabel;
             snapshot.DeviceTitle = _deviceTitle;
+            snapshot.Live = live;
             return snapshot;
         }
 

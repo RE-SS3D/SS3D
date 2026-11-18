@@ -12,6 +12,7 @@ namespace SS3D.UI.MachineInterface
             writer.WriteString(snapshot.ModelLabel);
             writer.WriteString(snapshot.DeviceTitle);
             writer.WriteString(snapshot.SubjectName);
+            writer.WriteBoolean(snapshot.Live);
             writer.WriteByte((byte)snapshot.State);
             writer.WriteBoolean(snapshot.IsConscious);
             writer.WriteBoolean(snapshot.IsCardiacArrest);
@@ -51,6 +52,7 @@ namespace SS3D.UI.MachineInterface
                 ModelLabel = reader.ReadString(),
                 DeviceTitle = reader.ReadString(),
                 SubjectName = reader.ReadString(),
+                Live = reader.ReadBoolean(),
                 State = (HealthState)reader.ReadByte(),
                 IsConscious = reader.ReadBoolean(),
                 IsCardiacArrest = reader.ReadBoolean(),

@@ -59,7 +59,7 @@ namespace SS3D.UI.MachineInterface
                 ModelLabel = string.IsNullOrEmpty(snapshot.ModelLabel) ? HealthScanViewModel.DefaultModelLabel : snapshot.ModelLabel,
                 DeviceTitle = title,
                 TitleText = $"Vitals Scan — {subject}",
-                SubText = "Live Scan · Full Body",
+                SubText = snapshot.Live ? "Live Scan · Full Body" : "Out of Range · Last Reading",
                 FooterText = $"SS3D Vitals Scan Unit — Model {title}",
             };
 

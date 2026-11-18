@@ -30,6 +30,9 @@ namespace SS3D.UI.MachineInterface
 
         public string SubjectName;
 
+        /// <summary>False once the patient left the scanner's range: the screen shows its last reading.</summary>
+        public bool Live;
+
         public HealthState State;
 
         public bool IsConscious;

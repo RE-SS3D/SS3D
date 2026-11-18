@@ -176,6 +176,7 @@ namespace SS3D.UI.MachineInterface
                 ModelLabel = DefaultModelLabel,
                 DeviceTitle = DefaultDeviceTitle,
                 SubjectName = "Subject 04",
+                Live = true,
                 State = injured ? HealthState.Critical : HealthState.Healthy,
                 IsConscious = !injured,
                 CriticalFlags = injured ? HealthCriticalFlags.LowBlood | HealthCriticalFlags.HighOxyDebt : HealthCriticalFlags.None,
