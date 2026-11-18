@@ -191,6 +191,44 @@
     height: 236px;
 }
 
+/* Machine panels load no default runtime theme, so a ScrollView's viewport does not clip on its own (the shell
+   sets this for its screen scroll too). No border-radius here: radius + overflow hidden renders as a white block. */
+.uplink__list-scroll .unity-scroll-view__content-viewport,
+.uplink__tabs-scroll .unity-scroll-view__content-viewport {
+    overflow: hidden;
+}
+
+/* Rows keep their height and overflow into the scroll instead of shrinking to fit the viewport. */
+.uplink__list-scroll .unity-scroll-view__content-container,
+.uplink__list-scroll .unity-scroll-view__content-container > VisualElement,
+.uplink__row,
+.uplink__ledger-row {
+    flex-shrink: 0;
+}
+
+.uplink__list-scroll .unity-scroller--vertical {
+    width: 8px;
+    margin-left: 4px;
+}
+
+.uplink__list-scroll .unity-base-slider__tracker {
+    background-color: var(--ss3d-diegetic-inset);
+    border-radius: 4px;
+    border-width: 0;
+}
+
+.uplink__list-scroll .unity-base-slider__dragger {
+    background-color: var(--ss3d-diegetic-border-default);
+    border-radius: 4px;
+    border-width: 0;
+    min-height: 24px;
+}
+
+.uplink__list-scroll .unity-scroller__low-button,
+.uplink__list-scroll .unity-scroller__high-button {
+    display: none;
+}
+
 .uplink__ledger {
     display: none;
 }
@@ -380,8 +418,6 @@
     flex-grow: 1;
     flex-shrink: 1;
     margin-left: 12px;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .uplink__col-lcost {
