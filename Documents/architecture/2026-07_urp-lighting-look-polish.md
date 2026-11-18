@@ -24,8 +24,8 @@ reference screenshots — without breaking dark rooms, emergency cones, or inven
 | Zero ambient / no main light | `Game.unity`, `SS3D_URPAsset` |
 | Flat albedo + Forward+ fixture lighting (replaced half-toon 2026-11-17) | `StationFlatLighting.hlsl` / `StationFlat.hlsl` (`STDefault`) |
 | Floor normals (derivative TBN) | `Station_NormalWS` in `StationFlat.hlsl`, floor mats |
-| Dual fixture lights (Spot + PointFill) | `LightTubeFixture` / `LightBulbFixture`, `LightPower` |
-| Emergency: dim short-range spot, fill **off** | `LightPower` |
+| Fixture spot lights (one shadowed spot per fixture; PointFills removed 2026-11-18) | `LightTubeFixture` / `LightBulbFixture`, `LightPower` |
+| Emergency: dim short-range spot | `LightPower` |
 | Gameplay volume + contact occlusion | `SS3D_GameplayVolumeProfile` (incl. `StationShading`), Forward+ renderer — `CortaoAmbientOcclusionFeature`; ST samples `_SS3DOcclusionTexture` |
 | Icon preview lights | `RuntimePreviewGenerator` |
 
@@ -73,11 +73,10 @@ Prefer those over the brief 857-literal prefab numbers (wall-hug point + intensi
 - [x] Constant palette UVs retain finite normals (carpet/vendor lighting streaks)
 - [x] Half-toon preserves fixture radiance (color and intensity); no double light-color multiplication in specular
 - [x] Near-field limiter preserves partial shadow visibility
-- [ ] Visually accept the fixture candidate: tube spot/fill 3.4/0.6, bulb 2.8/0.6, warm ivory, 130° outer / 70° inner spot, high-quality soft filtering at medium resolution, shadow strength 0.85; unshadowed fills at local y=1.9/z=1.5
-- [ ] PointFill: room center vs wall hotspot vs player-head plastic shine
+- [ ] Visually accept the fixture candidate: one spot per fixture, no fill, intensity 3.4, warm ivory, range 6.12 m, shadow strength 1, Medium resolution tier with the pipeline's soft-shadow quality; tube 138° outer / 71° inner pitched 47° at local y=3.3/z=0.72, bulb 179° / 149° pitched 8° at y=2.49/z=0.11
 - [ ] Spot angle/range for contact shadows without washing walls
-- [ ] Visually accept the grade candidate: Neutral tonemapping, bloom 1.3 / threshold 0.8, contrast/saturation 5, vignette 0.06; exposure remains 0.51
-- [ ] Visually accept contact occlusion: intensity 1 / radius 0.32 / direct strength 0.8 / downsampled; opaque ST now samples AO instead of bypassing it
+- [ ] Visually accept the grade candidate: no tonemapping, post-exposure 0.93, contrast −16, faint warm colour filter, bloom 0.5 / threshold 0.4, vignette 0.166
+- [ ] Visually accept contact occlusion: CORTAO intensity 1.316 / radius 1, per-tier settings in [rendering-quality-tiers](systems/rendering-quality-tiers.md); gameplay `LightOcclusion` 0.283
 - [ ] Floor specular vs prop `Palette` specular (keep characters `_SpecIntensity: 0`)
 - [ ] Confirm `NormalOnly` fixtures extinguish in Emergency; only `EmergencyCapable` stay on
 - [ ] Optional: full 857-style atten curve in half-toon additional lights
@@ -86,9 +85,9 @@ Prefer those over the brief 857-literal prefab numbers (wall-hug point + intensi
 
 [Documents/design/rendering-lighting.md](../design/rendering-lighting.md) §8 prefers Neutral
 tonemap and treats AO as mostly moot. Earlier plate experiments chased the **reference screenshot**
-(SSAO on, filmic grade). **Current candidate:** SSAO enabled for contact grounding, with opaque ST explicitly consuming direct-light AO. The previous all-one AO factors bypassed that contribution; the earlier conclusion that AO barely changed ST lighting is no longer a sound tuning baseline. This is a deliberate deviation from §8, evaluated in the running ministation. Keep DepthNormals for Decal Layers regardless of AO state.
+(SSAO on, filmic grade). **Until 2026-11-17:** SSAO enabled for contact grounding, with opaque ST explicitly consuming direct-light AO. The previous all-one AO factors bypassed that contribution; the earlier conclusion that AO barely changed ST lighting is no longer a sound tuning baseline. This is a deliberate deviation from §8, evaluated in the running ministation. Keep DepthNormals for Decal Layers regardless of AO state.
 
-**2026-11-17 candidate (owner request):** the gameplay plate moves away from the design's fixture-driven look. `STDefault` was rewritten from scratch as flat albedo with lighting (`StationFlatLighting.hlsl`): albedo × (ambient × CORTAO occlusion + soft fixture light) + emission; the half-toon model is gone from station materials. The `StationShading` override tunes it (gameplay and defaults: ambient 0, light strength 4, wrap 1, rolloff 1, light contrast 2.5, light falloff 1: Built-in-style range-relative attenuation with lit surfaces on the rolloff plateau, matching the old SS3D overview reference; fixture fills 0.2 and spot shadow strength 1; tuned from live overview screenshots). Tonemapping is off so albedo reads as authored; contrast stays neutral (negative contrast lifted the shadows) with a warm filter and a purple-shadow / cream-highlight split tone. Bloom is limited to HDR emissives. With `Ambient` at 0 the station is lit only by fixtures again, so unpowered rooms go dark as the design intends; keep Ambient at 0 or tie it to Area lighting states.
+**2026-11-17 candidate (owner request):** the gameplay plate moves away from the design's fixture-driven look. `STDefault` was rewritten from scratch as flat albedo with lighting (`StationFlatLighting.hlsl`): albedo × (ambient × CORTAO occlusion + soft fixture light) + emission; the half-toon model is gone from station materials. The `StationShading` override tunes it with Built-in-style range-relative attenuation and lit surfaces near the rolloff plateau, matching the old SS3D overview reference; the gameplay and default values are in [rendering](systems/rendering.md). Fixtures are one shadowed spot each (shadow strength 1, no fill light). Everything was tuned from live overview screenshots. Tonemapping is off so albedo reads as authored. With `Ambient` at 0 the station is lit only by fixtures again, so unpowered rooms go dark as the design intends; keep Ambient at 0 or tie it to Area lighting states.
 
 ## Out of scope for polish pass
 

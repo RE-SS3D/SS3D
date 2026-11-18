@@ -7,7 +7,7 @@
 
 ## Overview
 
-The station look is lit only by wall fixtures (shadowed spots plus dim unshadowed point fills), so CORTAO ambient
+The station look is lit only by wall fixtures (one shadowed spot each, 6.12 m range), so CORTAO ambient
 occlusion and the fixture spot shadows are the two costs each quality tier trades. Both are set per tier:
 AO in `CortaoAmbientOcclusionFeature.QualityLevels` (one renderer is shared by all tiers, so the feature picks its
 entry by `QualitySettings` level), shadows in each tier's URP asset. Which lights reach a pixel is not traded.
@@ -32,6 +32,9 @@ whenever more than 16 were in view (logged as "Reduced additional punctual light
 RTX 3070, D3D11, Editor host on classic-ministation, camera distance 15, vision mask off, SMAA, 29 shadowed
 fixture spots. Values are median GPU ms per `ProfilingSampler` marker over ~500 frames (`Recorder.gpuElapsedNanoseconds`).
 The 1080p runs had the GPU at about 1.2 GHz; 1440p and 2160p had it at 1.9 GHz (see Pitfalls).
+All numbers on this page predate the 2026-11-18 fixture retune (spot range 10–12 m → 6.12 m, PointFills removed)
+and were not re-measured. Fewer lights now reach each cluster, so expect the Forward+ light loop to cost less
+than shown.
 
 CORTAO at full resolution:
 
@@ -75,12 +78,12 @@ mostly wall bases, vents and panel seams.
 ### Lighting path: Forward+
 
 `SS3D_ForwardPlusRenderer` is Forward+ (`m_RenderingMode: 2`), as `URPFoundationSetup` writes it. On
-2026-11-18 the station flat-lighting rewrite (483980614) switched it to Forward (0) by accident. While it ran
+2026-11-18 the station flat-lighting rewrite switched it to Forward (0) by accident. While it ran
 Forward, two faults showed up, and Forward+ was restored the same day. Forward shades each mesh with at most
 `m_AdditionalLightsPerObjectLimit` lights, picked by
-intensity and distance at the mesh, not by which side of the mesh they light. Every fixture is two lights
-(shadowed spot, 10–12 m range, plus a 12 m PointFill). On classic-ministation 13–27 lights reach each 1 m tile,
-and 1046 of the 1189 renderers in view are reached by more than 8. The two faults:
+intensity and distance at the mesh, not by which side of the mesh they light. At the time every fixture was two
+lights (shadowed spot, 10–12 m range, plus a 12 m PointFill), so on classic-ministation 13–27 lights reached each
+1 m tile and 1046 of the 1189 renderers in view were reached by more than 8. The two faults:
 
 - **Black walls on Low and Medium.** At limits of 2 and 4, a wall often kept only the fixture behind it. Ambient
   is 0, and that fixture adds nothing to the wall's front face: its spot points away, and wrapped diffuse is zero
@@ -91,7 +94,7 @@ and 1046 of the 1189 renderers in view are reached by more than 8. The two fault
   fixture-dense rooms also showed brightness steps.
 
 Forward+ has no per-object limit: each pixel loops over every light whose range reaches its screen cluster, which
-here is most of the 52. `SteelWreckage.shader` needed `_CLUSTER_LIGHT_LOOP` and `LIGHT_LOOP_BEGIN` to keep its
+in the measured setup was most of the 52. `SteelWreckage.shader` needed `_CLUSTER_LIGHT_LOOP` and `LIGHT_LOOP_BEGIN` to keep its
 fixture light. Decals (DBuffer + Decal Layers), CORTAO, the vision mask and the selection pick pass behave the
 same as on Forward. The per-object limits are 8 on every asset, so a switch back to Forward would not bring back
 the black walls.
@@ -117,9 +120,8 @@ CPU in the opaque pass.
 
 The look changes on every tier, because each surface now receives every fixture that reaches it. At High the
 overview frame is 2.9/255 brighter on average and 14% of pixels move by more than 8/255. Character shadows are
-lighter where several spots overlap, since the spots that the cap dropped now fill them. PointFill is not the
-cause: lowering it from 0.2 to 0.05 changed under 2% of pixels, because `LightContrast` crushes such dim light.
-To restore darker shadows, retune `StationShading`.
+lighter where several spots overlap, since the spots that the cap dropped now fill them. To restore darker
+shadows, retune `StationShading`.
 
 ## Start here
 
@@ -143,7 +145,7 @@ To restore darker shadows, retune `StationShading`.
 - **Editor GPU timings move with load:** an Editor round is CPU/submission-bound. Removing a GPU pass lengthens `DrawOpaqueObjects` by the same time instead of shortening the camera, and the driver drops the clock when the GPU idles (RTX 3070: about 1.2 GHz at 1080p, 1.9 GHz at 2160p; switching quality level alone moved it between 0.5 and 1.9 GHz). Per-pass ms scale with the clock, so compare runs at the same clock (`nvidia-smi --query-gpu=pstate,clocks.gr`) or at 2160p. Hit 2026-11-18.
 - **GPU pass timings go quiet with no error:** three setups return stale or missing GPU samples. (1) With the Game view tab behind the Scene view, the game camera renders only now and then, and the opaque samples you read are the Scene view's; focus the Game view first. (2) With the GPU at 100 % (7680×4320 on a close-up, about 25 fps), a `ProfilerRecorder` with `GpuRecorder` got 2–4 samples in 12 s, and `Recorder.gpuElapsedNanoseconds` repeated one value for hundreds of frames; 3840×2160 at about 75 % load gave one sample per frame. (3) Recorders created, reset or read inside `RenderPipelineManager` callbacks collected nothing or one frozen value. What works: create the `ProfilerRecorder`s from one `script eval`, let the round run, `CopyTo` from the next eval, and alternate A/B phases with a control pass such as `CORTAO Main Pass` (the floor tile A/B, 2026-11-18). Hit 2026-11-18.
 - **Render scale other than 1 drops whole frames while the selection pick runs:** `SelectionPickRendererFeature` binds the render-scaled scene depth together with its screen-sized pick target. RenderGraph rejects the pass ("Mismatch in fragment dimensions") and the camera renders nothing that frame, so profiler recorders see no samples. Players who set render scale hit the same error. For profiling, enlarge the Game view instead. Hit 2026-11-18.
-- **Forward+ cost is shadow filtering on lights that miss the pixel:** with 10–12 m fixture ranges, a cluster holds most of the station's lights. `GetAdditionalLight` samples and filters each one's shadow map even when the pixel is outside its cone or behind the surface. Test attenuation × wrapped diffuse first, as `Station_AdditionalLightRadiance` does. That cut High's opaque pass from 20.0 to 14.0 ms at 7680×4320. Hit 2026-11-18.
+- **Forward+ cost is shadow filtering on lights that miss the pixel:** fixture ranges are long (6.12 m; 10–12 m when this was measured), so a cluster holds many of the station's lights. `GetAdditionalLight` samples and filters each one's shadow map even when the pixel is outside its cone or behind the surface. Test attenuation × wrapped diffuse first, as `Station_AdditionalLightRadiance` does. That cut High's opaque pass from 20.0 to 14.0 ms at 7680×4320. Hit 2026-11-18.
 - **Atlas overflow halves every fixture shadow:** URP's `AdditionalLightsShadowCasterPass` scales all additional-light shadow slices down by 2 until the requests fit, so resolution follows how many shadowed lights are in view. Keep atlas ≥ 8 × the tier's pixel size per side (64 slices) on every asset that has additional-light shadows.
 
 ## Tests
