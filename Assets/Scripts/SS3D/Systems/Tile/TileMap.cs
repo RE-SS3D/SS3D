@@ -1298,6 +1298,13 @@ namespace SS3D.Systems.Tile
 
             foreach (Item item in allItems)
             {
+                // Already destroyed: a loose container destroyed earlier in this loop takes its attached contents
+                // with it. Touching one throws (NullReferenceException in a player build) and aborts the restore.
+                if (item == null)
+                {
+                    continue;
+                }
+
                 // Skip items that are in containers (player inventory, etc.)
                 // and items that already have PlacedItemObject (they're already tracked)
                 if (item.Container != null || item.GetComponent<PlacedItemObject>() != null)
