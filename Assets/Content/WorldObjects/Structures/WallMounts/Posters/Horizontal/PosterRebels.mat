@@ -96,11 +96,11 @@ Material:
     - _MinLight: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Offset: 0.65
+    - _Offset: 0
     - _OtlWidth: 1
     - _Parallax: 0.02
     - _RampStrength: 0.35
-    - _Segmented: 1
+    - _Segmented: 0
     - _Shininess: 0.7
     - _ShnIntense: 0.35
     - _ShnOverlap: 0

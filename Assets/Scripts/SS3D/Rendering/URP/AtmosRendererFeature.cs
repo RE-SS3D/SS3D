@@ -186,6 +186,8 @@ namespace SS3D.Rendering.URP
             }
         }
 
+        // Null the fields: a renderer rebuild disposes this shared feature and then calls Create() in the same
+        // frame, and in Play Mode CoreUtils.Destroy is deferred, so Create() would keep the doomed materials.
         protected override void Dispose(bool disposing)
         {
             _scatterPass?.DisposePass();
@@ -194,6 +196,9 @@ namespace SS3D.Rendering.URP
             CoreUtils.Destroy(_scatterMaterial);
             CoreUtils.Destroy(_glowMaterial);
             CoreUtils.Destroy(_distortionMaterial);
+            _scatterMaterial = null;
+            _glowMaterial = null;
+            _distortionMaterial = null;
         }
 
         void ApplySharedMaterialSettings(AtmosRenderContext.Snapshot snapshot, Camera camera)

@@ -1,3 +1,4 @@
+using SS3D.Logging;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -10,8 +11,16 @@ namespace SS3D.Systems.Tile.FloorVisuals
     {
         public const float SurfaceLift = 0.005f;
 
+        /// <summary>
+        /// Station shader material with Alpha Clip on. Loaded from Resources so its
+        /// <c>_ALPHATEST_ON</c> variant ships in player builds: a shader_feature keyword
+        /// only enabled from code is stripped.
+        /// </summary>
+        private const string CutoutTemplatePath = "FloorVisuals/FloorVisualCutout";
+
         private static Mesh _quad;
         private static Texture2D _stripeCornerTexture;
+        private static Material _cutoutTemplate;
 
         public static Mesh GetQuad()
         {
@@ -57,25 +66,34 @@ namespace SS3D.Systems.Tile.FloorVisuals
             return _stripeCornerTexture;
         }
 
+        /// <summary>
+        /// Alpha-clipped station material for a stripe or decal quad, so it is lit and
+        /// occluded (CORTAO) like the floor under it. Texels whose alpha × tint alpha
+        /// falls below the template's cutoff are discarded.
+        /// </summary>
         public static Material CreateCutoutMaterial(Texture2D texture, Color tint)
         {
-            Shader shader = Shader.Find("Universal Render Pipeline/Lit");
-            if (shader == null)
-                shader = Shader.Find("Sprites/Default");
+            if (_cutoutTemplate == null)
+                _cutoutTemplate = Resources.Load<Material>(CutoutTemplatePath);
 
-            var material = new Material(shader);
-            if (texture != null)
+            Material material;
+            if (_cutoutTemplate != null)
             {
-                material.SetTexture("_BaseMap", texture);
-                material.mainTexture = texture;
+                material = new Material(_cutoutTemplate);
+            }
+            else
+            {
+                Log.Error(typeof(FloorVisualMesh), "Missing Resources/{path}; floor visuals fall back to Sprites/Default", Logs.Generic, CutoutTemplatePath);
+                material = new Material(Shader.Find("Sprites/Default"))
+                {
+                    renderQueue = (int)RenderQueue.AlphaTest,
+                };
             }
 
-            material.SetColor("_BaseColor", tint);
+            if (texture != null)
+                material.mainTexture = texture;
+
             material.color = tint;
-            material.SetFloat("_Surface", 0f);
-            material.SetFloat("_AlphaClip", 1f);
-            material.EnableKeyword("_ALPHATEST_ON");
-            material.renderQueue = (int)RenderQueue.AlphaTest;
             return material;
         }
 

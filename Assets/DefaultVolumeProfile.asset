@@ -382,6 +382,43 @@ MonoBehaviour:
   intensity:
     m_OverrideState: 1
     m_Value: 0
+--- !u!114 &-1729219765762223081
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7ddf142f2e64e36acb847ac25a67ff1, type: 3}
+  m_Name: StationShading
+  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.StationShading
+  active: 1
+  Ambient:
+    m_OverrideState: 1
+    m_Value: 0
+  AmbientOcclusion:
+    m_OverrideState: 1
+    m_Value: 1
+  LightStrength:
+    m_OverrideState: 1
+    m_Value: 4
+  LightWrap:
+    m_OverrideState: 1
+    m_Value: 1
+  LightRolloff:
+    m_OverrideState: 1
+    m_Value: 1
+  LightOcclusion:
+    m_OverrideState: 1
+    m_Value: 0.4
+  LightContrast:
+    m_OverrideState: 1
+    m_Value: 2.5
+  LightFalloff:
+    m_OverrideState: 1
+    m_Value: 1
 --- !u!114 &-995569616902299717
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -460,6 +497,7 @@ MonoBehaviour:
   - {fileID: -8516268180203566771}
   - {fileID: 1042304510575553919}
   - {fileID: -995569616902299717}
+  - {fileID: -1729219765762223081}
 --- !u!114 &215919075758085465
 MonoBehaviour:
   m_ObjectHideFlags: 3

@@ -1,5 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &2118591275785587892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8103de355db48fab9ded50c65675e06, type: 3}
+  m_Name: StationShadingFeature
+  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.StationShadingFeature
+  m_Active: 1
 --- !u!114 &-8472639182736451891
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,13 +140,14 @@ MonoBehaviour:
     probeSamplingDebugTexture: {fileID: 2800000, guid: 24ec0e140fb444a44ab96ee80844e18e, type: 3}
     probeVolumeBlendStatesCS: {fileID: 0}
   m_RendererFeatures:
+  - {fileID: 2118591275785587892}
   - {fileID: 5324824689208116589}
   - {fileID: -8123456789012345678}
   - {fileID: -8472639182736451891}
   - {fileID: -3601183876851600227}
   - {fileID: -6234567890123456789}
   - {fileID: -1301564243132305280}
-  m_RendererFeatureMap: 6dc57abbd793e549b20caf1e17af438fcd16f0a28d236b8a9d746509580606ceeb7e223d895d7aa980b0bf8337eaefed
+  m_RendererFeatureMap: b40c71618abf661d6dc57abbd793e549b20caf1e17af438fcd16f0a28d236b8a9d746509580606ceeb7e223d895d7aa980b0bf8337eaefed
   m_UseNativeRenderPass: 0
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
@@ -171,20 +185,45 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f62c9c65cf3354c93be831c8bc075510, type: 3}
-  m_Name: ScreenSpaceAmbientOcclusion
-  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.ScreenSpaceAmbientOcclusion
+  m_Script: {fileID: 11500000, guid: 905f8e057f1842a4bfbe9e5d357c42dc, type: 3}
+  m_Name: CortaoAmbientOcclusionFeature
+  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.CortaoAmbientOcclusionFeature
   m_Active: 1
-  m_Settings:
-    AOMethod: 1
-    Downsample: 1
-    AfterOpaque: 0
-    Source: 1
-    NormalSamples: 1
-    Intensity: 1
-    DirectLightingStrength: 0.8
-    Radius: 0.32
+  _prepassShader: {fileID: 7200000, guid: b07644f2cd4d4c9e814d6efd88087016, type: 3}
+  _mainPassShader: {fileID: 7200000, guid: 324df5fa0b524f98870cfd283d239b22, type: 3}
+  _filterShader: {fileID: 7200000, guid: 604607ead16843da8fd39abd4351e3f8, type: 3}
+  _upsampleShader: {fileID: 7200000, guid: e85c12e28f5f4a2d8e5f670e4de9b21e, type: 3}
+  _qualityLevels:
+  - Level: Low
+    Enabled: 0
+    Samples: 0
+    HalfResolution: 1
+    BlurRadius: 6
+  - Level: Medium
+    Enabled: 1
     Samples: 1
-    BlurQuality: 0
-    Falloff: 100
-    SampleCount: -1
+    HalfResolution: 1
+    BlurRadius: 6
+  - Level: High
+    Enabled: 1
+    Samples: 2
+    HalfResolution: 0
+    BlurRadius: 6
+  - Level: Ultra
+    Enabled: 1
+    Samples: 2
+    HalfResolution: 0
+    BlurRadius: 6
+  _radius: 1
+  _maxScreenRadius: 0.05
+  _intensity: 1.316
+  _mipBias: -4
+  _maxSlopeCompensation: 4
+  _backfaceThreshold: 0.5
+  _backfaceBoost: 0
+  _filter: 0
+  _filterDepthSensitivity: 512
+  _filterNormalSensitivity: 128
+  _blurShader: {fileID: 7200000, guid: c9b39e5ec78142aabfafb82c880516fd, type: 3}
+  _blurDepthSensitivity: 48
+  _blurNormalPower: 8

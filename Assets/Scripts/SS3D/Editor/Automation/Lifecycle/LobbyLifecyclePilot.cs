@@ -1525,7 +1525,7 @@ namespace SS3D.Editor.Automation
             foreach ((string materialName, Color color, string property) in new (string, Color, string)[]
             {
                 ("HumanSkin", catalog.GetSkinColor(5), "_Color"),
-                ("HumanEye", catalog.GetEyeColor(1), "_BaseColor"),
+                ("HumanEye", catalog.GetEyeColor(1), "_Color"),
             })
             {
                 bool found = false;

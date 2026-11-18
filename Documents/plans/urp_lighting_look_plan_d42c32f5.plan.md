@@ -6,10 +6,10 @@ todos:
     content: "Phase 1a: Zero ambient in Game scene, disable SSAO, tune URP asset for fixture-forward lighting"
     status: completed
   - id: half-toon-shader
-    content: "Phase 1b: URP half-toon — ramp texture, tinted shadow band, specular tuning in STCore.hlsl"
-    status: completed
+    content: "Phase 1b: URP half-toon shader — superseded 2026-11-17 by the flat station shader (SS3D/Station, StationFlat.hlsl); the half-toon includes were deleted 2026-11-18"
+    status: cancelled
   - id: material-migration
-    content: "Phase 1c: Migrate station floor/wall materials from URP Lit to half-toon shader"
+    content: "Phase 1c: Migrate station floor/wall materials from URP Lit to the station shader"
     status: completed
   - id: gameplay-volume
     content: "Phase 1d: Create SS3D_GameplayVolumeProfile (MKII port) and wire to in-round camera"
@@ -127,6 +127,11 @@ Goal: In-round scenes look like SS3D again — soft half-toon, pastel grade, blo
 - Remove main-light shadow cascade special-casing from tuning focus; fixture spot/point lights are the primary shadow casters (no directional sun).
 
 ### 1b. Half-toon shader (URP forward rewrite)
+
+> **Superseded (2026-11-17).** The station shader is now flat albedo with fixture lighting (`StationFlat.hlsl`,
+> `StationFlatLighting.hlsl`), tuned by the `StationShading` volume override; `STCore.hlsl`, `STLighting.hlsl`
+> and the other half-toon includes named below were deleted 2026-11-18. Current shader:
+> [rendering.md](../architecture/systems/rendering.md). The rest of this section is the original plan.
 
 Half-toon radiance multiplication and distance-before-shadow limiting are implemented
 in `STLighting.hlsl`; preserve these when retuning the ramp/falloff. Palette UV derivative frames are guarded against zero length. Skin/hair/cut and
@@ -271,4 +276,6 @@ Phase 1 is parallelizable across shader author, environment artist, and volume t
 
 ## Implementation notes
 
+- **2026-11-18:** `half-toon-shader` cancelled: the flat station shader replaced it, and `STOutline` plus the half-toon includes (`STCore`, `STLighting`, `STFragment`, `STFunctions`, `STDepthOnlyPass`, `STDepthNormalsPass`) were deleted. Station materials, the eye, tile overlays and floor decals all use `SS3D/Station` (steel floors `SS3D/Station Floor Tile`).
+- **2026-11-17:** URP SSAO replaced by CORTAO (`CortaoAmbientOcclusionFeature`); gameplay profile switched to the flat albedo × AO candidate via the `StationShading` override. See [2026-07_urp-lighting-look-polish.md](../architecture/2026-07_urp-lighting-look-polish.md) "Divergence from design".
 - **2026-07-29:** `ambient-baseline` marked completed — SSAO disabled on `SS3D_ForwardPlusRenderer` (`m_Active: 0`). Zero ambient / fixture-forward URP baseline was already in place. DepthNormals prepass **kept** for DBuffer + Decal Layers (blood); do not remove with SSAO. See [systems/rendering.md](../architecture/systems/rendering.md) Pitfalls.
