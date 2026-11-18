@@ -1,0 +1,242 @@
+.health-scan-title-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.health-scan-title-row #identity {
+    flex-shrink: 0;
+    margin-right: 16px;
+}
+
+.health-scan-title-row__status {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+}
+
+.health-scan-monitor {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.health-scan-column {
+    flex-direction: column;
+    flex-shrink: 0;
+    padding: 10px 12px;
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    background-color: var(--ss3d-diegetic-inset);
+}
+
+.health-scan-column--left {
+    width: 120px;
+    align-items: center;
+    margin-right: 16px;
+}
+
+.health-scan-column--centre {
+    align-items: center;
+    padding: 10px 6px;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-column--right {
+    width: 220px;
+    margin-left: 16px;
+}
+
+.health-scan-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    margin-top: 6px;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-label--spaced {
+    margin-top: 18px;
+}
+
+.health-scan-label--centred,
+.health-scan-value--centred {
+    -unity-text-align: middle-center;
+    align-self: center;
+}
+
+.health-scan-value {
+    font-size: 16px;
+    padding: 0;
+    color: var(--ss3d-text-secondary);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* Blood vial: tube with a fill from the bottom, and a bulb below it. */
+.health-scan-vial {
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.health-scan-vial__tube {
+    width: 30px;
+    height: 104px;
+    justify-content: flex-end;
+    border-width: 1px;
+    border-color: var(--ss3d-border-strong);
+    background-color: var(--ss3d-surface-inset);
+}
+
+.health-scan-vial__fill {
+    width: 100%;
+    height: 100%;
+    background-color: var(--ss3d-text-secondary);
+}
+
+.health-scan-vial__bulb {
+    width: 36px;
+    height: 36px;
+    margin-top: -6px;
+    border-radius: 18px;
+    border-width: 1px;
+    border-color: var(--ss3d-border-strong);
+    background-color: var(--ss3d-text-secondary);
+}
+
+.health-scan-legend {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 222px;
+    margin-top: 10px;
+}
+
+.health-scan-legend__item {
+    flex-direction: row;
+    align-items: center;
+    margin: 0 6px 4px 6px;
+}
+
+.health-scan-legend__swatch {
+    width: 8px;
+    height: 8px;
+    margin-right: 5px;
+    border-radius: 2px;
+}
+
+.health-scan-legend__swatch--round {
+    border-radius: 4px;
+}
+
+.health-scan-legend__swatch--brute {
+    background-color: #b13d3d;
+}
+
+.health-scan-legend__swatch--burn {
+    background-color: #e6ad53;
+}
+
+.health-scan-legend__swatch--ok {
+    background-color: #7fbf6b;
+}
+
+.health-scan-legend__swatch--impaired {
+    background-color: #e6ad53;
+}
+
+.health-scan-legend__swatch--critical {
+    background-color: #c25b5b;
+}
+
+.health-scan-legend__text {
+    font-size: 10px;
+    padding: 0;
+    color: var(--ss3d-text-secondary);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-hint {
+    font-size: 10px;
+    padding: 0;
+    margin-top: 4px;
+    color: var(--ss3d-text-tertiary);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-gauge {
+    width: 160px;
+    height: 88px;
+    align-self: center;
+}
+
+.health-scan-spo2 {
+    margin-top: 14px;
+}
+
+.health-scan-spo2__header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.health-scan-spo2__value {
+    font-size: 22px;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-trace {
+    height: 64px;
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    background-color: var(--ss3d-surface-void);
+}
+
+.health-scan-rhythm {
+    font-size: 10px;
+    padding: 0;
+    margin-top: 4px;
+    color: var(--ss3d-text-secondary);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-organs {
+    margin-top: 12px;
+    padding-top: 6px;
+    border-top-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+}
+
+.health-scan-organs__list {
+    margin-top: 6px;
+}
+
+.health-scan-organ-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.health-scan-organ-row__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+}
+
+.health-scan-organ-row__label {
+    flex-grow: 1;
+    font-size: 11px;
+    padding: 0;
+    color: var(--ss3d-text-secondary);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-organ-row__value {
+    font-size: 11px;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}

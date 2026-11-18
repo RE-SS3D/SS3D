@@ -1,0 +1,111 @@
+/* Body doll for the health scanner. Every layer is a full 296×585 Harm* mask from SS3D-Art,
+   drawn at 0.75 scale and tinted from code (HealthScanDoll). */
+.health-scan-doll {
+    width: 222px;
+    height: 439px;
+    flex-shrink: 0;
+}
+
+.health-scan-doll__layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: #3a3a3f;
+}
+
+.health-scan-doll__layer--severed {
+    opacity: 0.15;
+}
+
+.health-scan-doll__layer--skull,
+.health-scan-doll__layer--ribs {
+    -unity-background-image-tint-color: var(--ss3d-text-primary);
+    opacity: 0;
+}
+
+.health-scan-doll__layer--outline {
+    -unity-background-image-tint-color: rgba(0, 0, 0, 0.35);
+}
+
+.health-scan-doll__tooltip {
+    position: absolute;
+    translate: -50% -130%;
+    padding: 5px 9px;
+    font-size: 11px;
+    white-space: nowrap;
+    color: var(--ss3d-text-primary);
+    background-color: var(--ss3d-surface-panel-raised);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+}
+
+.health-scan-doll__layer--head {
+    background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmBaseHead.png");
+}
+
+.health-scan-doll__layer--chest {
+    background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmBaseChest.png");
+}
+
+.health-scan-doll__layer--pelvis {
+    background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmBasePelvis.png");
+}
+
+.health-scan-doll__layer--arm-l1 {
+    background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmBaseArmL1.png");
+}
+
+.health-scan-doll__layer--arm-l2 {
+    background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmBaseArmL2.png");
+}
+
+.health-scan-doll__layer--arm-r1 {
+    background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmBaseArmR1.png");
+}
+
+.health-scan-doll__layer--arm-r2 {
+    background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmBaseArmR2.png");
+}
+
+.health-scan-doll__layer--leg-l1 {
+    background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmBaseLegL1.png");
+}
+
+.health-scan-doll__layer--leg-l2 {
+    background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmBaseLegL2.png");
+}
+
+.health-scan-doll__layer--leg-r1 {
+    background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmBaseLegR1.png");
+}
+
+.health-scan-doll__layer--leg-r2 {
+    background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmBaseLegR2.png");
+}
+
+.health-scan-doll__layer--skull {
+    background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmBoneSkull.png");
+}
+
+.health-scan-doll__layer--ribs {
+    background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmBoneRibs.png");
+}
+
+.health-scan-doll__layer--heart {
+    background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmCirculatoryTorso.png");
+}
+
+.health-scan-doll__layer--lungs {
+    background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmOrganLungs.png");
+}
+
+.health-scan-doll__layer--liver {
+    background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmOrganLiver.png");
+}
+
+.health-scan-doll__layer--outline {
+    background-image: url("project://database/Assets/Art/Graphics/UI/Harm/HarmBase.png");
+}

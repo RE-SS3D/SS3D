@@ -57,7 +57,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 | shuttles | [shuttles](../design/shuttles.md) | [shuttle plan](../plans/shuttle_system_design_a3dd2e04.plan.md) — planned | none yet |
 | stamina | [stamina](../design/stamina.md) | [inventory-storage-redesign](../archive/architecture/2026-07_inventory-storage-redesign.md) — shipped | [stamina](systems/stamina.md) — partial |
 | surgery | [surgery](../design/surgery.md) | none yet | none yet |
-| virology | [virology](../design/virology.md) | none yet | none yet |
+| virology | [virology](../design/virology.md) | [health plan](../plans/health_implementation_plan.md) Phase 9 — pending (live scan built early) | [machine-interface](systems/machine-interface.md) (health scanner only) |
 
 Every design doc is `Status: active` unless its own header says otherwise. Deferred (design stands, no milestone up to MVP2 needs it): ai-cyborgs, crafting, cryogenics, hacking-interface, pda, surgery, virology. The 2026-10 design review is recorded in [REVIEW_2026-10](../design/REVIEW_2026-10.md).
 
@@ -94,7 +94,7 @@ Infrastructure and gameplay maps, including the ones with no design doc (interac
 | [inventory](systems/inventory.md) | partial | Items, containers, hands, Main HUD, StoragePanel, Syndicate hardsuit content |
 | [localization](systems/localization.md) | partial | `LocalizedTextService`, string tables |
 | [logging](systems/logging.md) | shipped | Serilog structured logging |
-| [machine-interface](systems/machine-interface.md) | shipped | Diegetic APC/SMES/atmos/vending UI |
+| [machine-interface](systems/machine-interface.md) | shipped | Diegetic APC/SMES/atmos/vending UI, handheld health scanner |
 | [map-editor-creative-hooks](systems/map-editor-creative-hooks.md) | partial | Map editor extension points for creative mode |
 | [map-editor-systems-views](systems/map-editor-systems-views.md) | shipped | Map Editor Atmos and Power views: network colours, tracing, problem markers shared with Map Check, admin pause and step, Room air |
 | [networking-session](systems/networking-session.md) | partial | Session FSM, protocol gate, headless server, Windows/Linux client stable-release updaters; [Multiplayer testing](systems/networking-session-testing.md) |
