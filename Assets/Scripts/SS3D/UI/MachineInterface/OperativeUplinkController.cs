@@ -40,6 +40,7 @@ namespace SS3D.UI.MachineInterface
         private string _refusalText = string.Empty;
         private int _deliverySequence;
         private string _deliveryName = string.Empty;
+        private int _deliveryListingIndex = -1;
         private bool _deliveredToHand;
 
         private static readonly Dictionary<string, string> ResolvedItemIds = new();
@@ -100,7 +101,11 @@ namespace SS3D.UI.MachineInterface
                 held,
                 roundSeconds);
 
-            if (refusal == UplinkRefusal.None && !Deliver(listing, hand))
+            if (refusal == UplinkRefusal.None && Deliver(listing, hand))
+            {
+                _deliveryListingIndex = listingIndex;
+            }
+            else if (refusal == UplinkRefusal.None)
             {
                 Account.Refund(listing, UplinkSquadStock.Shared, roundId);
                 refusal = UplinkRefusal.DeliveryFailed;
@@ -329,6 +334,7 @@ namespace SS3D.UI.MachineInterface
                 RefusalText = _refusalText,
                 DeliverySequence = _deliverySequence,
                 DeliveryName = _deliveryName,
+                DeliveryListingIndex = _deliveryListingIndex,
                 DeliveredToHand = _deliveredToHand,
             };
         }

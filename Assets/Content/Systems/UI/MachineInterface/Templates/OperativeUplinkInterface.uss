@@ -240,21 +240,21 @@
     color: var(--ss3d-text-secondary);
 }
 
+/* Two rows of the tallest card (badges + "need" line) fit without scrolling; more rows scroll. */
 .uplink__grid-scroll {
-    height: 300px;
+    height: 326px;
 }
 
 .uplink__grid {
     flex-direction: row;
     flex-wrap: wrap;
-    padding: 12px;
+    padding: 10px 12px 2px;
 }
 
 .uplink__card {
     width: 31%;
-    min-height: 150px;
-    margin: 0 2% 10px 0;
-    padding: 12px 8px 10px;
+    margin: 0 2% 8px 0;
+    padding: 8px 6px 8px;
     align-items: center;
     flex-direction: column;
     border-width: 1px;
@@ -288,7 +288,7 @@
 
 .uplink__card-name {
     font-size: 13px;
-    margin-top: 8px;
+    margin-top: 6px;
     color: var(--ss3d-text-primary);
     -unity-text-align: middle-center;
     white-space: normal;
@@ -319,7 +319,7 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    margin-top: 7px;
+    margin-top: 5px;
 }
 
 .uplink__badge {
@@ -440,6 +440,7 @@
 .uplink__fact-key {
     font-size: 11.5px;
     color: var(--ss3d-text-secondary);
+    flex-shrink: 0;
 }
 
 .uplink__fact-value {

@@ -16,6 +16,7 @@ namespace SS3D.UI.MachineInterface
                 RefusalText = snapshot.RefusalText ?? string.Empty,
                 DeliverySequence = snapshot.DeliverySequence,
                 DeliveryName = snapshot.DeliveryName ?? string.Empty,
+                DeliveryListingIndex = snapshot.DeliveryListingIndex,
                 DeliveredToHand = snapshot.DeliveredToHand,
             };
 

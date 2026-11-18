@@ -213,6 +213,7 @@ namespace EditorTests
                 RefusalText = "No TC spent.",
                 DeliverySequence = 2,
                 DeliveryName = "C4 charge",
+                DeliveryListingIndex = 2,
                 DeliveredToHand = true,
             };
 
@@ -239,6 +240,7 @@ namespace EditorTests
             Assert.AreEqual(original.RefusalText, copy.RefusalText);
             Assert.AreEqual(2, copy.DeliverySequence);
             Assert.AreEqual("C4 charge", copy.DeliveryName);
+            Assert.AreEqual(2, copy.DeliveryListingIndex);
             Assert.IsTrue(copy.DeliveredToHand);
         }
 

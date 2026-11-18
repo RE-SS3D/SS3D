@@ -77,6 +77,8 @@ namespace SS3D.UI.MachineInterface
 
         public string DeliveryName { get; set; } = string.Empty;
 
+        public int DeliveryListingIndex { get; set; } = -1;
+
         public bool DeliveredToHand { get; set; }
     }
 }

@@ -47,6 +47,7 @@ namespace SS3D.UI.MachineInterface.Bindings
         private readonly Label _buyReason;
         private readonly VisualElement _delivery;
         private readonly Label _deliveryName;
+        private readonly InventorySlot _deliverySlot;
         private readonly Label _deliveryWhere;
         private readonly Label _deliveryNote;
         private readonly VisualElement _ledger;
@@ -93,6 +94,7 @@ namespace SS3D.UI.MachineInterface.Bindings
             _buyReason = content.Q<Label>("buy-reason");
             _delivery = content.Q<VisualElement>("delivery");
             _deliveryName = content.Q<Label>("delivery-name");
+            _deliverySlot = content.Q<InventorySlot>("delivery-slot");
             _deliveryWhere = content.Q<Label>("delivery-where");
             _deliveryNote = content.Q<Label>("delivery-note");
             _ledger = content.Q<Button>("ledger-toggle")?.parent;
@@ -113,6 +115,13 @@ namespace SS3D.UI.MachineInterface.Bindings
             if (_buyButton != null)
             {
                 _buyButton.Clicked += Buy;
+
+                // SteelButton.uss's 12px wins over the template rule; the design's Buy is a full-width 40px button.
+                Button control = _buyButton.Q<Button>();
+                if (control != null)
+                {
+                    control.style.fontSize = 16;
+                }
             }
 
             Button ledgerToggle = content.Q<Button>("ledger-toggle");
@@ -370,7 +379,9 @@ namespace SS3D.UI.MachineInterface.Bindings
                 + (listing.OutOfStock ? ", out of stock" : string.Empty)
                 + (unaffordable ? $", need {listing.Shortfall} more TC" : string.Empty);
 
-            card.Add(new InventorySlot { Unknown = true, Size = 52 });
+            InventorySlot slot = new() { Unknown = true, Size = 44 };
+            OperativeUplinkIcons.Apply(slot, listing.Index);
+            card.Add(slot);
 
             Label name = new(listing.Name);
             name.AddToClassList("uplink__card-name");
@@ -461,6 +472,7 @@ namespace SS3D.UI.MachineInterface.Bindings
             if (_detailSlot != null)
             {
                 _detailSlot.style.opacity = listing.OutOfStock ? 0.35f : 1f;
+                OperativeUplinkIcons.Apply(_detailSlot, listing.Index);
             }
 
             if (_detailFacts != null)
@@ -543,6 +555,7 @@ namespace SS3D.UI.MachineInterface.Bindings
             }
 
             if (_deliveryName != null) _deliveryName.text = model.DeliveryName;
+            OperativeUplinkIcons.Apply(_deliverySlot, model.DeliveryListingIndex);
             if (_deliveryWhere != null)
             {
                 _deliveryWhere.text = model.DeliveredToHand ? "IN YOUR HAND" : "AT YOUR FEET";

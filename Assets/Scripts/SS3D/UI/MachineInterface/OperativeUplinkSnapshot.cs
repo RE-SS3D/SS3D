@@ -80,6 +80,9 @@ namespace SS3D.UI.MachineInterface
 
         public string DeliveryName;
 
+        /// <summary>Catalog index of the last delivered listing, or -1.</summary>
+        public int DeliveryListingIndex;
+
         /// <summary>True: put in the holder's free hand. False: both hands were full, so it landed at their feet.</summary>
         public bool DeliveredToHand;
     }

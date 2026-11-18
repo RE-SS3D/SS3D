@@ -86,7 +86,7 @@
             <ui:Label class="uplink__delivery-kicker font-arcade" text="DELIVERED" />
             <ui:Label name="delivery-empty" class="uplink__delivery-empty font-terminal" text="Nothing bought yet." />
             <ui:VisualElement name="delivery-row" class="uplink__delivery-row">
-                <ss3d:InventorySlot unknown="true" size="32" />
+                <ss3d:InventorySlot name="delivery-slot" unknown="true" size="32" />
                 <ui:Label name="delivery-name" class="uplink__delivery-name font-body" text="" />
                 <ui:Label name="delivery-where" class="uplink__delivery-where font-arcade" text="" />
                 <ui:Label name="delivery-note" class="uplink__delivery-note font-terminal" text="" />

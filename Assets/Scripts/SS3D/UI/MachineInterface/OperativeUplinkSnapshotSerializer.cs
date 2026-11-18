@@ -55,6 +55,7 @@ namespace SS3D.UI.MachineInterface
             writer.WriteString(snapshot.RefusalText);
             writer.WriteInt32(snapshot.DeliverySequence);
             writer.WriteString(snapshot.DeliveryName);
+            writer.WriteInt32(snapshot.DeliveryListingIndex);
             writer.WriteBoolean(snapshot.DeliveredToHand);
         }
 
@@ -110,6 +111,7 @@ namespace SS3D.UI.MachineInterface
             snapshot.RefusalText = reader.ReadString();
             snapshot.DeliverySequence = reader.ReadInt32();
             snapshot.DeliveryName = reader.ReadString();
+            snapshot.DeliveryListingIndex = reader.ReadInt32();
             snapshot.DeliveredToHand = reader.ReadBoolean();
             return snapshot;
         }
