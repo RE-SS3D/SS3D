@@ -571,6 +571,11 @@ namespace SS3D.Systems.Inventory.Items
                 }
 
                 childRenderer.enabled = visible;
+                // FishNet's host view range also writes Renderer.enabled: an item cached as visible at spawn
+                // came back on inside its locker or medkit when the host walked into range. It never touches
+                // forceRenderingOff, so that is what keeps a stored item hidden (TileUnderfloorVisibility does
+                // the same for cover-hidden tiles).
+                childRenderer.forceRenderingOff = !visible;
             }
 
             if (!visible)
@@ -599,7 +604,7 @@ namespace SS3D.Systems.Inventory.Items
         {
             // TODO: Make this handle multiple renderers
             Renderer component = GetComponent<Renderer>();
-            return component != null && component.enabled;
+            return component != null && component.enabled && !component.forceRenderingOff;
         }
 
         public virtual IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
@@ -884,6 +889,8 @@ namespace SS3D.Systems.Inventory.Items
                 }
 
                 childRenderer.enabled = visible;
+                // The preview clones the item as it is; a stored item's renderers carry SetVisibility's hide.
+                childRenderer.forceRenderingOff = !visible;
             }
         }
 

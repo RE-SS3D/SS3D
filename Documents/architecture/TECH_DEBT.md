@@ -407,8 +407,23 @@ times: `Hand.PlaceHeldItemOutOfHand` (`:213-232`, registers TileMap tracking eve
 The henkhooft/SS3D#208 fix guards out-of-order network arrival with a per-peer `Item.LocalHolder`
 (`AttachedContainer.cs:368`) instead of one replicated holder.
 
+Renderer visibility has the same problem one level down. Stored items are parented under their
+container, so every hierarchy-wide renderer writer also reaches them: `Item.SetVisibility`, FishNet's
+client-host `NetworkObject.SetRenderersVisible` (a renderer list cached once and replayed on every
+view-range change), `PlacedTileObject.EnableAllChildRenderers`, `TileUnderfloorVisibility`
+cover-hide, `ClothesDisplayer` occlusion, `InteractionOutlineView` and the icon preview. On a host,
+FishNet re-enabled stored items when the player walked back into range (a filled medkit in a locker
+showed its gauze loose in the locker). The current guard hides stored items through
+`forceRenderingOff`, which FishNet never writes, and the two tile helpers skip renderers under an
+`Item`. That holds only while every new hierarchy-wide writer knows the convention, and
+`forceRenderingOff` now has three writers of its own.
+
 **Fix:** a replicated holder on `Item`, applied by one routine on every peer; one
-`ServerReleaseToWorld` for drop, place and throw (M–L).
+`ServerReleaseToWorld` for drop, place and throw (M–L). In the same pass, give each rendered object
+one visibility owner that combines hide reasons (stored, out of view range, under the floor,
+occluded) and applies them once, with FishNet `UpdateHostVisibility` off and
+`OnHostVisibilityUpdated` feeding the view-range reason (M). That removes the stale renderer cache and
+the `EnableAllChildRenderers` workaround.
 
 ### 1.22 Map Editor trusts the client's partial map and assumes every command succeeded
 
