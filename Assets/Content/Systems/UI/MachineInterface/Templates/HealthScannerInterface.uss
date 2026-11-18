@@ -429,6 +429,8 @@
 
 .health-scan-wound__numbers {
     flex-grow: 1;
+    flex-shrink: 0;
+    white-space: nowrap;
     font-size: 12px;
     padding: 0;
     color: var(--ss3d-text-secondary);
@@ -436,10 +438,13 @@
 }
 
 .health-scan-wound__flags {
-    font-size: 12px;
+    flex-shrink: 1;
+    margin-left: 8px;
+    font-size: 11px;
     -unity-font-style: bold;
     padding: 0;
     white-space: nowrap;
+    -unity-text-align: middle-right;
     color: var(--ss3d-text-secondary);
     background-color: rgba(0, 0, 0, 0);
 }

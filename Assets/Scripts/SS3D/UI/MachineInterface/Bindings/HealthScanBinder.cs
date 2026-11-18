@@ -365,7 +365,8 @@ namespace SS3D.UI.MachineInterface.Bindings
                 _tier.text = view.TierLabel.ToUpperInvariant();
                 _tier.style.color = HealthScanSnapshotMapper.ToneColor(view.TierTone);
                 _numbers.text = view.NumbersText;
-                _flags.text = view.FlagsText;
+                // Two flags stack rather than squeeze the numbers ("BLEEDING · SPLINTED" is too wide).
+                _flags.text = view.FlagsText.Replace(" · ", "\n");
                 _flags.style.color = HealthScanSnapshotMapper.ToneColor(view.Bleeding ? StatusTone.Danger : StatusTone.Neutral);
             }
 
