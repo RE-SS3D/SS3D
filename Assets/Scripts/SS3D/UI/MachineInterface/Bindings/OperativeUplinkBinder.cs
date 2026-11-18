@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
 using SS3D.UI.MachineInterface.Components;
 using UnityEngine.UIElements;
@@ -7,10 +6,10 @@ using UnityEngine.UIElements;
 namespace SS3D.UI.MachineInterface.Bindings
 {
     /// <summary>
-    /// Operative uplink panel. Tab, selection, ledger fold and banner dismissal are local to this viewer; the
-    /// server owns balance, stock, ledger, refusals and deliveries. The snapshot refreshes on every electricity
-    /// tick, so each section rebuilds only when its content changed (a rebuild mid-click drops the click, see
-    /// <see cref="ProductGrid"/>).
+    /// Operative uplink panel (Claude Design "Operative Uplink", list layout). Tab (a category or the pinned Ledger),
+    /// selection and banner dismissal are local to this viewer; the server owns balance, stock, ledger, refusals and
+    /// deliveries. The snapshot refreshes on every electricity tick, so each section rebuilds only when its content
+    /// changed (a rebuild mid-click drops the click, see <see cref="ProductGrid"/>).
     /// </summary>
     public sealed class OperativeUplinkBinder : IMachineInterfaceBinder
     {
@@ -24,8 +23,11 @@ namespace SS3D.UI.MachineInterface.Bindings
 
         private const long DeltaVisibleMs = 2000;
 
+        /// <summary>The tab id of the pinned ledger tab; categories use their own names.</summary>
+        private const string LedgerTab = "\u0001ledger";
+
         private readonly DiegeticDeviceShell _shell;
-        private readonly DeviceIdentityBlock _identity;
+        private readonly Label _ownerLine;
         private readonly Label _spentLine;
         private readonly Label _balance;
         private readonly Label _delta;
@@ -34,11 +36,16 @@ namespace SS3D.UI.MachineInterface.Bindings
         private readonly Label _bannerText;
         private readonly Button _bannerDismiss;
         private readonly VisualElement _tabs;
-        private readonly Label _gridTitle;
-        private readonly Label _gridReadout;
-        private readonly VisualElement _grid;
+        private readonly Button _ledgerTab;
+        private readonly Label _ledgerCount;
+        private readonly Label _listTitle;
+        private readonly Label _listReadout;
+        private readonly VisualElement _rows;
+        private readonly Label _ledgerSummary;
+        private readonly VisualElement _ledgerRows;
         private readonly VisualElement _detail;
         private readonly Label _detailName;
+        private readonly VisualElement _detailBadges;
         private readonly Label _detailKind;
         private readonly Label _detailDesc;
         private readonly InventorySlot _detailSlot;
@@ -46,24 +53,19 @@ namespace SS3D.UI.MachineInterface.Bindings
         private readonly SteelButton _buyButton;
         private readonly Label _buyReason;
         private readonly VisualElement _delivery;
-        private readonly Label _deliveryName;
         private readonly InventorySlot _deliverySlot;
+        private readonly Label _deliveryName;
         private readonly Label _deliveryWhere;
         private readonly Label _deliveryNote;
-        private readonly VisualElement _ledger;
-        private readonly Label _ledgerChevron;
-        private readonly Label _ledgerSummary;
-        private readonly VisualElement _ledgerRows;
 
         private OperativeUplinkViewModel _model;
         private string _tab;
         private int _selected = -1;
-        private bool _ledgerOpen = true;
         private int _dismissedRefusal;
         private int _lastBalance = int.MinValue;
         private IVisualElementScheduledItem _deltaHide;
         private string _tabsSignature;
-        private string _gridSignature;
+        private string _rowsSignature;
         private string _detailSignature;
         private string _ledgerSignature;
 
@@ -72,7 +74,7 @@ namespace SS3D.UI.MachineInterface.Bindings
             _shell = root.Q<DiegeticDeviceShell>("device-shell") ?? root.Q<DiegeticDeviceShell>();
             VisualElement content = _shell ?? root;
 
-            _identity = content.Q<DeviceIdentityBlock>("identity");
+            _ownerLine = content.Q<Label>("owner-line");
             _spentLine = content.Q<Label>("spent-line");
             _balance = content.Q<Label>("balance");
             _delta = content.Q<Label>("delta");
@@ -81,11 +83,16 @@ namespace SS3D.UI.MachineInterface.Bindings
             _bannerText = content.Q<Label>("banner-text");
             _bannerDismiss = content.Q<Button>("banner-dismiss");
             _tabs = content.Q<VisualElement>("tabs");
-            _gridTitle = content.Q<Label>("grid-title");
-            _gridReadout = content.Q<Label>("grid-readout");
-            _grid = content.Q<VisualElement>("grid");
+            _ledgerTab = content.Q<Button>("ledger-tab");
+            _ledgerCount = content.Q<Label>("ledger-count");
+            _listTitle = content.Q<Label>("list-title");
+            _listReadout = content.Q<Label>("list-readout");
+            _rows = content.Q<VisualElement>("rows");
+            _ledgerSummary = content.Q<Label>("ledger-summary");
+            _ledgerRows = content.Q<VisualElement>("ledger-rows");
             _detail = content.Q<VisualElement>("detail");
             _detailName = content.Q<Label>("detail-name");
+            _detailBadges = content.Q<VisualElement>("detail-badges");
             _detailKind = content.Q<Label>("detail-kind");
             _detailDesc = content.Q<Label>("detail-desc");
             _detailSlot = content.Q<InventorySlot>("detail-slot");
@@ -93,14 +100,10 @@ namespace SS3D.UI.MachineInterface.Bindings
             _buyButton = content.Q<SteelButton>("buy-button");
             _buyReason = content.Q<Label>("buy-reason");
             _delivery = content.Q<VisualElement>("delivery");
-            _deliveryName = content.Q<Label>("delivery-name");
             _deliverySlot = content.Q<InventorySlot>("delivery-slot");
+            _deliveryName = content.Q<Label>("delivery-name");
             _deliveryWhere = content.Q<Label>("delivery-where");
             _deliveryNote = content.Q<Label>("delivery-note");
-            _ledger = content.Q<Button>("ledger-toggle")?.parent;
-            _ledgerChevron = content.Q<Label>("ledger-chevron");
-            _ledgerSummary = content.Q<Label>("ledger-summary");
-            _ledgerRows = content.Q<VisualElement>("ledger-rows");
 
             if (_shell != null)
             {
@@ -112,24 +115,25 @@ namespace SS3D.UI.MachineInterface.Bindings
                 _bannerDismiss.clicked += DismissBanner;
             }
 
+            if (_ledgerTab != null)
+            {
+                _ledgerTab.clicked += PickLedger;
+            }
+
             if (_buyButton != null)
             {
                 _buyButton.Clicked += Buy;
 
-                // SteelButton.uss's 12px wins over the template rule; the design's Buy is a full-width 40px button.
+                // SteelButton.uss's 12px wins over the template rule; the design's Buy is a full-width 44px button.
                 Button control = _buyButton.Q<Button>();
                 if (control != null)
                 {
-                    control.style.fontSize = 16;
+                    control.style.fontSize = 20;
                 }
             }
-
-            Button ledgerToggle = content.Q<Button>("ledger-toggle");
-            if (ledgerToggle != null)
-            {
-                ledgerToggle.clicked += ToggleLedger;
-            }
         }
+
+        private bool OnLedger => _tab == LedgerTab;
 
         public void Bind(IMachineInterfaceViewModel viewModel)
         {
@@ -139,9 +143,9 @@ namespace SS3D.UI.MachineInterface.Bindings
             }
 
             _model = model;
-            if (_tab == null || !model.Categories.Contains(_tab))
+            if (_tab == null || (!OnLedger && !model.Categories.Contains(_tab)))
             {
-                _tab = model.Categories.Count > 0 ? model.Categories[0] : string.Empty;
+                _tab = model.Categories.Count > 0 ? model.Categories[0] : LedgerTab;
             }
 
             if (_selected >= model.Listings.Count)
@@ -155,19 +159,18 @@ namespace SS3D.UI.MachineInterface.Bindings
                 _shell.PowerOk = true;
             }
 
-            if (_identity != null)
+            if (_ownerLine != null)
             {
-                _identity.Title = "UPLINK";
-                _identity.Subtitle = model.OwnerLine;
+                _ownerLine.text = model.OwnerLine;
             }
 
             BindBalance(model);
             BindBanner(model);
             BindTabs(model);
-            BindGrid(model);
+            BindRows(model);
+            BindLedger(model);
             BindDetail(model);
             BindDelivery(model);
-            BindLedger(model);
         }
 
         public void Disconnect()
@@ -180,6 +183,11 @@ namespace SS3D.UI.MachineInterface.Bindings
             if (_bannerDismiss != null)
             {
                 _bannerDismiss.clicked -= DismissBanner;
+            }
+
+            if (_ledgerTab != null)
+            {
+                _ledgerTab.clicked -= PickLedger;
             }
 
             if (_buyButton != null)
@@ -255,6 +263,13 @@ namespace SS3D.UI.MachineInterface.Bindings
 
         private void BindTabs(OperativeUplinkViewModel model)
         {
+            _shell?.EnableInClassList("uplink-interface--ledger", OnLedger);
+            _ledgerTab?.EnableInClassList("uplink__tab--active", OnLedger);
+            if (_ledgerCount != null)
+            {
+                _ledgerCount.text = model.Ledger.Count.ToString();
+            }
+
             if (_tabs == null)
             {
                 return;
@@ -302,9 +317,9 @@ namespace SS3D.UI.MachineInterface.Bindings
             }
         }
 
-        private void BindGrid(OperativeUplinkViewModel model)
+        private void BindRows(OperativeUplinkViewModel model)
         {
-            if (_grid == null)
+            if (_rows == null || OnLedger)
             {
                 return;
             }
@@ -329,31 +344,31 @@ namespace SS3D.UI.MachineInterface.Bindings
                 signature.Append('|').Append(listing.Index).Append(':').Append(listing.Remaining).Append(':').Append(listing.Price);
             }
 
-            if (_gridTitle != null)
+            if (_listTitle != null)
             {
-                _gridTitle.text = (_tab ?? string.Empty).ToUpperInvariant();
+                _listTitle.text = (_tab ?? string.Empty).ToUpperInvariant();
             }
 
-            if (_gridReadout != null)
+            if (_listReadout != null)
             {
-                _gridReadout.text = inTab > 0 ? $"{affordable} of {inTab} affordable" : string.Empty;
+                _listReadout.text = inTab > 0 ? $"{affordable} of {inTab} affordable" : string.Empty;
             }
 
             string key = signature.ToString();
-            if (key == _gridSignature)
+            if (key == _rowsSignature)
             {
                 return;
             }
 
-            _gridSignature = key;
-            _grid.Clear();
+            _rowsSignature = key;
+            _rows.Clear();
 
             if (inTab == 0)
             {
                 Label empty = new("No listings in this category yet.");
-                empty.AddToClassList("uplink__grid-empty");
+                empty.AddToClassList("uplink__list-empty");
                 empty.AddToClassList("font-terminal");
-                _grid.Add(empty);
+                _rows.Add(empty);
                 return;
             }
 
@@ -361,48 +376,51 @@ namespace SS3D.UI.MachineInterface.Bindings
             {
                 if (listing.Category == _tab)
                 {
-                    _grid.Add(BuildCard(listing));
+                    _rows.Add(BuildRow(listing));
                 }
             }
         }
 
-        private VisualElement BuildCard(UplinkListingViewData listing)
+        private VisualElement BuildRow(UplinkListingViewData listing)
         {
             bool unaffordable = !listing.OutOfStock && listing.Shortfall > 0;
 
-            Button card = new();
-            card.AddToClassList("uplink__card");
-            card.EnableInClassList("uplink__card--selected", listing.Index == _selected);
-            card.EnableInClassList("uplink__card--out", listing.OutOfStock);
-            card.EnableInClassList("uplink__card--unaffordable", unaffordable);
-            card.tooltip = listing.Name + ", " + listing.Price + " TC"
+            Button row = new();
+            row.AddToClassList("uplink__row");
+            row.EnableInClassList("uplink__row--selected", listing.Index == _selected);
+            row.EnableInClassList("uplink__row--out", listing.OutOfStock);
+            row.EnableInClassList("uplink__row--dim", listing.OutOfStock || unaffordable);
+            row.tooltip = listing.Name + ", " + listing.Price + " TC"
                 + (listing.OutOfStock ? ", out of stock" : string.Empty)
                 + (unaffordable ? $", need {listing.Shortfall} more TC" : string.Empty);
 
-            InventorySlot slot = new() { Unknown = true, Size = 44 };
+            VisualElement iconCell = new();
+            iconCell.AddToClassList("uplink__col-icon");
+            InventorySlot slot = new() { Unknown = true, Size = 40 };
             OperativeUplinkIcons.Apply(slot, listing.Index);
-            card.Add(slot);
+            iconCell.Add(slot);
+            row.Add(iconCell);
 
-            Label name = new(listing.Name);
-            name.AddToClassList("uplink__card-name");
-            name.AddToClassList("font-body");
-            card.Add(name);
-
-            Label price = new(listing.Price + " TC");
-            price.AddToClassList("uplink__card-price");
-            price.AddToClassList("font-terminal");
-            card.Add(price);
-
-            if (unaffordable)
+            VisualElement nameCell = new();
+            nameCell.AddToClassList("uplink__col-name");
+            nameCell.AddToClassList("uplink__row-name-wrap");
+            VisualElement nameBox = new();
+            Label name = new(listing.Name.ToUpperInvariant());
+            name.AddToClassList("uplink__row-name");
+            name.AddToClassList("font-terminal");
+            nameBox.Add(name);
+            if (listing.OutOfStock)
             {
-                Label need = new($"Need {listing.Shortfall} more TC");
-                need.AddToClassList("uplink__card-need");
-                need.AddToClassList("font-terminal");
-                card.Add(need);
+                VisualElement strike = new() { pickingMode = PickingMode.Ignore };
+                strike.AddToClassList("uplink__strike");
+                nameBox.Add(strike);
             }
 
+            nameCell.Add(nameBox);
+            row.Add(nameCell);
+
             VisualElement badges = new();
-            badges.AddToClassList("uplink__badges");
+            badges.AddToClassList("uplink__col-badges");
             if (listing.HasStock)
             {
                 badges.Add(Badge(listing.OutOfStock ? "OUT OF STOCK" : listing.Remaining + " LEFT",
@@ -419,14 +437,27 @@ namespace SS3D.UI.MachineInterface.Bindings
                 badges.Add(Badge("BUNDLE", "bundle"));
             }
 
-            if (badges.childCount > 0)
+            row.Add(badges);
+
+            VisualElement costCell = new();
+            costCell.AddToClassList("uplink__col-cost");
+            Label price = new(listing.Price + " TC");
+            price.AddToClassList("uplink__row-price");
+            price.AddToClassList("font-terminal");
+            costCell.Add(price);
+            if (unaffordable)
             {
-                card.Add(badges);
+                Label need = new($"Need {listing.Shortfall} more");
+                need.AddToClassList("uplink__row-need");
+                need.AddToClassList("font-terminal");
+                costCell.Add(need);
             }
 
+            row.Add(costCell);
+
             int index = listing.Index;
-            card.clicked += () => Select(index);
-            return card;
+            row.clicked += () => Select(index);
+            return row;
         }
 
         private static Label Badge(string text, string tone)
@@ -438,145 +469,8 @@ namespace SS3D.UI.MachineInterface.Bindings
             return badge;
         }
 
-        private void BindDetail(OperativeUplinkViewModel model)
-        {
-            if (_detail == null)
-            {
-                return;
-            }
-
-            UplinkListingViewData listing = _selected >= 0 ? model.Listings[_selected] : null;
-            if (listing != null && listing.Category != _tab)
-            {
-                listing = null;
-            }
-
-            _detail.EnableInClassList("uplink__detail-panel--selected", listing != null);
-            if (listing == null)
-            {
-                _detailSignature = null;
-                return;
-            }
-
-            string key = $"{listing.Index}:{listing.Remaining}:{model.Balance}";
-            if (key == _detailSignature)
-            {
-                return;
-            }
-
-            _detailSignature = key;
-
-            if (_detailName != null) _detailName.text = listing.Name;
-            if (_detailKind != null) _detailKind.text = listing.Kind.ToUpperInvariant();
-            if (_detailDesc != null) _detailDesc.text = listing.Description;
-            if (_detailSlot != null)
-            {
-                _detailSlot.style.opacity = listing.OutOfStock ? 0.35f : 1f;
-                OperativeUplinkIcons.Apply(_detailSlot, listing.Index);
-            }
-
-            if (_detailFacts != null)
-            {
-                _detailFacts.Clear();
-                AddFact("Price", listing.Price + " TC", null);
-                if (listing.HasStock)
-                {
-                    AddFact("Stock (squad-wide)", listing.OutOfStock ? "Out of stock" : listing.Remaining + " left",
-                        listing.OutOfStock ? "warn" : null);
-                }
-
-                if (!string.IsNullOrEmpty(listing.Restriction)) AddFact("Restriction", listing.Restriction, "amber");
-                if (!string.IsNullOrEmpty(listing.Includes)) AddFact("Includes", listing.Includes, null);
-                AddFact("After purchase", listing.CanBuy ? (model.Balance - listing.Price) + " TC left" : "—", null);
-            }
-
-            string label = "Buy · " + listing.Price + " TC";
-            string reason = "One click buys. The ledger keeps a record.";
-            string tone = null;
-            if (listing.OutOfStock)
-            {
-                label = "Out of stock";
-                reason = "None left for the squad this round.";
-                tone = "warn";
-            }
-            else if (listing.Shortfall > 0)
-            {
-                label = $"Need {listing.Shortfall} more TC";
-                reason = $"You have {model.Balance} TC.";
-                tone = "amber";
-            }
-
-            if (_buyButton != null)
-            {
-                _buyButton.Text = label;
-                _buyButton.Disabled = !listing.CanBuy;
-            }
-
-            if (_buyReason != null)
-            {
-                _buyReason.text = reason;
-                _buyReason.EnableInClassList("uplink__buy-reason--warn", tone == "warn");
-                _buyReason.EnableInClassList("uplink__buy-reason--amber", tone == "amber");
-            }
-        }
-
-        private void AddFact(string key, string value, string tone)
-        {
-            VisualElement row = new();
-            row.AddToClassList("uplink__fact");
-            Label k = new(key);
-            k.AddToClassList("uplink__fact-key");
-            k.AddToClassList("font-terminal");
-            Label v = new(value);
-            v.AddToClassList("uplink__fact-value");
-            v.AddToClassList("font-terminal");
-            if (tone != null)
-            {
-                v.AddToClassList("uplink__fact-value--" + tone);
-            }
-
-            row.Add(k);
-            row.Add(v);
-            _detailFacts.Add(row);
-        }
-
-        private void BindDelivery(OperativeUplinkViewModel model)
-        {
-            if (_delivery == null)
-            {
-                return;
-            }
-
-            bool has = model.DeliverySequence > 0 && !string.IsNullOrEmpty(model.DeliveryName);
-            _delivery.EnableInClassList("uplink__delivery--has", has);
-            if (!has)
-            {
-                return;
-            }
-
-            if (_deliveryName != null) _deliveryName.text = model.DeliveryName;
-            OperativeUplinkIcons.Apply(_deliverySlot, model.DeliveryListingIndex);
-            if (_deliveryWhere != null)
-            {
-                _deliveryWhere.text = model.DeliveredToHand ? "IN YOUR HAND" : "AT YOUR FEET";
-                _deliveryWhere.EnableInClassList("uplink__delivery-where--feet", !model.DeliveredToHand);
-            }
-
-            if (_deliveryNote != null)
-            {
-                _deliveryNote.text = model.DeliveredToHand ? "Put in your free hand" : "Both hands were full";
-            }
-        }
-
         private void BindLedger(OperativeUplinkViewModel model)
         {
-            _ledger?.EnableInClassList("uplink__ledger--collapsed", !_ledgerOpen);
-            if (_ledgerChevron != null)
-            {
-                // Body font: the titling and terminal fonts have no triangle glyphs.
-                _ledgerChevron.text = _ledgerOpen ? "▼" : "►";
-            }
-
             if (_ledgerSummary != null)
             {
                 int count = model.Ledger.Count;
@@ -612,7 +506,7 @@ namespace SS3D.UI.MachineInterface.Bindings
                 row.Add(Cell(entry.Number.ToString(), "uplink__col-n"));
                 row.Add(Cell(entry.Time, "uplink__col-time"));
                 row.Add(Cell(entry.ItemName, "uplink__col-item", "uplink__col-item--value"));
-                row.Add(Cell("−" + entry.Cost + " TC", "uplink__col-cost", "uplink__col-cost--value"));
+                row.Add(Cell("−" + entry.Cost + " TC", "uplink__col-lcost", "uplink__col-lcost--value"));
                 row.Add(Cell(entry.BalanceAfter + " TC", "uplink__col-after", "uplink__col-after--value"));
                 _ledgerRows.Add(row);
             }
@@ -622,6 +516,7 @@ namespace SS3D.UI.MachineInterface.Bindings
         {
             Label cell = new(text);
             cell.AddToClassList(column);
+            cell.AddToClassList("uplink__ledger-cell");
             cell.AddToClassList("font-terminal");
             if (extra != null)
             {
@@ -629,6 +524,135 @@ namespace SS3D.UI.MachineInterface.Bindings
             }
 
             return cell;
+        }
+
+        /// <summary>The selection stays put across tabs, Ledger included.</summary>
+        private void BindDetail(OperativeUplinkViewModel model)
+        {
+            if (_detail == null)
+            {
+                return;
+            }
+
+            UplinkListingViewData listing = _selected >= 0 ? model.Listings[_selected] : null;
+            _detail.EnableInClassList("uplink__detail-panel--selected", listing != null);
+            if (listing == null)
+            {
+                _detailSignature = null;
+                return;
+            }
+
+            string key = $"{listing.Index}:{listing.Remaining}:{model.Balance}";
+            if (key == _detailSignature)
+            {
+                return;
+            }
+
+            _detailSignature = key;
+
+            if (_detailName != null) _detailName.text = listing.Name;
+            if (_detailKind != null) _detailKind.text = listing.Kind.ToUpperInvariant();
+            if (_detailDesc != null) _detailDesc.text = listing.Description;
+            if (_detailBadges != null)
+            {
+                _detailBadges.Clear();
+                if (!string.IsNullOrEmpty(listing.Restriction))
+                {
+                    _detailBadges.Add(Badge(listing.Restriction.ToUpperInvariant(), "restrict"));
+                }
+            }
+
+            if (_detailSlot != null)
+            {
+                _detailSlot.style.opacity = listing.OutOfStock ? 0.35f : 1f;
+                OperativeUplinkIcons.Apply(_detailSlot, listing.Index);
+            }
+
+            if (_detailFacts != null)
+            {
+                _detailFacts.Clear();
+                AddFact("Price", listing.Price + " TC", false);
+                if (listing.HasStock)
+                {
+                    AddFact("Stock (squad)", listing.OutOfStock ? "Out of stock" : listing.Remaining + " left", listing.OutOfStock);
+                }
+
+                if (!string.IsNullOrEmpty(listing.Includes)) AddFact("Includes", listing.Includes, false);
+                AddFact("After purchase", listing.CanBuy ? (model.Balance - listing.Price) + " TC left" : "—", false);
+            }
+
+            string label = "Buy · " + listing.Price + " TC";
+            string reason = "One click buys. The ledger keeps a record.";
+            string tone = null;
+            if (listing.OutOfStock)
+            {
+                label = "Out of stock";
+                reason = "None left for the squad this round.";
+                tone = "warn";
+            }
+            else if (listing.Shortfall > 0)
+            {
+                label = $"Need {listing.Shortfall} more TC";
+                reason = $"You have {model.Balance} TC.";
+                tone = "amber";
+            }
+
+            if (_buyButton != null)
+            {
+                _buyButton.Text = label;
+                _buyButton.Disabled = !listing.CanBuy;
+            }
+
+            if (_buyReason != null)
+            {
+                _buyReason.text = reason;
+                _buyReason.EnableInClassList("uplink__buy-reason--warn", tone == "warn");
+                _buyReason.EnableInClassList("uplink__buy-reason--amber", tone == "amber");
+            }
+        }
+
+        private void AddFact(string key, string value, bool warn)
+        {
+            VisualElement row = new();
+            row.AddToClassList("uplink__fact");
+            Label k = new(key);
+            k.AddToClassList("uplink__fact-key");
+            k.AddToClassList("font-terminal");
+            Label v = new(value);
+            v.AddToClassList("uplink__fact-value");
+            v.AddToClassList("font-terminal");
+            v.EnableInClassList("uplink__fact-value--warn", warn);
+            row.Add(k);
+            row.Add(v);
+            _detailFacts.Add(row);
+        }
+
+        private void BindDelivery(OperativeUplinkViewModel model)
+        {
+            if (_delivery == null)
+            {
+                return;
+            }
+
+            bool has = model.DeliverySequence > 0 && !string.IsNullOrEmpty(model.DeliveryName);
+            _delivery.EnableInClassList("uplink__delivery--has", has);
+            if (!has)
+            {
+                return;
+            }
+
+            if (_deliveryName != null) _deliveryName.text = model.DeliveryName;
+            OperativeUplinkIcons.Apply(_deliverySlot, model.DeliveryListingIndex);
+            if (_deliveryWhere != null)
+            {
+                _deliveryWhere.text = model.DeliveredToHand ? "IN YOUR HAND" : "AT YOUR FEET";
+                _deliveryWhere.EnableInClassList("uplink__delivery-where--feet", !model.DeliveredToHand);
+            }
+
+            if (_deliveryNote != null)
+            {
+                _deliveryNote.text = model.DeliveredToHand ? "Put in your free hand" : "Both hands were full";
+            }
         }
 
         private void PickTab(string category)
@@ -639,9 +663,10 @@ namespace SS3D.UI.MachineInterface.Bindings
             }
 
             _tab = category;
-            _selected = -1;
             Rebind();
         }
+
+        private void PickLedger() => PickTab(LedgerTab);
 
         private void Select(int index)
         {
@@ -668,15 +693,6 @@ namespace SS3D.UI.MachineInterface.Bindings
             }
         }
 
-        private void ToggleLedger()
-        {
-            _ledgerOpen = !_ledgerOpen;
-            if (_model != null)
-            {
-                BindLedger(_model);
-            }
-        }
-
         private void Rebind()
         {
             if (_model == null)
@@ -685,7 +701,7 @@ namespace SS3D.UI.MachineInterface.Bindings
             }
 
             BindTabs(_model);
-            BindGrid(_model);
+            BindRows(_model);
             BindDetail(_model);
         }
 

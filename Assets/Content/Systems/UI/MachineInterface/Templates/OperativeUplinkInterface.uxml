@@ -18,21 +18,9 @@
         power-ok="true"
         style="align-self: center; margin-top: 24px;">
 
-        <ui:VisualElement name="uplink-header" class="uplink__header">
-            <ss3d:DeviceIdentityBlock name="identity"
-                title="UPLINK"
-                subtitle="Syndicate field uplink" />
-            <ui:VisualElement class="uplink__balance">
-                <ui:VisualElement class="uplink__balance-text">
-                    <ui:Label class="uplink__kicker font-arcade" text="TELECRYSTALS" />
-                    <ui:Label name="spent-line" class="uplink__spent font-terminal" text="Nothing spent yet" />
-                </ui:VisualElement>
-                <ui:VisualElement class="uplink__balance-value">
-                    <ui:Label name="delta" class="uplink__delta font-terminal" text="" />
-                    <ui:Label name="balance" class="uplink__balance-number font-display" text="40" />
-                    <ui:Label class="uplink__balance-unit font-titling" text="TC" />
-                </ui:VisualElement>
-            </ui:VisualElement>
+        <ui:VisualElement class="uplink__header">
+            <ui:Label class="uplink__title font-titling" text="UPLINK" />
+            <ui:Label name="owner-line" class="uplink__owner font-body" text="Syndicate field uplink" />
         </ui:VisualElement>
 
         <ui:VisualElement name="banner" class="uplink__banner">
@@ -41,43 +29,102 @@
             <ui:Button name="banner-dismiss" class="uplink__banner-dismiss font-body" text="Dismiss" />
         </ui:VisualElement>
 
-        <ui:ScrollView name="tabs-scroll" class="uplink__tabs-scroll" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden">
-            <ui:VisualElement name="tabs" class="uplink__tabs" />
-        </ui:ScrollView>
+        <!-- Categories scroll sideways; the Ledger tab is pinned right. -->
+        <ui:VisualElement class="uplink__tabstrip">
+            <ui:ScrollView name="tabs-scroll" class="uplink__tabs-scroll" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden">
+                <ui:VisualElement name="tabs" class="uplink__tabs" />
+            </ui:ScrollView>
+            <ui:Button name="ledger-tab" class="uplink__tab">
+                <ui:Label class="uplink__tab-label font-titling" text="LEDGER" />
+                <ui:Label name="ledger-count" class="uplink__tab-count font-terminal" text="0" />
+            </ui:Button>
+        </ui:VisualElement>
 
-        <ui:VisualElement class="uplink__body">
-            <ui:VisualElement class="uplink__grid-panel">
+        <!-- Main list: catalog rows, or the purchase ledger. -->
+        <ui:VisualElement class="uplink__list-panel">
+            <ui:VisualElement name="catalog" class="uplink__catalog">
                 <ui:VisualElement class="uplink__panel-header">
-                    <ui:Label name="grid-title" class="uplink__panel-title font-titling" text="WEAPONS" />
-                    <ui:Label name="grid-readout" class="uplink__panel-readout font-terminal" text="" />
+                    <ui:Label name="list-title" class="uplink__panel-title font-titling" text="WEAPONS" />
+                    <ui:Label name="list-readout" class="uplink__panel-readout font-terminal" text="" />
                 </ui:VisualElement>
-                <ui:ScrollView name="grid-scroll" class="uplink__grid-scroll" mode="Vertical">
-                    <ui:VisualElement name="grid" class="uplink__grid" />
+                <ui:VisualElement class="uplink__row uplink__row--head">
+                    <ui:VisualElement class="uplink__col-icon" />
+                    <ui:Label class="uplink__col-name uplink__colhead font-arcade" text="ITEM" />
+                    <ui:VisualElement class="uplink__col-badges" />
+                    <ui:Label class="uplink__col-cost uplink__colhead font-arcade" text="COST" />
+                </ui:VisualElement>
+                <ui:ScrollView name="list-scroll" class="uplink__list-scroll" mode="Vertical">
+                    <ui:VisualElement name="rows" />
                 </ui:ScrollView>
             </ui:VisualElement>
 
+            <ui:VisualElement name="ledger" class="uplink__ledger">
+                <ui:VisualElement class="uplink__panel-header">
+                    <ui:Label class="uplink__panel-title font-titling" text="PURCHASES" />
+                    <ui:Label name="ledger-summary" class="uplink__panel-readout font-terminal" text="" />
+                </ui:VisualElement>
+                <ui:VisualElement class="uplink__ledger-row uplink__ledger-row--head">
+                    <ui:Label class="uplink__col-n uplink__colhead font-arcade" text="#" />
+                    <ui:Label class="uplink__col-time uplink__colhead font-arcade" text="TIME" />
+                    <ui:Label class="uplink__col-item uplink__colhead font-arcade" text="ITEM" />
+                    <ui:Label class="uplink__col-lcost uplink__colhead font-arcade" text="COST" />
+                    <ui:Label class="uplink__col-after uplink__colhead font-arcade" text="BALANCE AFTER" />
+                </ui:VisualElement>
+                <ui:ScrollView name="ledger-scroll" class="uplink__list-scroll" mode="Vertical">
+                    <ui:VisualElement name="ledger-rows" />
+                </ui:ScrollView>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Detail (wide) + balance column. -->
+        <ui:VisualElement class="uplink__bottom">
             <ui:VisualElement name="detail" class="uplink__detail-panel">
                 <ui:VisualElement class="uplink__panel-header">
                     <ui:Label class="uplink__panel-title font-titling" text="SELECTED" />
                 </ui:VisualElement>
                 <ui:VisualElement name="detail-empty" class="uplink__detail-empty">
                     <ui:Label class="uplink__detail-hint font-body" text="Pick an item to see what it does in play." />
-                    <ui:Label class="uplink__detail-hint font-body" text="One click on Buy purchases it, with no confirmation step. Every purchase goes into the ledger below." />
+                    <ui:Label class="uplink__detail-hint font-body" text="One click on Buy purchases it, with no confirmation step. Every purchase is recorded on the Ledger tab." />
                 </ui:VisualElement>
                 <ui:VisualElement name="detail-body" class="uplink__detail-body">
-                    <ui:VisualElement class="uplink__detail-head">
-                        <ss3d:InventorySlot name="detail-slot" unknown="true" size="56" />
-                        <ui:VisualElement class="uplink__detail-names">
-                            <ui:Label name="detail-name" class="uplink__detail-name font-titling" text="" />
-                            <ui:Label name="detail-kind" class="uplink__detail-kind font-arcade" text="" />
+                    <ui:VisualElement class="uplink__detail-main">
+                        <ui:VisualElement class="uplink__detail-head">
+                            <ss3d:InventorySlot name="detail-slot" unknown="true" size="52" />
+                            <ui:VisualElement class="uplink__detail-names">
+                                <ui:VisualElement class="uplink__detail-name-row">
+                                    <ui:Label name="detail-name" class="uplink__detail-name font-titling" text="" />
+                                    <ui:VisualElement name="detail-badges" class="uplink__detail-badges" />
+                                </ui:VisualElement>
+                                <ui:Label name="detail-kind" class="uplink__detail-kind font-arcade" text="" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:Label name="detail-desc" class="uplink__detail-desc font-body" text="" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="uplink__detail-side">
+                        <ui:VisualElement name="detail-facts" class="uplink__facts" />
+                        <ui:VisualElement class="uplink__buy">
+                            <ss3d:SteelButton name="buy-button" text="Buy" />
+                            <ui:Label name="buy-reason" class="uplink__buy-reason font-terminal" text="" />
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:Label name="detail-desc" class="uplink__detail-desc font-body" text="" />
-                    <ui:VisualElement name="detail-facts" class="uplink__facts" />
-                    <ui:VisualElement class="uplink__buy">
-                        <ss3d:SteelButton name="buy-button" text="Buy" />
-                        <ui:Label name="buy-reason" class="uplink__buy-reason font-terminal" text="" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="uplink__side-column">
+                <ui:VisualElement class="uplink__balance">
+                    <ui:VisualElement class="uplink__balance-text">
+                        <ui:Label class="uplink__kicker font-arcade" text="TELECRYSTALS" />
+                        <ui:Label name="spent-line" class="uplink__spent font-terminal" text="Nothing spent yet" />
                     </ui:VisualElement>
+                    <ui:VisualElement class="uplink__balance-value">
+                        <ui:Label name="delta" class="uplink__delta font-terminal" text="" />
+                        <ui:Label name="balance" class="uplink__balance-number font-display" text="40" />
+                        <ui:Label class="uplink__balance-unit font-titling" text="TC" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="uplink__footer">
+                    <ui:Label class="uplink__footer-text font-terminal" text="PERSONAL UPLINK · BALANCE NOT SHARED WITH SQUAD" />
+                    <ui:Label class="uplink__footer-text font-terminal" text="ESC CLOSES · GAME INPUT BLOCKED WHILE OPEN" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
@@ -91,33 +138,6 @@
                 <ui:Label name="delivery-where" class="uplink__delivery-where font-arcade" text="" />
                 <ui:Label name="delivery-note" class="uplink__delivery-note font-terminal" text="" />
             </ui:VisualElement>
-        </ui:VisualElement>
-
-        <ui:VisualElement class="uplink__ledger">
-            <ui:Button name="ledger-toggle" class="uplink__ledger-toggle">
-                <ui:VisualElement class="uplink__ledger-heading">
-                    <ui:Label name="ledger-chevron" class="uplink__ledger-chevron font-body" text="▼" />
-                    <ui:Label class="uplink__panel-title font-titling" text="PURCHASE LEDGER" />
-                </ui:VisualElement>
-                <ui:Label name="ledger-summary" class="uplink__panel-readout font-terminal" text="" />
-            </ui:Button>
-            <ui:VisualElement name="ledger-body" class="uplink__ledger-body">
-                <ui:VisualElement class="uplink__ledger-row uplink__ledger-row--head">
-                    <ui:Label class="uplink__col-n font-arcade" text="#" />
-                    <ui:Label class="uplink__col-time font-arcade" text="TIME" />
-                    <ui:Label class="uplink__col-item font-arcade" text="ITEM" />
-                    <ui:Label class="uplink__col-cost font-arcade" text="COST" />
-                    <ui:Label class="uplink__col-after font-arcade" text="BALANCE AFTER" />
-                </ui:VisualElement>
-                <ui:ScrollView name="ledger-scroll" class="uplink__ledger-scroll" mode="Vertical">
-                    <ui:VisualElement name="ledger-rows" />
-                </ui:ScrollView>
-            </ui:VisualElement>
-        </ui:VisualElement>
-
-        <ui:VisualElement class="uplink__footer">
-            <ui:Label class="uplink__footer-text font-terminal" text="PERSONAL UPLINK · BALANCE NOT SHARED WITH SQUAD" />
-            <ui:Label class="uplink__footer-text font-terminal" text="ESC CLOSES · GAME INPUT BLOCKED WHILE OPEN" />
         </ui:VisualElement>
     </ss3d:DiegeticDeviceShell>
 </ui:UXML>

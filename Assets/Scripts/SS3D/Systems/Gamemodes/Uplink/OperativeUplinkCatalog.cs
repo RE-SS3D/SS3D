@@ -39,9 +39,9 @@ namespace SS3D.Systems.Gamemodes.Uplink
                 "Throwable bomb on a five-second fuse. Tears open hull and floor, so expect vacuum afterwards. Cannot be defused.",
                 new[] { "SyndicateMiniBomb" }),
             new UplinkListing("synbomb", Explosives, "Syndicate bomb", 11, "Deployed · long countdown",
-                "Large bomb with a long, audible countdown. Bolt it down and it levels a department if nobody defuses it.",
+                "Large bomb with a long, audible countdown. Comes as a beacon: use it in hand where the bomb should land. Bolt it down and it levels a department if nobody defuses it.",
                 new[] { "SyndicateBombBeacon" },
-                includes: "Delivery beacon: use it in hand where the bomb should land",
+                includes: "Delivery beacon",
                 squadStock: 1,
                 restriction: "One per squad"),
 
