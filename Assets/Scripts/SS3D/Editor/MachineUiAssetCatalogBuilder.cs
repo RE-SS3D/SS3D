@@ -100,6 +100,10 @@ namespace SS3D.Editor
             StyleSheet meterStyle = LoadRequired<StyleSheet>(MachineUiAssetPaths.MeterTemplateStyle, missing);
             StyleSheet[] meterComponents = LoadStyleSheets(gasLineStyles, missing);
 
+            VisualTreeAsset uplinkTemplate = LoadRequired<VisualTreeAsset>(MachineUiAssetPaths.OperativeUplinkTemplate, missing);
+            StyleSheet uplinkStyle = LoadRequired<StyleSheet>(MachineUiAssetPaths.OperativeUplinkTemplateStyle, missing);
+            StyleSheet[] uplinkComponents = LoadStyleSheets(MachineUiAssetPaths.OperativeUplinkComponentStyles, missing);
+
             if (missing.Count > 0)
             {
                 error = "Machine UI asset catalog rebuild failed. Missing assets:\n- "
@@ -160,7 +164,10 @@ namespace SS3D.Editor
                 mixerComponents,
                 meterTemplate,
                 meterStyle,
-                meterComponents);
+                meterComponents,
+                uplinkTemplate,
+                uplinkStyle,
+                uplinkComponents);
 
             EditorUtility.SetDirty(catalog);
             AssetDatabase.SaveAssets();

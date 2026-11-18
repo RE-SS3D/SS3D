@@ -31,6 +31,12 @@ namespace SS3D.UI.MachineInterface
             public const byte ReadId = 2;
         }
 
+        public static class Uplink
+        {
+            /// <summary>Buy the listing at this catalog index. One click, no confirmation.</summary>
+            public const byte Buy = 0;
+        }
+
         public static class IdConsole
         {
             public const byte ToggleAccessLevel = 0;

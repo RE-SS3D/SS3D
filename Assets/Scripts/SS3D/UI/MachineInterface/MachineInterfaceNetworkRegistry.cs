@@ -42,6 +42,9 @@ namespace SS3D.UI.MachineInterface
             Register<VentInterfaceSnapshot>(
                 GetVentInterfaceId,
                 VentInterfaceSnapshotMapper.ToViewModel);
+            Register<OperativeUplinkSnapshot>(
+                snapshot => snapshot.InterfaceId,
+                OperativeUplinkSnapshotMapper.ToViewModel);
         }
 
         public static void DispatchOpen<TSnapshot>(

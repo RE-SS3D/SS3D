@@ -89,9 +89,12 @@ namespace SS3D.Tests
 
             Hands hands = Body.GetComponentInParent<HumanInventory>().Hands;
             Assert.IsTrue(hands.PlayerHands.Any(hand => hand.ItemInHand != null), "The operative kit puts a gun in hand");
-            SyndicateBombBeacon[] beacons = Object.FindObjectsByType<SyndicateBombBeacon>(FindObjectsSortMode.None);
-            Assert.AreEqual(1, beacons.Length, "The first operative carries the squad's one bomb beacon");
-            Assert.IsNotNull(beacons[0].GetComponent<Item>().Container, "The beacon fits in the operative's bag");
+            Assert.IsEmpty(Object.FindObjectsByType<SyndicateBombBeacon>(FindObjectsSortMode.None),
+                "The squad's one bomb beacon is bought on the uplink, not issued");
+            SS3D.UI.MachineInterface.OperativeUplinkController[] uplinks =
+                Object.FindObjectsByType<SS3D.UI.MachineInterface.OperativeUplinkController>(FindObjectsSortMode.None);
+            Assert.AreEqual(1, uplinks.Length, "The operative carries a telecrystal uplink");
+            Assert.IsNotNull(uplinks[0].GetComponent<Item>().Container, "The uplink fits in the operative's bag");
 
             yield return WaitFor(() => Briefings.Count > 0, "the briefing reaches the operative's feed", 10f);
             StringAssert.Contains("Operative", Briefings[0], "The briefing names the role");
