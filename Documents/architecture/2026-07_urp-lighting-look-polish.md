@@ -2,7 +2,7 @@
 > Touches systems: rendering, electricity
 > Status: in-progress
 
-**Progress:** Half-toon fixture color/intensity response and shadow attenuation corrected. Finite palette normal frames and a first fixture/grade candidate applied. Skin/hair/cut and eight floor materials now use the same half-toon response. Softer spots, lower fixture fills and direct-light contact occlusion are checked in the running ministation; owner visual acceptance remains open.
+**Progress:** Half-toon fixture color/intensity response and shadow attenuation corrected. Finite palette normal frames and a first fixture/grade candidate applied. Skin/hair/cut and eight floor materials now use the same half-toon response. Softer spots, lower fixture fills and direct-light contact occlusion are checked in the running ministation. 2026-11-17: the owner redirected the gameplay plate to flat albedo × AO (references: "straight unlit + AO + lower contrast"). URP SSAO is replaced by CORTAO, and `STDefault` is now a flat-with-lighting shader tuned by the `StationShading` volume override. A first grade candidate is in `SS3D_GameplayVolumeProfile`; owner visual acceptance remains open.
 
 # URP lighting look polish (Jul 2026)
 
@@ -26,7 +26,7 @@ reference screenshots — without breaking dark rooms, emergency cones, or inven
 | Floor normals (derivative TBN) | `STFragment.hlsl`, floor mats |
 | Dual fixture lights (Spot + PointFill) | `LightTubeFixture` / `LightBulbFixture`, `LightPower` |
 | Emergency: dim short-range spot, fill **off** | `LightPower` |
-| Gameplay volume + contact occlusion | `SS3D_GameplayVolumeProfile`, Forward+ renderer — SSAO enabled; opaque ST passes consume direct-light AO |
+| Gameplay volume + contact occlusion | `SS3D_GameplayVolumeProfile` (incl. `StationShading`), Forward+ renderer — `CortaoAmbientOcclusionFeature`; ST samples `_SS3DOcclusionTexture` |
 | Icon preview lights | `RuntimePreviewGenerator` |
 
 ## Critical constraint — do not copy Built-in intensities
@@ -87,6 +87,8 @@ Prefer those over the brief 857-literal prefab numbers (wall-hug point + intensi
 [Documents/design/rendering-lighting.md](../design/rendering-lighting.md) §8 prefers Neutral
 tonemap and treats AO as mostly moot. Earlier plate experiments chased the **reference screenshot**
 (SSAO on, filmic grade). **Current candidate:** SSAO enabled for contact grounding, with opaque ST explicitly consuming direct-light AO. The previous all-one AO factors bypassed that contribution; the earlier conclusion that AO barely changed ST lighting is no longer a sound tuning baseline. This is a deliberate deviation from §8, evaluated in the running ministation. Keep DepthNormals for Decal Layers regardless of AO state.
+
+**2026-11-17 candidate (owner request):** the gameplay plate moves away from the design's fixture-driven look. `STDefault` was rewritten from scratch as flat albedo with lighting (`StationFlatLighting.hlsl`): albedo × (ambient × CORTAO occlusion + soft fixture light) + emission; the half-toon model is gone from station materials. The `StationShading` override tunes it (gameplay and defaults: ambient 0, light strength 4, wrap 1, rolloff 1, light contrast 2.5, light falloff 1: Built-in-style range-relative attenuation with lit surfaces on the rolloff plateau, matching the old SS3D overview reference; fixture fills 0.2 and spot shadow strength 1; tuned from live overview screenshots). Tonemapping is off so albedo reads as authored; contrast stays neutral (negative contrast lifted the shadows) with a warm filter and a purple-shadow / cream-highlight split tone. Bloom is limited to HDR emissives. With `Ambient` at 0 the station is lit only by fixtures again, so unpowered rooms go dark as the design intends; keep Ambient at 0 or tie it to Area lighting states.
 
 ## Out of scope for polish pass
 

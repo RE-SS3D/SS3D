@@ -26,12 +26,50 @@ STToonSettings ST_GetToonSettings()
     return settings;
 }
 
-float ST_ApplyHalfToonCurve(float ndotl)
+// Detail > Lit Offset: remaps N·L to 0..1 with the terminator shifted. Positive
+// wraps light past the geometric terminator, negative pulls it toward the light.
+float ST_LitIntensity(float ndotl)
+{
+    float offset = clamp(_Offset, -1.0, 1.0);
+    return ST_Clamp01((ndotl + offset) / max(1.0 + offset, 1e-4));
+}
+
+// Detail > Steps / Smoothness: quantizes a 0..1 intensity into cel bands,
+// softening the lower edge of each band by Smoothness (0 hard, 1 continuous).
+float ST_Band(float intense, STToonSettings settings)
+{
+    float step = 1.0 / floor(settings.steps);
+    int litNum = ceil(intense / step);
+    float lit = litNum * step;
+
+    float reduceV = _Offset - 1.0;
+    float reduceRes = 1.0 - ST_Clamp01(reduceV / 0.1);
+    float reduce = litNum == 1 ? reduceRes : 1.0;
+
+    float smthStart = lit - step;
+    float smthEnd = smthStart + step * settings.stpSmooth;
+
+    float smthLrp = ST_InvLerp01(smthEnd, smthStart, intense, 0.0);
+    float smthStp = ST_SmoothStepRange(smthEnd, smthStart, intense, 0.0);
+
+    float smoothV = ST_SmoothLerp(smthStp, smthLrp, settings.stpSmooth);
+    return ST_Clamp01(lit - smoothV * reduce * step);
+}
+
+float ST_ApplyHalfToonCurve(float ndotl, STToonSettings settings)
 {
     // Broad, smooth lit band like the original half-toon response. Keep the
     // unlit side in the authored shadow tint instead of wrapping light around
     // every face, which flattens curved characters under overlapping fixtures.
-    float lit = smoothstep(0.0, 0.75, saturate(ndotl));
+    // Lit Offset 0 + Segmented off is the plain curve; the Detail settings
+    // used to be skipped here entirely, so tuning them did nothing.
+    float lit = smoothstep(0.0, 0.75, ST_LitIntensity(ndotl));
+
+    // Band the curve output, not N·L, so Steps gives evenly spaced brightness levels.
+    if (_Segmented > 0.5)
+    {
+        lit = ST_Band(lit, settings);
+    }
 
     if (_RampStrength > 0.001)
     {
@@ -48,34 +86,15 @@ float ST_Toon(float dot, half atten, STToonSettings settings)
 
     if (_HalfToon > 0.5)
     {
-        float lit = ST_ApplyHalfToonCurve(dot) * atten;
+        float lit = ST_ApplyHalfToonCurve(dot, settings) * atten;
         result = clamp(lit, 0.0, settings.maxLight);
         return result;
     }
 
-    float offset = clamp(_Offset, -1.0, 1.0);
     float delta = max(settings.maxLight - _MinLight, 1e-5);
 
-    float intsPls = dot + offset;
-    float intsMax = 1.0 + offset;
-    float intense = ST_Clamp01(intsPls / intsMax);
-
-    float step = 1.0 / floor(settings.steps);
-    int litNum = ceil(intense / step);
-    float lit = litNum * step;
-
-    float reduceV = _Offset - 1.0;
-    float reduceRes = 1.0 - ST_Clamp01(reduceV / 0.1);
-    float reduce = litNum == 1 ? reduceRes : 1.0;
-
-    float smthStart = lit - step;
-    float smthEnd = smthStart + step * settings.stpSmooth;
-
-    float smthLrp = ST_InvLerp01(smthEnd, smthStart, intense, 0.0);
-    float smthStp = ST_SmoothStepRange(smthEnd, smthStart, intense, 0.0);
-
-    float smoothV = ST_SmoothLerp(smthStp, smthLrp, settings.stpSmooth);
-    float smooth = ST_Clamp01(lit - smoothV * reduce * step);
+    float intense = ST_LitIntensity(dot);
+    float smooth = ST_Band(intense, settings);
 
     float attenInv = clamp(atten, 1.0 - settings.maxAtten, 1.0);
     float dimLit = smooth * attenInv;

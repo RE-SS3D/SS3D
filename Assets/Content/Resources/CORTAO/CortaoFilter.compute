@@ -1,0 +1,64 @@
+// CORTAO filter pass: a sparse depth/normal-aware blur meant to precede temporal
+// filtering (TAA). Each thread filters a 2x2 pixel block with Gather().
+#pragma kernel CortaoFilter
+
+#define CORTAO_HLSL 1
+#define CORTAO_PERSPECTIVE_PROJECTION 1
+#define CORTAO_LARGE_FILTER 1
+#define CORTAO_FILTER_SYMMETRY 1
+#include "Assets/Scripts/External/CORTAO/CORTAOFilterPass.hlsl"
+
+Texture2D<float> _CortaoPackedData;
+Texture2D<float> _CortaoOcclusionInput;
+SamplerState sampler_PointClamp;
+RWTexture2D<float> _CortaoOcclusionOutput;
+
+uint _CortaoPackedResolution;
+float _CortaoDepthSensitivity;
+float _CortaoNormalSensitivity;
+float4 _CortaoTexelSize; // xy = 1 / resolution
+
+// Offsets move by whole pixels from a pixel corner, so the gathered 2x2 quad is the
+// same one an immediate Gather offset would pick (SM5 needs literal offsets).
+uint4 cortao_gatherPackedData(float2 texCoords, int2 offset)
+{
+    return asuint(_CortaoPackedData.Gather(sampler_PointClamp, texCoords + float2(offset) * _CortaoTexelSize.xy));
+}
+
+float4 cortao_gatherSSAO(float2 texCoords, int2 offset)
+{
+    return _CortaoOcclusionInput.Gather(sampler_PointClamp, texCoords + float2(offset) * _CortaoTexelSize.xy);
+}
+
+void cortao_writeFilterOutput(int2 pixelCoords, float ssao)
+{
+    _CortaoOcclusionOutput[pixelCoords] = ssao;
+}
+
+[numthreads(8, 8, 1)]
+void CortaoFilter(uint3 dispatchId : SV_DispatchThreadID)
+{
+    uint2 resolution = cortao_getResolution(_CortaoPackedResolution);
+    uint2 pixelCoords = (dispatchId.xy << uint2(1, 1)) | uint2(1, 1);
+
+    // cortao_filterPass skips sky pixels; default this thread's 2x2 block to unoccluded.
+    for (uint y = 0u; y < 2u; y++)
+    {
+        for (uint x = 0u; x < 2u; x++)
+        {
+            uint2 coords = pixelCoords - uint2(x, y);
+            if (coords.x < resolution.x && coords.y < resolution.y)
+            {
+                _CortaoOcclusionOutput[coords] = 1.0;
+            }
+        }
+    }
+
+    CORTAOFilterPassParameters parameters;
+    parameters.packedResolution = _CortaoPackedResolution;
+    parameters.depthSensitivity = _CortaoDepthSensitivity;
+    parameters.normalSensitivity = _CortaoNormalSensitivity;
+    parameters._padding0 = 0u;
+
+    cortao_filterPass(dispatchId.xy, parameters);
+}

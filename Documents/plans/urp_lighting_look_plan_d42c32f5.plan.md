@@ -271,4 +271,5 @@ Phase 1 is parallelizable across shader author, environment artist, and volume t
 
 ## Implementation notes
 
+- **2026-11-17:** URP SSAO replaced by CORTAO (`CortaoAmbientOcclusionFeature`); gameplay profile switched to the flat albedo × AO candidate via the `StationShading` override. See [2026-07_urp-lighting-look-polish.md](../architecture/2026-07_urp-lighting-look-polish.md) "Divergence from design".
 - **2026-07-29:** `ambient-baseline` marked completed — SSAO disabled on `SS3D_ForwardPlusRenderer` (`m_Active: 0`). Zero ambient / fixture-forward URP baseline was already in place. DepthNormals prepass **kept** for DBuffer + Decal Layers (blood); do not remove with SSAO. See [systems/rendering.md](../architecture/systems/rendering.md) Pitfalls.

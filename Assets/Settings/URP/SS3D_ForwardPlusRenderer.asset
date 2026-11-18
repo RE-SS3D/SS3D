@@ -155,7 +155,7 @@ MonoBehaviour:
     failOperation: 0
     zFailOperation: 0
   m_ShadowTransparentReceive: 1
-  m_RenderingMode: 2
+  m_RenderingMode: 0
   m_DepthPrimingMode: 0
   m_CopyDepthMode: 0
   m_DepthAttachmentFormat: 0
@@ -171,20 +171,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f62c9c65cf3354c93be831c8bc075510, type: 3}
-  m_Name: ScreenSpaceAmbientOcclusion
-  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.ScreenSpaceAmbientOcclusion
+  m_Script: {fileID: 11500000, guid: 905f8e057f1842a4bfbe9e5d357c42dc, type: 3}
+  m_Name: CortaoAmbientOcclusionFeature
+  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.CortaoAmbientOcclusionFeature
   m_Active: 1
-  m_Settings:
-    AOMethod: 1
-    Downsample: 1
-    AfterOpaque: 0
-    Source: 1
-    NormalSamples: 1
-    Intensity: 1
-    DirectLightingStrength: 0.8
-    Radius: 0.32
-    Samples: 1
-    BlurQuality: 0
-    Falloff: 100
-    SampleCount: -1
+  _prepassShader: {fileID: 7200000, guid: b07644f2cd4d4c9e814d6efd88087016, type: 3}
+  _mainPassShader: {fileID: 7200000, guid: 324df5fa0b524f98870cfd283d239b22, type: 3}
+  _filterShader: {fileID: 7200000, guid: 604607ead16843da8fd39abd4351e3f8, type: 3}
+  _quality: 2
+  _radius: 1
+  _maxScreenRadius: 0.05
+  _intensity: 1.316
+  _mipBias: -4
+  _maxSlopeCompensation: 4
+  _backfaceThreshold: 0.5
+  _backfaceBoost: 0
+  _filter: 0
+  _filterDepthSensitivity: 512
+  _filterNormalSensitivity: 128
+  _blurShader: {fileID: 7200000, guid: c9b39e5ec78142aabfafb82c880516fd, type: 3}
+  _blurRadius: 6
+  _blurDepthSensitivity: 48
+  _blurNormalPower: 8

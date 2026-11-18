@@ -1,5 +1,64 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9000000000000000106
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70afe9e12c7a7ed47911bb608a23a8ff, type: 3}
+  m_Name: SplitToning
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.SplitToning
+  active: 0
+  shadows:
+    m_OverrideState: 0
+    m_Value: {r: 0.5, g: 0.4316038, b: 0.4964051, a: 1}
+  highlights:
+    m_OverrideState: 1
+    m_Value: {r: 0.5, g: 0.4693396, b: 0.4992539, a: 1}
+  balance:
+    m_OverrideState: 1
+    m_Value: 13.1
+--- !u!114 &-9000000000000000105
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7ddf142f2e64e36acb847ac25a67ff1, type: 3}
+  m_Name: StationShading
+  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.StationShading
+  active: 1
+  Ambient:
+    m_OverrideState: 1
+    m_Value: 0
+  AmbientOcclusion:
+    m_OverrideState: 1
+    m_Value: 1
+  LightStrength:
+    m_OverrideState: 1
+    m_Value: 3.99
+  LightWrap:
+    m_OverrideState: 1
+    m_Value: 1
+  LightRolloff:
+    m_OverrideState: 1
+    m_Value: 1.352
+  LightOcclusion:
+    m_OverrideState: 1
+    m_Value: 0.399
+  LightContrast:
+    m_OverrideState: 1
+    m_Value: 1
+  LightFalloff:
+    m_OverrideState: 1
+    m_Value: 0.346
 --- !u!114 &-9000000000000000104
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -21,10 +80,10 @@ MonoBehaviour:
     m_Value: {x: 0.5, y: 0.5}
   intensity:
     m_OverrideState: 1
-    m_Value: 0.06
+    m_Value: 0.286
   smoothness:
     m_OverrideState: 1
-    m_Value: 0.35
+    m_Value: 0.45
   rounded:
     m_OverrideState: 0
     m_Value: 0
@@ -43,59 +102,19 @@ MonoBehaviour:
   active: 1
   postExposure:
     m_OverrideState: 1
-    m_Value: 0.51
+    m_Value: -0.52
   contrast:
     m_OverrideState: 1
-    m_Value: 5
+    m_Value: -6.7
   colorFilter:
     m_OverrideState: 1
-    m_Value: {r: 0.9528302, g: 0.9528302, b: 0.9528302, a: 1}
+    m_Value: {r: 1.2464474, g: 1.1483624, b: 1.3018868, a: 1}
   hueShift:
     m_OverrideState: 0
     m_Value: 0
   saturation:
     m_OverrideState: 1
-    m_Value: 5
---- !u!114 &-9000000000000000102
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97c23e3b12dc18c42a140437e53d3951, type: 3}
-  m_Name: Tonemapping
-  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.Tonemapping
-  active: 1
-  mode:
-    m_OverrideState: 1
-    m_Value: 1
-  neutralHDRRangeReductionMode:
-    m_OverrideState: 0
-    m_Value: 2
-  acesPreset:
-    m_OverrideState: 0
-    m_Value: 3
-  hueShiftAmount:
-    m_OverrideState: 0
     m_Value: 0
-  detectPaperWhite:
-    m_OverrideState: 0
-    m_Value: 0
-  paperWhite:
-    m_OverrideState: 0
-    m_Value: 300
-  detectBrightnessLimits:
-    m_OverrideState: 0
-    m_Value: 1
-  minNits:
-    m_OverrideState: 0
-    m_Value: 0.005
-  maxNits:
-    m_OverrideState: 0
-    m_Value: 1000
 --- !u!114 &-9000000000000000101
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -114,10 +133,10 @@ MonoBehaviour:
     m_Value: 1
   threshold:
     m_OverrideState: 1
-    m_Value: 0.8
+    m_Value: 1
   intensity:
     m_OverrideState: 1
-    m_Value: 1.3
+    m_Value: 0.8
   scatter:
     m_OverrideState: 1
     m_Value: 0.55
@@ -160,6 +179,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.VolumeProfile
   components:
   - {fileID: -9000000000000000101}
-  - {fileID: -9000000000000000102}
+  - {fileID: -9000000000000000105}
   - {fileID: -9000000000000000103}
   - {fileID: -9000000000000000104}
+  - {fileID: -9000000000000000106}

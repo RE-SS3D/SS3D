@@ -116,11 +116,27 @@
             #pragma multi_compile_instancing
 
             #include "STForwardPass.hlsl"
-            #include "STFragment.hlsl"
+            #include "StationFlatLighting.hlsl"
 
+            // Same flat + lighting model as STDefault, so glass matches the station.
             half4 ST_FragTransparent(STVaryings input) : SV_Target
             {
-                return ST_FragLit(input, true, true, _Color.a);
+                UNITY_SETUP_INSTANCE_ID(input);
+
+                float2 uv = TRANSFORM_TEX(input.uv, _MainTex);
+                half4 albedo = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv) * _Color;
+
+                StationSurface surface;
+                surface.albedo = albedo.rgb;
+                surface.emission = SAMPLE_TEXTURE2D(_EmissionMap, sampler_EmissionMap, uv).rgb * _EmissionColor.rgb;
+                surface.normalWS = input.normalWS;
+                surface.positionWS = input.positionWS;
+                surface.viewDirWS = input.viewDirWS;
+                surface.positionCS = input.positionCS;
+                // Not in the depth-normals prepass: the occlusion under it belongs to what is behind.
+                surface.receiveOcclusion = false;
+
+                return half4(Station_Shade(surface), _Color.a);
             }
             ENDHLSL
         }

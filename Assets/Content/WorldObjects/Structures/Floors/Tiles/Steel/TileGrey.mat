@@ -27,6 +27,7 @@ Material:
   m_ValidKeywords: []
   m_InvalidKeywords:
   - ENABLE_BLOOD
+  - _HALFTOON_ON
   - _NORMALMAP
   - _SEGMENTED_ON
   - _SPECULARHIGHLIGHTS_OFF
@@ -120,7 +121,7 @@ Material:
     - _Blood: 1
     - _BloodSmoothness: 0.5
     - _Bloodiness: 0.5
-    - _BumpScale: 1
+    - _BumpScale: 0
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _Clipped: 0
@@ -160,7 +161,7 @@ Material:
     - _SpecularHighlights: 0
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
-    - _Steps: 3
+    - _Steps: 4.23
     - _StpSmooth: 0
     - _Surface: 0
     - _UVSec: 0

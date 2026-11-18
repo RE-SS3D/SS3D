@@ -1,0 +1,71 @@
+// CORTAO prepass: packs linear depth and a low-precision view normal into one
+// 32-bit value per pixel and writes the first _CortaoMipCount mips in one dispatch.
+//
+// The packed buffer is R32_SFloat holding uint bits (asfloat/asuint) — CORTAO's
+// documented Shader Model 6.7 workaround, since DX11/SM5 cannot sample integer
+// textures. The packed values are positive normal floats or 0, so point sampling
+// preserves their bits.
+#pragma kernel CortaoPrepass
+
+#define CORTAO_HLSL 1
+#define CORTAO_PERSPECTIVE_PROJECTION 1
+#include "Assets/Scripts/External/CORTAO/CORTAOPrepass.hlsl"
+#include "CortaoCommon.hlsl"
+
+Texture2D<float> _CortaoDepthTexture;
+
+// One UAV per mip; slots past _CortaoMipCount are bound but never written.
+RWTexture2D<float> _CortaoPackedMip0;
+RWTexture2D<float> _CortaoPackedMip1;
+RWTexture2D<float> _CortaoPackedMip2;
+RWTexture2D<float> _CortaoPackedMip3;
+RWTexture2D<float> _CortaoPackedMip4;
+RWTexture2D<float> _CortaoPackedMip5;
+RWTexture2D<float> _CortaoPackedMip6;
+RWTexture2D<float> _CortaoPackedMip7;
+
+uint _CortaoPackedResolution;
+float _CortaoDepthScale;
+float _CortaoDepthOffset;
+uint _CortaoRandomSeed;
+uint _CortaoMipCount;
+
+float cortao_loadDepth(int2 pixelCoords)
+{
+    return _CortaoDepthTexture.Load(int3(pixelCoords, 0));
+}
+
+float3 cortao_loadNormal(int2 pixelCoords)
+{
+    return CortaoLoadViewNormal(pixelCoords);
+}
+
+void cortao_writePackedData(int2 pixelCoords, int mipLevel, uint data)
+{
+    float value = asfloat(data);
+    // mipLevel is a constant after CORTAO unrolls its mip loop.
+    if (mipLevel == 0) _CortaoPackedMip0[pixelCoords] = value;
+    else if (mipLevel == 1) _CortaoPackedMip1[pixelCoords] = value;
+    else if (mipLevel == 2) _CortaoPackedMip2[pixelCoords] = value;
+    else if (mipLevel == 3) _CortaoPackedMip3[pixelCoords] = value;
+    else if (mipLevel == 4) _CortaoPackedMip4[pixelCoords] = value;
+    else if (mipLevel == 5) _CortaoPackedMip5[pixelCoords] = value;
+    else if (mipLevel == 6) _CortaoPackedMip6[pixelCoords] = value;
+    else _CortaoPackedMip7[pixelCoords] = value;
+}
+
+[numthreads(8, 8, 1)]
+void CortaoPrepass(uint3 dispatchId : SV_DispatchThreadID)
+{
+    CORTAOPrepassParameters parameters;
+    parameters.packedResolution = _CortaoPackedResolution;
+    parameters.depthScale = _CortaoDepthScale;
+    parameters.depthOffset = _CortaoDepthOffset;
+    parameters.randomSeed = _CortaoRandomSeed;
+    parameters.mipCount = _CortaoMipCount;
+    parameters._padding0 = 0u;
+    parameters._padding1 = 0u;
+    parameters._padding2 = 0u;
+
+    cortao_prepass(dispatchId.xy, parameters);
+}

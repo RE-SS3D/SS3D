@@ -32,9 +32,26 @@ void ST_BuildInputData(STSurfaceInput surface, float4 positionCS, out InputData 
 #endif
 }
 
-AmbientOcclusionFactor ST_GetAmbientOcclusion(InputData inputData)
+// Globals (not PerMaterial), published per camera by CortaoAmbientOcclusionFeature.
+// CORTAO occlusion; white when AO is off. Not URP's _SCREEN_SPACE_OCCLUSION path:
+// URP strips that keyword from builds without its own SSAO feature.
+TEXTURE2D(_SS3DOcclusionTexture);
+// StationShading volume: x = flat (unlit) albedo, y = fixture-light reduction
+// (0 keeps all), z = occlusion on the flat term, w = occlusion on fixture light.
+// All-zero (feature absent) means fixture lighting only, no AO.
+float4 _SS3DFlatShading;
+// StationShading light pools: x = strength (0 = off), y = wrap past the terminator.
+float4 _SS3DLightPools;
+
+half ST_SampleOcclusion(float2 normalizedScreenSpaceUV)
 {
-    return GetScreenSpaceAmbientOcclusion(inputData.normalizedScreenSpaceUV);
+#if defined(ST_NO_SCREEN_OCCLUSION)
+    // Transparent surfaces are not in the depth-normals prepass, so the texture
+    // under them holds the occlusion of whatever is behind.
+    return 1.0;
+#else
+    return SAMPLE_TEXTURE2D(_SS3DOcclusionTexture, sampler_LinearClamp, normalizedScreenSpaceUV).r;
+#endif
 }
 
 float4 ST_EvaluateDirectLight(
@@ -89,19 +106,28 @@ float4 ST_EvaluateDirectLight(
 
 void ST_AccumulateLight(
     inout float4 result,
+    inout float3 poolRadiance,
     STSurfaceInput surface,
     Light light,
-    bool swapLightColorBlend)
+    bool swapLightColorBlend,
+    half directOcclusion)
 {
     float distanceAttenuation = light.distanceAttenuation;
     // Limit distance hotspots before applying visibility. Compressing the
     // product would brighten partial shadows near the light source.
     distanceAttenuation = distanceAttenuation / (1.0 + 1.75 * distanceAttenuation);
-    float lightAttenuation = light.shadowAttenuation * distanceAttenuation;
+    float lightAttenuation = light.shadowAttenuation * distanceAttenuation * directOcclusion;
     if (dot(light.color, 1.0) <= 0.0 || lightAttenuation <= 0.0)
     {
         return;
     }
+
+    // Light pools: plain wrapped diffuse, no toon banding or shadow tint, so the
+    // flat look still brightens near fixtures. Back faces stay unlit: a full
+    // omni term would leak unshadowed fill lights through walls.
+    float wrap = _SS3DLightPools.y;
+    float poolDiffuse = saturate((dot(normalize(surface.normalWS), normalize(light.direction)) + wrap) / (1.0 + wrap));
+    poolRadiance += light.color * (lightAttenuation * poolDiffuse);
 
     float4 lit = ST_EvaluateDirectLight(
         surface,
@@ -157,7 +183,15 @@ float4 ST_EvaluateLighting(
     ST_BuildInputData(surface, positionCS, inputData);
 
     half4 shadowMask = CalculateShadowMask(inputData);
-    AmbientOcclusionFactor aoFactor = ST_GetAmbientOcclusion(inputData);
+    // Neutral: URP only applies aoFactor under _SCREEN_SPACE_OCCLUSION, which ST no
+    // longer compiles. CORTAO occlusion is applied below via _SS3DFlatShading.
+    AmbientOcclusionFactor aoFactor;
+    aoFactor.indirectAmbientOcclusion = 1.0;
+    aoFactor.directAmbientOcclusion = 1.0;
+
+    half occlusion = ST_SampleOcclusion(inputData.normalizedScreenSpaceUV);
+    half directOcclusion = lerp(1.0, occlusion, _SS3DFlatShading.w);
+    float3 poolRadiance = 0.0;
 
 #if defined(_MAIN_LIGHT_SHADOWS) || defined(_MAIN_LIGHT_SHADOWS_CASCADE) || defined(_MAIN_LIGHT_SHADOWS_SCREEN)
     Light mainLight = GetMainLight(inputData, shadowMask, aoFactor);
@@ -168,7 +202,7 @@ float4 ST_EvaluateLighting(
     bool mainLightActive = dot(mainLight.color, 1.0) > 0.0;
     if (!gateZeroLight || mainLightActive)
     {
-        ST_AccumulateLight(result, surface, mainLight, swapLightColorBlend);
+        ST_AccumulateLight(result, poolRadiance, surface, mainLight, swapLightColorBlend, directOcclusion);
     }
 
 #if defined(_ADDITIONAL_LIGHTS)
@@ -180,15 +214,26 @@ float4 ST_EvaluateLighting(
         CLUSTER_LIGHT_LOOP_SUBTRACTIVE_LIGHT_CHECK
 
         Light light = GetAdditionalLight(lightIndex, inputData, shadowMask, aoFactor);
-        ST_AccumulateLight(result, surface, light, swapLightColorBlend);
+        ST_AccumulateLight(result, poolRadiance, surface, light, swapLightColorBlend, directOcclusion);
     }
     #endif
 
     LIGHT_LOOP_BEGIN(pixelLightCount)
         Light light = GetAdditionalLight(lightIndex, inputData, shadowMask, aoFactor);
-        ST_AccumulateLight(result, surface, light, swapLightColorBlend);
+        ST_AccumulateLight(result, poolRadiance, surface, light, swapLightColorBlend, directOcclusion);
     LIGHT_LOOP_END
 #endif
+
+    // Station look: albedo × (flat level × occlusion + soft light pools), under a
+    // reduced share of the half-toon fixture light.
+    result.rgb *= 1.0 - _SS3DFlatShading.y;
+    if (_SS3DFlatShading.x > 0.0 || _SS3DLightPools.x > 0.0)
+    {
+        float3 albedo = (SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, surface.uv) * _Color * _ColIntense + _ColBright).rgb;
+        half flatOcclusion = lerp(1.0, occlusion, _SS3DFlatShading.z);
+        float3 flatLight = _SS3DFlatShading.x * flatOcclusion + _SS3DLightPools.x * poolRadiance;
+        result.rgb += albedo * flatLight;
+    }
 
     result.rgb += SAMPLE_TEXTURE2D(_EmissionMap, sampler_EmissionMap, surface.uv).rgb * _EmissionColor.rgb;
     result.a = alphaMultiplier;

@@ -95,23 +95,23 @@ Material:
     - _MinLight: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Offset: 0.65
+    - _Offset: 1
     - _OtlWidth: 1
     - _Parallax: 0.02
-    - _RampStrength: 0.35
+    - _RampStrength: 0.417
     - _Segmented: 1
     - _Shininess: 0.7
-    - _ShnIntense: 0.08
+    - _ShnIntense: 0
     - _ShnOverlap: 0
     - _ShnRange: 0.15
     - _ShnSmooth: 1
     - _SmoothnessTextureChannel: 0
-    - _SpecIntensity: 0.12
+    - _SpecIntensity: 0
     - _SpecPower: 32
     - _SpecularHighlights: 0
     - _SrcBlend: 1
-    - _Steps: 1
-    - _StpSmooth: 1
+    - _Steps: 5.02
+    - _StpSmooth: 0
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:

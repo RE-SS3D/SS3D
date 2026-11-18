@@ -111,12 +111,12 @@ Material:
     - _MinLight: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Offset: 0.737
+    - _Offset: 0
     - _Parallax: 0.02
     - _QueueOffset: 0
     - _RampStrength: 0
     - _ReceiveShadows: 1
-    - _Segmented: 1
+    - _Segmented: 0
     - _ShnIntense: 0
     - _ShnOverlap: 0
     - _ShnRange: 0.15
