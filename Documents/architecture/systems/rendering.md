@@ -39,6 +39,7 @@ Client FOV / fog-of-war is a hard black mask driven by batched physics raycasts 
 - `Assets/Editor/URPMigration/SelectionPickRendererFeatureSetup.cs` — idempotent selection-feature registration and recovery-map synchronization
 - `Assets/Settings/URP/` — per-tier pipeline assets and the one renderer, `SS3D_ForwardPlusRenderer` (Forward despite the name; includes Decal Renderer feature)
 - **SS3D/Rendering/Run Content Prefab Recipes** — `RendererProbeUsageSetup` (light/reflection probes Off on Content prefabs)
+- **SS3D/Testing/Start Station Look-Dev Round** — `StationLookDev`: a hosted, embarked round with an overview camera and FOV off, for tuning `StationShading` live (`SetShading`, `DescribeShading`, `SaveShading`) and judging it from Game view captures; undone on Play exit. Runbook: [Testing/ui/README.md](../../../Testing/ui/README.md#station-look-dev-round)
 
 ## Extension points
 

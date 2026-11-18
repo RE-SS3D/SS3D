@@ -1,0 +1,10 @@
+# Station look-dev round: SS3D/Testing/Start Station Look-Dev Round (StationLookDev) sets this as the editor's
+# test script in memory, then hosts. Ready, start, embark; StationLookDev frames the overview once the body
+# is spawned. Runbook: Testing/ui/README.md, "Station look-dev round".
+wait_timeout 180
+wait_connected
+ready
+start_round
+wait_round Ongoing
+embark
+assert_embarked

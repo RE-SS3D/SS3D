@@ -252,6 +252,58 @@ Before building, make sure `Game.unity` is not dirty: `BuildPlayer` opens a bloc
 "Scene(s) Have Been Modified" dialog. If it is dirty after a playtest, look for root
 `Chunk [x,z]` objects (leaked tile load, see the tile map) rather than saving blindly.
 
+## Station look-dev round
+
+**SS3D → Testing → Start Station Look-Dev Round** (`StationLookDev`, `Assets/Scripts/SS3D/Editor/Automation/LookDev/`)
+is a tool for tuning the station look from screenshots, not a test. It needs no venv or MCP, so it runs on Windows too.
+It enters Play Mode as Host and runs [`lookdev-round.txt`](lookdev-round.txt) through `AutomationSubSystem` (ready,
+start the round, embark) on the station that Application Settings' `EditorStationTemplate` names. Once the body is
+spawned and the camera follows it, it pulls the camera out to distance 15, 55° above the body, and turns the
+line-of-sight mask off. `StationLookDev.State` reads `Ready` four seconds later (about 30 s after the menu on
+classic-ministation, warm editor). A failed script, or no body after 7 minutes, sets `Failed` and
+`StationLookDev.Failure`, and leaves Play running for a look.
+
+Exiting Play Mode puts back what it changed: the in-memory `TestScriptPath` and network type, the Play Mode start
+scene, the Game view size (it selects the pilots' 1920×1080), the warning stack-trace level the script raises to Full,
+and the static `VisionRenderContext` flags. The saved state lives in `SessionState`, so a script reload mid-round still
+restores on exit, and a menu call whose Play never starts restores after 15 s. While a round runs,
+`StationLookDevSaveGuard` leaves the application and network settings assets out of every asset save: Coimbra marks
+every `ScriptableSettings` dirty on each domain reload, entering Play reloads it, and a save would otherwise write the
+look-dev script path to disk.
+
+From the Unity CLI (`com.unity.pipeline`), with the Editor open on this checkout:
+
+```bash
+unity command editor invoke_menu --path "SS3D/Testing/Start Station Look-Dev Round"
+# The Pipeline drops for a few seconds while Play starts ("No Pipeline instance found"); retry.
+unity command --timeout 420 job wait --condition '{"member":"SS3D.Editor.Automation.StationLookDev.State","value":"Ready"}' --timeout 400
+unity command capture game_view --width 1920 --height 1080 --output-path artifacts/lookdev/before.png
+unity command script eval --code 'return SS3D.Editor.Automation.StationLookDev.SetShading("LightStrength", 5);'
+unity command capture game_view --width 1920 --height 1080 --output-path artifacts/lookdev/after.png
+unity command editor.playmode stop
+```
+
+The first `--timeout` lifts the CLI's 30 s default; the second is the wait's own. A blocking wait holds the Pipeline's
+command queue; to keep it free, add `--async true` and poll `unity command job wait_status --wait-id <id>`. A `Failed`
+round never meets the condition, so on a timeout read `StationLookDev.Failure`. Without `--width/--height` the capture
+is 1280×720.
+
+`StationLookDev` statics for `script eval` (`return …;` prints the result):
+
+| Call | Does |
+|------|------|
+| `SetShading("LightStrength", 5)` | Sets one `StationShading` field on `SS3D_GameplayVolumeProfile` with its override on (Undo-recorded); shows next frame. The result names the stored value and says when the slider range clamped it (`LightStrength: 3.99 -> 8 (clamped: 20 is outside [0, 8])`). |
+| `DescribeShading()` | Every `StationShading` parameter: the value a round uses, the gameplay override, the `DefaultVolumeProfile` baseline and the range. |
+| `SaveShading()` | Writes the gameplay profile, and nothing else, to disk. |
+| `Frame(15, 55)` | Re-frames the camera (distance on CameraFollow's exponential scale, which the zoom wheel caps at 15; vertical angle clamped to 10–80). |
+| `SetLineOfSight(true)` | Turns the FOV mask back on to check the look under it. |
+
+Shading edits are the tuning result, so Play exit does not undo them: they stay on the profile asset, dirty, until a
+save writes them (Undo or git reverts them). Prefer `SaveShading()` to a project-wide save. A parameter with its
+override off reads the `Assets/DefaultVolumeProfile.asset` baseline; when a tuned value becomes the new default, change
+both profiles, the C# constants and the shader fallback together
+([rendering map, Pitfalls](../../Documents/architecture/systems/rendering.md#pitfalls)).
+
 ## Troubleshooting
 
 - Missing license: check Unity Hub activation for the installed editor before running pilots.
