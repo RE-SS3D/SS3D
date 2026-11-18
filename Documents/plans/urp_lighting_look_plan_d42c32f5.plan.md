@@ -55,7 +55,7 @@ isProject: false
 
 **Current fork state (gaps):**
 
-- URP 17 Forward+ foundation shipped ([MERGE_GUIDE.md](Documents/MERGE_GUIDE.md) § URP migration); [rendering.md](Documents/architecture/systems/rendering.md) is `partial`.
+- URP 17 Forward+ foundation shipped ([merge guide](Documents/archive/architecture/2026-11_merge-guide.md) § URP migration); [rendering.md](Documents/architecture/systems/rendering.md) is `partial`.
 - [Simple Toon URP port](Assets/Content/Resources/Simple%20Toon/Shaders/STDefault.shader) exists but uses procedural step bands with **hard black** shadow color (`STCore.hlsl` line 25) — not the half-toon ramp + tinted shadows the design calls for.
 - Station materials are mostly **URP Lit**; characters use Simple Toon (~7 mats). Hybrid look, not unified station aesthetic.
 - Post-processing exists for **lobby/intro cameras only** ([SS3D_LobbyVolumeProfile.asset](Assets/Settings/URP/VolumeProfiles/SS3D_LobbyVolumeProfile.asset)); no in-round gameplay volume.

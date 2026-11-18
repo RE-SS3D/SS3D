@@ -5,7 +5,7 @@ agent: the repository is laid out so an agent can find the right code, follow th
 check its own work. You stay the author. You choose the work, steer the agent, and own every line you
 submit.
 
-New here after working on SS3D before November 2026? Read the [merge guide](Documents/MERGE_GUIDE.md) first.
+New here after working on SS3D before November 2026? Read the [merge guide](Documents/archive/architecture/2026-11_merge-guide.md) first.
 
 ## Before you start
 
@@ -83,8 +83,9 @@ PRs are squash-merged, so the PR title becomes the commit message on `develop`.
 **CI on your PR.** The docs and link checks run on every PR. Unity jobs (EditMode, and the multiplayer smoke set
 when a PR is labelled `test:multiplayer`) run on PRs from branches of this repository. PRs from forks never
 receive the project's Unity license, so their Unity jobs wait for a maintainer, who reads the change and runs
-them by hand (`gh workflow run editmodetestrunner.yml -f pr=<number>`). Run `validate.sh` locally before you
-ask.
+them by hand (`gh workflow run editmodetestrunner.yml -f pr=<number>`). If you have write access here and open
+the PR from your own fork, EditMode is dispatched for you and shows as the `EditMode (dispatched)` status.
+Run `validate.sh` locally before you ask.
 
 ## Code style
 

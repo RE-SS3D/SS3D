@@ -11,17 +11,20 @@ namespace SS3D.Systems.StructuralDamage
     /// </summary>
     public static class BlastVfxPresenter
     {
-        public static void Play(Vector3 epicenter, float yield)
+        /// <param name="flameTiles">The tiles the blast reached, from <see cref="BlastFlameTiles.Pack"/>; empty for none.</param>
+        public static void Play(Vector3 epicenter, float yield, byte[] flameTiles = null)
         {
             BlastVfxCatalog catalog = BlastVfxCatalog.Instance;
             float yieldScale = BlastVfxFalloff.YieldScale(yield);
+            float violence = BlastVfxFalloff.Violence(yield);
 
-            SpawnBurst(epicenter, yieldScale, catalog);
+            SpawnBurst(epicenter, yieldScale, violence, catalog);
+            BlastFlameFront.Spawn(epicenter, flameTiles);
             BlastScorchSpawner.SpawnAt(epicenter, yieldScale, catalog);
-            ApplyLocalFeedback(epicenter, yieldScale, catalog);
+            ApplyLocalFeedback(epicenter, yieldScale, violence, catalog);
         }
 
-        private static void SpawnBurst(Vector3 epicenter, float yieldScale, BlastVfxCatalog catalog)
+        private static void SpawnBurst(Vector3 epicenter, float yieldScale, float violence, BlastVfxCatalog catalog)
         {
             Vector3 position = epicenter + Vector3.up * 0.55f;
             GameObject root;
@@ -41,15 +44,16 @@ namespace SS3D.Systems.StructuralDamage
             if (effect == null)
                 effect = root.AddComponent<BlastExplosionEffect>();
 
-            effect.Play(yieldScale, catalog);
+            effect.Play(yieldScale, catalog, violence);
         }
 
-        private static void ApplyLocalFeedback(Vector3 epicenter, float yieldScale, BlastVfxCatalog catalog)
+        private static void ApplyLocalFeedback(Vector3 epicenter, float yieldScale, float violence, BlastVfxCatalog catalog)
         {
-            float shakeFull = catalog != null ? catalog.ShakeFullRange : 6f;
-            float shakeMax = catalog != null ? catalog.ShakeMaxRange : 24f;
-            float flashFull = catalog != null ? catalog.FlashFullRange : 4f;
-            float flashMax = catalog != null ? catalog.FlashMaxRange : 20f;
+            // A violent blast is felt and seen further away, not only harder up close.
+            float shakeFull = (catalog != null ? catalog.ShakeFullRange : 6f) * violence;
+            float shakeMax = (catalog != null ? catalog.ShakeMaxRange : 24f) * violence;
+            float flashFull = (catalog != null ? catalog.FlashFullRange : 4f) * violence;
+            float flashMax = (catalog != null ? catalog.FlashMaxRange : 20f) * violence;
 
             if (!TryGetListenerPosition(out Vector3 listener))
                 return;
@@ -62,8 +66,10 @@ namespace SS3D.Systems.StructuralDamage
                 CameraFollow follow = SceneRegistry<CameraFollow>.Count > 0 ? SceneRegistry<CameraFollow>.All[0] : null;
                 if (follow != null)
                 {
-                    float amplitude = (catalog != null ? catalog.ShakeAmplitude : 0.75f) * yieldScale * shakeAttenuation;
-                    float duration = catalog != null ? catalog.ShakeDuration : 0.85f;
+                    // Mostly longer, barely wider: the shake is already metres wide at a big charge's full range.
+                    float amplitude = (catalog != null ? catalog.ShakeAmplitude : 0.75f) * yieldScale
+                        * Mathf.Sqrt(violence) * shakeAttenuation;
+                    float duration = (catalog != null ? catalog.ShakeDuration : 0.85f) * violence * violence;
                     follow.AddImpulse(amplitude, duration);
                 }
             }
@@ -72,7 +78,8 @@ namespace SS3D.Systems.StructuralDamage
             if (flashAttenuation > 0.01f
                 && SubSystems.TryGet(out ScreenEffectsSubSystem screenEffects))
             {
-                screenEffects.TriggerBlastFlash(flashAttenuation * Mathf.Clamp01(0.65f + 0.35f * yieldScale));
+                screenEffects.TriggerBlastFlash(flashAttenuation * Mathf.Clamp01(0.65f + 0.35f * yieldScale) * violence,
+                    violence);
             }
         }
 

@@ -23,8 +23,6 @@ ALLOWED_PREFIXES = ("Documents/archive/",)
 ALLOWED_FILES = {
     ".mailmap",                                       # author identities
     "CLAUDE.md",                                      # explains how to read pre-merge #N references
-    "Documents/MERGE_GUIDE.md",                       # describes the merge itself
-    "Documents/architecture/2026-11_upstream-merge.md",
     "Assets/Scripts/Tests/EditMode/ServerInfoTests.cs",  # git-remote parsing inputs
     "Tools/ci/check_fork_links.py",
 }

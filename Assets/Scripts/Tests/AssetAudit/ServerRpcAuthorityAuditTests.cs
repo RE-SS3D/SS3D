@@ -74,6 +74,7 @@ namespace SS3D.Tests.AssetAudit
             { "HumanInventory.CmdTransferItem", AuthorityCheck.Revalidated },
             { "Hands.CmdSetActiveHand", AuthorityCheck.OwnerOfArgument },
             { "ContainerViewer.CmdContainerClose", AuthorityCheck.ServerDerived },
+            { "ContainerViewer.CmdShowContainerUI", AuthorityCheck.Revalidated },
             { "ItemSubSystem.CmdSpawnItem", AuthorityCheck.Admin },
             { "ItemSubSystem.CmdSpawnItemInContainer", AuthorityCheck.Admin },
 

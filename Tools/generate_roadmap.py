@@ -151,8 +151,8 @@ def render_roadmap(gates):
         out.append(f"| [{g['name']}](#{anchor(g['name'])}) | {g['summary']} | {progress(g)} |")
     out += [
         "",
-        "What already works, system by system, is listed in",
-        "[the merge guide](Documents/MERGE_GUIDE.md#shipped-gameplay).",
+        "What already works, system by system, is in the",
+        "[coverage table](Documents/architecture/INDEX.md#coverage-table).",
     ]
     for g in gates:
         out += [

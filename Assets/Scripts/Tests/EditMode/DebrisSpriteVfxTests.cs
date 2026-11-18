@@ -84,6 +84,35 @@ namespace EditorTests
             }
         }
 
+        [Test]
+        public void BlastDebris_SharesOneEmitterPerBlast_AndFliesOutward()
+        {
+            BlastDebrisPush.Clear();
+            BlastDebrisPush.Begin(Vector3.zero, 10f);
+            ParticleSystem first = null;
+            try
+            {
+                first = DebrisSpriteVfx.Burst(new Vector3(3f, 1f, 0f), Vector3.up, DebrisKind.Metal, 5, 2f, 0.1f);
+                if (first == null)
+                    Assert.Ignore("No graphics device: debris is client presentation only.");
+                ParticleSystem second = DebrisSpriteVfx.Burst(new Vector3(5f, 1f, 0f), Vector3.up, DebrisKind.Metal, 4, 2f, 0.1f);
+
+                Assert.AreSame(first, second, "A blast's breaks share one emitter, not one each");
+                Assert.AreEqual(DebrisSpriteVfx.MaxBlastParticles, first.main.maxParticles);
+                var particles = new ParticleSystem.Particle[16];
+                int count = first.GetParticles(particles);
+                Assert.AreEqual(9, count, "Every fragment is kept");
+                for (int i = 0; i < count; i++)
+                    Assert.Greater(particles[i].velocity.x, 0f, "East of the epicenter, thrown east");
+            }
+            finally
+            {
+                BlastDebrisPush.Clear();
+                if (first != null)
+                    Object.DestroyImmediate(first.gameObject);
+            }
+        }
+
         [TestCase(DebrisKind.Glass)]
         [TestCase(DebrisKind.Electronics)]
         public void BurstDrawsOnlyFromItsKindsSprites(DebrisKind kind)
