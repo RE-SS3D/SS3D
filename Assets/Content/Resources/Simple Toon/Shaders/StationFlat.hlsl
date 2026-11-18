@@ -1,8 +1,8 @@
 #ifndef SS3D_STATION_FLAT_INCLUDED
 #define SS3D_STATION_FLAT_INCLUDED
 
-// Inputs and passes for STDefault ("Simple Toon/SToon Default"), the station's
-// opaque shader: flat albedo with fixture lighting (StationFlatLighting.hlsl).
+// Inputs and passes for STDefault ("SS3D/Station"), the station's opaque
+// shader: flat albedo with fixture lighting (StationFlatLighting.hlsl).
 // Property names match the old Simple Toon set so existing materials keep their
 // texture, colour, normal map and emission. Every pass includes this file, so
 // all passes share one UnityPerMaterial layout (SRP Batcher).
@@ -22,7 +22,18 @@ CBUFFER_START(UnityPerMaterial)
     half4 _Color;
     half4 _EmissionColor;
     half _BumpScale;
+    half _Cutoff;
 CBUFFER_END
+
+// Alpha Clip: every pass discards the same texels, so depth, normals (CORTAO),
+// decal layers and shadows all match the visible cutout.
+void Station_AlphaClip(float2 uv)
+{
+#if defined(_ALPHATEST_ON)
+    half alpha = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, TRANSFORM_TEX(uv, _MainTex)).a * _Color.a;
+    clip(alpha - _Cutoff);
+#endif
+}
 
 struct StationAttributes
 {
@@ -98,7 +109,11 @@ half4 StationForwardFragment(StationVaryings input) : SV_Target
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
     float2 uv = TRANSFORM_TEX(input.uv, _MainTex);
-    half3 albedo = (SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv) * _Color).rgb;
+    half4 albedoAlpha = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv) * _Color;
+#if defined(_ALPHATEST_ON)
+    clip(albedoAlpha.a - _Cutoff);
+#endif
+    half3 albedo = albedoAlpha.rgb;
 
     // DBuffer blood / surface marks tint the albedo, so they are lit like the surface.
 #if defined(_DBUFFER)
@@ -120,11 +135,14 @@ half4 StationForwardFragment(StationVaryings input) : SV_Target
 #endif
 
 // ---------------------------------------------------------------------------
-// DepthOnly
+// DepthOnly (also the ShadowCaster varyings)
 
 struct StationDepthVaryings
 {
     float4 positionCS : SV_POSITION;
+#if defined(_ALPHATEST_ON)
+    float2 uv : TEXCOORD0;
+#endif
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
 };
@@ -136,6 +154,9 @@ StationDepthVaryings StationDepthOnlyVertex(StationAttributes input)
     UNITY_TRANSFER_INSTANCE_ID(input, output);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
     output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
+#if defined(_ALPHATEST_ON)
+    output.uv = input.uv;
+#endif
     return output;
 }
 
@@ -143,8 +164,56 @@ half StationDepthOnlyFragment(StationDepthVaryings input) : SV_Target
 {
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+#if defined(_ALPHATEST_ON)
+    Station_AlphaClip(input.uv);
+#endif
     return input.positionCS.z;
 }
+
+// ---------------------------------------------------------------------------
+// ShadowCaster: URP's ShadowCasterPass.hlsl reads Lit's _BaseMap / _BaseColor
+// for alpha clipping, so the station shader biases and clips on its own.
+
+#if defined(STATION_SHADOW_CASTER_PASS)
+
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
+
+// Set per shadow-casting light by URP (ShadowUtils.SetupShadowCasterConstantBuffer).
+float3 _LightDirection;
+float3 _LightPosition;
+
+StationDepthVaryings StationShadowVertex(StationAttributes input)
+{
+    StationDepthVaryings output = (StationDepthVaryings)0;
+    UNITY_SETUP_INSTANCE_ID(input);
+    UNITY_TRANSFER_INSTANCE_ID(input, output);
+
+    float3 positionWS = TransformObjectToWorld(input.positionOS.xyz);
+    float3 normalWS = TransformObjectToWorldNormal(input.normalOS);
+#if defined(_CASTING_PUNCTUAL_LIGHT_SHADOW)
+    float3 lightDirectionWS = normalize(_LightPosition - positionWS);
+#else
+    float3 lightDirectionWS = _LightDirection;
+#endif
+
+    float4 positionCS = TransformWorldToHClip(ApplyShadowBias(positionWS, normalWS, lightDirectionWS));
+    output.positionCS = ApplyShadowClamping(positionCS);
+#if defined(_ALPHATEST_ON)
+    output.uv = input.uv;
+#endif
+    return output;
+}
+
+half4 StationShadowFragment(StationDepthVaryings input) : SV_Target
+{
+    UNITY_SETUP_INSTANCE_ID(input);
+#if defined(_ALPHATEST_ON)
+    Station_AlphaClip(input.uv);
+#endif
+    return 0;
+}
+
+#endif
 
 // ---------------------------------------------------------------------------
 // DepthNormals: geometric world normal (CORTAO input) + rendering layers for
@@ -154,6 +223,9 @@ struct StationDepthNormalsVaryings
 {
     float4 positionCS : SV_POSITION;
     float3 normalWS : TEXCOORD0;
+#if defined(_ALPHATEST_ON)
+    float2 uv : TEXCOORD1;
+#endif
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
 };
@@ -166,6 +238,9 @@ StationDepthNormalsVaryings StationDepthNormalsVertex(StationAttributes input)
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
     output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
     output.normalWS = TransformObjectToWorldNormal(input.normalOS);
+#if defined(_ALPHATEST_ON)
+    output.uv = input.uv;
+#endif
     return output;
 }
 
@@ -183,6 +258,9 @@ void StationDepthNormalsFragment(
 {
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+#if defined(_ALPHATEST_ON)
+    Station_AlphaClip(input.uv);
+#endif
     outNormalWS = half4(NormalizeNormalPerPixel(input.normalWS), 0.0);
 
 #ifdef _WRITE_RENDERING_LAYERS

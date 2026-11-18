@@ -4,9 +4,12 @@
 //
 // Lighting lives in StationFlatLighting.hlsl and is tuned globally through the
 // "SS3D/Station Shading" volume override (ambient level, light strength, wrap,
-// rolloff, CORTAO occlusion strengths), not per material. The name is kept from
-// the old Simple Toon shader so existing materials and references still resolve.
-Shader "Simple Toon/SToon Default"
+// rolloff, CORTAO occlusion strengths), not per material. Materials reference
+// this file by GUID; the file keeps its old Simple Toon name (STDefault) and folder.
+//
+// Alpha Clip (_ALPHATEST_ON) discards texels below _Cutoff (albedo alpha × colour
+// alpha) in every pass, for cutout floor stripes and decals.
+Shader "SS3D/Station"
 {
     Properties
     {
@@ -18,6 +21,9 @@ Shader "Simple Toon/SToon Default"
 
         _EmissionMap ("Emission Map", 2D) = "white" {}
         [HDR] _EmissionColor ("Emission Color", COLOR) = (0,0,0,0)
+
+        [Toggle(_ALPHATEST_ON)] _AlphaClip ("Alpha Clip", Float) = 0
+        _Cutoff ("Alpha Cutoff", Range(0, 1)) = 0.5
     }
 
     SubShader
@@ -51,6 +57,7 @@ Shader "Simple Toon/SToon Default"
             // DBuffer blood / surface marks (body wounds, floor splatters).
             #pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3
             #pragma multi_compile_instancing
+            #pragma shader_feature_local_fragment _ALPHATEST_ON
 
             #define STATION_FORWARD_PASS
             #include "StationFlat.hlsl"
@@ -69,14 +76,15 @@ Shader "Simple Toon/SToon Default"
 
             HLSLPROGRAM
             #pragma target 2.0
-            #pragma vertex ShadowPassVertex
-            #pragma fragment ShadowPassFragment
+            #pragma vertex StationShadowVertex
+            #pragma fragment StationShadowFragment
 
             #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
             #pragma multi_compile_instancing
+            #pragma shader_feature_local _ALPHATEST_ON
 
+            #define STATION_SHADOW_CASTER_PASS
             #include "StationFlat.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
             ENDHLSL
         }
 
@@ -94,6 +102,7 @@ Shader "Simple Toon/SToon Default"
             #pragma vertex StationDepthOnlyVertex
             #pragma fragment StationDepthOnlyFragment
             #pragma multi_compile_instancing
+            #pragma shader_feature_local _ALPHATEST_ON
 
             #include "StationFlat.hlsl"
             ENDHLSL
@@ -113,6 +122,7 @@ Shader "Simple Toon/SToon Default"
             #pragma vertex StationDepthNormalsVertex
             #pragma fragment StationDepthNormalsFragment
             #pragma multi_compile_instancing
+            #pragma shader_feature_local _ALPHATEST_ON
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl"
 
             #define STATION_DEPTH_NORMALS_PASS

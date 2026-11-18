@@ -22,8 +22,8 @@ reference screenshots — without breaking dark rooms, emergency cones, or inven
 | Piece | Where |
 |-------|--------|
 | Zero ambient / no main light | `Game.unity`, `SS3D_URPAsset` |
-| Half-toon + Forward+ additional lights | `STCore` / `STLighting` / `STFragment` |
-| Floor normals (derivative TBN) | `STFragment.hlsl`, floor mats |
+| Flat albedo + Forward+ fixture lighting (replaced half-toon 2026-11-17) | `StationFlatLighting.hlsl` / `StationFlat.hlsl` (`STDefault`) |
+| Floor normals (derivative TBN) | `Station_NormalWS` in `StationFlat.hlsl`, floor mats |
 | Dual fixture lights (Spot + PointFill) | `LightTubeFixture` / `LightBulbFixture`, `LightPower` |
 | Emergency: dim short-range spot, fill **off** | `LightPower` |
 | Gameplay volume + contact occlusion | `SS3D_GameplayVolumeProfile` (incl. `StationShading`), Forward+ renderer — `CortaoAmbientOcclusionFeature`; ST samples `_SS3DOcclusionTexture` |
@@ -45,8 +45,8 @@ wall blowout. URP uses stock `distanceAttenuation`.
 same plate. Either:
 
 1. Eye-tune for URP (preferred short-term), or
-2. Port a soft-near / carry-far atten into `STLighting.hlsl` (partial soft-near already
-   present to reduce head hotspots — extend toward 857’s curve if chasing wall-adjacent fills).
+2. Tune `StationShading.LightFalloff`: `Station_AdditionalLightAttenuation` in
+   `StationFlatLighting.hlsl` already rebuilds the Built-in range-relative falloff.
 
 ## Last eye-tuned snapshot worth revisiting
 

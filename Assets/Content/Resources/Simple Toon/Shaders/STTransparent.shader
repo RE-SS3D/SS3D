@@ -1,4 +1,4 @@
-﻿Shader "Simple Toon/SToon Transparent"
+﻿Shader "SS3D/Station Transparent"
 {
     Properties
     {
