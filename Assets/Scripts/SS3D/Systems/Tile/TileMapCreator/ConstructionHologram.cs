@@ -150,6 +150,35 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
         }
 
+        /// <summary>
+        /// Face <paramref name="direction"/> when the object allows it; with <paramref name="acceptOpposite"/> (a door,
+        /// where only the axis matters) the opposite direction will do. False, unchanged, when neither is allowed.
+        /// </summary>
+        public bool TrySetDirection(Direction direction, bool acceptOpposite)
+        {
+            if (!Hologram.TryGetComponent(out ICustomGhostRotation customRotationComponent))
+            {
+                _direction = direction;
+                return true;
+            }
+
+            Direction[] allowed = customRotationComponent.GetAllowedRotations();
+            if (allowed.Contains(direction))
+            {
+                _direction = direction;
+                return true;
+            }
+
+            Direction opposite = TileHelper.GetOpposite(direction);
+            if (acceptOpposite && allowed.Contains(opposite))
+            {
+                _direction = opposite;
+                return true;
+            }
+
+            return false;
+        }
+
         public void Destroy()
         {
             Hologram.Dispose(true);

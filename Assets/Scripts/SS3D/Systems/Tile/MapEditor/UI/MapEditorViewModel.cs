@@ -32,6 +32,49 @@ namespace SS3D.Systems.Tile.MapEditor.UI
         public bool AlwaysPowerLights { get; set; }
         /// <summary>Builder takes no damage and walks on open space (persists after closing the editor).</summary>
         public bool Invincible { get; set; } = true;
+        /// <summary>Lay a subfloor under anything placed where there is none (<see cref="MapEditorPlacementRules"/>).</summary>
+        public bool AutoSubfloor { get; set; } = true;
+
+        /// <summary>The room tool's wall: the last wall picked (windows aside), else the first in Walls &amp; Windows.</summary>
+        public TileObjectSo RoomWall { get; private set; }
+        public string RoomWallLabel { get; private set; }
+
+        /// <summary>The room tool's floor: the last floor picked, else the first in Floors.</summary>
+        public TileObjectSo RoomFloor { get; private set; }
+        public string RoomFloorLabel { get; private set; }
+
+        /// <summary>
+        /// Remembers <paramref name="asset"/> as the room tool's wall or floor when it is one, as the room tool in a
+        /// house builder uses the wall and floor you last picked. Returns whether it was. A window counts only when
+        /// <paramref name="allowWindow"/> (picked with the room tool on), so placing windows never turns rooms to glass.
+        /// </summary>
+        public bool RememberRoomPart(MapEditorCatalogEntry entry, GenericObjectSo asset, bool allowWindow = false)
+        {
+            if (asset is not TileObjectSo tile)
+                return false;
+
+            switch (MapEditorPlacementRules.KindOf(tile))
+            {
+                case TurfKind.Wall when allowWindow || !IsWindow(tile):
+                    RoomWall = tile;
+                    RoomWallLabel = entry != null ? MapEditorCatalog.PlacingLabel(entry) : tile.NameString;
+                    return true;
+                case TurfKind.Floor:
+                    RoomFloor = tile;
+                    RoomFloorLabel = entry != null ? MapEditorCatalog.PlacingLabel(entry) : tile.NameString;
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>The sub-tabs whose picks the room tool takes as its wall or floor.</summary>
+        public static bool IsRoomPartTab(MapEditorSubcategory subcategory) =>
+            subcategory is MapEditorSubcategory.WallsAndWindows or MapEditorSubcategory.Floors;
+
+        /// <summary>Windows are walls to the tile map, but a room is never built out of them by default.</summary>
+        public static bool IsWindow(TileObjectSo tile) =>
+            tile != null && tile.NameString.IndexOf("Window", StringComparison.OrdinalIgnoreCase) >= 0;
         public float CameraFov { get; set; } = 72f;
         public float CameraZoomSpeed { get; set; } = 5f;
         public float CameraRotationSpeed { get; set; } = 4f;
@@ -312,6 +355,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             SelectedEntry = entry;
             SelectedAsset = asset;
             RememberVariant(entry);
+            RememberRoomPart(entry, asset);
             UpdateHint();
             NotifyChanged();
         }
@@ -422,7 +466,10 @@ namespace SS3D.Systems.Tile.MapEditor.UI
 
             if (layer is TileLayer.WallMountHigh or TileLayer.WallMountLow
                 || (layer == null && CurrentSubcategory == MapEditorSubcategory.WallMounts))
-                return "Press R to rotate — click a wall to place, drag for a line";
+                return "Point at the side of a wall to place — drag for a line, R to turn";
+
+            if (MapEditorPlacementRules.KindOf(SelectedAsset as TileObjectSo) == TurfKind.Door)
+                return "Click a wall or a gap in one — the door lines up with the wall, R to turn";
 
             if (CurrentMode == MapEditorMode.Lower
                 || layer is TileLayer.Plenum or TileLayer.Turf or TileLayer.Wire or TileLayer.Disposal
@@ -456,6 +503,12 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                 return;
             }
 
+            if (CurrentTool == MapEditorTool.Room)
+            {
+                SelectedObjectHint = RoomHint();
+                return;
+            }
+
             if (CurrentTool == MapEditorTool.Edit && SelectedAsset != null)
             {
                 SelectedObjectHint = HoldsFamily ? PlacementHint() + " — V: variant" : PlacementHint();
@@ -483,6 +536,43 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             SelectedObjectHint = SelectedAsset != null
                 ? "Select the Edit tool to place this object"
                 : "Choose an object from the library";
+        }
+
+        /// <summary>The room tool's hint: what it builds with, and how to change that.</summary>
+        public string RoomHint()
+        {
+            if (RoomWall == null || RoomFloor == null)
+                return "Room: pick a wall and a floor in the library first";
+
+            return $"Room: {RoomWallLabel} walls, {RoomFloorLabel} floor — drag a rectangle. Pick a wall or floor to change them";
+        }
+
+        /// <summary>
+        /// Fills in the room tool's wall and floor from the first entries in Walls &amp; Windows and Floors when nothing
+        /// has been picked yet this session.
+        /// </summary>
+        public void EnsureRoomParts(Func<MapEditorCatalogEntry, GenericObjectSo> resolve)
+        {
+            if (Catalog == null || resolve == null)
+                return;
+
+            if (RoomWall == null)
+                RememberFirstRoomPart(MapEditorSubcategory.WallsAndWindows, TurfKind.Wall, resolve);
+            if (RoomFloor == null)
+                RememberFirstRoomPart(MapEditorSubcategory.Floors, TurfKind.Floor, resolve);
+        }
+
+        private void RememberFirstRoomPart(MapEditorSubcategory subcategory, TurfKind kind,
+            Func<MapEditorCatalogEntry, GenericObjectSo> resolve)
+        {
+            foreach (MapEditorCatalogEntry entry in Catalog.Query(MapEditorMode.Upper, subcategory, null))
+            {
+                if (resolve(entry) is TileObjectSo tile && MapEditorPlacementRules.KindOf(tile) == kind && !IsWindow(tile))
+                {
+                    RememberRoomPart(entry, tile);
+                    return;
+                }
+            }
         }
     }
 }

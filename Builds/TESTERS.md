@@ -28,7 +28,16 @@ Press **B** to open the map editor. Press **B** again to close it.
 - **Scripts → Spawn Points** sets where players appear. **Scripts → Rooms** paints rooms and
   sets their name, department and door access. **Scripts → Starting Air** marks what air a room starts with.
 - To erase, pick the **Delete** tool: it removes whatever the open sub-tab places (Cables removes
-  cables, Gas Pipes removes pipes, and so on).
+  cables, Gas Pipes removes pipes, and so on). Or hold **Ctrl** while building: click or drag erases
+  the same way, and letting go of Ctrl gives you back what you were holding.
+- Floors, walls and furniture placed over empty space get a subfloor underneath automatically
+  (Settings → Auto Subfloor turns this off). A floor dragged over another floor repaints it, and a
+  door dropped on a wall replaces it. Hold **Alt** to replace anything else.
+- Wall mounts go on the side of the wall you point at. Doors turn to line up with their wall.
+  **R** still rotates either.
+- The **Room** tool (key **5**) draws walls around a rectangle and a floor inside it in one drag. It
+  uses the last wall and floor you picked; pick another in the library (a window works too) to change them.
+- Right click (or Esc) cancels a drag. Right click with nothing dragged puts down what you're holding.
 - Ctrl+Z / Ctrl+Y undo and redo.
 
 ## 3. Save

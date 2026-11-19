@@ -21,6 +21,7 @@ namespace SS3D.Systems.Tile.MapEditor
             public const string Move = Root + "move.svg";
             public const string Dropper = Root + "dropper.svg";
             public const string Delete = Root + "trash.svg";
+            public const string Room = Root + "room.svg";
             public const string Undo = Root + "undo.svg";
             public const string Redo = Root + "redo.svg";
             public const string SaveMap = Root + "saveAs.svg";
@@ -57,6 +58,7 @@ namespace SS3D.Systems.Tile.MapEditor
         [SerializeField] private VectorImage _move;
         [SerializeField] private VectorImage _dropper;
         [SerializeField] private VectorImage _delete;
+        [SerializeField] private VectorImage _room;
         [SerializeField] private VectorImage _undo;
         [SerializeField] private VectorImage _redo;
         [SerializeField] private VectorImage _saveMap;
@@ -93,6 +95,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 MapEditorTool.Move => Resolve(_move, Paths.Move),
                 MapEditorTool.Dropper => Resolve(_dropper, Paths.Dropper),
                 MapEditorTool.Delete => Resolve(_delete, Paths.Delete),
+                MapEditorTool.Room => Resolve(_room, Paths.Room),
 
                 _ => null,
             };

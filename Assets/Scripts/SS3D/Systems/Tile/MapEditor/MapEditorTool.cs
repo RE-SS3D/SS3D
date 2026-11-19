@@ -14,5 +14,8 @@ namespace SS3D.Systems.Tile.MapEditor
         Area,
         Dropper,
         Delete,
+
+        /// <summary>Drag a rectangle: walls on its border, floor inside, subfloor under both, in one undo step.</summary>
+        Room,
     }
 }

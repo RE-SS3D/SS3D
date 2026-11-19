@@ -57,19 +57,7 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
             }
 
             if (dto.Kind == MapEditorCommandKind.PlaceTile)
-            {
-                GenericObjectSo asset = ctx.ResolveAsset(dto.AssetName);
-                if (asset is not TileObjectSo tile || ctx.Construction == null)
-                    return false;
-
-                PreviewResult preview = ctx.Construction.TryPreviewTile(
-                    tile, dto.Position, dto.Direction, dto.ReplaceExisting);
-                if (!preview.CanBuild)
-                    return false;
-
-                into.Add(CreatePlaceTile(dto, ctx));
-                return true;
-            }
+                return TryCreatePlaceTileCommands(dto, ctx, into);
 
             if (dto.Kind == MapEditorCommandKind.SetFloorDecal)
             {
@@ -114,6 +102,49 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
             }
 
             into.Add(new PlaceItemCommand(dto.AssetName, dto.Position, dto.Direction, dto.Setup));
+            return true;
+        }
+
+        /// <summary>
+        /// A tile place, checked against the live map by <see cref="MapEditorPlacementRules"/>. Every place in a gesture is
+        /// checked before any of them runs, so a subfloor the object needs is added here, ahead of the object, rather than
+        /// sent by the client: the object's own check would fail before the subfloor existed. Both land in the gesture's
+        /// one compound, which undoes in reverse, so a single undo takes the object and then its subfloor.
+        /// </summary>
+        private static bool TryCreatePlaceTileCommands(
+            MapEditorCommandDto dto,
+            MapEditorCommandContext ctx,
+            List<IMapEditorCommand> into)
+        {
+            GenericObjectSo asset = ctx.ResolveAsset(dto.AssetName);
+            if (asset is not TileObjectSo tile || ctx.Map == null || ctx.Construction == null)
+                return false;
+
+            PlacementPlan plan = MapEditorPlacementRules.Plan(
+                ctx.Map, tile, dto.Position, dto.Direction, dto.ReplaceExisting, dto.AutoSubfloor);
+            if (!plan.CanPlace)
+                return false;
+
+            if (plan.Subfloor.Count > 0)
+            {
+                if (ctx.ResolveAsset(MapEditorPlacementRules.SubfloorAssetName) is not TileObjectSo subfloor)
+                    return false;
+
+                foreach (SubfloorCell cell in plan.Subfloor)
+                {
+                    into.Add(CreatePlaceTile(new MapEditorCommandDto
+                    {
+                        Kind = MapEditorCommandKind.PlaceTile,
+                        AssetName = subfloor.NameString,
+                        Position = cell.Position,
+                        Direction = Direction.North,
+                        ReplaceExisting = cell.ReplacesGrating,
+                    }, ctx));
+                }
+            }
+
+            dto.ReplaceExisting = plan.Replace;
+            into.Add(CreatePlaceTile(dto, ctx));
             return true;
         }
 

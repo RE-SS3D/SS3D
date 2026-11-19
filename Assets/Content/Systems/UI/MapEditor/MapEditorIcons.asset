@@ -17,6 +17,7 @@ MonoBehaviour:
   _move: {fileID: 7388822144124034973, guid: 0908689b9cd5371d9b470c8cab2513d5, type: 3}
   _dropper: {fileID: 7388822144124034973, guid: 0361fa8008af97efda6b235183fa27cf, type: 3}
   _delete: {fileID: 7388822144124034973, guid: fb7bf1b35d17501369f394a9e8e11a13, type: 3}
+  _room: {fileID: 7388822144124034973, guid: b6fbfc39a19b4c25a176f1f570a87861, type: 3}
   _undo: {fileID: 7388822144124034973, guid: a45f5c7feb9b45ded88943e3be4a8570, type: 3}
   _redo: {fileID: 7388822144124034973, guid: 0cfedd0cd24e8ff3da627f0238092bc2, type: 3}
   _saveMap: {fileID: 7388822144124034973, guid: 0486df65a6468d60cab443aec846983b, type: 3}

@@ -124,6 +124,9 @@ namespace SS3D.Systems.Tile.MapEditor
         /// <summary>True for the Delete tool, which erases whatever the open sub-tab's delete scope covers.</summary>
         public bool IsDeleting => _viewModel.CurrentTool == MapEditorTool.Delete;
         public MapEditorTool CurrentTool => _viewModel.CurrentTool;
+
+        /// <summary>Settings › Auto Subfloor: place commands ask the server to lay a subfloor where one is missing.</summary>
+        public bool AutoSubfloor => _viewModel.AutoSubfloor;
         public bool IsRoomCategory => _viewModel.IsRoomCategory;
         public MapEditorMode CurrentMode => _viewModel.CurrentMode;
         public MapEditorSubcategory CurrentSubcategory => _viewModel.CurrentSubcategory;
@@ -780,13 +783,19 @@ namespace SS3D.Systems.Tile.MapEditor
                 return;
 
             string label = string.Empty;
-            if (!_viewModel.HideUI && !_mouseOverUI && _viewModel.CurrentTool == MapEditorTool.Edit)
+            if (!_viewModel.HideUI && !_mouseOverUI && (_viewModel.CurrentTool == MapEditorTool.Edit || _hologramManager.IsErasing))
             {
                 if (IsRoomCategory)
                     label = _viewModel.AreaRoomName ?? string.Empty;
+                else if (_hologramManager.IsErasing)
+                    label = EraseLabel(_viewModel.CurrentSubcategory);
                 else if (_viewModel.SelectedEntry != null)
                     label = PlacingLabel(_viewModel.SelectedEntry);
             }
+
+            if (!_viewModel.HideUI && !_mouseOverUI && !IsRoomCategory
+                && _viewModel.CurrentTool is MapEditorTool.Edit or MapEditorTool.Room or MapEditorTool.Delete)
+                label = _hologramManager.WithDragReadout(label);
 
             if (!_viewModel.HideUI && !_mouseOverUI)
                 label = MapEditorSystemsViewClient.CursorLabel(label, SystemsViewHoverLabel());
@@ -807,6 +816,21 @@ namespace SS3D.Systems.Tile.MapEditor
             }
 
             return _placingLabel;
+        }
+
+        // "Erase Walls & Windows" while Ctrl is held: one string per sub-tab, not one per frame.
+        private MapEditorSubcategory? _eraseLabelFor;
+        private string _eraseLabel;
+
+        private string EraseLabel(MapEditorSubcategory subcategory)
+        {
+            if (_eraseLabelFor != subcategory)
+            {
+                _eraseLabelFor = subcategory;
+                _eraseLabel = "Erase " + MapEditorSubTabs.LabelOf(subcategory);
+            }
+
+            return _eraseLabel;
         }
 
         private void ReleaseCursorLabel()
@@ -907,6 +931,12 @@ namespace SS3D.Systems.Tile.MapEditor
             _view.CloseAreaProperties();
             CancelAreaStroke();
             _viewModel.SetTool(tool);
+            if (tool == MapEditorTool.Room)
+            {
+                EnterRoomTool();
+                return;
+            }
+
             if (IsRoomCategory)
             {
                 _hologramManager.ClearSelection();
@@ -926,6 +956,42 @@ namespace SS3D.Systems.Tile.MapEditor
                     _hologramManager.ClearSelection();
                     break;
             }
+        }
+
+        /// <summary>The room tool builds with the last wall and floor picked, from Walls &amp; Windows unless on Floors.</summary>
+        private void EnterRoomTool()
+        {
+            if (!MapEditorViewModel.IsRoomPartTab(_viewModel.CurrentSubcategory))
+            {
+                _viewModel.SearchText = string.Empty;
+                OpenSubTab(MapEditorSubcategory.WallsAndWindows); // comes back here through AfterSubTabChanged
+                return;
+            }
+
+            _viewModel.EnsureRoomParts(entry => _catalog.AssetFor(entry, _tileSystem.Loader));
+            _viewModel.RefreshHint();
+            _view?.RefreshHint();
+            _hologramManager.EnterRoomMode(_viewModel.RoomWall, _viewModel.RoomFloor);
+        }
+
+        /// <summary>Right click with no drag: put down what the cursor holds; the room tool goes back to Construct.</summary>
+        public void DropHeldObject()
+        {
+            if (!_active || IsRoomCategory)
+                return;
+
+            if (_viewModel.CurrentTool == MapEditorTool.Room)
+            {
+                OnToolSelected(MapEditorTool.Edit);
+                return;
+            }
+
+            if (_viewModel.CurrentTool != MapEditorTool.Edit || _viewModel.SelectedEntry == null)
+                return;
+
+            _setupCopy.Clear();
+            _viewModel.ClearSelection();
+            _hologramManager.ClearSelection();
         }
 
         private void RestoreConstructHologramFromSelection()
@@ -967,6 +1033,8 @@ namespace SS3D.Systems.Tile.MapEditor
             _viewModel.SelectEntry(next, asset);
             if (_viewModel.CurrentTool == MapEditorTool.Edit)
                 _hologramManager.SwapSelectedObject(asset);
+            else if (_viewModel.CurrentTool == MapEditorTool.Room)
+                EnterRoomTool();
         }
 
         private void HandleToolHotkeys()
@@ -983,6 +1051,8 @@ namespace SS3D.Systems.Tile.MapEditor
                 OnToolSelected(MapEditorTool.Dropper);
             else if (keyboard.digit4Key.wasPressedThisFrame || keyboard.numpad4Key.wasPressedThisFrame)
                 OnToolSelected(MapEditorTool.Delete);
+            else if (keyboard.digit5Key.wasPressedThisFrame || keyboard.numpad5Key.wasPressedThisFrame)
+                OnToolSelected(MapEditorTool.Room);
         }
 
         private static bool IsChordModifierPressed(Keyboard keyboard) =>
@@ -1219,7 +1289,10 @@ namespace SS3D.Systems.Tile.MapEditor
         {
             // Scripts follows its tab, Turfs the Lower run tabs, the x-ray layers a systems view turning on or off.
             MapEditorLayerVisibility.Sync(_viewModel);
-            OnToolSelected(_viewModel.CurrentTool);
+            // Browsing away from walls and floors means picking something else to place: leave the room tool.
+            OnToolSelected(_viewModel.CurrentTool == MapEditorTool.Room && !MapEditorViewModel.IsRoomPartTab(_viewModel.CurrentSubcategory)
+                ? MapEditorTool.Edit
+                : _viewModel.CurrentTool);
             SyncHologramToLibrarySelection();
             MapEditorLastTab.Save(_viewModel.CurrentSubcategory);
         }
@@ -1232,6 +1305,23 @@ namespace SS3D.Systems.Tile.MapEditor
         {
             // Placing from the palette always gives the default object (object-setup-persistence Q5).
             _setupCopy.Clear();
+            if (entry == null)
+                return;
+
+            // The room tool takes a wall or floor as what it builds with, and stays on.
+            if (_viewModel.CurrentTool == MapEditorTool.Room && _viewModel.RememberRoomPart(entry, asset, allowWindow: true))
+            {
+                if (!_viewModel.SelectAsset(entry, asset))
+                    EnterRoomTool();
+                else
+                    AfterSubTabChanged();
+                return;
+            }
+
+            // Picking from the library means placing it: Select, Dropper, Delete and the room tool hand over to Construct.
+            if (!IsRoomCategory && _viewModel.CurrentTool != MapEditorTool.Edit)
+                OnToolSelected(MapEditorTool.Edit);
+
             SelectAsset(entry, asset);
         }
 

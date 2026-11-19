@@ -219,6 +219,10 @@ namespace SS3D.Systems.Tile.MapEditor
             return asset != null;
         }
 
+        /// <summary>The asset behind <paramref name="entry"/>, or null for a virtual key (decal, marker) or a missing asset.</summary>
+        public GenericObjectSo AssetFor(MapEditorCatalogEntry entry, TileResourceLoader loader) =>
+            entry == null || loader == null || IsVirtualKey(entry.AssetName) ? null : loader.GetAsset(entry.AssetName);
+
         public IEnumerable<MapEditorCatalogEntry> Query(MapEditorMode mode, MapEditorSubcategory subcategory, string search)
         {
             IEnumerable<MapEditorCatalogEntry> query = _entries.Where(e => e.Mode == mode && e.Subcategory == subcategory

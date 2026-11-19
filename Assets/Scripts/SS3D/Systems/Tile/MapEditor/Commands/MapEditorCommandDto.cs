@@ -38,6 +38,9 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
         public Direction Direction;
         public Direction PreviousDirection;
         public bool ReplaceExisting;
+
+        /// <summary>Place tile: lay a subfloor first where the object needs one (<see cref="MapEditorPlacementRules"/>).</summary>
+        public bool AutoSubfloor;
         public ushort DecalId;
         public GasMarkerRecord GasMarker;
 
