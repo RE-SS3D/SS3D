@@ -147,6 +147,18 @@ namespace SS3D.Systems.Tile.MapEditor
             AppendFloorDecals(mapped);
             AppendSpawnPoints(mapped);
             AppendGasMarkers();
+            AppendFloorPaint();
+        }
+
+        private void AppendFloorPaint()
+        {
+            for (int index = 1; index < FloorPaint.Palette.Count; index++)
+            {
+                MapEditorCatalogEntry entry = Virtual(MapEditorFloorPaintCatalog.Encode(index), MapEditorSubcategory.FloorPaint,
+                    "paint", "colour", "color", FloorPaint.NameOf(index));
+                _entries.Add(entry);
+                _byAssetName[entry.AssetName] = entry;
+            }
         }
 
         private void AppendFloorDecals(HashSet<string> mapped)
@@ -384,6 +396,9 @@ namespace SS3D.Systems.Tile.MapEditor
             if (MapEditorGasMarkerCatalog.TryDecode(assetName, out GasMarkerKind gasKind))
                 return MapEditorGasMarkerCatalog.DisplayName(gasKind);
 
+            if (MapEditorFloorPaintCatalog.TryDecode(assetName, out int paintIndex))
+                return FloorPaint.NameOf(paintIndex);
+
             if (RenamedLabels.TryGetValue(assetName, out string renamed))
                 return renamed;
 
@@ -420,7 +435,8 @@ namespace SS3D.Systems.Tile.MapEditor
         public static bool IsVirtualKey(string assetName) =>
             MapEditorFloorDecalCatalog.TryDecode(assetName, out _)
             || MapEditorSpawnCatalog.IsSpawnKey(assetName)
-            || MapEditorGasMarkerCatalog.TryDecode(assetName, out _);
+            || MapEditorGasMarkerCatalog.TryDecode(assetName, out _)
+            || MapEditorFloorPaintCatalog.TryDecode(assetName, out _);
 
         /// <summary>
         /// The words that find <paramref name="assetName"/> in search: a marker's job, antagonist or kind,
@@ -434,6 +450,9 @@ namespace SS3D.Systems.Tile.MapEditor
 
             if (MapEditorGasMarkerCatalog.TryDecode(assetName, out GasMarkerKind gasKind))
                 return MapEditorGasMarkerCatalog.DisplayName(gasKind);
+
+            if (MapEditorFloorPaintCatalog.TryDecode(assetName, out int paintIndex))
+                return FloorPaint.NameOf(paintIndex);
 
             if (MapEditorFloorDecalCatalog.TryDecode(assetName, out ushort decalId)
                 && FloorDecalCatalog.Get()?.TryGet(decalId, out FloorDecalDefinition decal) == true)

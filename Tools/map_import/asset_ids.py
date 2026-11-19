@@ -10,6 +10,7 @@ This module reads that name -> id table from the asset files, and stamps ids int
 Stamping sets the `id` of every entry whose name is a tile asset, leaves the rest alone, raises a
 station template's schemaVersion to the current one, and prints the names it could not resolve.
 Schema 3 added each object's optional `setup`; a map without it loads every object at its defaults.
+Schema 4 added each chunk's optional `floorPaint`; a map without it is unpainted.
 """
 import json
 import pathlib
@@ -19,7 +20,7 @@ import sys
 REPO = pathlib.Path(__file__).resolve().parents[2]
 TILE_ASSETS = REPO / "Assets/Content/Data/TileMap/Resources"
 ASSET_REFERENCES = REPO / "Assets/Content/Data/ObjectAssetReferences"
-SCHEMA_VERSION = 3  # PersistenceEnvelope.CurrentSchemaVersion
+SCHEMA_VERSION = 4  # PersistenceEnvelope.CurrentSchemaVersion
 NAME_KEYS = ("tileObjectSOName", "itemName")
 
 

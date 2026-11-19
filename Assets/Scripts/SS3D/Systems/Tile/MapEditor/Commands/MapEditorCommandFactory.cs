@@ -39,6 +39,8 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
                     CreateClearGasMarker(dto.Position, ctx),
                 MapEditorCommandKind.SetObjectSetup =>
                     new SetObjectSetupCommand(dto.AssetName, dto.Position, dto.Direction, dto.PreviousSetup, dto.Setup),
+                MapEditorCommandKind.SetFloorPaint =>
+                    new SetFloorPaintCommand(dto.Position, dto.PaintMask, dto.PaintColor),
                 _ => CreatePlaceTile(dto, ctx),
             };
         }
@@ -50,7 +52,7 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
         {
             if (dto.Kind is not (MapEditorCommandKind.PlaceTile or MapEditorCommandKind.PlaceItem
                 or MapEditorCommandKind.SetFloorDecal or MapEditorCommandKind.PlaceSpawnPoint
-                or MapEditorCommandKind.PlaceGasMarker))
+                or MapEditorCommandKind.PlaceGasMarker or MapEditorCommandKind.SetFloorPaint))
             {
                 into.Add(FromDto(dto, ctx));
                 return true;
@@ -58,6 +60,17 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
 
             if (dto.Kind == MapEditorCommandKind.PlaceTile)
                 return TryCreatePlaceTileCommands(dto, ctx, into);
+
+            if (dto.Kind == MapEditorCommandKind.SetFloorPaint)
+            {
+                // Only floors and airlocks take paint, only palette colours exist, and an empty mask paints nothing.
+                if ((dto.PaintMask & 0xF) == 0 || (dto.PaintColor != 0 && !FloorVisuals.FloorPaint.IsPaint(dto.PaintColor))
+                    || !FloorVisuals.FloorPaintMap.CanPaint(ctx.Map, dto.Position))
+                    return false;
+
+                into.Add(FromDto(dto, ctx));
+                return true;
+            }
 
             if (dto.Kind == MapEditorCommandKind.SetFloorDecal)
             {

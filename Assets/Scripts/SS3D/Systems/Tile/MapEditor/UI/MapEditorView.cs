@@ -697,9 +697,10 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             bool isFloorDecal = MapEditorFloorDecalCatalog.TryDecode(entry.AssetName, out decalId);
             bool isSpawn = MapEditorSpawnCatalog.IsSpawnKey(entry.AssetName);
             bool isGasMarker = MapEditorGasMarkerCatalog.TryDecode(entry.AssetName, out GasMarkerKind gasKind);
+            bool isFloorPaint = MapEditorFloorPaintCatalog.TryDecode(entry.AssetName, out int paintIndex);
 
-            // Virtual catalog keys (floor decals / spawn markers) are not TileResourceLoader assets.
-            GenericObjectSo asset = isFloorDecal || isSpawn || isGasMarker
+            // Virtual catalog keys (floor decals, markers, paint swatches) are not TileResourceLoader assets.
+            GenericObjectSo asset = isFloorDecal || isSpawn || isGasMarker || isFloorPaint
                 ? null
                 : _loader.GetAsset(entry.AssetName);
 
@@ -713,6 +714,8 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                 slot.tooltip = floorDecal.DisplayName;
             else if (isSpawn)
                 slot.tooltip = MapEditorSpawnCatalog.DisplayName(entry.AssetName);
+            else if (isFloorPaint)
+                slot.tooltip = FloorPaint.NameOf(paintIndex);
             else
                 slot.tooltip = entry.AssetName;
             bool active = _vm.SelectedEntry != null &&
@@ -739,6 +742,10 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             {
                 icon.style.backgroundImage = new StyleBackground(gasIcon);
                 icon.style.unityBackgroundImageTintColor = MapEditorGasMarkerCatalog.PinColor(gasKind);
+            }
+            else if (isFloorPaint)
+            {
+                icon.style.backgroundColor = (Color)FloorPaint.ColorOf(paintIndex);
             }
             else if (asset?.icon != null)
             {

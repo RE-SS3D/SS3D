@@ -26,6 +26,9 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
         /// only: the RPC refuses it from clients.
         /// </summary>
         SetObjectSetup,
+
+        /// <summary>Paint or erase floor squares of one tile (<see cref="SetFloorPaintCommand"/>).</summary>
+        SetFloorPaint,
     }
 
     [Serializable]
@@ -42,6 +45,10 @@ namespace SS3D.Systems.Tile.MapEditor.Commands
         /// <summary>Place tile: lay a subfloor first where the object needs one (<see cref="MapEditorPlacementRules"/>).</summary>
         public bool AutoSubfloor;
         public ushort DecalId;
+
+        /// <summary>Set floor paint: a bit per square of the tile (1 SW, 2 SE, 4 NW, 8 NE), and the palette index (0 erases).</summary>
+        public byte PaintMask;
+        public byte PaintColor;
         public GasMarkerRecord GasMarker;
 
         /// <summary>

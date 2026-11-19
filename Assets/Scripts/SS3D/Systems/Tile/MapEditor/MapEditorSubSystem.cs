@@ -127,6 +127,26 @@ namespace SS3D.Systems.Tile.MapEditor
 
         /// <summary>Settings › Auto Subfloor: place commands ask the server to lay a subfloor where one is missing.</summary>
         public bool AutoSubfloor => _viewModel.AutoSubfloor;
+
+        /// <summary>Upper › Floor Paint is open: <see cref="MapEditorFloorPainter"/> takes the input, not the ghosts.</summary>
+        public bool IsFloorPaintCategory => _viewModel.IsFloorPaintCategory;
+
+        private MapEditorFloorPainter _floorPainterInstance;
+        private MapEditorFloorPainter FloorPainter => _floorPainterInstance ??= new MapEditorFloorPainter(this);
+
+        /// <summary>Dropper on Floor Paint: hold the picked square's colour and go back to painting.</summary>
+        public void PickFloorPaintColor(int paletteIndex)
+        {
+            if (!FloorVisuals.FloorPaint.IsPaint(paletteIndex)
+                || !_catalog.TryGetEntry(MapEditorFloorPaintCatalog.Encode(paletteIndex), out MapEditorCatalogEntry entry))
+            {
+                ShowLocalToast("That square isn't painted");
+                return;
+            }
+
+            SelectAsset(entry, null);
+            OnToolSelected(MapEditorTool.Edit);
+        }
         public bool IsRoomCategory => _viewModel.IsRoomCategory;
         public MapEditorMode CurrentMode => _viewModel.CurrentMode;
         public MapEditorSubcategory CurrentSubcategory => _viewModel.CurrentSubcategory;
@@ -221,7 +241,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 _tileSystem.CurrentMap,
                 _tileSystem.Loader,
                 new ConstructionService(_tileSystem.CurrentMap, _tileSystem.QueryService),
-                () => _tileSystem.SyncFloorDecalsToClients(),
+                () => _tileSystem.RequestFloorVisualsSync(),
                 _tileSystem.SpawnPoints,
                 () => MapMarkerEditorView.RefreshAll(),
                 _tileSystem.GasMarkers);
@@ -489,6 +509,7 @@ namespace SS3D.Systems.Tile.MapEditor
                 _session.Exit();
                 _lighting.Restore();
                 CancelAreaStroke();
+                FloorPainter.Cancel();
                 _areaOverlay.SetVisible(false);
                 _systemsViewClient.Stop(_viewModel);
                 MapEditorLayerVisibility.Deactivate();
@@ -548,6 +569,13 @@ namespace SS3D.Systems.Tile.MapEditor
 
             _viewModel.SelectEntry(entry, asset);
 
+            if (MapEditorFloorPaintCatalog.TryDecode(entry.AssetName, out int paintIndex))
+            {
+                _viewModel.FloorPaintColor = (byte)paintIndex;
+                _hologramManager.ClearSelection();
+                return;
+            }
+
             if (MapEditorFloorDecalCatalog.TryDecode(entry.AssetName, out ushort decalId) &&
                 FloorDecalCatalog.Get()?.TryGet(decalId, out FloorDecalDefinition definition) == true &&
                 _viewModel.CurrentTool == MapEditorTool.Edit)
@@ -604,21 +632,25 @@ namespace SS3D.Systems.Tile.MapEditor
             {
                 UpdateMouseOverUI();
 
+                bool ownInput = IsRoomCategory || IsFloorPaintCategory;
                 if (IsRoomCategory)
                     HandleAreaInput();
+                else if (IsFloorPaintCategory)
+                    FloorPainter.Update(_viewModel.FloorPaintColor);
 
-                if (!IsRoomCategory && _viewModel.CurrentTool == MapEditorTool.Select && _controls.Place.WasPerformedThisFrame() && !MouseOverUI)
+                if (!ownInput && _viewModel.CurrentTool == MapEditorTool.Select && _controls.Place.WasPerformedThisFrame() && !MouseOverUI)
                     HandleSelectClick();
 
-                if (!IsRoomCategory && _viewModel.CurrentTool == MapEditorTool.Dropper && _controls.Place.WasPerformedThisFrame() && !MouseOverUI)
+                if (!ownInput && _viewModel.CurrentTool == MapEditorTool.Dropper && _controls.Place.WasPerformedThisFrame() && !MouseOverUI)
                     HandleDropperClick();
 
-                if (!IsRoomCategory && _viewModel.CurrentTool == MapEditorTool.Move && !MouseOverUI)
+                if (!ownInput && _viewModel.CurrentTool == MapEditorTool.Move && !MouseOverUI)
                     HandleMoveInput();
             }
             else
             {
                 CancelAreaStroke();
+                FloorPainter.Cancel();
                 SetMouseOverUI(false);
             }
 
@@ -787,6 +819,8 @@ namespace SS3D.Systems.Tile.MapEditor
             {
                 if (IsRoomCategory)
                     label = _viewModel.AreaRoomName ?? string.Empty;
+                else if (IsFloorPaintCategory)
+                    label = FloorPainter.IsErasing ? EraseLabel(MapEditorSubcategory.FloorPaint) : _viewModel.FloorPaintLabel;
                 else if (_hologramManager.IsErasing)
                     label = EraseLabel(_viewModel.CurrentSubcategory);
                 else if (_viewModel.SelectedEntry != null)
@@ -937,7 +971,8 @@ namespace SS3D.Systems.Tile.MapEditor
                 return;
             }
 
-            if (IsRoomCategory)
+            FloorPainter.Cancel();
+            if (IsRoomCategory || IsFloorPaintCategory)
             {
                 _hologramManager.ClearSelection();
                 return;
@@ -1417,9 +1452,7 @@ namespace SS3D.Systems.Tile.MapEditor
             foreach (MapEditorCatalogEntry entry in _catalog.Query(_viewModel.CurrentMode, sub, _viewModel.SearchText))
             {
                 GenericObjectSo asset = null;
-                if (MapEditorFloorDecalCatalog.TryDecode(entry.AssetName, out _) ||
-                    MapEditorSpawnCatalog.IsSpawnKey(entry.AssetName) ||
-                    MapEditorGasMarkerCatalog.TryDecode(entry.AssetName, out _))
+                if (MapEditorCatalog.IsVirtualKey(entry.AssetName))
                 {
                     HandleAssetSelected(entry, null);
                     return;
@@ -1689,7 +1722,7 @@ namespace SS3D.Systems.Tile.MapEditor
             {
                 if (dto.Kind is MapEditorCommandKind.PlaceTile or MapEditorCommandKind.PlaceItem
                     or MapEditorCommandKind.SetFloorDecal or MapEditorCommandKind.PlaceSpawnPoint
-                    or MapEditorCommandKind.PlaceGasMarker)
+                    or MapEditorCommandKind.PlaceGasMarker or MapEditorCommandKind.SetFloorPaint)
                 {
                     MapEditorCommandFactory.TryCreatePlaceCommands(dto, ctx, list);
                     continue;

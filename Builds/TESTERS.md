@@ -38,6 +38,10 @@ Press **B** to open the map editor. Press **B** again to close it.
 - The **Room** tool (key **5**) draws walls around a rectangle and a floor inside it in one drag. It
   uses the last wall and floor you picked; pick another in the library (a window works too) to change them.
   Drawn over an existing room, it swaps its walls and floor for the new ones and keeps its doors and windows.
+- **Upper → Floor Paint** colours the squares of floor tiles and airlock floors (each tile is 2 × 2 squares) in department
+  colours: pick a swatch, then click a square, drag a line or Shift-drag a rectangle. Hold **Ctrl** (or use
+  Delete) to erase, and use the Dropper to pick up a square's colour. What you see while hovering is what a
+  click does.
 - Right click (or Esc) cancels a drag. Right click with nothing dragged puts down what you're holding.
 - Ctrl+Z / Ctrl+Y undo and redo.
 

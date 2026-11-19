@@ -1,5 +1,6 @@
-// Station floor tiles drawn procedurally: square tiles, thin grout lines and a
-// grout diamond on every other crossing, optionally checkered in two colours.
+// Station floor tiles drawn procedurally: 2 x 2 square tiles a cell, thin grout
+// lines and a grout diamond on every other crossing, optionally checkered in two
+// colours. Each square takes map editor floor paint (FloorPaintView).
 // Pattern: StationFloorTile.hlsl. Lighting, shadows, depth, CORTAO normals and
 // DBuffer decals are the shared station passes (StationFlat.hlsl), so floors
 // light, occlude and take blood exactly like STDefault.
@@ -12,7 +13,6 @@ Shader "SS3D/Station Floor Tile"
     Properties
     {
         [Header(Tiles)]
-        [IntRange] _TilesPerCell ("Tiles Per Cell", Range(1, 8)) = 2
         _TileColor ("Tile Color", Color) = (0.8, 0.8, 0.8, 1)
         [ToggleUI] _Checker ("Checkerboard", Float) = 0
         _TileColorB ("Checker Tile Color", Color) = (0.53, 0.51, 0.51, 1)

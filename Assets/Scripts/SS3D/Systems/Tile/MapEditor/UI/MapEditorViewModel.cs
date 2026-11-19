@@ -16,6 +16,24 @@ namespace SS3D.Systems.Tile.MapEditor.UI
         public string AreaRoomName { get; set; } = "New room";
         public ushort AreaRoomId { get; set; }
         public bool IsRoomCategory => CurrentSubcategory == MapEditorSubcategory.Rooms;
+        public bool IsFloorPaintCategory => CurrentSubcategory == MapEditorSubcategory.FloorPaint;
+
+        private byte _floorPaintColor = 1;
+
+        /// <summary>The palette colour Floor Paint paints with (<see cref="FloorVisuals.FloorPaint"/>).</summary>
+        public byte FloorPaintColor
+        {
+            get => _floorPaintColor;
+            set
+            {
+                _floorPaintColor = value;
+                FloorPaintLabel = "Paint: " + FloorVisuals.FloorPaint.NameOf(value);
+                UpdateHint();
+            }
+        }
+
+        /// <summary>"Paint: Medical", for the cursor badge.</summary>
+        public string FloorPaintLabel { get; private set; } = "Paint: " + FloorVisuals.FloorPaint.NameOf(1);
         public MapEditorTool CurrentTool { get; set; } = MapEditorTool.Edit;
         public MapEditorMode CurrentMode { get; set; } = MapEditorMode.Upper;
         public MapEditorSubcategory CurrentSubcategory { get; set; } = MapEditorSubTabs.Default;
@@ -493,6 +511,18 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                 };
                 return;
             }
+            if (IsFloorPaintCategory)
+            {
+                SelectedObjectHint = CurrentTool switch
+                {
+                    MapEditorTool.Edit =>
+                        $"{FloorPaintLabel} — click a square, drag a line, Shift-drag a rectangle; hold Ctrl to erase",
+                    MapEditorTool.Delete => "Erase paint — click a square, drag a line, Shift-drag a rectangle",
+                    _ => "Click a painted square to paint with its colour",
+                };
+                return;
+            }
+
             if (CurrentTool == MapEditorTool.Delete)
             {
                 string label = MapEditorSubTabs.LabelOf(CurrentSubcategory);

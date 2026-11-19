@@ -208,7 +208,67 @@ namespace SS3D.Systems.Tile
             }
 
             RpcSyncFloorDecals(chunks.ToArray());
+            SyncFloorPaintToClients();
         }
+
+        private bool _floorVisualsSyncQueued;
+
+        /// <summary>
+        /// Sends floor decals and paint once, at the end of this frame: a map editor stroke changes many tiles in one
+        /// gesture, and each change asks for a sync.
+        /// </summary>
+        [Server]
+        public void RequestFloorVisualsSync()
+        {
+            if (_floorVisualsSyncQueued)
+                return;
+
+            _floorVisualsSyncQueued = true;
+            FlushFloorVisualsSync().Forget();
+        }
+
+        private async UniTaskVoid FlushFloorVisualsSync()
+        {
+            await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
+            _floorVisualsSyncQueued = false;
+            if (IsServer)
+                SyncFloorDecalsToClients();
+        }
+
+        [Server]
+        private void SyncFloorPaintToClients()
+        {
+            var chunks = new List<SyncedFloorPaintChunk>();
+            foreach (TileChunk chunk in _currentMap.GetAllChunks())
+            {
+                ushort[] paint = chunk.CopyFloorPaint();
+                if (paint != null)
+                    chunks.Add(new SyncedFloorPaintChunk { chunkKey = _currentMap.GetKey(chunk.GetWorldPosition(0, 0)), floorPaint = paint });
+            }
+
+            RpcSyncFloorPaint(chunks.ToArray());
+        }
+
+        [ObserversRpc(BufferLast = true)]
+        private void RpcSyncFloorPaint(SyncedFloorPaintChunk[] chunks)
+        {
+            var list = new List<(Vector2Int chunkKey, ushort[] floorPaint)>(chunks?.Length ?? 0);
+            if (chunks != null)
+            {
+                foreach (SyncedFloorPaintChunk chunk in chunks)
+                    list.Add((chunk.chunkKey, chunk.floorPaint));
+            }
+
+            FloorPaintView.ReplaceChunks(list);
+        }
+
+        [Serializable]
+        private struct SyncedFloorPaintChunk
+        {
+            public Vector2Int chunkKey;
+            public ushort[] floorPaint;
+        }
+
 
         [ObserversRpc(BufferLast = true)]
         private void RpcSyncFloorDecals(SyncedFloorDecalChunk[] chunks)

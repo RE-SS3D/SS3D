@@ -10,8 +10,9 @@ namespace SS3D.Data.Persistence
         /// 2: placed tile objects and items carry their prefab <c>id</c> beside the name. Version 1 saves load by name.
         /// 3: placed objects and items carry their authored <c>setup</c> (device settings, locks, container contents).
         /// Older saves need no migration: no setup entry means the prefab default.
+        /// 4: tile chunks carry <c>floorPaint</c>, the colour of each floor square. Older saves have none: unpainted.
         /// </summary>
-        public const int CurrentSchemaVersion = 3;
+        public const int CurrentSchemaVersion = 4;
 
         /// <summary>
         /// A template saved by a newer build: it still loads, but settings that build added may be missing here.
