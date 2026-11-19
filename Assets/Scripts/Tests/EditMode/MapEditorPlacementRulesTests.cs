@@ -47,16 +47,22 @@ namespace SS3D.Tests.EditMode
             Assert.AreEqual(expected, MapEditorPlacementRules.PaintsOver(placing, existing));
         }
 
-        [TestCase(TurfKind.Wall, TurfKind.None, true)]
-        [TestCase(TurfKind.Floor, TurfKind.None, true)]
-        [TestCase(TurfKind.Wall, TurfKind.Floor, true)]
-        [TestCase(TurfKind.Wall, TurfKind.Wall, false)]
-        [TestCase(TurfKind.Wall, TurfKind.Door, false)]
-        [TestCase(TurfKind.Floor, TurfKind.Floor, false)]
-        [TestCase(TurfKind.Floor, TurfKind.Wall, false)]
-        public void RoomBuildsOver_OnlyAdds(TurfKind placing, TurfKind existing, bool expected)
+        // A room drawn over a room re-skins its walls and floor, and keeps doors, windows and inner walls.
+        [TestCase(TurfKind.Wall, false, TurfKind.None, false, true)]
+        [TestCase(TurfKind.Floor, false, TurfKind.None, false, true)]
+        [TestCase(TurfKind.Wall, false, TurfKind.Floor, false, true)]
+        [TestCase(TurfKind.Wall, false, TurfKind.Wall, false, true)]
+        [TestCase(TurfKind.Floor, false, TurfKind.Floor, false, true)]
+        [TestCase(TurfKind.Wall, false, TurfKind.Door, false, false)]
+        [TestCase(TurfKind.Wall, false, TurfKind.Wall, true, false)]
+        [TestCase(TurfKind.Wall, true, TurfKind.Wall, true, true)]
+        [TestCase(TurfKind.Wall, true, TurfKind.Wall, false, true)]
+        [TestCase(TurfKind.Floor, false, TurfKind.Wall, false, false)]
+        [TestCase(TurfKind.Floor, false, TurfKind.Door, false, false)]
+        public void RoomBuildsOver_ReskinsWallsAndFloors_KeepsOpenings(
+            TurfKind placing, bool placingWindow, TurfKind existing, bool existingWindow, bool expected)
         {
-            Assert.AreEqual(expected, MapEditorPlacementRules.RoomBuildsOver(placing, existing));
+            Assert.AreEqual(expected, MapEditorPlacementRules.RoomBuildsOver(placing, placingWindow, existing, existingWindow));
         }
 
         [Test]

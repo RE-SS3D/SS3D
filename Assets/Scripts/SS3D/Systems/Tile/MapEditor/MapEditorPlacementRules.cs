@@ -129,24 +129,38 @@ namespace SS3D.Systems.Tile.MapEditor
         };
 
         /// <summary>
-        /// Whether the room tool places <paramref name="placing"/> over <paramref name="existing"/>: it only adds, so it
-        /// builds on empty cells and puts walls over floors, and keeps every wall, door and floor already there.
+        /// Whether the room tool places <paramref name="placing"/> over <paramref name="existing"/>. A room drawn over a
+        /// room re-skins it: its walls go over walls and floors on the border, its floor over floors inside. Doors and
+        /// windows stay, as openings someone chose; a room built of windows does replace windows. Walls inside the
+        /// rectangle stay too, as partitions.
         /// </summary>
-        public static bool RoomBuildsOver(TurfKind placing, TurfKind existing) =>
-            existing == TurfKind.None || (placing == TurfKind.Wall && existing == TurfKind.Floor);
+        public static bool RoomBuildsOver(TurfKind placing, bool placingWindow, TurfKind existing, bool existingWindow) =>
+            existing switch
+            {
+                TurfKind.None => true,
+                TurfKind.Door => false,
+                TurfKind.Wall when existingWindow && !placingWindow => false,
+                _ => placing == TurfKind.Wall || existing == TurfKind.Floor,
+            };
 
-        /// <summary>The turf kind in <paramref name="cell"/>, or <see cref="TurfKind.None"/> for an empty or unknown cell.</summary>
-        public static TurfKind TurfKindAt(TileMap map, Vector3 cell)
+        /// <summary>Windows are walls to the tile map; the room tool and the room-wall memory tell them apart by name.</summary>
+        public static bool IsWindow(TileObjectSo tile) =>
+            tile != null && tile.NameString.IndexOf("Window", StringComparison.OrdinalIgnoreCase) >= 0;
+
+        /// <summary>The turf object in <paramref name="cell"/>, or null for an empty or unknown cell.</summary>
+        public static TileObjectSo TurfAt(TileMap map, Vector3 cell)
         {
             if (map == null
                 || !map.TryGetTileLocation(TileLayer.Turf, cell, out ITileLocation turf)
                 || !turf.TryGetPlacedObject(out PlacedTileObject placed)
-                || placed == null
-                || placed.tileObjectSO == null)
-                return TurfKind.None;
+                || placed == null)
+                return null;
 
-            return KindOf(placed.tileObjectSO);
+            return placed.tileObjectSO;
         }
+
+        /// <summary>The turf kind in <paramref name="cell"/>, or <see cref="TurfKind.None"/> for an empty or unknown cell.</summary>
+        public static TurfKind TurfKindAt(TileMap map, Vector3 cell) => KindOf(TurfAt(map, cell));
 
         /// <summary>
         /// What placing <paramref name="tile"/> at <paramref name="position"/> will do.

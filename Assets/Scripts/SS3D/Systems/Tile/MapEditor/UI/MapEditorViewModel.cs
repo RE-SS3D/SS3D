@@ -73,8 +73,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             subcategory is MapEditorSubcategory.WallsAndWindows or MapEditorSubcategory.Floors;
 
         /// <summary>Windows are walls to the tile map, but a room is never built out of them by default.</summary>
-        public static bool IsWindow(TileObjectSo tile) =>
-            tile != null && tile.NameString.IndexOf("Window", StringComparison.OrdinalIgnoreCase) >= 0;
+        public static bool IsWindow(TileObjectSo tile) => MapEditorPlacementRules.IsWindow(tile);
         public float CameraFov { get; set; } = 72f;
         public float CameraZoomSpeed { get; set; } = 5f;
         public float CameraRotationSpeed { get; set; } = 4f;

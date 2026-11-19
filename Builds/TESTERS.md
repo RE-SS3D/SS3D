@@ -37,6 +37,7 @@ Press **B** to open the map editor. Press **B** again to close it.
   **R** still rotates either.
 - The **Room** tool (key **5**) draws walls around a rectangle and a floor inside it in one drag. It
   uses the last wall and floor you picked; pick another in the library (a window works too) to change them.
+  Drawn over an existing room, it swaps its walls and floor for the new ones and keeps its doors and windows.
 - Right click (or Esc) cancels a drag. Right click with nothing dragged puts down what you're holding.
 - Ctrl+Z / Ctrl+Y undo and redo.
 

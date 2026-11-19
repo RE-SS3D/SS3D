@@ -8,8 +8,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
 {
     /// <summary>
     /// The room tool (<see cref="MapEditorTool.Room"/>): previews and sends walls on a dragged rectangle's border and
-    /// floor inside, each with its own ghost set. It only adds, keeping the walls, doors and floors already there
-    /// (<see cref="MapEditorPlacementRules.RoomBuildsOver"/>).
+    /// floor inside, each with its own ghost set. Drawn over a room it re-skins the walls and floor and keeps doors and
+    /// windows (<see cref="MapEditorPlacementRules.RoomBuildsOver"/>).
     /// </summary>
     internal sealed class ConstructionRoomTool
     {
@@ -184,8 +184,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <summary>What the room does on one cell: skip what it keeps, else place as the editor would.</summary>
         private static PlacementPlan CellPlan(TileMap map, TileObjectSo part, Vector3 cell, bool autoSubfloor)
         {
-            TurfKind existing = MapEditorPlacementRules.TurfKindAt(map, cell);
-            if (!MapEditorPlacementRules.RoomBuildsOver(MapEditorPlacementRules.KindOf(part), existing))
+            TileObjectSo existing = MapEditorPlacementRules.TurfAt(map, cell);
+            if (!MapEditorPlacementRules.RoomBuildsOver(MapEditorPlacementRules.KindOf(part), MapEditorPlacementRules.IsWindow(part),
+                    MapEditorPlacementRules.KindOf(existing), MapEditorPlacementRules.IsWindow(existing)))
                 return PlacementPlan.AlreadyThere;
 
             return MapEditorPlacementRules.Plan(map, part, cell, Direction.North, forceReplace: false, autoSubfloor);
