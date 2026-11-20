@@ -11,7 +11,7 @@ Layered contributor-based disk persistence for station templates and server meta
 
 ## Start here
 
-- `Assets/Scripts/SS3D/Data/Persistence/PersistenceEnvelope.cs` — envelope wrapper and schema version (3: object setup); `IsNewerThanThisBuild` flags a map a newer build saved, which still loads with a warning (`PersistenceSubSystem.LastLoadWasNewerVersion`)
+- `Assets/Scripts/SS3D/Data/Persistence/PersistenceEnvelope.cs` — envelope wrapper and schema version (4: floor paint; 3: object setup); `IsNewerThanThisBuild` flags a map a newer build saved, which still loads with a warning (`PersistenceSubSystem.LastLoadWasNewerVersion`)
 - `Assets/Scripts/SS3D/Data/Persistence/IPersistentSetup.cs` / `SavedSetupEntry.cs` / `ObjectSetup.cs` — authored object setup ([object-setup-persistence](../2026-11_object-setup-persistence.md)): components capture sparse JSON (null at the prefab default) into each placed object's `setup` list; `ObjectSetup.Restore` applies it and reports what it couldn't. `ISetupRecordRoot` (on `Item`) stops a capture at a stored item, whose setup travels in its container's contents. `ISetupScope` lets an object name others its interface changes (air alarm → room vents)
 - `Assets/Scripts/SS3D/Data/Persistence/EnvelopePersistenceStore.cs` — JSON file I/O via `LocalStorage`
 - `Assets/Scripts/SS3D/Data/Persistence/PersistencePaths.cs` — `StationTemplates/`, `ServerMeta/` (permissions, round-history, server-info, reset-health, bugs), legacy `Tilemaps/`

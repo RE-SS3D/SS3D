@@ -1015,6 +1015,7 @@ namespace SS3D.Systems.Tile
                     chunk.SetAreaIds(savedChunk.areaIds);
                 if (savedChunk.floorDecalIds != null)
                     chunk.SetFloorDecalIds(savedChunk.floorDecalIds);
+                chunk.SetFloorPaint(savedChunk.floorPaint);
 
                 if (tileSystem == null)
                     continue;

@@ -347,7 +347,7 @@ namespace SS3D.Tests.EditMode
         public void SubTabs_AreInTheDesignOrder()
         {
             CollectionAssert.AreEqual(
-                new[] { "Floors", "Walls & Windows", "Doors", "Wall Mounts", "Furniture", "Machines", "Decals" },
+                new[] { "Floors", "Walls & Windows", "Doors", "Wall Mounts", "Furniture", "Machines", "Decals", "Floor Paint" },
                 Labels(MapEditorMode.Upper));
             CollectionAssert.AreEqual(new[] { "Subfloor", "Cables", "Gas Pipes", "Disposal Pipes" }, Labels(MapEditorMode.Lower));
             CollectionAssert.AreEqual(

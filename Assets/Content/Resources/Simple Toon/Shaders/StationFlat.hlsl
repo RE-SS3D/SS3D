@@ -12,6 +12,9 @@
 // reuses every pass below (StationFloorTile.hlsl does). It must still declare
 // the inputs these passes read: _MainTex, _BumpMap, _EmissionMap (textures and
 // samplers), _MainTex_ST, _BumpMap_ST, _Color, _EmissionColor, _BumpScale, _Cutoff.
+// A shader that also defines STATION_ALBEDO_WS supplies Station_AlbedoWS(uv,
+// positionWS), which the forward pass calls instead, for albedo that depends on
+// where the surface is in the world (floor paint).
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
@@ -124,7 +127,11 @@ half4 StationForwardFragment(StationVaryings input) : SV_Target
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
     float2 uv = TRANSFORM_TEX(input.uv, _MainTex);
+#if defined(STATION_ALBEDO_WS)
+    half4 albedoAlpha = Station_AlbedoWS(input.uv, input.positionWS);
+#else
     half4 albedoAlpha = Station_Albedo(input.uv);
+#endif
 #if defined(_ALPHATEST_ON)
     clip(albedoAlpha.a - _Cutoff);
 #endif

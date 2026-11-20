@@ -34,7 +34,7 @@ Client FOV / fog-of-war is a hard black mask driven by batched physics raycasts 
 - [rendering-quality-tiers](rendering-quality-tiers.md) — per-tier AO and fixture-shadow settings, measured GPU costs
 - `Assets/Content/Resources/Simple Toon/Shaders/StationFlatLighting.hlsl` — the station lighting model (shared by STDefault and STTransparent)
 - `Assets/Content/Resources/Simple Toon/Shaders/STDefault.shader` + `StationFlat.hlsl` — opaque station shader `SS3D/Station`: ForwardLit, ShadowCaster, DepthOnly, DepthNormals (CORTAO + Decal Layers), optional Alpha Clip
-- `Assets/Content/Resources/Simple Toon/Shaders/StationFloorTile.shader` + `StationFloorTile.hlsl` — `SS3D/Station Floor Tile`: procedural floor tiles (tile/checker/grout colours, line width, diamond size, tiles per cell) on the station passes
+- `Assets/Content/Resources/Simple Toon/Shaders/StationFloorTile.shader` + `StationFloorTile.hlsl` — `SS3D/Station Floor Tile`: procedural floor tiles (tile/checker/grout colours, line width, diamond size; fixed 2 × 2 tiles a cell) on the station passes. Each tile square takes map editor floor paint from the global `_FloorPaintMap` / `_FloorPaintRect`, looked up by world position (`FloorPaintView`, [tile](tile.md) Floor paint)
 - `Assets/Content/Resources/Simple Toon/Shaders/STTransparent.shader` + `STForwardPass.hlsl` / `STInput.hlsl` — `SS3D/Station Transparent` (glass); its CBUFFER and properties still carry the unused half-toon fields
 - `Assets/Content/Resources/Simple Toon/Shaders/ObjectIcon.shader` — unlit bright full-toon for UI icon previews
 - `Assets/Scripts/SS3D/Utils/IconPreviewGenerator.cs` — ObjectIcon material swap for UI icon previews
@@ -46,7 +46,7 @@ Client FOV / fog-of-war is a hard black mask driven by batched physics raycasts 
 ## Extension points
 
 - New render features: add URP `ScriptableRendererFeature` under `Rendering/URP/`.
-- Station shader with its own albedo: `#define STATION_CUSTOM_INPUT`, declare the inputs `StationFlat.hlsl` lists (textures, `UnityPerMaterial`) plus a `Station_Albedo(meshUV)`, then include `StationFlat.hlsl` in every pass. Lighting, shadows, CORTAO, DBuffer decals and Decal Layers come with it; `StationFloorTile.hlsl` is the example.
+- Station shader with its own albedo: `#define STATION_CUSTOM_INPUT`, declare the inputs `StationFlat.hlsl` lists (textures, `UnityPerMaterial`) plus a `Station_Albedo(meshUV)`, then include `StationFlat.hlsl` in every pass. Albedo that depends on world position also defines `STATION_ALBEDO_WS` and a `Station_AlbedoWS(meshUV, positionWS)`, which the forward pass calls instead; keep per-map data in globals, not `UnityPerMaterial`, so the SRP Batcher keeps batching. Lighting, shadows, CORTAO, DBuffer decals and Decal Layers come with it; `StationFloorTile.hlsl` is the example.
 - Outline / auxiliary meshes that must not participate in pick: set rendering layer `SelectionRenderingLayers.ExcludeFromSelectionPick`.
 - World surface marks: stamp `DecalRenderingLayers.ReceiveWorldDecals` on receiver renderers; point floor `DecalProjector`s at `WorldFloorProjectorMask`. Custom opaque shaders must implement DepthNormals with `_WRITE_RENDERING_LAYERS` or Decal Layers will not exclude them, and must sample DBuffer (`ApplyDecalToBaseColor` / `_DBUFFER_MRT*`) or DBuffer projectors never tint albedo (worn jumpsuit / ST floors).
 

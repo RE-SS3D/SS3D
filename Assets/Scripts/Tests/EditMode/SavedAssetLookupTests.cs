@@ -86,9 +86,9 @@ namespace SS3D.Tests.EditMode
         }
 
         [Test]
-        public void SchemaVersion_IsThree()
+        public void SchemaVersion_IsFour()
         {
-            Assert.AreEqual(3, PersistenceEnvelope.CurrentSchemaVersion, "schema 3 adds placed-object setup");
+            Assert.AreEqual(4, PersistenceEnvelope.CurrentSchemaVersion, "schema 4 adds floor paint");
         }
 
         [Test]
