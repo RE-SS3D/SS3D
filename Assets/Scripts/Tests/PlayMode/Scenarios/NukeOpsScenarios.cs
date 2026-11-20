@@ -89,7 +89,8 @@ namespace SS3D.Tests
             Assert.Less(new Vector2(offset.x, offset.z).magnitude, 0.75f, $"The operative spawns on the marker at {marker.Position}");
 
             Hands hands = Body.GetComponentInParent<HumanInventory>().Hands;
-            Assert.IsTrue(hands.PlayerHands.Any(hand => hand.ItemInHand != null), "The operative kit puts a gun in hand");
+            Assert.IsTrue(hands.PlayerHands.All(hand => hand.ItemInHand == null),
+                "The uplink replaces the fixed kit: no rifle in hand, the C-20r is bought");
             Assert.IsEmpty(Object.FindObjectsByType<SyndicateBombBeacon>(FindObjectsSortMode.None),
                 "The squad's one bomb beacon is bought on the uplink, not issued");
             SS3D.UI.MachineInterface.OperativeUplinkController[] uplinks =

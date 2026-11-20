@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FishNet.Serializing;
 using NUnit.Framework;
+using ObjectAssetReference = SS3D.Data.AssetDatabases.ObjectAssetReference;
 using SS3D.Systems.Gamemodes.Uplink;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
@@ -306,6 +307,14 @@ namespace EditorTests
                 .Where(c => c.Slot == ContainerType.Bag)
                 .SelectMany(c => c.Items)
                 .Count(r => r == item.Asset), "Run SS3D → Roles → Apply Job Kits");
+
+            // The uplink replaces the fixed kit (antagonist-content.md §6): nothing it sells but the sidearm and
+            // the survival gear is issued.
+            Assert.IsNull(operative.HandRightAsset, "No rifle in hand: the C-20r is bought");
+            string[] bought = { "C20R", "C4", "SyndicateMiniBomb", "SyndicateBombBeacon" };
+            foreach (ObjectAssetReference reference in operative.EquipmentContents.Concat(operative.FirstHolderContents)
+                         .SelectMany(c => c.Items))
+                CollectionAssert.DoesNotContain(bought, reference.name, "Run SS3D → Roles → Apply Job Kits");
         }
     }
 }

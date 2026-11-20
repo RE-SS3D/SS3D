@@ -145,7 +145,7 @@ namespace SS3D.Tests.EditMode
         public void JobKits_HandOutThePlaytestGear()
         {
             RoleLoadout operative = Loadout("Operative");
-            Assert.AreEqual("C20R", operative.HandRightAsset.name);
+            Assert.IsNull(operative.HandRightAsset, "The C20R is bought on the uplink (OperativeUplinkTests)");
             Assert.That(Storage(operative, ContainerType.Bag), Does.Contain("Stechkin"));
             RoleLoadout security = Loadout("Security");
             Assert.AreEqual("SecurityPistol", security.HandRightAsset.name);

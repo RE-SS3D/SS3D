@@ -10,8 +10,9 @@ namespace SS3D.Systems.Roles.Editor
 {
     /// <summary>
     /// Puts the Playtest 1 weapons and medical gear into the job loadouts (mvp1-nuke-ops.md M0/M1c):
-    /// operatives carry the C-20r, a Stechkin and their telecrystal uplink, Security a security pistol and a stun
-    /// baton, the Doctor gauze in the medkit and a defibrillator. The Syndicate bomb beacon is bought on the uplink.
+    /// operatives carry a Stechkin sidearm and their telecrystal uplink, Security a security pistol and a stun
+    /// baton, the Doctor gauze in the medkit and a defibrillator. The uplink replaces the operative's fixed weapons
+    /// and explosives (antagonist-content.md §6): the C-20r, C4, minibomb and Syndicate bomb beacon are bought on it.
     /// Clothing stays with ClothingImportSetup. Re-running it is idempotent.
     /// </summary>
     public static class JobKitSetup
@@ -23,15 +24,13 @@ namespace SS3D.Systems.Roles.Editor
         public static void Apply()
         {
             RoleLoadout operative = Load("OperativeLoadout");
-            operative.HandRightAsset = Reference("C20R");
+            // The uplink replaces the fixed kit: what it sells is bought, not issued. Operatives keep the survival
+            // gear (hardsuit, helmet, tank, magboots, tools) and a sidearm, like the SS14 and /tg/ operative.
+            operative.HandRightAsset = null;
             AddToStorage(operative, ContainerType.Bag, "Stechkin");
             // Each operative carries a personal telecrystal uplink (OperativeUplinkPrefabSetup builds it).
             AddToStorage(operative, ContainerType.Bag, "OperativeUplink");
-            // The squad's one Syndicate bomb is now bought on the uplink (squad-wide stock of one), so the
-            // first operative no longer spawns with its beacon.
-            ObjectAssetReference beacon = Reference("SyndicateBombBeacon");
-            foreach (LoadoutContents contents in operative.FirstHolderContents) contents.Items.RemoveAll(r => r == beacon);
-            operative.FirstHolderContents.RemoveAll(c => c.Items.Count == 0);
+            RemoveEverywhere(operative, "C20R", "C4", "SyndicateMiniBomb", "SyndicateBombBeacon");
             Save(operative);
 
             RoleLoadout security = Load("SecurityLoadout");
@@ -48,6 +47,17 @@ namespace SS3D.Systems.Roles.Editor
             Save(doctor);
 
             DB.SaveAssets();
+        }
+
+        /// <summary>Drops every copy of <paramref name="items"/> from the loadout's storage contents.</summary>
+        private static void RemoveEverywhere(RoleLoadout loadout, params string[] items)
+        {
+            List<ObjectAssetReference> references = items.Select(Reference).ToList();
+            foreach (LoadoutContents contents in loadout.EquipmentContents.Concat(loadout.FirstHolderContents))
+                contents.Items.RemoveAll(references.Contains);
+            loadout.HandLeftContents.RemoveAll(references.Contains);
+            loadout.HandRightContents.RemoveAll(references.Contains);
+            loadout.FirstHolderContents.RemoveAll(c => c.Items.Count == 0);
         }
 
         private static void AddToStorage(RoleLoadout loadout, ContainerType slot, string item)
