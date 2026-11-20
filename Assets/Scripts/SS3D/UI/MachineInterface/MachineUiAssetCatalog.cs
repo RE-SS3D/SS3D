@@ -128,6 +128,15 @@ namespace SS3D.UI.MachineInterface
         private StyleSheet[] _meterComponentStyles;
 
         [SerializeField]
+        private VisualTreeAsset _operativeUplinkTemplate;
+
+        [SerializeField]
+        private StyleSheet _operativeUplinkTemplateStyle;
+
+        [SerializeField]
+        private StyleSheet[] _operativeUplinkComponentStyles;
+
+        [SerializeField]
         private VisualTreeAsset _healthScannerTemplate;
 
         [SerializeField]
@@ -179,6 +188,9 @@ namespace SS3D.UI.MachineInterface
                 MeterTemplate = _meterTemplate,
                 MeterTemplateStyle = _meterTemplateStyle,
                 MeterComponentStyles = _meterComponentStyles,
+                OperativeUplinkTemplate = _operativeUplinkTemplate,
+                OperativeUplinkTemplateStyle = _operativeUplinkTemplateStyle,
+                OperativeUplinkComponentStyles = _operativeUplinkComponentStyles,
                 HealthScannerTemplate = _healthScannerTemplate,
                 HealthScannerTemplateStyle = _healthScannerTemplateStyle,
                 HealthScannerComponentStyles = _healthScannerComponentStyles,
@@ -260,6 +272,9 @@ namespace SS3D.UI.MachineInterface
             VisualTreeAsset meterTemplate,
             StyleSheet meterTemplateStyle,
             StyleSheet[] meterComponentStyles,
+            VisualTreeAsset operativeUplinkTemplate,
+            StyleSheet operativeUplinkTemplateStyle,
+            StyleSheet[] operativeUplinkComponentStyles,
             VisualTreeAsset healthScannerTemplate,
             StyleSheet healthScannerTemplateStyle,
             StyleSheet[] healthScannerComponentStyles)
@@ -302,6 +317,9 @@ namespace SS3D.UI.MachineInterface
             _meterTemplate = meterTemplate;
             _meterTemplateStyle = meterTemplateStyle;
             _meterComponentStyles = meterComponentStyles;
+            _operativeUplinkTemplate = operativeUplinkTemplate;
+            _operativeUplinkTemplateStyle = operativeUplinkTemplateStyle;
+            _operativeUplinkComponentStyles = operativeUplinkComponentStyles;
             _healthScannerTemplate = healthScannerTemplate;
             _healthScannerTemplateStyle = healthScannerTemplateStyle;
             _healthScannerComponentStyles = healthScannerComponentStyles;

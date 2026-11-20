@@ -144,7 +144,7 @@ namespace SS3D.Systems.StructuralDamage.Editor
             return light;
         }
 
-        private static void WireExamine(GameObject root, string name, string title, string description)
+        internal static void WireExamine(GameObject root, string name, string title, string description)
         {
             StringTableCollection collection = LocalizationEditorSettings.GetStringTableCollection("Examine");
             StringTable table = (StringTable)collection.GetTable(new LocaleIdentifier("en"));

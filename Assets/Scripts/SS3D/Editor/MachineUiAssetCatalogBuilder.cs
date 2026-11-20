@@ -100,6 +100,9 @@ namespace SS3D.Editor
             StyleSheet meterStyle = LoadRequired<StyleSheet>(MachineUiAssetPaths.MeterTemplateStyle, missing);
             StyleSheet[] meterComponents = LoadStyleSheets(gasLineStyles, missing);
 
+            VisualTreeAsset uplinkTemplate = LoadRequired<VisualTreeAsset>(MachineUiAssetPaths.OperativeUplinkTemplate, missing);
+            StyleSheet uplinkStyle = LoadRequired<StyleSheet>(MachineUiAssetPaths.OperativeUplinkTemplateStyle, missing);
+            StyleSheet[] uplinkComponents = LoadStyleSheets(MachineUiAssetPaths.OperativeUplinkComponentStyles, missing);
             VisualTreeAsset healthScannerTemplate = LoadRequired<VisualTreeAsset>(MachineUiAssetPaths.HealthScannerTemplate, missing);
             StyleSheet healthScannerStyle = LoadRequired<StyleSheet>(MachineUiAssetPaths.HealthScannerTemplateStyle, missing);
             StyleSheet[] healthScannerComponents = LoadStyleSheets(MachineUiAssetPaths.HealthScannerComponentStyles, missing);
@@ -165,6 +168,9 @@ namespace SS3D.Editor
                 meterTemplate,
                 meterStyle,
                 meterComponents,
+                uplinkTemplate,
+                uplinkStyle,
+                uplinkComponents,
                 healthScannerTemplate,
                 healthScannerStyle,
                 healthScannerComponents);
