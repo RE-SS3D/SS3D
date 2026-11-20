@@ -36,6 +36,8 @@ namespace SS3D.Systems.Tile
         private List<TileGrid> _tileGridList;
         private ushort[] _areaIds;
         private ushort[] _floorDecalIds;
+        /// <summary>Floor paint per tile, four squares of 4 bits (<see cref="FloorVisuals.FloorPaint"/>); null until painted.</summary>
+        private ushort[] _floorPaint;
 
         public Vector2Int ChunkKey => _chunkKey;
 
@@ -280,6 +282,43 @@ namespace SS3D.Systems.Tile
             return copy;
         }
 
+        public ushort GetFloorPaint(int localX, int localY)
+        {
+            if (_floorPaint == null || localX < 0 || localY < 0 || localX >= ChunkSize || localY >= ChunkSize)
+                return 0;
+
+            return _floorPaint[localY * ChunkSize + localX];
+        }
+
+        public void SetFloorPaint(int localX, int localY, ushort paint)
+        {
+            if (localX < 0 || localY < 0 || localX >= ChunkSize || localY >= ChunkSize || (_floorPaint == null && paint == 0))
+                return;
+
+            _floorPaint ??= new ushort[ChunkSize * ChunkSize];
+            _floorPaint[localY * ChunkSize + localX] = paint;
+        }
+
+        public void SetFloorPaint(ushort[] paint)
+        {
+            if (paint == null || paint.Length != ChunkSize * ChunkSize)
+                return;
+
+            _floorPaint ??= new ushort[ChunkSize * ChunkSize];
+            Array.Copy(paint, _floorPaint, paint.Length);
+        }
+
+        /// <summary>A copy of the chunk's floor paint, or null when nothing in it is painted.</summary>
+        public ushort[] CopyFloorPaint()
+        {
+            if (_floorPaint == null || Array.TrueForAll(_floorPaint, paint => paint == 0))
+                return null;
+
+            var copy = new ushort[_floorPaint.Length];
+            Array.Copy(_floorPaint, copy, _floorPaint.Length);
+            return copy;
+        }
+
         public List<ITileLocation> GetTileLocations(int x, int y)
         {
 
@@ -349,6 +388,7 @@ namespace SS3D.Systems.Tile
                 chunkKey = _chunkKey,
                 areaIds = HasAnyAreaIds() ? CopyAreaIds() : null,
                 floorDecalIds = HasAnyFloorDecalIds() ? CopyFloorDecalIds() : null,
+                floorPaint = CopyFloorPaint(),
             };
 
             return saveObject;

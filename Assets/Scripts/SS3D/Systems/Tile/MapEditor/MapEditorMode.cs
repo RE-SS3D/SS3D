@@ -26,6 +26,8 @@ namespace SS3D.Systems.Tile.MapEditor
         Furniture = 104,
         Machines = 105,
         Decals = 106,
+        /// <summary>Colours for each square of a floor tile (<c>FloorPaint</c>); painted, not placed.</summary>
+        FloorPaint = 107,
 
         // Lower
         Subfloor = 200,

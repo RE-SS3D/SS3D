@@ -50,6 +50,7 @@ GameObject:
   - component: {fileID: 5464842264619517571}
   - component: {fileID: 2986267657943188832}
   - component: {fileID: 2339314836376900352}
+  - component: {fileID: 4719358201846630127}
   m_Layer: 10
   m_Name: HealthScanner
   m_TagString: Untagged
@@ -249,6 +250,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 1363585423008195204}
   - {fileID: 6377164133976095912}
+  - {fileID: 4719358201846630127}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -278,6 +280,7 @@ MonoBehaviour:
   _name: Health Scanner
   _weight: 0.4
   _sizeClass: 1
+  _tooHeavyToLift: 0
   _maxStackSize: 1
   _initialStackCount: 1
   _stackCount: 1
@@ -286,6 +289,7 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 8869951128713715569}
   AttachmentPointAlt: {fileID: 7904818470334036375}
   _restRotation: {x: 270, y: 0, z: 0}
+  _restsUpright: 0
   _overrideIconRotation: 1
   _iconRotation: {x: 0, y: 0, z: 0}
   _container: {fileID: 0}
@@ -327,6 +331,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Audio.NoisyCollision
   _material: 4
+--- !u!114 &4719358201846630127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794527162878356835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee88b4cd81c64051b59a336bbdf792f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SS3D.UI.MachineInterface::SS3D.UI.MachineInterface.HealthScannerInterfaceController
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: 261983550380735922}
+  _networkObjectCache: {fileID: 261983550380735922}
+  _modelLabel: "VSU-5R \xB7 anatomical scan unit"
+  _deviceTitle: VSU-5R
 --- !u!1 &5237778949470897495
 GameObject:
   m_ObjectHideFlags: 0

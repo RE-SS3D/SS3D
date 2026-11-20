@@ -128,6 +128,15 @@ Read directly from code and prefabs; the [rendering](systems/rendering.md) map i
 
 **As built (2026-11-16):** `VisionCompositeRenderPass` and `Vision/VisionComposite` (the shader keeps its GUID, so the renderer asset's field was renamed in place to `_visionCompositeShader`). `ViewCastInfo`, `DirectionFromAngle` and the `transform.position` write went with P2. View range, cone width and rays per degree are constants (`VisionSubSystem.ViewRange` is public); only the `Show Debug` gizmo toggle stays serialized. Public members are `Target`, `StepCount`, `ViewPoints`, `ShowDebug`. `Entity.HasFieldOfView` replaces the ghost component check. `systems/fov.md` is the new map; `rendering.md` keeps a pointer.
 
+### Develop merge (2026-11-20)
+
+Develop (`51c4dfa0b`) brought what the branch had to absorb:
+
+- **Airlock variants:** 13 new airlock prefabs plus their glass versions. The glass tiles already have `blocksVision: 0`, so the recipe now sorts door tiles by `blocksVision` too: blocking doors get leaf occluders, see-through ones must have none (the audit checks both). `ExternalAirlock` is a shutter (`Top/Blocker` box, mesh under `Model`), not two leaves; doors without direct leaf children get an occluder copied from each solid Default box.
+- **Stored items (#1548):** `Item.SetVisibility` started hiding stored items through `forceRenderingOff`, which the culler would have cleared for an item in sight. It now goes through `RendererHiding.Reason.Stored`, and `Item.IsVisible` asks for that reason only.
+- **`StationLookDev`** (look-dev round) wrote `VisionRenderContext.Suppressed` / `Enabled`, which P2 removed; it now calls `VisionSubSystem.SetSuppressed` only.
+- **Station shading rewrite:** the station shader keeps its DepthNormals pass with Decal Layers, so the rendering-layers texture the mask reads is unchanged; `scenarios:Vision` and `VisionShots` confirm.
+
 ## Tests
 
 - **Delete** the slack tests in `VisionFovTests` (they check the old constants, not behaviour). Keep the `IsWithinDepths` tests.

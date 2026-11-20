@@ -14,6 +14,7 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Health;
+using SS3D.Systems.Health.Interactions;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
@@ -259,13 +260,20 @@ namespace SS3D.UI.MainHud
                 return;
             }
 
-            bool visible = _localPlayer != null
+            bool visible = false;
+            bool showLabel = false;
+            bool harm = false;
+            if (_localPlayer != null
                 && IsRoundInGame()
                 && !_machineUiOpen
                 && !_menuOpen
                 && _intentProvider != null
-                && _intentProvider.CurrentIntent == IntentType.Harm
-                && !(SubSystems.TryGet(out ArmedInteractionSubSystem armed) && armed.IsArmed);
+                && !(SubSystems.TryGet(out ArmedInteractionSubSystem armed) && armed.IsArmed))
+            {
+                IntentType intent = _intentProvider.CurrentIntent;
+                harm = intent == IntentType.Harm;
+                ZoneReticleMode.Resolve(intent, SelectedHandHoldsZoneTreatment(), out visible, out showLabel);
+            }
 
             Vector2 screenPosition = InputInterface.GetPointerScreenPosition();
             string zoneLabel = string.Empty;
@@ -290,7 +298,11 @@ namespace SS3D.UI.MainHud
                         out _,
                         out Collider zoneCollider))
                 {
-                    zoneLabel = ZoneTargetResolver.GetReticleLabel(zone);
+                    if (showLabel)
+                    {
+                        zoneLabel = ZoneTargetResolver.GetReticleLabel(zone);
+                    }
+
                     inRange = IsHoveredZoneInRange(zoneCollider);
                 }
             }
@@ -298,7 +310,7 @@ namespace SS3D.UI.MainHud
             float lockReadyProgress01 = 1f;
             bool recharging = false;
             float bloom01 = 0f;
-            if (visible)
+            if (visible && harm)
             {
                 TryGetSelectedHandRecovery(out lockReadyProgress01, out recharging);
                 bloom01 = GetSelectedRangedBloom01();
@@ -312,6 +324,12 @@ namespace SS3D.UI.MainHud
                 lockReadyProgress01,
                 recharging,
                 bloom01);
+        }
+
+        private bool SelectedHandHoldsZoneTreatment()
+        {
+            Item item = _hands?.SelectedHand?.ItemInHand;
+            return item != null && item.TryGetComponent(out IZoneTargetedTreatment _);
         }
 
         private void HandleMeleeConnectHitLanded()

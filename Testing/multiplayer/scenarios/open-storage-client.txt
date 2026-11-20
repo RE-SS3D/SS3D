@@ -1,0 +1,11 @@
+# Client side of mppm:open-storage: joins the running round and opens its worn bag (else a pocket) through the server.
+wait_timeout 60
+wait_connected
+wait_round Ongoing
+wait_seconds 1
+ready
+embark
+assert_embarked
+assert_open_storage
+wait_seconds 2
+disconnect

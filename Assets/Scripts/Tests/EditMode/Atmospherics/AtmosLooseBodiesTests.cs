@@ -77,6 +77,30 @@ namespace EditorTests.Atmospherics
         }
 
         [Test]
+        public void IgnoringWind_PushesNothing()
+        {
+            var context = TileMapTestUtilities.CreateContext(_objects);
+            using AtmosSimulation sim = Breached(context, out int hole);
+            Rigidbody free = AddBody(new Vector3(RoomSize, 0.2f, hole));
+            var loose = new AtmosLooseBodies();
+            bool previous = AtmosWind.BodiesIgnoreWind;
+            try
+            {
+                AtmosWind.BodiesIgnoreWind = true;
+                Tick(sim, loose, 10);
+                Assert.IsFalse(loose.IsPushed(free), "The wind console toggle stops wind moving items");
+                Assert.That(loose.PushedCount, Is.Zero);
+            }
+            finally
+            {
+                AtmosWind.BodiesIgnoreWind = previous;
+            }
+
+            Tick(sim, loose, 1);
+            Assert.IsTrue(loose.IsPushed(free), "Turning wind back on pushes the item again");
+        }
+
+        [Test]
         public void BodyWithoutGravitySlowsToRest_AndGravityGivesItsDampingBack()
         {
             var context = TileMapTestUtilities.CreateContext(_objects);

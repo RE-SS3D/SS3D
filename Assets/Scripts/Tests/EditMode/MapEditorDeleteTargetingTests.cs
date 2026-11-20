@@ -41,6 +41,7 @@ namespace SS3D.Tests.EditMode
             { MapEditorSubcategory.SpawnPoints, MapEditorDeleteScope.SpawnPoint },
             { MapEditorSubcategory.Rooms, MapEditorDeleteScope.Area },
             { MapEditorSubcategory.StartingAir, MapEditorDeleteScope.GasMarker },
+            { MapEditorSubcategory.FloorPaint, MapEditorDeleteScope.FloorPaint },
         };
 
         private static readonly TileObjectGenericType[] TurfKinds =

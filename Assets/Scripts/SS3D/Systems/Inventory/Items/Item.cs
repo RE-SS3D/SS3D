@@ -30,6 +30,7 @@ using SS3D.Core;
 #if UNITY_EDITOR
 using AssetDatabase = UnityEditor.AssetDatabase;
 using UnityEditor;
+using SS3D.Rendering.URP;
 #endif
 
 namespace SS3D.Systems.Inventory.Items
@@ -158,6 +159,12 @@ namespace SS3D.Systems.Inventory.Items
 
         /// <summary>No hand, slot or container takes this item; it moves only by dragging or physics.</summary>
         public bool TooHeavyToLift => _tooHeavyToLift;
+
+        /// <summary>
+        /// False for a prefab asset. When the server despawns an item in the tick it changed a SyncList holding it,
+        /// FishNet writes the item's PrefabId and the host's client reads back the prefab asset itself.
+        /// </summary>
+        public bool IsSceneInstance => gameObject.scene.IsValid();
 
         public int MaxStackSize => _maxStackSize;
 
@@ -565,6 +572,11 @@ namespace SS3D.Systems.Inventory.Items
                 }
 
                 childRenderer.enabled = visible;
+                // FishNet's host view range also writes Renderer.enabled: an item cached as visible at spawn
+                // came back on inside its locker or medkit when the host walked into range. It never touches
+                // forceRenderingOff, so that is what keeps a stored item hidden (TileUnderfloorVisibility does
+                // the same for cover-hidden tiles). Through RendererHiding, so the FOV showing the item doesn't undo it.
+                RendererHiding.Set(childRenderer, RendererHiding.Reason.Stored, !visible);
             }
 
             if (!visible)
@@ -593,7 +605,8 @@ namespace SS3D.Systems.Inventory.Items
         {
             // TODO: Make this handle multiple renderers
             Renderer component = GetComponent<Renderer>();
-            return component != null && component.enabled;
+            // Stored, not out of sight: the FOV's culling is the local viewer's, and a host's server shares this object.
+            return component != null && component.enabled && !RendererHiding.IsHidden(component, RendererHiding.Reason.Stored);
         }
 
         public virtual IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
@@ -878,6 +891,8 @@ namespace SS3D.Systems.Inventory.Items
                 }
 
                 childRenderer.enabled = visible;
+                // The preview clones the item as it is; a stored item's renderers carry SetVisibility's hide.
+                childRenderer.forceRenderingOff = !visible;
             }
         }
 

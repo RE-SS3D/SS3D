@@ -648,7 +648,11 @@ namespace SS3D.Systems.Tile
                 NotifyTilePlaced(placedObject, placePosition);
 
                 if (tileObjectSo.layer == TileLayer.Turf)
+                {
                     TileUnderfloorVisibility.RefreshUnderfloorForTurf(this, placedObject);
+                    if (!skipAdjacency)
+                        AirlockFloorSides.RefreshDoorsBeside(this, placedObject);
+                }
             }
 
             return canBuild;
@@ -705,9 +709,13 @@ namespace SS3D.Systems.Tile
             if (underfloorRefreshCells != null)
             {
                 for (int i = 0; i < underfloorRefreshCells.Count; i++)
+                {
                     TileUnderfloorVisibility.RefreshUnderfloorAt(this, underfloorRefreshCells[i]);
+                    AirlockFloorSides.RefreshDoorsBeside(this, underfloorRefreshCells[i]);
+                }
             }
         }
+
 
         private void ClearLocations(List<ITileLocation> toClearLocations, Vector3 placePosition)
         {
@@ -1007,6 +1015,7 @@ namespace SS3D.Systems.Tile
                     chunk.SetAreaIds(savedChunk.areaIds);
                 if (savedChunk.floorDecalIds != null)
                     chunk.SetFloorDecalIds(savedChunk.floorDecalIds);
+                chunk.SetFloorPaint(savedChunk.floorPaint);
 
                 if (tileSystem == null)
                     continue;
@@ -1290,6 +1299,13 @@ namespace SS3D.Systems.Tile
 
             foreach (Item item in allItems)
             {
+                // Already destroyed: a loose container destroyed earlier in this loop takes its attached contents
+                // with it. Touching one throws (NullReferenceException in a player build) and aborts the restore.
+                if (item == null)
+                {
+                    continue;
+                }
+
                 // Skip items that are in containers (player inventory, etc.)
                 // and items that already have PlacedItemObject (they're already tracked)
                 if (item.Container != null || item.GetComponent<PlacedItemObject>() != null)

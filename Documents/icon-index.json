@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T14:21:17.651621+00:00",
+  "generated_at": "2026-11-18T21:55:47.058109+00:00",
   "purpose": "Agent reference for locating icon assets under Assets/Art/Icons/ (plus Phase 2 InteractionIcons scatter; see asset-file-structure-taxonomy).",
   "sources": [
     {
@@ -9,7 +9,7 @@
     },
     {
       "source": "map-editor",
-      "count": 39,
+      "count": 40,
       "root": "Assets/Art/Icons/map-editor"
     },
     {
@@ -39,15 +39,15 @@
     },
     {
       "source": "lobby-icons",
-      "count": 17,
+      "count": 72,
       "root": "Assets/Art/Icons/Lobby"
     }
   ],
   "summary": {
-    "total_icons": 4801,
+    "total_icons": 4857,
     "source_count": 8,
     "pack_count": 36,
-    "svg_count": 4219
+    "svg_count": 4220
   },
   "packs": [
     {
@@ -49643,6 +49643,17 @@
       ]
     },
     {
+      "name": "room.svg",
+      "stem": "room",
+      "extension": "svg",
+      "source": "map-editor",
+      "pack": "map-editor",
+      "path": "Assets/Art/Icons/map-editor/room.svg",
+      "tags": [
+        "room"
+      ]
+    },
+    {
       "name": "rotateLeft.svg",
       "stem": "rotateLeft",
       "extension": "svg",
@@ -49940,6 +49951,17 @@
       ]
     },
     {
+      "name": "ArrowsExpand.png",
+      "stem": "ArrowsExpand",
+      "extension": "png",
+      "source": "heroicons",
+      "pack": "Outline",
+      "path": "Assets/Art/Icons/Heroicons/Outline/ArrowsExpand.png",
+      "tags": [
+        "arrowsexpand"
+      ]
+    },
+    {
       "name": "ArrowSmDown.png",
       "stem": "ArrowSmDown",
       "extension": "png",
@@ -49992,17 +50014,6 @@
       "path": "Assets/Art/Icons/Heroicons/Outline/ArrowUp.png",
       "tags": [
         "arrowup"
-      ]
-    },
-    {
-      "name": "ArrowsExpand.png",
-      "stem": "ArrowsExpand",
-      "extension": "png",
-      "source": "heroicons",
-      "pack": "Outline",
-      "path": "Assets/Art/Icons/Heroicons/Outline/ArrowsExpand.png",
-      "tags": [
-        "arrowsexpand"
       ]
     },
     {
@@ -50072,17 +50083,6 @@
       ]
     },
     {
-      "name": "BookOpen.png",
-      "stem": "BookOpen",
-      "extension": "png",
-      "source": "heroicons",
-      "pack": "Outline",
-      "path": "Assets/Art/Icons/Heroicons/Outline/BookOpen.png",
-      "tags": [
-        "bookopen"
-      ]
-    },
-    {
       "name": "Bookmark.png",
       "stem": "Bookmark",
       "extension": "png",
@@ -50102,6 +50102,17 @@
       "path": "Assets/Art/Icons/Heroicons/Outline/BookmarkAlt.png",
       "tags": [
         "bookmarkalt"
+      ]
+    },
+    {
+      "name": "BookOpen.png",
+      "stem": "BookOpen",
+      "extension": "png",
+      "source": "heroicons",
+      "pack": "Outline",
+      "path": "Assets/Art/Icons/Heroicons/Outline/BookOpen.png",
+      "tags": [
+        "bookopen"
       ]
     },
     {
@@ -52470,6 +52481,17 @@
       ]
     },
     {
+      "name": "ArrowsExpand.png",
+      "stem": "ArrowsExpand",
+      "extension": "png",
+      "source": "heroicons",
+      "pack": "Solid",
+      "path": "Assets/Art/Icons/Heroicons/Solid/ArrowsExpand.png",
+      "tags": [
+        "arrowsexpand"
+      ]
+    },
+    {
       "name": "ArrowSmDown.png",
       "stem": "ArrowSmDown",
       "extension": "png",
@@ -52522,17 +52544,6 @@
       "path": "Assets/Art/Icons/Heroicons/Solid/ArrowUp.png",
       "tags": [
         "arrowup"
-      ]
-    },
-    {
-      "name": "ArrowsExpand.png",
-      "stem": "ArrowsExpand",
-      "extension": "png",
-      "source": "heroicons",
-      "pack": "Solid",
-      "path": "Assets/Art/Icons/Heroicons/Solid/ArrowsExpand.png",
-      "tags": [
-        "arrowsexpand"
       ]
     },
     {
@@ -52602,17 +52613,6 @@
       ]
     },
     {
-      "name": "BookOpen.png",
-      "stem": "BookOpen",
-      "extension": "png",
-      "source": "heroicons",
-      "pack": "Solid",
-      "path": "Assets/Art/Icons/Heroicons/Solid/BookOpen.png",
-      "tags": [
-        "bookopen"
-      ]
-    },
-    {
       "name": "Bookmark.png",
       "stem": "Bookmark",
       "extension": "png",
@@ -52632,6 +52632,17 @@
       "path": "Assets/Art/Icons/Heroicons/Solid/BookmarkAlt.png",
       "tags": [
         "bookmarkalt"
+      ]
+    },
+    {
+      "name": "BookOpen.png",
+      "stem": "BookOpen",
+      "extension": "png",
+      "source": "heroicons",
+      "pack": "Solid",
+      "path": "Assets/Art/Icons/Heroicons/Solid/BookOpen.png",
+      "tags": [
+        "bookopen"
       ]
     },
     {
@@ -56004,14 +56015,14 @@
       ]
     },
     {
-      "name": "DropdownArrow.png",
-      "stem": "DropdownArrow",
+      "name": "Assistant.png",
+      "stem": "Assistant",
       "extension": "png",
       "source": "lobby-icons",
-      "pack": "Lobby",
-      "path": "Assets/Art/Icons/Lobby/DropdownArrow.png",
+      "pack": "Jobs",
+      "path": "Assets/Art/Icons/Lobby/Jobs/Assistant.png",
       "tags": [
-        "dropdownarrow"
+        "assistant"
       ]
     },
     {
@@ -56169,25 +56180,687 @@
       ]
     },
     {
-      "name": "PnJanitor.png",
-      "stem": "PnJanitor",
+      "name": "beard-humanfacehairamish.png",
+      "stem": "beard-humanfacehairamish",
       "extension": "png",
       "source": "lobby-icons",
-      "pack": "Lobby",
-      "path": "Assets/Art/Icons/Lobby/PnJanitor.png",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairamish.png",
       "tags": [
-        "pnjanitor"
+        "beard",
+        "humanfacehairamish"
       ]
     },
     {
-      "name": "PnSecurity.png",
-      "stem": "PnSecurity",
+      "name": "beard-humanfacehaircabron.png",
+      "stem": "beard-humanfacehaircabron",
       "extension": "png",
       "source": "lobby-icons",
-      "pack": "Lobby",
-      "path": "Assets/Art/Icons/Lobby/PnSecurity.png",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehaircabron.png",
       "tags": [
-        "pnsecurity"
+        "beard",
+        "humanfacehaircabron"
+      ]
+    },
+    {
+      "name": "beard-humanfacehairchaplin.png",
+      "stem": "beard-humanfacehairchaplin",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairchaplin.png",
+      "tags": [
+        "beard",
+        "humanfacehairchaplin"
+      ]
+    },
+    {
+      "name": "beard-humanfacehairdali.png",
+      "stem": "beard-humanfacehairdali",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairdali.png",
+      "tags": [
+        "beard",
+        "humanfacehairdali"
+      ]
+    },
+    {
+      "name": "beard-humanfacehairdanishfull.png",
+      "stem": "beard-humanfacehairdanishfull",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairdanishfull.png",
+      "tags": [
+        "beard",
+        "humanfacehairdanishfull"
+      ]
+    },
+    {
+      "name": "beard-humanfacehairdanishmustache.png",
+      "stem": "beard-humanfacehairdanishmustache",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairdanishmustache.png",
+      "tags": [
+        "beard",
+        "humanfacehairdanishmustache"
+      ]
+    },
+    {
+      "name": "beard-humanfacehairfreeman.png",
+      "stem": "beard-humanfacehairfreeman",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairfreeman.png",
+      "tags": [
+        "beard",
+        "humanfacehairfreeman"
+      ]
+    },
+    {
+      "name": "beard-humanfacehairfrenchie.png",
+      "stem": "beard-humanfacehairfrenchie",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairfrenchie.png",
+      "tags": [
+        "beard",
+        "humanfacehairfrenchie"
+      ]
+    },
+    {
+      "name": "beard-humanfacehairfull.png",
+      "stem": "beard-humanfacehairfull",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairfull.png",
+      "tags": [
+        "beard",
+        "humanfacehairfull"
+      ]
+    },
+    {
+      "name": "beard-humanfacehairfuller.png",
+      "stem": "beard-humanfacehairfuller",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairfuller.png",
+      "tags": [
+        "beard",
+        "humanfacehairfuller"
+      ]
+    },
+    {
+      "name": "beard-humanfacehairfumanchu.png",
+      "stem": "beard-humanfacehairfumanchu",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairfumanchu.png",
+      "tags": [
+        "beard",
+        "humanfacehairfumanchu"
+      ]
+    },
+    {
+      "name": "beard-humanfacehairgoatee.png",
+      "stem": "beard-humanfacehairgoatee",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairgoatee.png",
+      "tags": [
+        "beard",
+        "humanfacehairgoatee"
+      ]
+    },
+    {
+      "name": "beard-humanfacehairmayor.png",
+      "stem": "beard-humanfacehairmayor",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairmayor.png",
+      "tags": [
+        "beard",
+        "humanfacehairmayor"
+      ]
+    },
+    {
+      "name": "beard-humanfacehairmustache.png",
+      "stem": "beard-humanfacehairmustache",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairmustache.png",
+      "tags": [
+        "beard",
+        "humanfacehairmustache"
+      ]
+    },
+    {
+      "name": "beard-humanfacehairmuttonchops.png",
+      "stem": "beard-humanfacehairmuttonchops",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairmuttonchops.png",
+      "tags": [
+        "beard",
+        "humanfacehairmuttonchops"
+      ]
+    },
+    {
+      "name": "beard-humanfacehairplumber.png",
+      "stem": "beard-humanfacehairplumber",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairplumber.png",
+      "tags": [
+        "beard",
+        "humanfacehairplumber"
+      ]
+    },
+    {
+      "name": "beard-humanfacehairrancher.png",
+      "stem": "beard-humanfacehairrancher",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairrancher.png",
+      "tags": [
+        "beard",
+        "humanfacehairrancher"
+      ]
+    },
+    {
+      "name": "beard-humanfacehairsaxonthegnsstache.png",
+      "stem": "beard-humanfacehairsaxonthegnsstache",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairsaxonthegnsstache.png",
+      "tags": [
+        "beard",
+        "humanfacehairsaxonthegnsstache"
+      ]
+    },
+    {
+      "name": "beard-humanfacehairshadow.png",
+      "stem": "beard-humanfacehairshadow",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairshadow.png",
+      "tags": [
+        "beard",
+        "humanfacehairshadow"
+      ]
+    },
+    {
+      "name": "beard-humanfacehairusualmike.png",
+      "stem": "beard-humanfacehairusualmike",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-humanfacehairusualmike.png",
+      "tags": [
+        "beard",
+        "humanfacehairusualmike"
+      ]
+    },
+    {
+      "name": "beard-none.png",
+      "stem": "beard-none",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/beard-none.png",
+      "tags": [
+        "beard",
+        "none"
+      ]
+    },
+    {
+      "name": "eyebrows-humaneyebrowsbold.png",
+      "stem": "eyebrows-humaneyebrowsbold",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/eyebrows-humaneyebrowsbold.png",
+      "tags": [
+        "eyebrows",
+        "humaneyebrowsbold"
+      ]
+    },
+    {
+      "name": "eyebrows-humaneyebrowscircle.png",
+      "stem": "eyebrows-humaneyebrowscircle",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/eyebrows-humaneyebrowscircle.png",
+      "tags": [
+        "eyebrows",
+        "humaneyebrowscircle"
+      ]
+    },
+    {
+      "name": "eyebrows-humaneyebrowsclassic.png",
+      "stem": "eyebrows-humaneyebrowsclassic",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/eyebrows-humaneyebrowsclassic.png",
+      "tags": [
+        "eyebrows",
+        "humaneyebrowsclassic"
+      ]
+    },
+    {
+      "name": "eyebrows-humaneyebrowsdainty.png",
+      "stem": "eyebrows-humaneyebrowsdainty",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/eyebrows-humaneyebrowsdainty.png",
+      "tags": [
+        "eyebrows",
+        "humaneyebrowsdainty"
+      ]
+    },
+    {
+      "name": "eyebrows-humaneyebrowsdefault.png",
+      "stem": "eyebrows-humaneyebrowsdefault",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/eyebrows-humaneyebrowsdefault.png",
+      "tags": [
+        "eyebrows",
+        "humaneyebrowsdefault"
+      ]
+    },
+    {
+      "name": "eyebrows-none.png",
+      "stem": "eyebrows-none",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/eyebrows-none.png",
+      "tags": [
+        "eyebrows",
+        "none"
+      ]
+    },
+    {
+      "name": "hair-humanhairafro.png",
+      "stem": "hair-humanhairafro",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairafro.png",
+      "tags": [
+        "hair",
+        "humanhairafro"
+      ]
+    },
+    {
+      "name": "hair-humanhairafro2.png",
+      "stem": "hair-humanhairafro2",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairafro2.png",
+      "tags": [
+        "hair",
+        "humanhairafro2"
+      ]
+    },
+    {
+      "name": "hair-humanhairanime.png",
+      "stem": "hair-humanhairanime",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairanime.png",
+      "tags": [
+        "hair",
+        "humanhairanime"
+      ]
+    },
+    {
+      "name": "hair-humanhairbalding1.png",
+      "stem": "hair-humanhairbalding1",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairbalding1.png",
+      "tags": [
+        "hair",
+        "humanhairbalding1"
+      ]
+    },
+    {
+      "name": "hair-humanhairbalding2.png",
+      "stem": "hair-humanhairbalding2",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairbalding2.png",
+      "tags": [
+        "hair",
+        "humanhairbalding2"
+      ]
+    },
+    {
+      "name": "hair-humanhairbeep.png",
+      "stem": "hair-humanhairbeep",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairbeep.png",
+      "tags": [
+        "hair",
+        "humanhairbeep"
+      ]
+    },
+    {
+      "name": "hair-humanhairbigceo.png",
+      "stem": "hair-humanhairbigceo",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairbigceo.png",
+      "tags": [
+        "hair",
+        "humanhairbigceo"
+      ]
+    },
+    {
+      "name": "hair-humanhairclown.png",
+      "stem": "hair-humanhairclown",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairclown.png",
+      "tags": [
+        "hair",
+        "humanhairclown"
+      ]
+    },
+    {
+      "name": "hair-humanhaircrewcut.png",
+      "stem": "hair-humanhaircrewcut",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhaircrewcut.png",
+      "tags": [
+        "hair",
+        "humanhaircrewcut"
+      ]
+    },
+    {
+      "name": "hair-humanhairdyhr.png",
+      "stem": "hair-humanhairdyhr",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairdyhr.png",
+      "tags": [
+        "hair",
+        "humanhairdyhr"
+      ]
+    },
+    {
+      "name": "hair-humanhairemo.png",
+      "stem": "hair-humanhairemo",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairemo.png",
+      "tags": [
+        "hair",
+        "humanhairemo"
+      ]
+    },
+    {
+      "name": "hair-humanhairfancykid.png",
+      "stem": "hair-humanhairfancykid",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairfancykid.png",
+      "tags": [
+        "hair",
+        "humanhairfancykid"
+      ]
+    },
+    {
+      "name": "hair-humanhairfry.png",
+      "stem": "hair-humanhairfry",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairfry.png",
+      "tags": [
+        "hair",
+        "humanhairfry"
+      ]
+    },
+    {
+      "name": "hair-humanhairgrizzlyoutlaw.png",
+      "stem": "hair-humanhairgrizzlyoutlaw",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairgrizzlyoutlaw.png",
+      "tags": [
+        "hair",
+        "humanhairgrizzlyoutlaw"
+      ]
+    },
+    {
+      "name": "hair-humanhairhipsterponytail2.png",
+      "stem": "hair-humanhairhipsterponytail2",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairhipsterponytail2.png",
+      "tags": [
+        "hair",
+        "humanhairhipsterponytail2"
+      ]
+    },
+    {
+      "name": "hair-humanhairlonghairlong.png",
+      "stem": "hair-humanhairlonghairlong",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairlonghairlong.png",
+      "tags": [
+        "hair",
+        "humanhairlonghairlong"
+      ]
+    },
+    {
+      "name": "hair-humanhairlonghairmedium.png",
+      "stem": "hair-humanhairlonghairmedium",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairlonghairmedium.png",
+      "tags": [
+        "hair",
+        "humanhairlonghairmedium"
+      ]
+    },
+    {
+      "name": "hair-humanhairlonghairshort.png",
+      "stem": "hair-humanhairlonghairshort",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairlonghairshort.png",
+      "tags": [
+        "hair",
+        "humanhairlonghairshort"
+      ]
+    },
+    {
+      "name": "hair-humanhairmane.png",
+      "stem": "hair-humanhairmane",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairmane.png",
+      "tags": [
+        "hair",
+        "humanhairmane"
+      ]
+    },
+    {
+      "name": "hair-humanhairmohawk.png",
+      "stem": "hair-humanhairmohawk",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairmohawk.png",
+      "tags": [
+        "hair",
+        "humanhairmohawk"
+      ]
+    },
+    {
+      "name": "hair-humanhairmohawkalternative.png",
+      "stem": "hair-humanhairmohawkalternative",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairmohawkalternative.png",
+      "tags": [
+        "hair",
+        "humanhairmohawkalternative"
+      ]
+    },
+    {
+      "name": "hair-humanhairmullet.png",
+      "stem": "hair-humanhairmullet",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairmullet.png",
+      "tags": [
+        "hair",
+        "humanhairmullet"
+      ]
+    },
+    {
+      "name": "hair-humanhairpoofybangsshort.png",
+      "stem": "hair-humanhairpoofybangsshort",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairpoofybangsshort.png",
+      "tags": [
+        "hair",
+        "humanhairpoofybangsshort"
+      ]
+    },
+    {
+      "name": "hair-humanhairshorthair.png",
+      "stem": "hair-humanhairshorthair",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairshorthair.png",
+      "tags": [
+        "hair",
+        "humanhairshorthair"
+      ]
+    },
+    {
+      "name": "hair-humanhairshortmessy.png",
+      "stem": "hair-humanhairshortmessy",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairshortmessy.png",
+      "tags": [
+        "hair",
+        "humanhairshortmessy"
+      ]
+    },
+    {
+      "name": "hair-humanhairsimple1.png",
+      "stem": "hair-humanhairsimple1",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairsimple1.png",
+      "tags": [
+        "hair",
+        "humanhairsimple1"
+      ]
+    },
+    {
+      "name": "hair-humanhairsimple2.png",
+      "stem": "hair-humanhairsimple2",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairsimple2.png",
+      "tags": [
+        "hair",
+        "humanhairsimple2"
+      ]
+    },
+    {
+      "name": "hair-humanhairsimple3.png",
+      "stem": "hair-humanhairsimple3",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairsimple3.png",
+      "tags": [
+        "hair",
+        "humanhairsimple3"
+      ]
+    },
+    {
+      "name": "hair-humanhairsimplehime.png",
+      "stem": "hair-humanhairsimplehime",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-humanhairsimplehime.png",
+      "tags": [
+        "hair",
+        "humanhairsimplehime"
+      ]
+    },
+    {
+      "name": "hair-none.png",
+      "stem": "hair-none",
+      "extension": "png",
+      "source": "lobby-icons",
+      "pack": "Styles",
+      "path": "Assets/Art/Icons/Lobby/Styles/hair-none.png",
+      "tags": [
+        "hair",
+        "none"
       ]
     }
   ]

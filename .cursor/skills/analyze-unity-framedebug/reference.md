@@ -24,8 +24,8 @@ Matched into **SS3D / feature hits** (case-insensitive substring on event path /
 | `Vision` | FOV mask composite |
 | `UiBackdrop` | Dual Kawase blur behind diegetic UI |
 | `SS3D` | Generic SS3D pass / object naming |
-| `STDefault` | Simple Toon opaque |
-| `Simple Toon` | ST shader family |
+| `STDefault` | Station opaque shader file |
+| `SS3D/Station` | Station shaders (`SS3D/Station`, `SS3D/Station Transparent`) |
 | `ObjectIcon` | UI icon preview unlit path |
 
 ## Draw-ish event types

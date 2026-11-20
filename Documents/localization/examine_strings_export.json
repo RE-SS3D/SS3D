@@ -1,6 +1,6 @@
 {
     "Version": 1,
-    "ExportedAt": "2026-11-05T20:34:09.7589900Z",
+    "ExportedAt": "2026-11-16T22:24:36.2543140Z",
     "Entries": [
         {
             "AssetPath": "Assets/Content/Data/Examine/String/Entities/Humanoids/Human.asset",
@@ -29,6 +29,13 @@
             "DescriptionKey": "furniture.flora.potted_plants.plant_7.desc",
             "EnName": "Potted Plant",
             "EnDescription": "Some exotic species planted in a pot."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Generic/Jukebox.asset",
+            "NameKey": "furniture.jukebox.name",
+            "DescriptionKey": "furniture.jukebox.desc",
+            "EnName": "Jukebox",
+            "EnDescription": "A jukebox with a worn selection of songs."
         },
         {
             "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Generic/NuclearDevice.asset",
@@ -325,11 +332,60 @@
             "EnDescription": "A locker for security officers."
         },
         {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/ArmorVestSecurity.asset",
+            "NameKey": "items.clothing.armor_vest_security.name",
+            "DescriptionKey": "items.clothing.armor_vest_security.desc",
+            "EnName": "Armor Vest",
+            "EnDescription": "A ballistic vest. Good against blows and bullets, poor against fire."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/ArmorVestSyndicate.asset",
+            "NameKey": "items.clothing.armor_vest_syndicate.name",
+            "DescriptionKey": "items.clothing.armor_vest_syndicate.desc",
+            "EnName": "Syndicate Armor Vest",
+            "EnDescription": "A black plate vest with shoulder guards."
+        },
+        {
             "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/Backpack.asset",
             "NameKey": "items.clothing.backpack.name",
             "DescriptionKey": "items.clothing.backpack.desc",
             "EnName": "Backpack",
             "EnDescription": "Worn on the back and stores stuff."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/BackpackCommand.asset",
+            "NameKey": "items.clothing.backpack_command.name",
+            "DescriptionKey": "items.clothing.backpack_command.desc",
+            "EnName": "Command Backpack",
+            "EnDescription": "A backpack in command blue."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/BackpackMedical.asset",
+            "NameKey": "items.clothing.backpack_medical.name",
+            "DescriptionKey": "items.clothing.backpack_medical.desc",
+            "EnName": "Medical Backpack",
+            "EnDescription": "A white backpack with a green stripe."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/BackpackSecurity.asset",
+            "NameKey": "items.clothing.backpack_security.name",
+            "DescriptionKey": "items.clothing.backpack_security.desc",
+            "EnName": "Security Backpack",
+            "EnDescription": "A black backpack with red trim."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/CapCaptain.asset",
+            "NameKey": "items.clothing.cap_captain.name",
+            "DescriptionKey": "items.clothing.cap_captain.desc",
+            "EnName": "Captain's Garrison Cap",
+            "EnDescription": "A blue garrison cap with a gold badge."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/CapSecurity.asset",
+            "NameKey": "items.clothing.cap_security.name",
+            "DescriptionKey": "items.clothing.cap_security.desc",
+            "EnName": "Security Cap",
+            "EnDescription": "A red cap marked POLICE."
         },
         {
             "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/FacewearGasMask.asset",
@@ -339,11 +395,39 @@
             "EnDescription": "Protect's the wearer's airways and can supply fresh air to them from a tank."
         },
         {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/GlassesSecurityHud.asset",
+            "NameKey": "items.clothing.glasses_security_hud.name",
+            "DescriptionKey": "items.clothing.glasses_security_hud.desc",
+            "EnName": "Security Glasses",
+            "EnDescription": "Red-tinted security glasses."
+        },
+        {
             "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/GloveInsulated.asset",
             "NameKey": "items.clothing.glove_insulated.name",
             "DescriptionKey": "items.clothing.glove_insulated.desc",
-            "EnName": "Insulated Glove",
-            "EnDescription": "A single insulated glove, looks to be for the hands."
+            "EnName": "Insulated Gloves",
+            "EnDescription": "A pair of insulated gloves."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/GloveSyndicate.asset",
+            "NameKey": "items.clothing.glove_syndicate.name",
+            "DescriptionKey": "items.clothing.glove_syndicate.desc",
+            "EnName": "Combat Gloves",
+            "EnDescription": "Black fingerless combat gloves."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/GogglesMeson.asset",
+            "NameKey": "items.clothing.goggles_meson.name",
+            "DescriptionKey": "items.clothing.goggles_meson.desc",
+            "EnName": "Meson Goggles",
+            "EnDescription": "Green-lensed engineering goggles."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/HardHatYellow.asset",
+            "NameKey": "items.clothing.hard_hat_yellow.name",
+            "DescriptionKey": "items.clothing.hard_hat_yellow.desc",
+            "EnName": "Hard Hat",
+            "EnDescription": "A yellow hard hat with a lamp."
         },
         {
             "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/Headset.asset",
@@ -360,11 +444,25 @@
             "EnDescription": "A headset for listenting to the security's comms."
         },
         {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/HelmetSecurity.asset",
+            "NameKey": "items.clothing.helmet_security.name",
+            "DescriptionKey": "items.clothing.helmet_security.desc",
+            "EnName": "Security Helmet",
+            "EnDescription": "A hard helmet marked POLICE."
+        },
+        {
             "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/JumpsuitBotany.asset",
             "NameKey": "items.clothing.jumpsuit_botany.name",
             "DescriptionKey": "items.clothing.jumpsuit_botany.desc",
             "EnName": "Botany Jumpsuit",
             "EnDescription": "A botany issue jumpsuit from Nanotrasen."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/JumpsuitCaptain.asset",
+            "NameKey": "items.clothing.jumpsuit_captain.name",
+            "DescriptionKey": "items.clothing.jumpsuit_captain.desc",
+            "EnName": "Captain's Jumpsuit",
+            "EnDescription": "A navy jumpsuit with gold trim, cut for whoever is in charge."
         },
         {
             "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/JumpsuitEngineer.asset",
@@ -381,6 +479,13 @@
             "EnDescription": "A regular issue jumpsuit from Nanotrasen, this one is grey."
         },
         {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/JumpsuitMedical.asset",
+            "NameKey": "items.clothing.jumpsuit_medical.name",
+            "DescriptionKey": "items.clothing.jumpsuit_medical.desc",
+            "EnName": "Medical Scrubs",
+            "EnDescription": "White scrubs, easy to spot blood on."
+        },
+        {
             "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/JumpsuitSecurity.asset",
             "NameKey": "items.clothing.jumpsuit_security.name",
             "DescriptionKey": "items.clothing.jumpsuit_security.desc",
@@ -388,18 +493,46 @@
             "EnDescription": "A security issue jumpsuit from Nanotrasen."
         },
         {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/JumpsuitSyndicate.asset",
+            "NameKey": "items.clothing.jumpsuit_syndicate.name",
+            "DescriptionKey": "items.clothing.jumpsuit_syndicate.desc",
+            "EnName": "Tactical Turtleneck",
+            "EnDescription": "Black fatigues with red bands. Nobody on the crew wears these."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/LabCoat.asset",
+            "NameKey": "items.clothing.lab_coat.name",
+            "DescriptionKey": "items.clothing.lab_coat.desc",
+            "EnName": "Lab Coat",
+            "EnDescription": "A long white coat worn over the uniform."
+        },
+        {
             "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/ShoeHiTops.asset",
             "NameKey": "items.clothing.shoe_hi_tops.name",
             "DescriptionKey": "items.clothing.shoe_hi_tops.desc",
-            "EnName": "High Top Sneaker",
+            "EnName": "High Top Sneakers",
             "EnDescription": "Stylin' foot swag."
         },
         {
             "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/ShoeJackboots.asset",
             "NameKey": "items.clothing.shoe_jackboots.name",
             "DescriptionKey": "items.clothing.shoe_jackboots.desc",
-            "EnName": "Jackboot",
-            "EnDescription": "Jackboot for a foot."
+            "EnName": "Jackboots",
+            "EnDescription": "A pair of jackboots."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/ShoeSyndicateBoots.asset",
+            "NameKey": "items.clothing.shoe_syndicate_boots.name",
+            "DescriptionKey": "items.clothing.shoe_syndicate_boots.desc",
+            "EnName": "Combat Boots",
+            "EnDescription": "A pair of black combat boots."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/ShoeWorkBoots.asset",
+            "NameKey": "items.clothing.shoe_work_boots.name",
+            "DescriptionKey": "items.clothing.shoe_work_boots.desc",
+            "EnName": "Work Boots",
+            "EnDescription": "A pair of laced yellow work boots."
         },
         {
             "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/Sunglasses.asset",
@@ -407,6 +540,27 @@
             "DescriptionKey": "items.clothing.sunglasses.desc",
             "EnName": "Sunglasses",
             "EnDescription": "It's bright in space, protect your eyes with these Nanotrasen brand sunglasses!"
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/SyndicateHardsuit.asset",
+            "NameKey": "items.clothing.syndicate_hardsuit.name",
+            "DescriptionKey": "items.clothing.syndicate_hardsuit.desc",
+            "EnName": "Syndicate Hardsuit",
+            "EnDescription": "Armored pressure suit. Sealed with its helmet it keeps out vacuum and cold, but it does not supply air."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/SyndicateHardsuitHelmet.asset",
+            "NameKey": "items.clothing.syndicate_hardsuit_helmet.name",
+            "DescriptionKey": "items.clothing.syndicate_hardsuit_helmet.desc",
+            "EnName": "Syndicate Hardsuit Helmet",
+            "EnDescription": "Armored sealed helmet. It completes the hardsuit's seal and doubles as a mask for internals."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/SyndicateMagboots.asset",
+            "NameKey": "items.clothing.syndicate_magboots.name",
+            "DescriptionKey": "items.clothing.syndicate_magboots.desc",
+            "EnName": "Syndicate Magboots",
+            "EnDescription": "Magnetic boots. Switched on, they hold you to the deck against moving air."
         },
         {
             "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/Toolbelt.asset",
@@ -423,6 +577,13 @@
             "EnDescription": "A billed hated often worn by truckers to keep their mullets out of their face."
         },
         {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/WeldingMask.asset",
+            "NameKey": "items.clothing.welding_mask.name",
+            "DescriptionKey": "items.clothing.welding_mask.desc",
+            "EnName": "Welding Helmet",
+            "EnDescription": "A dark-visored welding helmet."
+        },
+        {
             "AssetPath": "Assets/Content/Data/Examine/String/Items/Consumable/Chemical/Medications/BrutePatch.asset",
             "NameKey": "items.consumable.chemical.medications.brute_patch.name",
             "DescriptionKey": "items.consumable.chemical.medications.brute_patch.desc",
@@ -435,6 +596,13 @@
             "DescriptionKey": "items.consumable.chemical.medications.burn_patch.desc",
             "EnName": "Burn Patch",
             "EnDescription": "Heals burn damage.<br>Not implemented."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Consumable/Chemical/Medications/Gauze.asset",
+            "NameKey": "items.medical.gauze.name",
+            "DescriptionKey": "items.medical.gauze.desc",
+            "EnName": "Gauze",
+            "EnDescription": "A roll of gauze. Use it on a bleeding body part to stop the bleeding."
         },
         {
             "AssetPath": "Assets/Content/Data/Examine/String/Items/Consumable/Chemical/Medications/MedicalPatch.asset",
@@ -661,6 +829,34 @@
             "EnDescription": "A plank of wood."
         },
         {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Parts/Lights/LightBulb.asset",
+            "NameKey": "items.parts.light_bulb.name",
+            "DescriptionKey": "items.parts.light_bulb.desc",
+            "EnName": "Light bulb",
+            "EnDescription": "A replacement bulb for a small light fixture."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Parts/Lights/LightBulbBroken.asset",
+            "NameKey": "items.parts.light_bulb_broken.name",
+            "DescriptionKey": "items.parts.light_bulb_broken.desc",
+            "EnName": "Broken light bulb",
+            "EnDescription": "The shattered remains of a light bulb. Mind your fingers."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Parts/Lights/LightTube.asset",
+            "NameKey": "items.parts.light_tube.name",
+            "DescriptionKey": "items.parts.light_tube.desc",
+            "EnName": "Light tube",
+            "EnDescription": "A replacement fluorescent tube for a light fixture."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Parts/Lights/LightTubeBroken.asset",
+            "NameKey": "items.parts.light_tube_broken.name",
+            "DescriptionKey": "items.parts.light_tube_broken.desc",
+            "EnName": "Broken light tube",
+            "EnDescription": "What's left of a fluorescent tube."
+        },
+        {
             "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Parts/MachineParts/MatterBin.asset",
             "NameKey": "items.parts.machine_parts.matter_bin.name",
             "DescriptionKey": "items.parts.machine_parts.matter_bin.desc",
@@ -787,6 +983,153 @@
             "EnDescription": "Scans the health of the target."
         },
         {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Tools/Medical/PortableDefibrillator.asset",
+            "NameKey": "items.medical.defibrillator.name",
+            "DescriptionKey": "items.medical.defibrillator.desc",
+            "EnName": "Defibrillator",
+            "EnDescription": "A portable defibrillator. Use it on the chest of a patient whose heart has stopped, before the brain dies. Shocking a beating heart burns it."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Weapons/C20R.asset",
+            "NameKey": "items.weapons.c20r.name",
+            "DescriptionKey": "items.weapons.c20r.desc",
+            "EnName": "C-20r SMG",
+            "EnDescription": "A compact Syndicate submachine gun. Fast and light-hitting, it needs both hands. Use to reload."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Weapons/C4.asset",
+            "NameKey": "items.weapons.c4.name",
+            "DescriptionKey": "items.weapons.c4.desc",
+            "EnName": "C4",
+            "EnDescription": "A timed demolition charge. Place it and arm from the interaction menu, or use it on a wall or door to attach and arm. Its red display counts down fifteen seconds; an audible countdown runs throughout and speeds up at the end. Wirecutters take three seconds to defuse it; stay in reach."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Weapons/Flamethrower.asset",
+            "NameKey": "items.weapons.flamethrower.name",
+            "DescriptionKey": "items.weapons.flamethrower.desc",
+            "EnName": "Flamethrower",
+            "EnDescription": "A two-handed flame projector. Hold primary in Harm to spray a wide fan of burning fuel up to four metres. Fuel sticks to people and surfaces, burns for six seconds and blackens surfaces. Holds sixty fuel pulses. Use to refill in four seconds."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Weapons/IonRifle.asset",
+            "NameKey": "items.weapons.ionrifle.name",
+            "DescriptionKey": "items.weapons.ionrifle.desc",
+            "EnName": "Ion Rifle",
+            "EnDescription": "A cyan ion rifle. Burns its target; no EMP effect. Use to replenish its charge."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Weapons/LaserRifle.asset",
+            "NameKey": "items.weapons.laserrifle.name",
+            "DescriptionKey": "items.weapons.laserrifle.desc",
+            "EnName": "Laser Rifle",
+            "EnDescription": "A focused laser rifle. Delivers burn damage. Use to replenish its charge."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Weapons/SecurityPistol.asset",
+            "NameKey": "items.weapons.securitypistol.name",
+            "DescriptionKey": "items.weapons.securitypistol.desc",
+            "EnName": "Security Pistol",
+            "EnDescription": "The standard Security sidearm. One-handed, with a ten-round magazine. Use to reload."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Weapons/Stechkin.asset",
+            "NameKey": "items.weapons.stechkin.name",
+            "DescriptionKey": "items.weapons.stechkin.desc",
+            "EnName": "Stechkin Pistol",
+            "EnDescription": "A Syndicate pistol: small, one-handed and hard-hitting. Use to reload."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Weapons/StunBaton.asset",
+            "NameKey": "items.weapons.stunbaton.name",
+            "DescriptionKey": "items.weapons.stunbaton.desc",
+            "EnName": "Stun Baton",
+            "EnDescription": "A Security baton with a charged head. A hit knocks the target down and tires them out; it goes through armor."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Weapons/SyndicateBomb.asset",
+            "NameKey": "items.weapons.syndicatebomb.name",
+            "DescriptionKey": "items.weapons.syndicatebomb.desc",
+            "EnName": "Syndicate bomb",
+            "EnDescription": "A huge, heavy Syndicate explosive: too big to lift, so it has to be dragged into place. Set its timer (90 seconds at least) and arm it, then bolt it to the floor with a wrench; once armed the bolts lock, so nobody can drag it off. It beeps loudly enough to hear from the next room. Defusing takes a screwdriver to open its wiring panel, then wirecutters."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Weapons/SyndicateBombBeacon.asset",
+            "NameKey": "items.weapons.syndicatebombbeacon.name",
+            "DescriptionKey": "items.weapons.syndicatebombbeacon.desc",
+            "EnName": "Syndicate bomb beacon",
+            "EnDescription": "A one-use Syndicate beacon. Use it in hand and a Syndicate bomb lands in front of you; the bomb is too heavy to carry, so only call it down where you mean to use it."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Weapons/SyndicateMiniBomb.asset",
+            "NameKey": "items.weapons.syndicateminibomb.name",
+            "DescriptionKey": "items.weapons.syndicateminibomb.desc",
+            "EnName": "Syndicate minibomb",
+            "EnDescription": "A compact syndicate grenade. Arm it in hand or use Throw minibomb to pull the pin and throw. Its five-second fuse ends in a small explosion. An armed minibomb cannot be defused."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Weapons/Taser.asset",
+            "NameKey": "items.weapons.taser.name",
+            "DescriptionKey": "items.weapons.taser.desc",
+            "EnName": "Taser",
+            "EnDescription": "A short-range electrical weapon. Knocks an unarmored target down and drains stamina; a hardsuit stops the knockdown. Holds three charges and recharges slowly. Use to replenish its charge."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Weapons/X4.asset",
+            "NameKey": "items.weapons.x4.name",
+            "DescriptionKey": "items.weapons.x4.desc",
+            "EnName": "X4",
+            "EnDescription": "A powerful directional demolition charge. Hold it and use it on a wall or door to attach and arm. Its fifteen-second audible countdown speeds up toward detonation. Extra blast force spreads in a cone through the far side of the target. Wirecutters take three seconds to defuse it."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/Airlock.asset",
+            "NameKey": "structures.doors.airlock.name",
+            "DescriptionKey": "structures.doors.airlock.desc",
+            "EnName": "Airlock",
+            "EnDescription": "A plain station airlock with no department markings."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/AirlockGlass.asset",
+            "NameKey": "structures.doors.airlock_glass.name",
+            "DescriptionKey": "structures.doors.airlock_glass.desc",
+            "EnName": "Glass Airlock",
+            "EnDescription": "A plain station airlock with no department markings. Its window lets you see through."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/AirlockPanel.asset",
+            "NameKey": "structures.doors.airlock_panel.name",
+            "DescriptionKey": "structures.doors.airlock_panel.desc",
+            "EnName": "Airlock Panel",
+            "EnDescription": "The control panel on an airlock."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/AtmosphericsAirlock.asset",
+            "NameKey": "structures.doors.atmospherics_airlock.name",
+            "DescriptionKey": "structures.doors.atmospherics_airlock.desc",
+            "EnName": "Atmospherics Airlock",
+            "EnDescription": "A station airlock for atmospheric technicians."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/AtmosphericsAirlockGlass.asset",
+            "NameKey": "structures.doors.atmospherics_airlock_glass.name",
+            "DescriptionKey": "structures.doors.atmospherics_airlock_glass.desc",
+            "EnName": "Atmospherics Glass Airlock",
+            "EnDescription": "A station airlock for atmospheric technicians. Its window lets you see through."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/ChemistryAirlock.asset",
+            "NameKey": "structures.doors.chemistry_airlock.name",
+            "DescriptionKey": "structures.doors.chemistry_airlock.desc",
+            "EnName": "Chemistry Airlock",
+            "EnDescription": "A station airlock for chemists."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/ChemistryAirlockGlass.asset",
+            "NameKey": "structures.doors.chemistry_airlock_glass.name",
+            "DescriptionKey": "structures.doors.chemistry_airlock_glass.desc",
+            "EnName": "Chemistry Glass Airlock",
+            "EnDescription": "A station airlock for chemists. Its window lets you see through."
+        },
+        {
             "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/CivilianAirlock.asset",
             "NameKey": "structures.doors.civilian_airlock.name",
             "DescriptionKey": "structures.doors.civilian_airlock.desc",
@@ -794,11 +1137,158 @@
             "EnDescription": "A common airlock for all."
         },
         {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/CivillianAirlockGlass.asset",
+            "NameKey": "structures.doors.civillian_airlock_glass.name",
+            "DescriptionKey": "structures.doors.civillian_airlock_glass.desc",
+            "EnName": "Civilian Glass Airlock",
+            "EnDescription": "A public station airlock, open to all crew. Its window lets you see through."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/CommandAirlock.asset",
+            "NameKey": "structures.doors.command_airlock.name",
+            "DescriptionKey": "structures.doors.command_airlock.desc",
+            "EnName": "Command Airlock",
+            "EnDescription": "A station airlock for command staff."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/CommandAirlockGlass.asset",
+            "NameKey": "structures.doors.command_airlock_glass.name",
+            "DescriptionKey": "structures.doors.command_airlock_glass.desc",
+            "EnName": "Command Glass Airlock",
+            "EnDescription": "A station airlock for command staff. Its window lets you see through."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/EngineeringAirlock.asset",
+            "NameKey": "structures.doors.engineering_airlock.name",
+            "DescriptionKey": "structures.doors.engineering_airlock.desc",
+            "EnName": "Engineering Airlock",
+            "EnDescription": "A station airlock for engineering staff."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/EngineeringAirlockGlass.asset",
+            "NameKey": "structures.doors.engineering_airlock_glass.name",
+            "DescriptionKey": "structures.doors.engineering_airlock_glass.desc",
+            "EnName": "Engineering Glass Airlock",
+            "EnDescription": "A station airlock for engineering staff. Its window lets you see through."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/ExternalAirlock.asset",
+            "NameKey": "structures.doors.external_airlock.name",
+            "DescriptionKey": "structures.doors.external_airlock.desc",
+            "EnName": "External Airlock",
+            "EnDescription": "A heavy airlock that seals the station off from space. It opens only when someone works it by hand, sinking into the floor, and shuts again on its own once the doorway is clear."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/GeneticsAirlock.asset",
+            "NameKey": "structures.doors.genetics_airlock.name",
+            "DescriptionKey": "structures.doors.genetics_airlock.desc",
+            "EnName": "Genetics Airlock",
+            "EnDescription": "A station airlock for geneticists."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/GeneticsAirlockGlass.asset",
+            "NameKey": "structures.doors.genetics_airlock_glass.name",
+            "DescriptionKey": "structures.doors.genetics_airlock_glass.desc",
+            "EnName": "Genetics Glass Airlock",
+            "EnDescription": "A station airlock for geneticists. Its window lets you see through."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/MaintenanceAirlock.asset",
+            "NameKey": "structures.doors.maintenance_airlock.name",
+            "DescriptionKey": "structures.doors.maintenance_airlock.desc",
+            "EnName": "Maintenance Airlock",
+            "EnDescription": "A station airlock for maintenance access."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/MaintenanceAirlockGlass.asset",
+            "NameKey": "structures.doors.maintenance_airlock_glass.name",
+            "DescriptionKey": "structures.doors.maintenance_airlock_glass.desc",
+            "EnName": "Maintenance Glass Airlock",
+            "EnDescription": "A station airlock for maintenance access. Its window lets you see through."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/MedicalAirlock.asset",
+            "NameKey": "structures.doors.medical_airlock.name",
+            "DescriptionKey": "structures.doors.medical_airlock.desc",
+            "EnName": "Medical Airlock",
+            "EnDescription": "A station airlock for medical staff."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/MedicalAirlockGlass.asset",
+            "NameKey": "structures.doors.medical_airlock_glass.name",
+            "DescriptionKey": "structures.doors.medical_airlock_glass.desc",
+            "EnName": "Medical Glass Airlock",
+            "EnDescription": "A station airlock for medical staff. Its window lets you see through."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/ScienceAirlock.asset",
+            "NameKey": "structures.doors.science_airlock.name",
+            "DescriptionKey": "structures.doors.science_airlock.desc",
+            "EnName": "Science Airlock",
+            "EnDescription": "A station airlock for science staff."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/ScienceAirlockGlass.asset",
+            "NameKey": "structures.doors.science_airlock_glass.name",
+            "DescriptionKey": "structures.doors.science_airlock_glass.desc",
+            "EnName": "Science Glass Airlock",
+            "EnDescription": "A station airlock for science staff. Its window lets you see through."
+        },
+        {
             "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/SecurityAirlock.asset",
             "NameKey": "structures.doors.security_airlock.name",
             "DescriptionKey": "structures.doors.security_airlock.desc",
             "EnName": "Security Airlock",
             "EnDescription": "A security access airlock."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/SecurityAirlockGlass.asset",
+            "NameKey": "structures.doors.security_airlock_glass.name",
+            "DescriptionKey": "structures.doors.security_airlock_glass.desc",
+            "EnName": "Security Glass Airlock",
+            "EnDescription": "A station airlock for security staff. Its window lets you see through."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/SupplyAirlock.asset",
+            "NameKey": "structures.doors.supply_airlock.name",
+            "DescriptionKey": "structures.doors.supply_airlock.desc",
+            "EnName": "Supply Airlock",
+            "EnDescription": "A station airlock for cargo staff."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/SupplyAirlockGlass.asset",
+            "NameKey": "structures.doors.supply_airlock_glass.name",
+            "DescriptionKey": "structures.doors.supply_airlock_glass.desc",
+            "EnName": "Supply Glass Airlock",
+            "EnDescription": "A station airlock for cargo staff. Its window lets you see through."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/SurgeryAirlock.asset",
+            "NameKey": "structures.doors.surgery_airlock.name",
+            "DescriptionKey": "structures.doors.surgery_airlock.desc",
+            "EnName": "Surgery Airlock",
+            "EnDescription": "A station airlock for surgeons."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/SurgeryAirlockGlass.asset",
+            "NameKey": "structures.doors.surgery_airlock_glass.name",
+            "DescriptionKey": "structures.doors.surgery_airlock_glass.desc",
+            "EnName": "Surgery Glass Airlock",
+            "EnDescription": "A station airlock for surgeons. Its window lets you see through."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/VirologyAirlock.asset",
+            "NameKey": "structures.doors.virology_airlock.name",
+            "DescriptionKey": "structures.doors.virology_airlock.desc",
+            "EnName": "Virology Airlock",
+            "EnDescription": "A station airlock for virologists."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/VirologyAirlockGlass.asset",
+            "NameKey": "structures.doors.virology_airlock_glass.name",
+            "DescriptionKey": "structures.doors.virology_airlock_glass.desc",
+            "EnName": "Virology Glass Airlock",
+            "EnDescription": "A station airlock for virologists. Its window lets you see through."
         },
         {
             "AssetPath": "Assets/Content/Data/Examine/String/Structures/Floors/Catwalk.asset",
@@ -843,6 +1333,20 @@
             "EnDescription": "Red and grey checkered floor tile."
         },
         {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Floors/Tiles/TileDirt.asset",
+            "NameKey": "structures.floors.tiles.tile_dirt.name",
+            "DescriptionKey": "structures.floors.tiles.tile_dirt.desc",
+            "EnName": "Dirt",
+            "EnDescription": "A patch of packed dirt."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Floors/Tiles/TileGrass.asset",
+            "NameKey": "structures.floors.tiles.tile_grass.name",
+            "DescriptionKey": "structures.floors.tiles.tile_grass.desc",
+            "EnName": "Grass",
+            "EnDescription": "A patch of grass, somehow growing on a space station."
+        },
+        {
             "AssetPath": "Assets/Content/Data/Examine/String/Structures/Floors/Tiles/TileGrey.asset",
             "NameKey": "structures.floors.tiles.tile_grey.name",
             "DescriptionKey": "structures.floors.tiles.tile_grey.desc",
@@ -871,6 +1375,13 @@
             "EnDescription": "Floor plating."
         },
         {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Floors/Tiles/TileReinforced.asset",
+            "NameKey": "structures.floors.tiles.tile_reinforced.name",
+            "DescriptionKey": "structures.floors.tiles.tile_reinforced.desc",
+            "EnName": "Reinforced Floor",
+            "EnDescription": "Heavy reinforced floor plating."
+        },
+        {
             "AssetPath": "Assets/Content/Data/Examine/String/Structures/Floors/Tiles/TileWhite.asset",
             "NameKey": "structures.floors.tiles.tile_white.name",
             "DescriptionKey": "structures.floors.tiles.tile_white.desc",
@@ -885,6 +1396,41 @@
             "EnDescription": "Planks of wood combined into a floor tile."
         },
         {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosFilterL.asset",
+            "NameKey": "structures.pipes.atmos_filter.name",
+            "DescriptionKey": "structures.pipes.atmos_filter.desc",
+            "EnName": "Gas Filter",
+            "EnDescription": "Sends the gases it's set to out of its side port. Everything else carries straight on."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosFilterL2.asset",
+            "NameKey": "structures.pipes.atmos_filter.name",
+            "DescriptionKey": "structures.pipes.atmos_filter.desc",
+            "EnName": "Gas Filter",
+            "EnDescription": "Sends the gases it's set to out of its side port. Everything else carries straight on."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosFilterR.asset",
+            "NameKey": "structures.pipes.atmos_filter.name",
+            "DescriptionKey": "structures.pipes.atmos_filter.desc",
+            "EnName": "Gas Filter",
+            "EnDescription": "Sends the gases it's set to out of its side port. Everything else carries straight on."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosFilterR2.asset",
+            "NameKey": "structures.pipes.atmos_filter.name",
+            "DescriptionKey": "structures.pipes.atmos_filter.desc",
+            "EnName": "Gas Filter",
+            "EnDescription": "Sends the gases it's set to out of its side port. Everything else carries straight on."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosInjector.asset",
+            "NameKey": "structures.pipes.atmos_injector.name",
+            "DescriptionKey": "structures.pipes.atmos_injector.desc",
+            "EnName": "Gas Injector",
+            "EnDescription": "A floor nozzle that releases a pipe line's gas into the room while it's open."
+        },
+        {
             "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosManifold3.asset",
             "NameKey": "structures.pipes.atmos_manifold_3.name",
             "DescriptionKey": "structures.pipes.atmos_manifold_3.desc",
@@ -897,6 +1443,27 @@
             "DescriptionKey": "structures.pipes.atmos_manifold_4.desc",
             "EnName": "Pipe Manifold",
             "EnDescription": "Joins the pipes running through this tile, the Surface line included, into one line."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosMeter.asset",
+            "NameKey": "structures.pipes.atmos_meter.name",
+            "DescriptionKey": "structures.pipes.atmos_meter.desc",
+            "EnName": "Gas Meter",
+            "EnDescription": "Reads the pipe line it sits on: pressure, temperature and what the gas is made of."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosMixerL.asset",
+            "NameKey": "structures.pipes.atmos_mixer.name",
+            "DescriptionKey": "structures.pipes.atmos_mixer.desc",
+            "EnName": "Gas Mixer",
+            "EnDescription": "Combines two lines at a set ratio, up to a target pressure. Stops if a line it needs runs dry."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosMixerR.asset",
+            "NameKey": "structures.pipes.atmos_mixer.name",
+            "DescriptionKey": "structures.pipes.atmos_mixer.desc",
+            "EnName": "Gas Mixer",
+            "EnDescription": "Combines two lines at a set ratio, up to a target pressure. Stops if a line it needs runs dry."
         },
         {
             "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosPipesMixed.asset",

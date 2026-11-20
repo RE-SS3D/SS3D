@@ -138,7 +138,7 @@ namespace SS3D.Systems.Rounds
             catch (Exception exception)
             {
                 FailStationLoad("Station load failed. Select a map and try again.");
-                Log.Error(this, "Station restore failed: {error}", Logs.ServerOnly, exception.Message);
+                Log.Error(this, exception, "Station restore failed: {error}", Logs.ServerOnly, exception.Message);
                 return;
             }
 

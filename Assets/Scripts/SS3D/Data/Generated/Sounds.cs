@@ -10,6 +10,8 @@ namespace SS3D.Data.Generated
         public const string Can2 = "8d93fdf9dcada204a952e29213f0293f";
         public const string Can3 = "b315c4abdef36244fb211c5f643d411a";
         public const string Can4 = "f00c6b5a098e84b4b87d80d23b4f295a";
+        public const string ExternalAirlockClose = "cddae0473d895fe0f9fe3abc25059a14";
+        public const string ExternalAirlockOpen = "6f578c04c3e4952efba925637a7727d3";
         public const string FuelPowerGenerator = "59b65ecaf8dffbf49876ab2768490b59";
         public const string Title1 = "ec8b849764a7e9147b2a565f81a1ca42";
         public const string Title2 = "3f51862f0b88a5243a8cceb97147489d";

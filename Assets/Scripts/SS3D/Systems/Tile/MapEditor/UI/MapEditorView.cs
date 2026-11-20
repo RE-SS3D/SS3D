@@ -190,7 +190,8 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             AddToolButton(_leftToolbar, MapEditorTool.Edit, "Construct [1]");
             AddToolButton(_leftToolbar, MapEditorTool.Select, "Select [2]");
             AddToolButton(_leftToolbar, MapEditorTool.Dropper, "Dropper [3]");
-            AddToolButton(_leftToolbar, MapEditorTool.Delete, "Delete [4]");
+            AddToolButton(_leftToolbar, MapEditorTool.Delete, "Delete [4] — or hold Ctrl while building");
+            AddToolButton(_leftToolbar, MapEditorTool.Room, "Room [5]");
             AddSeparator(_leftToolbar, vertical: true);
 
             Button undo = CreateIconButton(_icons?.Undo, null, () => UndoRequested?.Invoke());
@@ -205,7 +206,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             _persistenceSeparator = _leftToolbar[_leftToolbar.childCount - 1];
             _saveMapButton = WrapWithHoverHint(
                 CreateIconButton(_icons?.SaveMap, null, () => TogglePopover("saveMenu")),
-                "Save map [Ctrl+Shift+S]");
+                "Save map [Ctrl+S]");
             _leftToolbar.Add(_saveMapButton);
             _loadMapButton = WrapWithHoverHint(
                 CreateIconButton(_icons?.OpenMap, null, () => TogglePopover("maps")),
@@ -696,9 +697,10 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             bool isFloorDecal = MapEditorFloorDecalCatalog.TryDecode(entry.AssetName, out decalId);
             bool isSpawn = MapEditorSpawnCatalog.IsSpawnKey(entry.AssetName);
             bool isGasMarker = MapEditorGasMarkerCatalog.TryDecode(entry.AssetName, out GasMarkerKind gasKind);
+            bool isFloorPaint = MapEditorFloorPaintCatalog.TryDecode(entry.AssetName, out int paintIndex);
 
-            // Virtual catalog keys (floor decals / spawn markers) are not TileResourceLoader assets.
-            GenericObjectSo asset = isFloorDecal || isSpawn || isGasMarker
+            // Virtual catalog keys (floor decals, markers, paint swatches) are not TileResourceLoader assets.
+            GenericObjectSo asset = isFloorDecal || isSpawn || isGasMarker || isFloorPaint
                 ? null
                 : _loader.GetAsset(entry.AssetName);
 
@@ -712,6 +714,8 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                 slot.tooltip = floorDecal.DisplayName;
             else if (isSpawn)
                 slot.tooltip = MapEditorSpawnCatalog.DisplayName(entry.AssetName);
+            else if (isFloorPaint)
+                slot.tooltip = FloorPaint.NameOf(paintIndex);
             else
                 slot.tooltip = entry.AssetName;
             bool active = _vm.SelectedEntry != null &&
@@ -738,6 +742,10 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             {
                 icon.style.backgroundImage = new StyleBackground(gasIcon);
                 icon.style.unityBackgroundImageTintColor = MapEditorGasMarkerCatalog.PinColor(gasKind);
+            }
+            else if (isFloorPaint)
+            {
+                icon.style.backgroundColor = (Color)FloorPaint.ColorOf(paintIndex);
             }
             else if (asset?.icon != null)
             {
@@ -978,6 +986,8 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                     });
                     break;
                 case "settings":
+                    // Client-side: each place command carries it, and the ghosts pick it up on the next hover.
+                    AddSwitchRow(container, "Auto Subfloor", _vm.AutoSubfloor, v => _vm.AutoSubfloor = v);
                     AddSwitchRow(container, "Always Power Lights", _vm.AlwaysPowerLights, v =>
                     {
                         _vm.AlwaysPowerLights = v;

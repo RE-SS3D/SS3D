@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
+using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Audio;
@@ -31,7 +32,7 @@ namespace SS3D.Systems.Furniture
     public class AirLockOpener : NetworkBehaviour, IDynamicTileOccupant, IInteractionTarget
     {
         /// <summary>
-        /// Seconds before the door starts closing once the volume is empty.
+        /// Default seconds before the door starts closing once the volume is empty (see <see cref="_autoCloseDelay"/>).
         /// </summary>
         private const float DoorWaitCloseTime = 2.0f;
 
@@ -47,10 +48,13 @@ namespace SS3D.Systems.Furniture
         private const float ProximityPadding = 0.85f;
 
         /// <summary>
-        /// Seconds a door keeps animating off-camera after a state change. Covers the longest
-        /// open/close clip (1.08 s) plus a margin.
+        /// Least seconds a door keeps animating off-camera after a state change. Covers the standard
+        /// open/close clip (1.08 s) plus a margin; a door with longer clips keeps animating for those.
         /// </summary>
         private const float PanelMotionTime = 1.5f;
+
+        /// <summary>Margin past the longest clip before an off-camera door is culled again.</summary>
+        private const float PanelMotionMargin = 0.2f;
 
         /// <summary>
         /// Reach past the door volume when testing for a body in the doorway. The volume already spans
@@ -61,7 +65,6 @@ namespace SS3D.Systems.Furniture
         /// <summary>Seconds between doorway checks while a close waits for a body to clear it.</summary>
         private const float BlockedCloseRetryInterval = 0.25f;
 
-        private const int DoorLightMaterialIndex = 1;
         private const int DenyBlinkPulseCount = 3;
         private const float DenyBlinkHalfPeriod = 0.22f;
 
@@ -96,6 +99,29 @@ namespace SS3D.Systems.Furniture
         [SerializeField]
         private List<SkinnedMeshRenderer> _skinnedMeshesToColor;
 
+        /// <summary>Material slot of the door light on <see cref="_meshesToColor"/>; glass airlock meshes put it after the glass.</summary>
+        [SerializeField]
+        private int _doorLightMaterialIndex = 1;
+
+        /// <summary>
+        /// False for doors that open only through the Open interaction (the external airlock): they skip the
+        /// proximity service, so walking up never opens them and never plays the deny sound.
+        /// </summary>
+        [SerializeField]
+        private bool _opensOnApproach = true;
+
+        /// <summary>Seconds an opened door waits before it closes on its own (it still waits for a clear doorway).</summary>
+        [SerializeField]
+        private float _autoCloseDelay = DoorWaitCloseTime;
+
+        /// <summary>Sounds database id played as the door opens; empty plays the standard airlock sound.</summary>
+        [SerializeField]
+        private string _openSoundId;
+
+        /// <summary>Sounds database id played as the door closes; empty plays the standard airlock sound.</summary>
+        [SerializeField]
+        private string _closeSoundId;
+
         [SyncVar(OnChange = nameof(OnOpenChanged))]
         private bool _isOpen;
 
@@ -122,6 +148,7 @@ namespace SS3D.Systems.Furniture
         private Coroutine _denyBlinkTimer;
         private Coroutine _panelMotionTimer;
         private AnimatorCullingMode _restingCullingMode;
+        private float _panelMotionTime = PanelMotionTime;
         private bool _animatedOpen;
 
         public ReadOnlyCollection<MeshRenderer> MeshesToColor => _meshesToColor.AsReadOnly();
@@ -129,6 +156,10 @@ namespace SS3D.Systems.Furniture
         public ReadOnlyCollection<SkinnedMeshRenderer> SkinnedMeshesToColor => _skinnedMeshesToColor.AsReadOnly();
 
         public bool IsOpen => _isOpen;
+
+        public string OpenSoundId => string.IsNullOrEmpty(_openSoundId) ? Sounds.AirlockOpen : _openSoundId;
+
+        public string CloseSoundId => string.IsNullOrEmpty(_closeSoundId) ? Sounds.AirlockClose : _closeSoundId;
 
         /// <summary>True while the door animates regardless of camera visibility, because its panels are moving.</summary>
         public bool PanelsInMotion => _panelMotionTimer != null;
@@ -148,6 +179,7 @@ namespace SS3D.Systems.Furniture
             if (_animator != null)
             {
                 _restingCullingMode = _animator.cullingMode;
+                _panelMotionTime = PanelMotionTimeFor(_animator.runtimeAnimatorController);
             }
 
             if (_proximityVolume == null)
@@ -180,7 +212,10 @@ namespace SS3D.Systems.Furniture
                 _powerConsumer.OnPowerStatusUpdated += HandlePowerStatusUpdated;
             }
 
-            AirLockProximityService.Instance.Register(this);
+            if (_opensOnApproach)
+            {
+                AirLockProximityService.Instance.Register(this);
+            }
 
             UpdateAnimator();
             NotifyTileStateChanged();
@@ -233,9 +268,9 @@ namespace SS3D.Systems.Furniture
                             continue;
                         }
 
-                        renderer.GetPropertyBlock(_doorLightPropertyBlock, DoorLightMaterialIndex);
+                        renderer.GetPropertyBlock(_doorLightPropertyBlock, _doorLightMaterialIndex);
                         _doorLightPropertyBlock.SetColor(_doorLightColorPropertyId, color);
-                        renderer.SetPropertyBlock(_doorLightPropertyBlock, DoorLightMaterialIndex);
+                        renderer.SetPropertyBlock(_doorLightPropertyBlock, _doorLightMaterialIndex);
                     }
                 }
             }
@@ -294,12 +329,12 @@ namespace SS3D.Systems.Furniture
 
                 _sharedMaterialsScratch.Clear();
                 renderer.GetSharedMaterials(_sharedMaterialsScratch);
-                if (DoorLightMaterialIndex >= _sharedMaterialsScratch.Count)
+                if (_doorLightMaterialIndex >= _sharedMaterialsScratch.Count)
                 {
                     continue;
                 }
 
-                Material targetMaterial = _sharedMaterialsScratch[DoorLightMaterialIndex];
+                Material targetMaterial = _sharedMaterialsScratch[_doorLightMaterialIndex];
                 if (targetMaterial == null)
                 {
                     continue;
@@ -693,9 +728,28 @@ namespace SS3D.Systems.Furniture
 
         private IEnumerator RunPanelMotion()
         {
-            yield return new WaitForSeconds(PanelMotionTime);
+            yield return new WaitForSeconds(_panelMotionTime);
             _animator.cullingMode = _restingCullingMode;
             _panelMotionTimer = null;
+        }
+
+        /// <summary>How long a state change animates off-camera: the longest clip plus a margin, at least <see cref="PanelMotionTime"/>.</summary>
+        public static float PanelMotionTimeFor(RuntimeAnimatorController controller)
+        {
+            float longest = 0f;
+            if (controller != null)
+            {
+                AnimationClip[] clips = controller.animationClips;
+                for (int i = 0; i < clips.Length; i++)
+                {
+                    if (clips[i] != null)
+                    {
+                        longest = Mathf.Max(longest, clips[i].length);
+                    }
+                }
+            }
+
+            return Mathf.Max(PanelMotionTime, longest + PanelMotionMargin);
         }
 
         private void NotifyTileStateChanged()
@@ -727,7 +781,7 @@ namespace SS3D.Systems.Furniture
                 return;
             }
 
-            _closeTimer = StartCoroutine(RunCloseEventually(DoorWaitCloseTime));
+            _closeTimer = StartCoroutine(RunCloseEventually(_autoCloseDelay));
         }
 
         private void CancelCloseTimer()

@@ -60,6 +60,8 @@ namespace SS3D.Systems.Atmospherics
                     continue;
                 }
 
+                if (AtmosWind.BodiesIgnoreWind) continue;
+
                 Vector3 position = body.position;
                 // A sleeping cell has no flow, and most of a station is asleep. This is what keeps the
                 // scan cheap: a tile lookup per body instead of a blended wind sample.

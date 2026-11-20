@@ -6,8 +6,9 @@ namespace SS3D.Rendering.URP
 {
     /// <summary>
     /// Shares <see cref="Renderer.forceRenderingOff"/> between owners that hide renderers for different reasons,
-    /// so one showing a renderer never undoes another's hide: worn clothes covering a body part, and the field
-    /// of view culling a whole person (2026-11_fov-rework D9). A renderer renders when no reason holds.
+    /// so one showing a renderer never undoes another's hide: an item stored in a container, worn clothes covering
+    /// a body part, and the field of view culling a whole person (2026-11_fov-rework D9). A renderer renders when no
+    /// reason holds.
     /// </summary>
     public static class RendererHiding
     {
@@ -16,6 +17,7 @@ namespace SS3D.Rendering.URP
         {
             CoveredByClothes = 1 << 0,
             OutOfSight = 1 << 1,
+            Stored = 1 << 2,
         }
 
         private const int PruneAbove = 4096;

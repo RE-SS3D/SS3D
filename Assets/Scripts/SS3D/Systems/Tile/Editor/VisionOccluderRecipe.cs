@@ -35,8 +35,11 @@ namespace SS3D.Systems.Tile.Editor
             int changed = 0;
             foreach (string path in WallPrefabPaths().Blocking)
                 changed += Apply(path, SetupWall) ? 1 : 0;
-            foreach (string path in DoorPrefabPaths())
+            (List<string> blockingDoors, List<string> glassDoors) = DoorPrefabPaths();
+            foreach (string path in blockingDoors)
                 changed += Apply(path, SetupDoor) ? 1 : 0;
+            foreach (string path in glassDoors)
+                changed += Apply(path, RemoveDoorOccluders) ? 1 : 0;
 
             AssetDatabase.SaveAssets();
             return changed;
@@ -60,10 +63,18 @@ namespace SS3D.Systems.Tile.Editor
                     drift.Add($"{path}: sees through (window or blocksVision off) but has sight occluders");
             }
 
-            foreach (string path in DoorPrefabPaths())
+            (List<string> blockingDoors, List<string> glassDoors) = DoorPrefabPaths();
+            foreach (string path in blockingDoors)
             {
                 GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
                 drift.AddRange(DoorDrift(prefab).Select(problem => $"{path}: {problem}"));
+            }
+
+            foreach (string path in glassDoors)
+            {
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                if (DoorHolders(prefab).Any())
+                    drift.Add($"{path}: sees through (blocksVision off, a glass airlock) but has sight occluders");
             }
 
             return drift;
@@ -110,8 +121,34 @@ namespace SS3D.Systems.Tile.Editor
             return (blocking, seeThrough);
         }
 
-        private static IEnumerable<string> DoorPrefabPaths() =>
-            Tiles(TileObjectGenericType.Door).Select(PrefabPath).Where(path => path != null).Distinct();
+        /// <summary>Door prefabs by their tile's <c>blocksVision</c>: glass airlocks are see-through.</summary>
+        private static (List<string> Blocking, List<string> SeeThrough) DoorPrefabPaths()
+        {
+            List<string> blocking = new();
+            List<string> seeThrough = new();
+            foreach (TileObjectSo tile in Tiles(TileObjectGenericType.Door))
+            {
+                string path = PrefabPath(tile);
+                if (path == null || blocking.Contains(path) || seeThrough.Contains(path))
+                    continue;
+
+                (tile.blocksVision ? blocking : seeThrough).Add(path);
+            }
+
+            return (blocking, seeThrough);
+        }
+
+        private static IEnumerable<Transform> DoorHolders(GameObject root) =>
+            root.GetComponentsInChildren<Transform>(true).Where(t => t.name == HolderName && t != root.transform);
+
+        private static bool RemoveDoorOccluders(GameObject root)
+        {
+            List<Transform> holders = DoorHolders(root).ToList();
+            foreach (Transform holder in holders)
+                Object.DestroyImmediate(holder.gameObject);
+
+            return holders.Count > 0;
+        }
 
         private static IEnumerable<TileObjectSo> Tiles(TileObjectGenericType type) =>
             AssetDatabase.FindAssets("t:TileObjectSo", new[] { TileRoot })
@@ -335,9 +372,14 @@ namespace SS3D.Systems.Tile.Editor
             return BoxDrift(holder, bounds.center, bounds.size, true);
         }
 
-        /// <summary>Door leaves: direct children with a solid box and a mesh, i.e. what slides open.</summary>
+        /// <summary>
+        /// What blocks a door's opening and moves when it opens. Airlock leaves are direct children with a solid
+        /// box and a mesh, and the occluder is the mesh's size. A door built otherwise (the external airlock's
+        /// shutter, a <c>Blocker</c> box under the animated part, mesh elsewhere) uses its solid boxes as they are.
+        /// </summary>
         private static IEnumerable<(Transform Leaf, Bounds Bounds)> Leaves(GameObject root)
         {
+            List<(Transform, Bounds)> leaves = new();
             foreach (Transform child in root.transform)
             {
                 if (child.name == HolderName || child.gameObject.layer != 0)
@@ -348,8 +390,22 @@ namespace SS3D.Systems.Tile.Editor
                 if (box == null || box.isTrigger || filter == null || filter.sharedMesh == null)
                     continue;
 
-                yield return (child, filter.sharedMesh.bounds);
+                leaves.Add((child, filter.sharedMesh.bounds));
             }
+
+            if (leaves.Count > 0)
+                return leaves;
+
+            foreach (BoxCollider box in root.GetComponentsInChildren<BoxCollider>(true))
+            {
+                Transform owner = box.transform;
+                if (owner == root.transform || box.isTrigger || owner.gameObject.layer != 0 || owner.name == HolderName)
+                    continue;
+
+                leaves.Add((owner, new Bounds(box.center, box.size)));
+            }
+
+            return leaves;
         }
 
         private static string BoxDrift(Transform owner, Vector3 center, Vector3 size, bool active)

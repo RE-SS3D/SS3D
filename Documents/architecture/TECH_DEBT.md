@@ -216,7 +216,7 @@ selection/drop behavior or the Nuke Ops happy path.
 **Blast radius: low today, compounding — trend: stable**
 
 StyleCop analyzers were disabled project-wide on 2026-07-14 "to reduce friction on AI-assisted
-edits" ([MERGE_GUIDE.md](../MERGE_GUIDE.md#analyzer-tooling) § Analyzer tooling). `.editorconfig` still encodes the
+edits" ([merge guide](../archive/architecture/2026-11_merge-guide.md#analyzer-tooling) § Analyzer tooling). `.editorconfig` still encodes the
 naming/formatting rules, but nothing enforces them in CI — conformance now depends entirely on
 reviewer attention (human or AI) at PR time, with no automated signal when a change drifts from
 convention. As the volume of AI-assisted PRs grows, this is the kind of gate that's cheap to skip
@@ -407,8 +407,23 @@ times: `Hand.PlaceHeldItemOutOfHand` (`:213-232`, registers TileMap tracking eve
 The henkhooft/SS3D#208 fix guards out-of-order network arrival with a per-peer `Item.LocalHolder`
 (`AttachedContainer.cs:368`) instead of one replicated holder.
 
+Renderer visibility has the same problem one level down. Stored items are parented under their
+container, so every hierarchy-wide renderer writer also reaches them: `Item.SetVisibility`, FishNet's
+client-host `NetworkObject.SetRenderersVisible` (a renderer list cached once and replayed on every
+view-range change), `PlacedTileObject.EnableAllChildRenderers`, `TileUnderfloorVisibility`
+cover-hide, `ClothesDisplayer` occlusion, `InteractionOutlineView` and the icon preview. On a host,
+FishNet re-enabled stored items when the player walked back into range (a filled medkit in a locker
+showed its gauze loose in the locker). The current guard hides stored items through
+`forceRenderingOff`, which FishNet never writes, and the two tile helpers skip renderers under an
+`Item`. That holds only while every new hierarchy-wide writer knows the convention, and
+`forceRenderingOff` now has three writers of its own.
+
 **Fix:** a replicated holder on `Item`, applied by one routine on every peer; one
-`ServerReleaseToWorld` for drop, place and throw (M–L).
+`ServerReleaseToWorld` for drop, place and throw (M–L). In the same pass, give each rendered object
+one visibility owner that combines hide reasons (stored, out of view range, under the floor,
+occluded) and applies them once, with FishNet `UpdateHostVisibility` off and
+`OnHostVisibilityUpdated` feeding the view-range reason (M). That removes the stale renderer cache and
+the `EnableAllChildRenderers` workaround.
 
 ### 1.22 Map Editor trusts the client's partial map and assumes every command succeeded
 
@@ -515,7 +530,7 @@ See §6.
 
 ## 2. Hot-path GC / performance debt (tracked, partially paid down)
 
-PR henkhooft/SS3D#13 fixed a first wave of per-tick allocation ([MERGE_GUIDE.md](../MERGE_GUIDE.md#hot-path-performance) § Hot-path
+PR henkhooft/SS3D#13 fixed a first wave of per-tick allocation ([merge guide](../archive/architecture/2026-11_merge-guide.md#hot-path-performance) § Hot-path
 performance): `TileCoord` boxing on dictionary lookups, atmos GPU-upload allocations, pipe-network
 list churn, and `SubstanceContainer.AsReadOnly()` on bleed ticks. The pattern keeps recurring in new
 code rather than being structurally prevented (no analyzer/test flags a new per-tick `List.AsReadOnly()`

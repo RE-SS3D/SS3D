@@ -28,6 +28,8 @@ namespace SS3D.Systems.Tile.MapEditor
         GasMarker,
         /// <summary>Room assignments, cleared by the area tool rather than the tile delete path.</summary>
         Area,
+        /// <summary>Floor square colours, cleared by the floor painter rather than the tile delete path.</summary>
+        FloorPaint,
     }
 
     [Flags]
@@ -79,6 +81,7 @@ namespace SS3D.Systems.Tile.MapEditor
             Row(MapEditorSubcategory.Furniture, MapEditorMode.Upper, 4, "Furniture", "cube", MapEditorDeleteScope.FurnitureLayers),
             Row(MapEditorSubcategory.Machines, MapEditorMode.Upper, 5, "Machines", "settings", MapEditorDeleteScope.FurnitureLayers),
             Row(MapEditorSubcategory.Decals, MapEditorMode.Upper, 6, "Decals", "layers", MapEditorDeleteScope.FloorDecal),
+            Row(MapEditorSubcategory.FloorPaint, MapEditorMode.Upper, 7, "Floor Paint", "grid", MapEditorDeleteScope.FloorPaint),
 
             Row(MapEditorSubcategory.Subfloor, MapEditorMode.Lower, 0, "Subfloor", "dots9", MapEditorDeleteScope.Plenum),
             Row(MapEditorSubcategory.Cables, MapEditorMode.Lower, 1, "Cables", "bolt", MapEditorDeleteScope.Wire),

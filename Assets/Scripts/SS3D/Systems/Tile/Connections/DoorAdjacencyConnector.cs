@@ -1,4 +1,7 @@
 ﻿
+using FishNet.Object.Synchronizing;
+using SS3D.Core;
+using SS3D.Data;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using UnityEngine;
@@ -7,8 +10,10 @@ namespace SS3D.Systems.Tile.Connections
 {
     /// <summary>
     /// Connector for doors, handling adding wall caps and the floor visual under the door.
-    /// Doors occupy the Turf layer, so they cover the plenum (see <see cref="TileUnderfloorVisibility"/>);
-    /// without their own floor the covered cell would render as open space.
+    /// The floor is two half tiles (<see cref="AirlockFloorVisual"/>), each copying the floor on its
+    /// side of the door. The server finds those floors and syncs their tile asset ids. A side with no
+    /// floor to copy leaves its half open, and the door then stops covering the plenum
+    /// (<see cref="CoversPlenum"/>, read by <see cref="TileUnderfloorVisibility"/>) so it shows through.
     /// </summary>
     public class DoorAdjacencyConnector : EngineDrivenHorizontalConnector
     {
@@ -42,8 +47,88 @@ namespace SS3D.Systems.Tile.Connections
 
         private GameObject _floor;
 
+        private AirlockFloorVisual _floorVisual;
+
+        /// <summary>Tile asset id of the floor in front of the door (its facing side); invalid when there is none to copy.</summary>
+        [SyncVar(OnChange = nameof(SyncSideFloor))]
+        private ushort _frontFloorId = TileAssetCatalog.InvalidAssetId;
+
+        /// <summary>Tile asset id of the floor behind the door; invalid when there is none to copy.</summary>
+        [SyncVar(OnChange = nameof(SyncSideFloor))]
+        private ushort _backFloorId = TileAssetCatalog.InvalidAssetId;
+
+        private ushort _pendingFrontFloorId = TileAssetCatalog.InvalidAssetId;
+        private ushort _pendingBackFloorId = TileAssetCatalog.InvalidAssetId;
+        private bool _hasPendingSideFloors;
+
         public override IConnectionRule ConnectionRule => DoorRule;
 
+        /// <summary>
+        /// Both halves wear a floor, so the door hides the plenum and what runs under it. False while
+        /// either half is open; doors without a floor visual always cover.
+        /// </summary>
+        public bool CoversPlenum => floorPrefab == null
+            || (FrontFloorId != TileAssetCatalog.InvalidAssetId && BackFloorId != TileAssetCatalog.InvalidAssetId);
+
+        // Unspawned on the server, the latest values wait in the pending fields until OnStartServer.
+        private ushort FrontFloorId => _hasPendingSideFloors ? _pendingFrontFloorId : _frontFloorId;
+
+        private ushort BackFloorId => _hasPendingSideFloors ? _pendingBackFloorId : _backFloorId;
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+
+            if (_hasPendingSideFloors)
+                PublishSideFloors(_pendingFrontFloorId, _pendingBackFloorId);
+        }
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+
+            if (!IsServer)
+                ApplySideFloors();
+        }
+
+        public override void SetAdjacencyConnections(byte horizontalConnections)
+        {
+            base.SetAdjacencyConnections(horizontalConnections);
+
+            TileMap map = SubSystems.GetOrNull<TileSubSystem>()?.CurrentMap;
+            if (map != null)
+                RefreshSideFloors(map);
+        }
+
+        /// <summary>
+        /// Server: re-read the floors in front of and behind the door, sync them, and refresh what the
+        /// door covers when that changed. <see cref="TileMap"/> calls this when a turf beside a door
+        /// is placed or cleared; the adjacency engine calls it when the door itself is placed.
+        /// </summary>
+        public void RefreshSideFloors(TileMap map)
+        {
+            if (floorPrefab == null || map == null)
+                return;
+
+            Setup();
+            Direction front = DoorDirection;
+            ushort frontId = FindCopyableFloorId(map, front);
+            ushort backId = FindCopyableFloorId(map, TileHelper.GetOpposite(front));
+            if (frontId == FrontFloorId && backId == BackFloorId)
+                return;
+
+            _pendingFrontFloorId = frontId;
+            _pendingBackFloorId = backId;
+            _hasPendingSideFloors = true;
+
+            // NetworkObject first — IsServer NREs when _networkObjectCache is null (EditMode).
+            bool spawnedServer = NetworkObject != null && NetworkObject.IsSpawned && IsServer;
+            if (spawnedServer || !UnityEngine.Application.isPlaying)
+                PublishSideFloors(frontId, backId);
+
+            ApplySideFloors();
+            TileUnderfloorVisibility.RefreshUnderfloorAt(map, transform.position);
+        }
         /// <summary>
         /// Rebuilds wall caps after replicated tile identity is available on the client.
         /// </summary>
@@ -61,7 +146,82 @@ namespace SS3D.Systems.Tile.Connections
 
             _adjacencyMap.DeserializeFromByte(horizontalConnections);
             EnsureFloor();
+            ApplySideFloors();
             UpdateWallCaps();
+        }
+
+        private ushort FindCopyableFloorId(TileMap map, Direction side)
+        {
+            if (!TileHelper.IsCardinalDirection(side))
+                return TileAssetCatalog.InvalidAssetId;
+
+            var offset = TileHelper.ToCardinalVector(side);
+            Vector3 cell = transform.position + new Vector3(offset.Item1, 0f, offset.Item2);
+            if (!map.TryGetTileLocation(TileLayer.Turf, cell, out ITileLocation location)
+                || !location.TryGetPlacedObject(out PlacedTileObject turf)
+                || turf == null
+                || turf.tileObjectSO == null
+                || turf.GenericType != TileObjectGenericType.Floor)
+                return TileAssetCatalog.InvalidAssetId;
+
+            if (ResolveHalfMaterial(turf.tileObjectSO) == null)
+                return TileAssetCatalog.InvalidAssetId;
+
+            return SubSystems.GetOrNull<TileSubSystem>()?.TryGetAssetId(turf.tileObjectSO) ?? TileAssetCatalog.InvalidAssetId;
+        }
+
+        private Material ResolveSyncedHalfMaterial(ushort assetId)
+        {
+            if (assetId == TileAssetCatalog.InvalidAssetId)
+                return null;
+
+            return SubSystems.GetOrNull<TileSubSystem>()?.GetAsset(assetId) is TileObjectSo floor
+                ? ResolveHalfMaterial(floor)
+                : null;
+        }
+
+        private Material ResolveHalfMaterial(TileObjectSo floor)
+        {
+            if (floor.PrefabAsset == null || !floorPrefab.TryGetComponent(out AirlockFloorVisual visualConfig))
+                return null;
+
+            GameObject prefab = Assets.Get<GameObject>(floor.PrefabAsset);
+            return AirlockFloorSides.GetHalfMaterial(prefab, visualConfig.AtlasMaterials);
+        }
+
+        private void PublishSideFloors(ushort frontId, ushort backId)
+        {
+            _frontFloorId = frontId;
+            _backFloorId = backId;
+            _hasPendingSideFloors = false;
+        }
+
+        private void SyncSideFloor(ushort _, ushort __, bool asServer)
+        {
+            if (asServer)
+                return;
+
+            ApplySideFloors();
+            TileMap map = SubSystems.GetOrNull<TileSubSystem>()?.CurrentMap;
+            if (map != null)
+                TileUnderfloorVisibility.RefreshUnderfloorAt(map, transform.position);
+        }
+
+        private void ApplySideFloors()
+        {
+            if (_floorVisual == null)
+                return;
+
+            Direction front = DoorDirection;
+            Material frontMaterial = ResolveSyncedHalfMaterial(FrontFloorId);
+            Material backMaterial = ResolveSyncedHalfMaterial(BackFloorId);
+            bool frontIsSubmesh0 = AirlockFloorSides.SubmeshToward(front) == 0;
+
+            _floorVisual.Apply(
+                AirlockFloorSides.UsesNorthSouthMesh(front),
+                frontIsSubmesh0 ? frontMaterial : backMaterial,
+                frontIsSubmesh0 ? backMaterial : frontMaterial);
+            RefreshHostRenderers();
         }
 
         private void EnsureFloor()
@@ -72,7 +232,7 @@ namespace SS3D.Systems.Tile.Connections
             _floor = Instantiate(floorPrefab, transform);
             _floor.name = "DoorFloor";
             _floor.transform.localPosition = Vector3.zero;
-            _floor.transform.localRotation = Quaternion.identity;
+            _floor.transform.rotation = Quaternion.identity;
 
             // Visual only: the plenum below already supports and collides; the door owns interaction.
             // Destroy dependents first: SimpleExaminable [RequireComponent]s Selectable, and Unity refuses
@@ -83,7 +243,7 @@ namespace SS3D.Systems.Tile.Connections
                 for (int i = behaviours.Length - 1; i >= 0; i--)
                 {
                     MonoBehaviour behaviour = behaviours[i];
-                    if (behaviour == null || behaviour is FishNet.Object.NetworkObject)
+                    if (behaviour == null || behaviour is FishNet.Object.NetworkObject or AirlockFloorVisual)
                         continue;
 
                     if (pass == 0 && behaviour is SS3D.Systems.Selection.Selectable)
@@ -103,6 +263,7 @@ namespace SS3D.Systems.Tile.Connections
             ServerVisualsUtility.DisableRenderingComponents(_floor);
 #endif
 
+            _floorVisual = _floor.GetComponent<AirlockFloorVisual>();
             RefreshHostRenderers();
         }
 

@@ -115,6 +115,12 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 // Show the new cloth on the player
                 case SyncListOperation.Add:
+                    // A late read after the server despawned the cloth resolves it to null or its prefab asset.
+                    if (newData.ClothToDisplay == null || !newData.ClothToDisplay.IsSceneInstance)
+                    {
+                        return;
+                    }
+
                     if (!TryGetClothedBodyPart(newData.Type, out ClothedBodyPart newClothedBodyPart) || !newData.ClothToDisplay.TryGetComponent(out Cloth newCloth))
                     {
                         Log.Error(this, "Error getting components to display cloth on player");
