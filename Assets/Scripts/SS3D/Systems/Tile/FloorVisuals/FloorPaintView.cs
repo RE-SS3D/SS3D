@@ -1,3 +1,4 @@
+using SS3D.Systems.IdAccess;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,11 +26,17 @@ namespace SS3D.Systems.Tile.FloorVisuals
         private static readonly Dictionary<Vector2Int, byte> Preview = new();
         private static float _pendingSince;
 
+        // Each palette index's colour, read once per rebuild rather than once per square.
+        private static readonly Color32[] Colors = new Color32[16];
+
         private static Texture2D _texture;
         private static Color32[] _base;
         private static Color32[] _pixels;
         // The texture's texels in world half-tiles.
         private static RectInt _rect;
+
+        // A department colour edited in Project Settings redraws the floors with it.
+        static FloorPaintView() => DepartmentColors.Changed += () => Rebuild(rebuildBase: true);
 
         /// <summary>The server's paint, chunk by chunk; replaces everything this client had.</summary>
         public static void ReplaceChunks(IReadOnlyList<(Vector2Int chunkKey, ushort[] floorPaint)> chunks)
@@ -127,6 +134,9 @@ namespace SS3D.Systems.Tile.FloorVisuals
                 rebuildBase = true;
             }
 
+            for (int index = 0; index < Colors.Length; index++)
+                Colors[index] = FloorPaint.ColorOf(index);
+
             if (rebuildBase)
                 FillBase();
 
@@ -179,7 +189,7 @@ namespace SS3D.Systems.Tile.FloorVisuals
                         {
                             int index = FloorPaint.Get(paint, square);
                             if (index != 0)
-                                _base[PixelOf(FloorPaint.TexelOf(tile, square))] = FloorPaint.ColorOf(index);
+                                _base[PixelOf(FloorPaint.TexelOf(tile, square))] = Colors[index];
                         }
                     }
                 }
@@ -193,7 +203,7 @@ namespace SS3D.Systems.Tile.FloorVisuals
 
             int pixel = PixelOf(texel);
             // Erasing shows the floor's own colour, or the erase colour where the preview marks squares to erase.
-            _pixels[pixel] = index == 0 ? default : FloorPaint.ColorOf(index);
+            _pixels[pixel] = Colors[index & 0xF];
         }
 
         private static int PixelOf(Vector2Int texel) => (texel.y - _rect.y) * _rect.width + (texel.x - _rect.x);

@@ -1,3 +1,4 @@
+using SS3D.Systems.IdAccess;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,37 +16,38 @@ namespace SS3D.Systems.Tile.FloorVisuals
     /// </summary>
     public static class FloorPaint
     {
-        /// <summary>One paint colour. Saved maps store the index, so entries are only ever appended, never reordered.</summary>
+        /// <summary>One paint colour: a department's. Saved maps store the index, so entries are only ever appended, never reordered.</summary>
         public readonly struct Swatch
         {
-            public Swatch(string name, Color32 color)
+            public Swatch(Department department)
             {
-                Name = name;
-                Color = color;
+                Department = department;
             }
 
-            public string Name { get; }
+            public Department Department { get; }
 
-            /// <summary>sRGB, as written in the lobby's department tokens.</summary>
-            public Color32 Color { get; }
+            public string Name => Department == Department.None ? "Unpainted" : DepartmentDisplay.GetName(Department);
+
+            /// <summary>sRGB, from <see cref="DepartmentColors"/>; transparent for unpainted.</summary>
+            public Color32 Color => Department == Department.None ? default : DepartmentColors.Get(Department);
         }
 
         /// <summary>
-        /// The paint colours, index 1 up (index 0 is unpainted). The departments use the lobby's department colours
-        /// (<c>LobbyTokens.uss</c> <c>--dept-*</c>), so a room's floor matches its department everywhere it is shown.
-        /// Append new colours at the end: saved maps hold these indices. At most <see cref="MaxColors"/>.
+        /// The paint colours, index 1 up (index 0 is unpainted): the departments, coloured by <see cref="DepartmentColors"/>
+        /// (Project Settings › SS3D › Assets › Department Colors). Append new entries at the end: saved maps hold these
+        /// indices. At most <see cref="MaxColors"/>.
         /// </summary>
-        public static readonly IReadOnlyList<Swatch> Palette = new[]
+        public static readonly IReadOnlyList<Swatch> Palette = new Swatch[]
         {
-            new Swatch("Unpainted", new Color32(0, 0, 0, 0)),
-            new Swatch("Command", new Color32(0x8f, 0xb4, 0xf2, 0xff)),
-            new Swatch("Security", new Color32(0xf2, 0x91, 0xa8, 0xff)),
-            new Swatch("Engineering", new Color32(0xec, 0xd3, 0x5e, 0xff)),
-            new Swatch("Medical", new Color32(0x62, 0xd0, 0xd6, 0xff)),
-            new Swatch("Science", new Color32(0xcf, 0x9d, 0xf0, 0xff)),
-            new Swatch("Cargo", new Color32(0xc9, 0xa2, 0x7c, 0xff)),
-            new Swatch("Service", new Color32(0x8e, 0xdb, 0x9c, 0xff)),
-            new Swatch("Civilian", new Color32(0xdd, 0xd7, 0xcb, 0xff)),
+            new(Department.None),
+            new(Department.Command),
+            new(Department.Security),
+            new(Department.Engineering),
+            new(Department.Medical),
+            new(Department.Science),
+            new(Department.Cargo),
+            new(Department.Service),
+            new(Department.Civilian),
         };
 
         /// <summary>Highest index a square can hold (4 bits; 15 is the editor's erase preview).</summary>

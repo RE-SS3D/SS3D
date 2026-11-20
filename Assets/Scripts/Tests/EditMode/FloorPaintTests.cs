@@ -1,5 +1,7 @@
+using Coimbra;
 using EditorTests;
 using NUnit.Framework;
+using SS3D.Systems.IdAccess;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.FloorVisuals;
 using SS3D.Systems.Tile.MapEditor;
@@ -94,6 +96,25 @@ namespace SS3D.Tests.EditMode
                 FloorPaint.Palette.Skip(1).Select(swatch => swatch.Name));
             Assert.IsFalse(FloorPaint.IsPaint(0));
             Assert.IsFalse(FloorPaint.IsPaint(FloorPaint.ErasePreview));
+        }
+
+        [Test]
+        public void Palette_TakesItsColoursFromDepartmentColors()
+        {
+            Assert.AreEqual(new Color32(0, 0, 0, 0), FloorPaint.ColorOf(0), "unpainted shows the floor");
+            for (int index = 1; index < FloorPaint.Palette.Count; index++)
+            {
+                Department department = FloorPaint.Palette[index].Department;
+                Assert.AreEqual((Color32)DepartmentColors.Get(department), FloorPaint.ColorOf(index), department.ToString());
+                Assert.AreEqual(255, FloorPaint.ColorOf(index).a, $"{department} is opaque");
+            }
+        }
+
+        [Test]
+        public void DepartmentColors_LoadFromTheProjectSettingsAsset()
+        {
+            Assert.IsNotNull(ScriptableSettings.GetOrFind<DepartmentColors>(),
+                "Assets/Settings/DepartmentColorsSettings.asset, preloaded, is where the colours are edited");
         }
 
         [Test]
