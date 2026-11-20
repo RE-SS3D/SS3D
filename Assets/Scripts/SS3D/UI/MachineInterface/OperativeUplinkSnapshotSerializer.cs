@@ -35,6 +35,7 @@ namespace SS3D.UI.MachineInterface
                 writer.WriteString(listing.Restriction);
                 writer.WriteInt32(listing.Remaining);
                 writer.WriteBoolean(listing.Bundle);
+                writer.WriteString(listing.IconItemId);
             }
 
             int ledgerLength = snapshot.Ledger?.Length ?? 0;
@@ -91,6 +92,7 @@ namespace SS3D.UI.MachineInterface
                     Restriction = reader.ReadString(),
                     Remaining = reader.ReadInt32(),
                     Bundle = reader.ReadBoolean(),
+                    IconItemId = reader.ReadString(),
                 };
             }
 

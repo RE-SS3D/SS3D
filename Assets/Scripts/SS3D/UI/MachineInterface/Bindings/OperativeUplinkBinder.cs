@@ -397,7 +397,7 @@ namespace SS3D.UI.MachineInterface.Bindings
             VisualElement iconCell = new();
             iconCell.AddToClassList("uplink__col-icon");
             InventorySlot slot = new() { Unknown = true, Size = 40 };
-            OperativeUplinkIcons.Apply(slot, listing.Index);
+            OperativeUplinkIcons.Apply(slot, listing.IconItemId);
             iconCell.Add(slot);
             row.Add(iconCell);
 
@@ -565,7 +565,7 @@ namespace SS3D.UI.MachineInterface.Bindings
             if (_detailSlot != null)
             {
                 _detailSlot.style.opacity = listing.OutOfStock ? 0.35f : 1f;
-                OperativeUplinkIcons.Apply(_detailSlot, listing.Index);
+                OperativeUplinkIcons.Apply(_detailSlot, listing.IconItemId);
             }
 
             if (_detailFacts != null)
@@ -642,7 +642,10 @@ namespace SS3D.UI.MachineInterface.Bindings
             }
 
             if (_deliveryName != null) _deliveryName.text = model.DeliveryName;
-            OperativeUplinkIcons.Apply(_deliverySlot, model.DeliveryListingIndex);
+            OperativeUplinkIcons.Apply(_deliverySlot,
+                model.DeliveryListingIndex >= 0 && model.DeliveryListingIndex < model.Listings.Count
+                    ? model.Listings[model.DeliveryListingIndex].IconItemId
+                    : null);
             if (_deliveryWhere != null)
             {
                 _deliveryWhere.text = model.DeliveredToHand ? "IN YOUR HAND" : "AT YOUR FEET";

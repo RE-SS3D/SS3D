@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
+using SS3D.Data.AssetDatabases;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
@@ -31,8 +32,8 @@ namespace SS3D.UI.MachineInterface
         private string _modelLabel = "SYN-UL · encrypted telecrystal uplink";
 
         [SerializeField]
-        [Tooltip("Telecrystals the device starts with.")]
-        private int _startingBalance = OperativeUplinkCatalog.StartingBalance;
+        [Tooltip("What this uplink sells and its starting balance. Edit the asset, not code.")]
+        private UplinkCatalog _catalog;
 
         private UplinkAccount _account;
         private string _ownerName;
@@ -43,12 +44,14 @@ namespace SS3D.UI.MachineInterface
         private int _deliveryListingIndex = -1;
         private bool _deliveredToHand;
 
-        private static readonly Dictionary<string, string> ResolvedItemIds = new();
-
         public override string InterfaceId => MachineInterfaceIds.OperativeUplink;
 
         /// <summary>Server: the device's balance and ledger.</summary>
-        public UplinkAccount Account => _account ??= new UplinkAccount(_startingBalance);
+        public UplinkAccount Account => _account ??= new UplinkAccount(
+            _catalog != null ? _catalog.StartingBalance : UplinkCatalog.DefaultStartingBalance);
+
+        /// <summary>What this uplink sells; null on a misconfigured prefab, which then sells nothing.</summary>
+        public UplinkCatalog Catalog => _catalog;
 
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
@@ -88,7 +91,7 @@ namespace SS3D.UI.MachineInterface
         [Server]
         public UplinkRefusal ServerBuy(int listingIndex, NetworkConnection buyer)
         {
-            UplinkListing listing = OperativeUplinkCatalog.At(listingIndex);
+            UplinkListing listing = _catalog != null ? _catalog.At(listingIndex) : null;
             Hand hand = HolderHand();
             bool held = hand != null && (buyer == null || hand.HandsController == null || hand.HandsController.Owner == buyer);
             int roundId = CurrentRoundId(out int roundSeconds);
@@ -197,11 +200,12 @@ namespace SS3D.UI.MachineInterface
 
             bool any = false;
             bool first = true;
-            foreach (string itemName in listing.ItemNames)
+            foreach (ObjectAssetReference reference in listing.Items)
             {
-                if (!TryResolveItem(itemName, out Item prefab, out string assetId))
+                string assetId = reference != null ? reference.Id : null;
+                if (string.IsNullOrEmpty(assetId) || !CommandResolver.TryResolveItemAsset(assetId, out Item prefab, out _))
                 {
-                    Debug.LogWarning($"Uplink listing {listing.Id}: no item named {itemName}", this);
+                    Debug.LogWarning($"Uplink listing {listing.Id}: item {(reference != null ? reference.name : "(empty)")} is not a registered item", this);
                     continue;
                 }
 
@@ -254,28 +258,12 @@ namespace SS3D.UI.MachineInterface
             return false;
         }
 
-        private static bool TryResolveItem(string itemName, out Item prefab, out string assetId)
-        {
-            if (ResolvedItemIds.TryGetValue(itemName, out assetId)
-                && CommandResolver.TryResolveItemAsset(assetId, out prefab, out _))
-            {
-                return true;
-            }
-
-            if (CommandResolver.TryResolveItemAsset(itemName, out prefab, out assetId))
-            {
-                ResolvedItemIds[itemName] = assetId;
-                return true;
-            }
-
-            return false;
-        }
-
         private OperativeUplinkSnapshot BuildSnapshot()
         {
             int roundId = CurrentRoundId(out _);
             UplinkAccount account = Account;
-            IReadOnlyList<UplinkListing> catalog = OperativeUplinkCatalog.Listings;
+            IReadOnlyList<UplinkListing> catalog = _catalog != null ? _catalog.Listings : System.Array.Empty<UplinkListing>();
+            IReadOnlyList<string> categoryNames = _catalog != null ? _catalog.Categories : System.Array.Empty<string>();
 
             UplinkListingSnapshot[] listings = new UplinkListingSnapshot[catalog.Count];
             for (int i = 0; i < catalog.Count; i++)
@@ -294,6 +282,7 @@ namespace SS3D.UI.MachineInterface
                         ? UplinkSquadStock.Shared.Remaining(listing, roundId)
                         : UplinkListingSnapshot.Unlimited,
                     Bundle = listing.Bundle,
+                    IconItemId = listing.IconItemId,
                 };
             }
 
@@ -311,10 +300,10 @@ namespace SS3D.UI.MachineInterface
                 };
             }
 
-            string[] categories = new string[OperativeUplinkCatalog.Categories.Count];
+            string[] categories = new string[categoryNames.Count];
             for (int i = 0; i < categories.Length; i++)
             {
-                categories[i] = OperativeUplinkCatalog.Categories[i];
+                categories[i] = categoryNames[i];
             }
 
             return new OperativeUplinkSnapshot

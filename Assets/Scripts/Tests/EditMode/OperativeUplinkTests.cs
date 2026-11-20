@@ -24,21 +24,49 @@ namespace EditorTests
     {
         private const int Round = 7;
 
-        private static UplinkListing Get(string id) => OperativeUplinkCatalog.Listings.First(l => l.Id == id);
+        private const string CatalogPath = "Assets/Content/Data/Gamemode/Uplink/OperativeUplinkCatalog.asset";
+
+        private static UplinkCatalog Catalog => AssetDatabase.LoadAssetAtPath<UplinkCatalog>(CatalogPath);
+
+        private static UplinkListing Get(string id) => Catalog.Listings.First(l => l.Id == id);
 
         [Test]
-        public void Catalog_HasUniqueIds_KnownCategories_AndPositivePrices()
+        public void Catalog_Asset_IsSound()
         {
-            HashSet<string> ids = new();
-            foreach (UplinkListing listing in OperativeUplinkCatalog.Listings)
-            {
-                Assert.IsTrue(ids.Add(listing.Id), "duplicate id " + listing.Id);
-                CollectionAssert.Contains(OperativeUplinkCatalog.Categories, listing.Category, listing.Id);
-                Assert.Greater(listing.Price, 0, listing.Id);
-                Assert.IsNotEmpty(listing.ItemNames, listing.Id);
-            }
+            Assert.IsNotNull(Catalog, "The operative uplink catalog asset exists");
+            CollectionAssert.IsEmpty(
+                Catalog.Validate(OperativeUplinkSnapshot.MaxListings, OperativeUplinkSnapshot.MaxCategories),
+                "Fix the catalog asset");
+            Assert.AreEqual(UplinkCatalog.DefaultStartingBalance, Catalog.StartingBalance,
+                "The rule tests assume the default balance; update both together");
+        }
 
-            Assert.LessOrEqual(OperativeUplinkCatalog.Listings.Count, OperativeUplinkSnapshot.MaxListings);
+        [Test]
+        public void Validate_ReportsAuthoringMistakes()
+        {
+            ObjectAssetReference item = ScriptableObject.CreateInstance<ObjectAssetReference>();
+            UplinkCatalog catalog = UplinkCatalog.Create(40, new[] { "Weapons", "Empty" }, new[]
+            {
+                new UplinkListing("a", "Weapons", "A", 1, "", "", new[] { item }),
+                new UplinkListing("a", "Weapons", "Duplicate", 1, "", "", new[] { item }),
+                new UplinkListing("b", "Nowhere", "Lost", 1, "", "", new[] { item }),
+                new UplinkListing("c", "Weapons", "Nothing", 1, "", "", new ObjectAssetReference[0]),
+            });
+            try
+            {
+                List<string> problems = catalog.Validate(maxListings: 3, maxCategories: 8);
+
+                Assert.That(problems, Has.Some.Contains("duplicate id"));
+                Assert.That(problems, Has.Some.Contains("unknown category 'Nowhere'"));
+                Assert.That(problems, Has.Some.Contains("delivers nothing"));
+                Assert.That(problems, Has.Some.Contains("category 'Empty' has no listings"));
+                Assert.That(problems, Has.Some.Contains("panel sends at most 3"));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(catalog);
+                UnityEngine.Object.DestroyImmediate(item);
+            }
         }
 
         [Test]
@@ -60,7 +88,7 @@ namespace EditorTests
             UplinkRefusal refusal = account.TryBuy(smg, new UplinkSquadStock(), Round, holderDowned: false, held: true, roundSeconds: 872);
 
             Assert.AreEqual(UplinkRefusal.None, refusal);
-            Assert.AreEqual(OperativeUplinkCatalog.StartingBalance - smg.Price, account.Balance);
+            Assert.AreEqual(UplinkCatalog.DefaultStartingBalance - smg.Price, account.Balance);
             Assert.AreEqual(smg.Price, account.Spent);
             Assert.AreEqual(1, account.Ledger.Count);
             UplinkLedgerEntry line = account.Ledger[0];
@@ -112,7 +140,7 @@ namespace EditorTests
             UplinkRefusal refusal = second.TryBuy(bomb, stock, Round, false, true, 11);
 
             Assert.AreEqual(UplinkRefusal.SoldOut, refusal);
-            Assert.AreEqual(OperativeUplinkCatalog.StartingBalance, second.Balance);
+            Assert.AreEqual(UplinkCatalog.DefaultStartingBalance, second.Balance);
             Assert.IsEmpty(second.Ledger);
             Assert.AreEqual(0, stock.Remaining(bomb, Round));
         }
@@ -152,7 +180,7 @@ namespace EditorTests
         {
             UplinkAccount account = new();
             Assert.AreEqual(UplinkRefusal.NotHeld, account.TryBuy(Get("c4"), new UplinkSquadStock(), Round, false, held: false, 0));
-            Assert.AreEqual(OperativeUplinkCatalog.StartingBalance, account.Balance);
+            Assert.AreEqual(UplinkCatalog.DefaultStartingBalance, account.Balance);
         }
 
         [Test]
@@ -165,7 +193,7 @@ namespace EditorTests
 
             account.Refund(bomb, stock, Round);
 
-            Assert.AreEqual(OperativeUplinkCatalog.StartingBalance, account.Balance);
+            Assert.AreEqual(UplinkCatalog.DefaultStartingBalance, account.Balance);
             Assert.IsEmpty(account.Ledger);
             Assert.AreEqual(1, stock.Remaining(bomb, Round));
         }
@@ -207,6 +235,7 @@ namespace EditorTests
                     {
                         Name = "Syndicate bomb", Category = "Explosives", Price = 11, Kind = "Deployed", Description = "Big",
                         Includes = "Beacon", Restriction = "One per squad", Remaining = 1, Bundle = true,
+                        IconItemId = "abc123",
                     },
                 },
                 Ledger = new[] { new UplinkLedgerSnapshot { Number = 1, RoundSeconds = 99, ItemName = "Bulldog", Cost = 14, BalanceAfter = 26 } },
@@ -235,6 +264,7 @@ namespace EditorTests
             Assert.AreEqual(1, copy.Listings[0].Remaining);
             Assert.AreEqual("One per squad", copy.Listings[0].Restriction);
             Assert.IsTrue(copy.Listings[0].Bundle);
+            Assert.AreEqual("abc123", copy.Listings[0].IconItemId);
             Assert.AreEqual(1, copy.Ledger.Length);
             Assert.AreEqual(26, copy.Ledger[0].BalanceAfter);
             Assert.AreEqual(3, copy.RefusalSequence);
@@ -286,11 +316,15 @@ namespace EditorTests
                 prefabNames.Add(System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GUIDToAssetPath(guid)));
             }
 
-            foreach (UplinkListing listing in OperativeUplinkCatalog.Listings)
+            // Every item reference points into the same database as a known item's.
+            string itemsDatabase = AssetDatabase.LoadAssetAtPath<ObjectAssetReference>(
+                "Assets/Content/Data/ObjectAssetReferences/Gauze.asset").Database;
+            foreach (UplinkListing listing in Catalog.Listings)
             {
-                foreach (string itemName in listing.ItemNames)
+                foreach (ObjectAssetReference reference in listing.Items)
                 {
-                    Assert.IsTrue(prefabNames.Contains(itemName), $"{listing.Id}: no item prefab named {itemName}");
+                    Assert.IsTrue(prefabNames.Contains(reference.name), $"{listing.Id}: no item prefab named {reference.name}");
+                    Assert.AreEqual(itemsDatabase, reference.Database, $"{listing.Id}: {reference.name} is not an item");
                 }
             }
 
@@ -298,6 +332,8 @@ namespace EditorTests
                 "Assets/Content/WorldObjects/Items/Weapons/OperativeUplink.prefab");
             Assert.IsNotNull(uplink, "Run SS3D → Structural Damage → Run Content Prefab Recipes");
             Assert.IsNotNull(uplink.GetComponent<OperativeUplinkController>());
+            Assert.AreEqual(Catalog, uplink.GetComponent<OperativeUplinkController>().Catalog,
+                "The uplink prefab sells the operative catalog");
             Item item = uplink.GetComponent<Item>();
             Assert.IsNotNull(item.Asset, "The uplink is a registered item");
 

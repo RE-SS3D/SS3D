@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System;
 using SS3D.Data.AssetDatabases;
+using SS3D.Systems.Gamemodes.Uplink;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.StructuralDamage;
 using UnityEditor;
@@ -23,6 +24,9 @@ namespace SS3D.Systems.StructuralDamage.Editor
 
         // The controller lives in SS3D.UI.MachineInterface, which this assembly does not reference.
         private const string ControllerType = "SS3D.UI.MachineInterface.OperativeUplinkController, SS3D.UI.MachineInterface";
+        /// <summary>The operative uplink's catalog: prices, stock and listings, edited in the Inspector.</summary>
+        public const string CatalogPath = "Assets/Content/Data/Gamemode/Uplink/OperativeUplinkCatalog.asset";
+
         private const string ItemsDatabaseId = "c2644d7b34e956743a0bc485e7ca5e37";
 
         public static void SetupAll()
@@ -61,6 +65,21 @@ namespace SS3D.Systems.StructuralDamage.Editor
                 if (root.GetComponent(controllerType) == null)
                 {
                     root.AddComponent(controllerType);
+                }
+
+                // The catalog is hand-edited content: link it, never rewrite it.
+                SerializedObject controller = new(root.GetComponent(controllerType));
+                SerializedProperty catalog = controller.FindProperty("_catalog");
+                if (catalog.objectReferenceValue == null)
+                {
+                    UplinkCatalog asset = DB.LoadAssetAtPath<UplinkCatalog>(CatalogPath);
+                    if (asset == null)
+                    {
+                        throw new InvalidOperationException("Missing uplink catalog " + CatalogPath);
+                    }
+
+                    catalog.objectReferenceValue = asset;
+                    controller.ApplyModifiedPropertiesWithoutUndo();
                 }
 
                 SerializedObject item = new(root.GetComponent<Item>());

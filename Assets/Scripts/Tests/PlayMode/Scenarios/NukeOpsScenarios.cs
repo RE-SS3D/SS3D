@@ -201,37 +201,30 @@ namespace SS3D.Tests
             yield return WaitFor(() => panels.IsOpen, "the uplink panel opens", 3f);
 
             int start = uplink.Account.Balance;
-            Assert.AreEqual(OperativeUplinkCatalog.StartingBalance, start);
+            Assert.AreEqual(uplink.Catalog.StartingBalance, start);
             Hand other = hands.PlayerHands.First(h => h != hand);
 
-            Assert.AreEqual(UplinkRefusal.None, uplink.ServerBuy(Index("c4"), hands.Owner), "C4 is affordable");
+            Assert.AreEqual(UplinkRefusal.None, uplink.ServerBuy(uplink.Catalog.IndexOf("c4"), hands.Owner), "C4 is affordable");
             Assert.AreEqual(start - 2, uplink.Account.Balance);
             Assert.IsNotNull(other.ItemInHand, "The C4 lands in the free hand");
             Assert.AreEqual(1, uplink.Account.Ledger.Count);
 
             Item[] before = Object.FindObjectsByType<Item>(FindObjectsSortMode.None);
-            Assert.AreEqual(UplinkRefusal.None, uplink.ServerBuy(Index("gauze"), hands.Owner), "Gauze with both hands full");
+            Assert.AreEqual(UplinkRefusal.None, uplink.ServerBuy(uplink.Catalog.IndexOf("gauze"), hands.Owner), "Gauze with both hands full");
             yield return Hold(0.2f);
             Item dropped = Object.FindObjectsByType<Item>(FindObjectsSortMode.None).Except(before).SingleOrDefault();
             Assert.IsNotNull(dropped, "The gauze spawns");
             Assert.IsNull(dropped.Container, "Both hands are full, so it lands at the feet");
             Assert.Less(Vector3.Distance(dropped.transform.position, Body.transform.position), 1.5f, "At the operative's feet");
 
-            Assert.AreEqual(UplinkRefusal.None, uplink.ServerBuy(Index("synbomb"), hands.Owner), "The squad's one bomb");
+            Assert.AreEqual(UplinkRefusal.None, uplink.ServerBuy(uplink.Catalog.IndexOf("synbomb"), hands.Owner), "The squad's one bomb");
             int afterBomb = uplink.Account.Balance;
-            Assert.AreEqual(UplinkRefusal.SoldOut, uplink.ServerBuy(Index("synbomb"), hands.Owner), "Only one per squad");
+            Assert.AreEqual(UplinkRefusal.SoldOut, uplink.ServerBuy(uplink.Catalog.IndexOf("synbomb"), hands.Owner), "Only one per squad");
             Assert.AreEqual(afterBomb, uplink.Account.Balance, "A refusal spends nothing");
             Assert.AreEqual(3, uplink.Account.Ledger.Count);
 
             panels.Close();
             yield return WaitFor(() => !panels.IsOpen, "the uplink panel closes", 3f);
-        }
-
-        private static int Index(string listingId)
-        {
-            for (int i = 0; i < OperativeUplinkCatalog.Listings.Count; i++)
-                if (OperativeUplinkCatalog.Listings[i].Id == listingId) return i;
-            throw new System.ArgumentException(listingId);
         }
 
         private string Run(GameObject target, string genericName) =>

@@ -24,6 +24,9 @@ namespace SS3D.UI.MachineInterface
         public int Remaining;
 
         public bool Bundle;
+
+        /// <summary>Asset id of the listing's first item, for its icon; the client needs no catalog.</summary>
+        public string IconItemId;
     }
 
     public struct UplinkLedgerSnapshot

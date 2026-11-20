@@ -29,6 +29,9 @@ namespace SS3D.UI.MachineInterface
 
         public bool Bundle { get; set; }
 
+        /// <summary>Asset id of the item whose HUD sprite is the listing's icon.</summary>
+        public string IconItemId { get; set; }
+
         /// <summary>TC missing to buy it; 0 when affordable.</summary>
         public int Shortfall { get; set; }
 

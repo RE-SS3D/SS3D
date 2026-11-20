@@ -137,7 +137,7 @@ namespace SS3D.Tests.EditMode
                 "Assets/Content/Data/Roles/Loadouts/OperativeLoadout.asset");
             Item beaconItem = beacon.GetComponent<Item>();
             Assert.IsFalse(operative.FirstHolderContents.SelectMany(c => c.Items).Any(r => r == beaconItem.Asset),
-                "The squad's one beacon is sold on the uplink (OperativeUplinkCatalog), not issued to the first operative");
+                "The squad's one beacon is sold on the uplink (its catalog asset), not issued to the first operative");
             Assert.IsFalse(operative.EquipmentContents.SelectMany(c => c.Items).Any(r => r == beaconItem.Asset),
                 "Not in every operative's bag");
         }

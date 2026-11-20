@@ -344,4 +344,4 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 1602098408367427586}
   _networkObjectCache: {fileID: 0}
   _modelLabel: "SYN-UL \xB7 encrypted telecrystal uplink"
-  _startingBalance: 40
+  _catalog: {fileID: 11400000, guid: ca3c8fd17c030f92eb671f2aa63c61ee, type: 2}

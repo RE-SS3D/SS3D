@@ -45,6 +45,7 @@ namespace SS3D.UI.MachineInterface
                         Remaining = hasStock ? listing.Remaining : 0,
                         OutOfStock = hasStock && listing.Remaining <= 0,
                         Bundle = listing.Bundle,
+                        IconItemId = listing.IconItemId ?? string.Empty,
                         Shortfall = listing.Price > snapshot.Balance ? listing.Price - snapshot.Balance : 0,
                     });
                 }

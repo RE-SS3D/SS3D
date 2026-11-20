@@ -47,7 +47,7 @@ namespace SS3D.Systems.Gamemodes.Uplink
     {
         private readonly List<UplinkLedgerEntry> _ledger = new();
 
-        public UplinkAccount(int startingBalance = OperativeUplinkCatalog.StartingBalance)
+        public UplinkAccount(int startingBalance = UplinkCatalog.DefaultStartingBalance)
         {
             StartingBalance = startingBalance;
             Balance = startingBalance;
