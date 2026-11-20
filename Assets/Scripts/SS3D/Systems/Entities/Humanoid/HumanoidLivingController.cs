@@ -23,7 +23,17 @@ namespace SS3D.Systems.Entities.Humanoid
         private EvaGearController _evaGear;
         private HumanHealthController _healthController;
 
-        public bool IsDragging { get; set; }
+        private Draggable _dragTarget;
+
+        /// <summary>
+        /// True while the object this body started dragging still exists and is still dragged. Read from the object
+        /// rather than stored, so a drag that ends any other way (the object blows up, is deleted or the server lets go)
+        /// frees the body to turn again (#1535).
+        /// </summary>
+        public bool IsDragging => _dragTarget != null && _dragTarget.Dragged;
+
+        /// <summary>Called by <see cref="Furniture.DragInteraction"/> when this body starts (or, with null, stops) a drag.</summary>
+        public void SetDragTarget(Draggable target) => _dragTarget = target;
 
         /// <summary>Exhausted bodies move slower; feet slow by the same factor (ExertionPenalty is a SyncVar, so remotes match).</summary>
         public override float LocomotionPlaybackRate => GearSpeedFactor * (_staminaController != null

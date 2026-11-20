@@ -233,3 +233,15 @@ MonoBehaviour:
   - {fileID: 7433441132597879392, guid: 18953952b936d3e31b09d0b121fda12d, type: 3}
   - {fileID: 7433441132597879392, guid: c1047cfd2dc96f64e965c17afa9f9707, type: 3}
   - {fileID: 7433441132597879392, guid: e7dc176e2babd6a668c2f7a325c6baf8, type: 3}
+  _healthScannerTemplate: {fileID: 9197481963319205126, guid: 2d5b4caa8c6b4f9b9c8b9f9a53584903, type: 3}
+  _healthScannerTemplateStyle: {fileID: 7433441132597879392, guid: af4e476b581e4383a7c5c0a8a056e2ea, type: 3}
+  _healthScannerComponentStyles:
+  - {fileID: 7433441132597879392, guid: 262968ad957a29c0b911189ebd1dc313, type: 3}
+  - {fileID: 7433441132597879392, guid: 5051dc4d3239c2f7c818b19f0921a499, type: 3}
+  - {fileID: 7433441132597879392, guid: 0c1a8a089f33f05f0a9d98e1d7ec2132, type: 3}
+  - {fileID: 7433441132597879392, guid: 4ea59d7e784d660e199c8b32808f5a7f, type: 3}
+  - {fileID: 7433441132597879392, guid: d0abd738edf8c5c8c9cf69adca69d666, type: 3}
+  - {fileID: 7433441132597879392, guid: c109b55996e99b766ac945222cdaf5d9, type: 3}
+  - {fileID: 7433441132597879392, guid: 5ccf999f5a348b5cba3c141450ec9a00, type: 3}
+  - {fileID: 7433441132597879392, guid: e7dc176e2babd6a668c2f7a325c6baf8, type: 3}
+  - {fileID: 7433441132597879392, guid: 44d83273c2394310a80c6b7304450ab8, type: 3}

@@ -15,8 +15,8 @@ every configured asset being hard-referenced into RAM at startup.
 The repository tracks this exact problem as
 [RE-SS3D/SS3D#1494](https://github.com/RE-SS3D/SS3D/issues/1494) ("Excessive memory usage" — up to
 600MB from `AssetDatabase.Assets` directly referencing everything from the start) and had an
-unreviewed rewrite attempting to fix it, closed unmerged at the 2026 merge:
-[RE-SS3D/SS3D#1500](https://github.com/RE-SS3D/SS3D/pull/1500) ("Make adressables great again").
+unreviewed rewrite attempting to fix it, left open at the 2026 merge because its author plans to port
+it onto the merged `develop`: [RE-SS3D/SS3D#1500](https://github.com/RE-SS3D/SS3D/pull/1500) ("Make adressables great again").
 
 The merged codebase has the identical root cause, independently of that PR. Investigated
 2026-07-21:

@@ -267,7 +267,7 @@ namespace SS3D.Systems.Inventory.Containers
 
             for (int i = 0; Inventory.TryGetTypeContainer(ContainerType.Pocket, i, out AttachedContainer pocket); i++)
             {
-                Inventory.containerViewer.ShowContainerUI(pocket);
+                Inventory.containerViewer.CmdShowContainerUI(pocket);
             }
         }
 

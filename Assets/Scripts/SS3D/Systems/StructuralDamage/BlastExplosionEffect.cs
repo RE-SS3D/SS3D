@@ -19,23 +19,25 @@ namespace SS3D.Systems.StructuralDamage
         private Material _smokeMaterial;
         private Material _fireMaterial;
 
-        public void Play(float yieldScale, BlastVfxCatalog catalog)
+        /// <param name="violence"><see cref="BlastVfxFalloff.Violence"/>: swells the fireball and its light past a charge's.</param>
+        public void Play(float yieldScale, BlastVfxCatalog catalog, float violence = 1f)
         {
             EnsureConfigured(catalog);
             float scale = Mathf.Max(0.35f, yieldScale);
+            float size = scale * violence;
 
             if (_core != null)
             {
                 ParticleSystem.MainModule main = _core.main;
-                main.startSizeMultiplier *= scale;
-                main.startSpeedMultiplier *= scale;
+                main.startSizeMultiplier *= size;
+                main.startSpeedMultiplier *= size;
                 _core.Play(true);
             }
 
             if (_smoke != null)
             {
                 ParticleSystem.MainModule smokeMain = _smoke.main;
-                smokeMain.startSizeMultiplier *= scale;
+                smokeMain.startSizeMultiplier *= size;
                 _smoke.Play(true);
             }
 
@@ -43,10 +45,10 @@ namespace SS3D.Systems.StructuralDamage
             {
                 _light.enabled = true;
                 _light.color = BlastVfxCatalog.FireCoreColor;
-                _light.intensity = catalog.LightIntensity * scale;
-                _light.range = catalog.LightRange * Mathf.Lerp(0.85f, 1.25f, (scale - 0.35f) / 2.15f);
+                _light.intensity = catalog.LightIntensity * scale * violence;
+                _light.range = catalog.LightRange * Mathf.Lerp(0.85f, 1.25f, (scale - 0.35f) / 2.15f) * violence;
                 StopAllCoroutines();
-                StartCoroutine(FadeLight(catalog.LightDuration, catalog.LightIntensity * scale));
+                StartCoroutine(FadeLight(catalog.LightDuration * violence, catalog.LightIntensity * scale * violence));
             }
 
             float lifetime = catalog != null ? Mathf.Max(3.5f, catalog.EffectLifetime) : 3.5f;

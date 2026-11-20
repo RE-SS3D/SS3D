@@ -1,0 +1,81 @@
+# EditMode for fork PRs whose author can already push to this repository.
+#
+# A PR from a fork never runs Unity under its own pull_request event: it would get no secrets, and its
+# workflow files come from the fork. editmodetestrunner.yml posts a notice instead and a maintainer
+# dispatches `-f pr=<number>`. This workflow does that dispatch automatically when the PR's author has
+# write access here and the PR comes from the author's own fork. Those authors can already push branches
+# here and dispatch any workflow, so this adds no trust that same-repo PRs don't already have
+# (project-infrastructure § Keeping the runner safe). Everyone else's fork PRs still wait for a maintainer.
+#
+# workflow_run runs this file from the default branch, never from the PR, and the dispatched run uses
+# develop's editmodetestrunner.yml. This job checks out nothing and treats every value from the PR
+# (branch name, head owner) as data passed through env, never interpolated into the script.
+#
+# The dispatched run reports back as the "EditMode (dispatched)" commit status on the PR head. That status
+# also stops a second dispatch for the same commit (a reopen, or a re-run of Run Tests).
+name: EditMode for trusted fork PRs
+on:
+  workflow_run:
+    workflows: ["Run Tests"]
+    types: [completed]
+permissions: {}
+jobs:
+  dispatch:
+    name: Dispatch EditMode for a trusted author
+    # A fork PR's Run Tests run ends "success" (its notice job ran) for a push, and "skipped" for a title
+    # or body edit, which needs no test run.
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.full_name != github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      pull-requests: read
+      statuses: write
+    steps:
+      - name: Dispatch when the author has write access
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_OWNER: ${{ github.event.workflow_run.head_repository.owner.login }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          STATUS_CONTEXT: EditMode (dispatched)
+        run: |
+          set -euo pipefail
+          # workflow_run lists no pull requests for a fork, so find the open PR at this exact head.
+          found=$(gh api -X GET "repos/$REPO/pulls" -f state=open -f head="$HEAD_OWNER:$HEAD_BRANCH" \
+            --jq '[.[] | select(.head.sha == env.HEAD_SHA)][0] // empty | "\(.number) \(.user.login)"')
+          if [ -z "$found" ]; then
+            echo "No open PR has head $HEAD_SHA any more (closed, or a newer push). Nothing to do."
+            exit 0
+          fi
+          read -r pr author <<< "$found"
+
+          if [ "$author" != "$HEAD_OWNER" ]; then
+            echo "PR #$pr is by $author but comes from $HEAD_OWNER's fork. A maintainer runs it by hand."
+            exit 0
+          fi
+          # .permission is admin, write, read or none; maintain reports as write, triage as read.
+          permission=$(gh api "repos/$REPO/collaborators/$author/permission" --jq .permission 2>/dev/null || echo none)
+          case "$permission" in
+            admin|write) ;;
+            *)
+              echo "$author has '$permission' access. PR #$pr waits for a maintainer's dispatch."
+              exit 0
+              ;;
+          esac
+
+          already=$(gh api "repos/$REPO/commits/$HEAD_SHA/statuses" \
+            --jq '[.[] | select(.context == env.STATUS_CONTEXT)] | length')
+          if [ "$already" != "0" ]; then
+            echo "EditMode was already dispatched for $HEAD_SHA. Not dispatching again."
+            exit 0
+          fi
+
+          gh workflow run editmodetestrunner.yml --repo "$REPO" --ref develop -f pr="$pr"
+          gh api -X POST "repos/$REPO/statuses/$HEAD_SHA" -f state=pending -f context="$STATUS_CONTEXT" \
+            -f description="Queued: $author has write access" \
+            -f target_url="${{ github.server_url }}/$REPO/actions/workflows/editmodetestrunner.yml" > /dev/null
+          echo "Dispatched EditMode for PR #$pr ($author, $permission) at $HEAD_SHA."

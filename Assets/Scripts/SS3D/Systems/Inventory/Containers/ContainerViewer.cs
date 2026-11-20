@@ -46,14 +46,16 @@ namespace SS3D.Systems.Inventory.Containers
             base.OnDisabled();
         }
 
-        public override void OnStartClient()
-        {
-            base.OnStartClient();
-            if (!IsOwner) { return; }
+        // No UI lookup here — Systems-layer code must not depend on a UI assembly. The UI side
+        // (StoragePanelHost, via MainHudSubSystem's existing local-player tracking) discovers this
+        // ContainerViewer and subscribes to OnContainerOpened/OnContainerClosed itself.
 
-            // No UI lookup here — Systems-layer code must not depend on a UI assembly. The UI side
-            // (StoragePanelHost, via MainHudSubSystem's existing local-player tracking) discovers this
-            // ContainerViewer and subscribes to OnContainerOpened/OnContainerClosed itself.
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+
+            // The displayed-container list lives on the server, so the range check that closes
+            // out-of-reach containers runs there too (a dedicated server has no owning client).
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
@@ -99,12 +101,32 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         /// <summary>
+        /// Client request to open a container's UI (HUD open buttons, pockets, nested panels).
+        /// The server checks the container is reachable before opening it.
+        /// </summary>
+        [ServerRpc]
+        public void CmdShowContainerUI(AttachedContainer container)
+        {
+            if (container == null || !CanOpen(container))
+            {
+                return;
+            }
+
+            ShowContainerUI(container);
+        }
+
+        /// <summary>
         /// Make this inventory open an container.
         /// </summary>
+        [Server]
         public void ShowContainerUI(AttachedContainer attachedContainer)
         {
-            _displayedContainers.Add(attachedContainer);
-            SetOpenState(attachedContainer.gameObject, true);
+            if (!_displayedContainers.Contains(attachedContainer))
+            {
+                _displayedContainers.Add(attachedContainer);
+                SetOpenState(attachedContainer.gameObject, true);
+            }
+
             NetworkConnection client = Owner;
             if (client != null)
             {
@@ -112,9 +134,33 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
+        [Server]
+        private bool CanOpen(AttachedContainer container)
+        {
+            if (!container.IsAccessibleBy(inventory != null ? inventory : GetComponent<HumanInventory>()))
+            {
+                return false;
+            }
+
+            IStorageAccessGate gate = container.GetComponentInParent<IStorageAccessGate>();
+            if (gate != null && !gate.AllowsStorageAccess)
+            {
+                return false;
+            }
+
+            if (container.transform.root == transform.root)
+            {
+                return true;
+            }
+
+            Hands hands = GetComponent<Hands>();
+            return hands != null && hands.SelectedHand != null && hands.SelectedHand.CanInteract(container.gameObject);
+        }
+
         /// <summary>
         /// Removes a container from the list of visible containers UI.
         /// </summary>
+        [Server]
         public void CloseContainerUI(AttachedContainer container)
         {
             if (_displayedContainers.Remove(container))
@@ -141,6 +187,13 @@ namespace SS3D.Systems.Inventory.Containers
             for (int i = 0; i < _displayedContainers.Count; i++)
             {
                 AttachedContainer attachedContainer = _displayedContainers[i];
+                if (attachedContainer == null)
+                {
+                    _displayedContainers.RemoveAt(i);
+                    i--;
+                    continue;
+                }
+
                 if (hands.SelectedHand && hands.SelectedHand.CanInteract(attachedContainer.gameObject))
                 {
                     continue;

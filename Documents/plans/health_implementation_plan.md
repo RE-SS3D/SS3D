@@ -431,7 +431,7 @@ Spec: [Documents/design/virology.md](Documents/design/virology.md). Resolves ite
 1. Authored disease record (contact transmission, stages, cure recipe ref).
 2. Exposure accumulation per (character, disease id) — contact dose events + Area co-location airborne interim.
 3. Threshold → infection → incubation → symptomatic stage writing real organ/pool deltas.
-4. Medical scanner (live scan + blood sample) — diegetic device screen.
+4. Medical scanner (live scan + blood sample) — diegetic device screen. **Live scan built** (`HealthScannerInterfaceController`, see [machine-interface](../architecture/systems/machine-interface.md)); blood sample and the disease line wait for chemistry containers and a disease roster.
 5. Chemistry-synthesized cure → halts progression, reverses stage effects → immunity on crew record.
 
 **Explicitly not in health plan:** mutation/culture minigame, quarantine enforcement, prophylactic vaccination, gamemode antagonist diseases (virology.md §11).
@@ -603,3 +603,5 @@ health.md §8 + death-cloning §9 example A, end-to-end:
 Death and unconsciousness collapse use single-authority `Ragdoll` + replicated `BodyPresentationState`.
 Health maps vitals via `BodyPresentationIntent` and must not grow a parallel collapse path.
 See [2026-07_body-presentation-authority.md](../archive/architecture/2026-07_body-presentation-authority.md).
+
+- **Health scanner live scan (Phase 9 item 4, early):** built ahead of virology because it only reads existing health state. Help-intent Targeted "Scan vitals" from the held `HealthScanner` opens the VSU-5R vitals screen (Claude Design "Medical Scanner Vitals View", "Vitals Scan Result Spec" page): body doll with per-zone brute/burn tint, bone show-through, black disabled and ghosted severed limbs, lungs/heart/liver overlays; blood vial, bleed rate, brain, toxin dial, SpO2 trace with heart rhythm, organ readout; shock bar on the game's stand/downed/critical lines and a wound list. Deviations from the mockup: organs are the five the game simulates (brain, heart, both lungs, liver), not stomach/intestines/nerves; blood volume reads as a percent (no cc model); the pathology banner is omitted until diseases exist. The screen follows the patient live (0.5 s) while they stay within 3 m of the scanner, then freezes on the last reading. The device footer is dropped so the screen fits without scrolling.

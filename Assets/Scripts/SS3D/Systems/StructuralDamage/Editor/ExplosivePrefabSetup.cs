@@ -17,7 +17,7 @@ namespace SS3D.Systems.StructuralDamage.Editor
     /// <summary>Repeatable explosive content recipe on the structural damage domain aggregator.</summary>
     public static class ExplosivePrefabSetup
     {
-        private const string Art = "Assets/Art/Models/Items/Weapons/Explosive/";
+        internal const string Art = "Assets/Art/Models/Items/Weapons/Explosive/";
         private const string Sound = "Assets/Art/Sound/Items/Weapons/Explosive/SS14/";
         public static void SetupAll()
         {

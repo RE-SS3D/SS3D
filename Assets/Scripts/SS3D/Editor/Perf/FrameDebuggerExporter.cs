@@ -30,7 +30,7 @@ namespace SS3D.Editor.Perf
             "UiBackdrop",
             "SS3D",
             "STDefault",
-            "Simple Toon",
+            "SS3D/Station",
             "ObjectIcon",
         };
 

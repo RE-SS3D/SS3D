@@ -160,7 +160,7 @@ namespace SS3D.Tests
             Assert.AreEqual(0f, Atmos.GetPipeNetworkMoles(supply, AtmosConstants.CarbonDioxide), "None of it reaches the distribution line");
         }
 
-        // Guards: Waste stays shut behind its closed valve at round start, and opening the valve lets it out through the hull vent (AtmosValveController, inline ports, a vent powered off the grid outside any room) · Not cheaper because: needs the shipped map's run, a real space cell and the grid-fed vent
+        // Guards: Waste stays shut behind a closed valve, and opening the valve lets it out through the hull vent (AtmosValveController, inline ports, a vent powered off the grid outside any room) · Not cheaper because: needs the shipped map's run, a real space cell and the grid-fed vent
         [UnityTest]
         public IEnumerator WasteValve_HoldsTheLine_UntilOpened_ThenVentsItToSpace()
         {
@@ -171,7 +171,9 @@ namespace SS3D.Tests
             yield return WaitFor(() => valve.TryGetConnectedNetwork(out _) && scrubber.TryGetConnectedNetwork(out _),
                 "the valve and scrubber join their lines", 10f);
 
-            Assert.IsFalse(valve.IsOpen, "The valve starts closed");
+            // Classic MiniStation saves this valve open (object setup persistence), so shut it first.
+            valve.ServerSetEnabled(false);
+            Assert.IsFalse(valve.IsOpen, "The valve closes");
             GasPipeNetworkRecord waste = Record(NetworkOf(scrubber));
             foreach (ScrubberController other in Devices<ScrubberController>())
                 other.ServerSetEnabled(false);

@@ -182,6 +182,7 @@ namespace SS3D.Tests
                 yield return Hold(0.3f);
                 Item sheets = HoldNew(SteelSheet).ItemInHand;
                 yield return Hold(0.3f);
+                int sheetsHeld = sheets.StackCount;
                 yield return RunObjectStep(Plenum(wall).gameObject, "ConstructionPlaceGirder");
                 yield return WaitFor(() => TurfNamed(wall, ConstructionNames.Girder), "a girder goes up",
                     ConstructionRecipes.Get(ConstructionStep.PlaceGirder).Seconds + 3f);
@@ -192,7 +193,7 @@ namespace SS3D.Tests
                 yield return RunObjectStep(placed.gameObject, "ConstructionPlateGirder");
                 yield return WaitFor(() => TurfNamed(wall, ConstructionNames.GirderPlated), "the girder is plated",
                     ConstructionRecipes.Get(ConstructionStep.PlateGirder).Seconds + 3f);
-                Assert.AreEqual(16, sheets.StackCount, "Girder and plate cost two sheets each");
+                Assert.AreEqual(sheetsHeld - 4, sheets.StackCount, "Girder and plate cost two sheets each");
 
                 hand.ItemInHand.Delete();
                 yield return Hold(0.3f);

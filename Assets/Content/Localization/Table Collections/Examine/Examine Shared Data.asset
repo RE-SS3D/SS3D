@@ -2159,6 +2159,222 @@ MonoBehaviour:
     m_Key: items.weapons.operativeuplink.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 300177990510419968
+    m_Key: structures.doors.airlock.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300177990539780096
+    m_Key: structures.doors.airlock.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300177994654392320
+    m_Key: structures.doors.maintenance_airlock.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300177994654392321
+    m_Key: structures.doors.maintenance_airlock.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300177996999008256
+    m_Key: structures.doors.command_airlock.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300177997003202560
+    m_Key: structures.doors.command_airlock.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178000505446400
+    m_Key: structures.doors.engineering_airlock.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178000505446401
+    m_Key: structures.doors.engineering_airlock.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178002799730688
+    m_Key: structures.doors.atmospherics_airlock.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178002799730689
+    m_Key: structures.doors.atmospherics_airlock.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178005131763712
+    m_Key: structures.doors.medical_airlock.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178005131763713
+    m_Key: structures.doors.medical_airlock.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178007438630912
+    m_Key: structures.doors.chemistry_airlock.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178007438630913
+    m_Key: structures.doors.chemistry_airlock.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178009741303808
+    m_Key: structures.doors.genetics_airlock.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178009745498112
+    m_Key: structures.doors.genetics_airlock.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178012052365312
+    m_Key: structures.doors.virology_airlock.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178012056559616
+    m_Key: structures.doors.virology_airlock.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178014455701504
+    m_Key: structures.doors.surgery_airlock.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178014455701505
+    m_Key: structures.doors.surgery_airlock.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178016821288960
+    m_Key: structures.doors.science_airlock.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178016821288961
+    m_Key: structures.doors.science_airlock.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178019186876416
+    m_Key: structures.doors.supply_airlock.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300178019191070720
+    m_Key: structures.doors.supply_airlock.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181904991428608
+    m_Key: structures.doors.airlock_glass.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181905008205824
+    m_Key: structures.doors.airlock_glass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181905213726720
+    m_Key: structures.doors.civillian_airlock_glass.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181905213726721
+    m_Key: structures.doors.civillian_airlock_glass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181905972895744
+    m_Key: structures.doors.maintenance_airlock_glass.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181905972895745
+    m_Key: structures.doors.maintenance_airlock_glass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181906727870464
+    m_Key: structures.doors.command_airlock_glass.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181906727870465
+    m_Key: structures.doors.command_airlock_glass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181907122135040
+    m_Key: structures.doors.security_airlock_glass.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181907122135041
+    m_Key: structures.doors.security_airlock_glass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181907893886976
+    m_Key: structures.doors.engineering_airlock_glass.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181907893886977
+    m_Key: structures.doors.engineering_airlock_glass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181908653056000
+    m_Key: structures.doors.atmospherics_airlock_glass.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181908653056001
+    m_Key: structures.doors.atmospherics_airlock_glass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181909433196544
+    m_Key: structures.doors.medical_airlock_glass.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181909433196545
+    m_Key: structures.doors.medical_airlock_glass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181910183976960
+    m_Key: structures.doors.chemistry_airlock_glass.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181910183976961
+    m_Key: structures.doors.chemistry_airlock_glass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181910968311808
+    m_Key: structures.doors.genetics_airlock_glass.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181910968311809
+    m_Key: structures.doors.genetics_airlock_glass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181911756840960
+    m_Key: structures.doors.virology_airlock_glass.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181911756840961
+    m_Key: structures.doors.virology_airlock_glass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181912511815680
+    m_Key: structures.doors.surgery_airlock_glass.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181912511815681
+    m_Key: structures.doors.surgery_airlock_glass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181913258401792
+    m_Key: structures.doors.science_airlock_glass.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181913258401793
+    m_Key: structures.doors.science_airlock_glass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181914009182208
+    m_Key: structures.doors.supply_airlock_glass.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300181914009182209
+    m_Key: structures.doors.supply_airlock_glass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300186129876099072
+    m_Key: structures.doors.external_airlock.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300186129892876288
+    m_Key: structures.doors.external_airlock.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

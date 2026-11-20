@@ -50,6 +50,26 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0aa92b8443a89b7db9c67cc91ffe857e
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/MedicalAirlockGlass.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0c0cae8961a5eeb349497cbd45a5c0e2
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/AirlockGlass.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0c31beba7ae1c9eb09d4198d0eab5a8d
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/SurgeryAirlock.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0cdb8cffb4be07964abe2229843ab06e
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/AtmosphericsAirlockGlass.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0d6ab6288624c7348bdcbfb81d07088f
     m_Address: Assets/Content/WorldObjects/Structures/WallMounts/Posters/Vertical/PosterVertical.prefab
     m_ReadOnly: 0
@@ -62,6 +82,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0ef9cea3bb74e6c4788f77e711f92d4d
     m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Dirt/TileDirt1.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0f80140a583023498806daee19953c47
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/GeneticsAirlockGlass.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -130,6 +155,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1cacaf5444f18ce04bc8c1ccf53553f2
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/ExternalAirlock.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1ccc3cf742cb80680b05529457e5b64c
     m_Address: GlassesSecurityHud
     m_ReadOnly: 0
@@ -195,8 +225,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 26603097dba0a9e92b72e280fdfef336
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/SecurityAirlockGlass.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2767aeb6e6fd53b43a1cb305789834d4
     m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/WoodLog.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 27b21cef08daec17cb2dd1b8ee0f44f1
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/ChemistryAirlock.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -240,8 +280,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3338069aeb4d4cca1940eb0ddd2a4291
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/CommandAirlockGlass.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 35dfc7c3f708a5b48a206b4a44e7ab49
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanHandLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3818082d63f8f1af4a0e63e38810587d
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/VirologyAirlockGlass.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -320,6 +370,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 46c6ba5f143125480a10482f39324592
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/CommandAirlock.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 48efd00c91c310e4bb965d025c63b3ba
     m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/AtmosPipesSurface.prefab
     m_ReadOnly: 0
@@ -385,6 +440,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4e6ce5548d9592e03bce67dcb697d10d
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/ChemistryAirlockGlass.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4f33f4e24e81db98f94f16cd4bfe04c1
     m_Address: SyndicateBomb
     m_ReadOnly: 0
@@ -442,6 +502,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 56b1aff2041026242bed0f064dee56bb
     m_Address: Assets/Content/WorldObjects/Items/Consumable/Food/General/Snacks/DonkPocket.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 56b95b886827304408e01eca54e51caf
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/AtmosphericsAirlock.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -550,6 +615,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6e5eb55f1bdb70eefba047eaa48efb2f
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/CivillianAirlockGlass.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6f2976f635940684da7f7f4ed7855a8d
     m_Address: Assets/Content/WorldObjects/Furniture/Machines/Vendors/VendorSecTech.prefab
     m_ReadOnly: 0
@@ -615,6 +685,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7e85976b50e3a49b9929c8546023653d
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/ScienceAirlockGlass.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7f5954f009d06b2439ca637b43920440
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanHandRight.prefab
     m_ReadOnly: 0
@@ -672,6 +747,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 88e2667f303b7336fa14723a217739c0
     m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/FloorTileBar.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 896ec393918780a7fad3f8324a49e9c3
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/EngineeringAirlock.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -775,6 +855,16 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9cdf15c03c5be96bd9cad80217e28dbb
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/GeneticsAirlock.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9e0718cc443147808a320e0b743b37e4
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/Airlock.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9e967cb4084bf064c8a0ca5f57a33b0c
     m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Botany/Hatchet.prefab
     m_ReadOnly: 0
@@ -870,6 +960,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b036e1d2871e93a3faa1d40edffafc26
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/VirologyAirlock.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b044d7bdb55405046a9055726a779eb1
     m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Poster.prefab
     m_ReadOnly: 0
@@ -940,6 +1035,16 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c1bc9e998c907032baffafeada44c893
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/SupplyAirlockGlass.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c3da5210125827b9a9dabc7443118c6d
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/ScienceAirlock.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c598d3290aa6b25a7997235b9a307741
     m_Address: CapCaptain
     m_ReadOnly: 0
@@ -960,6 +1065,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cbb69e5fd0188c074b6d0729dc2e1c3f
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/MaintenanceAirlock.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cc1b7e8558e50594089a64af537ff781
     m_Address: Assets/Content/WorldObjects/Furniture/Machines/Vendors/VendorYouTool.prefab
     m_ReadOnly: 0
@@ -972,6 +1082,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cc71128d4bcc0c548ac11481000ac424
     m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/ElectricalWire.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d020a8373bed0a51795a08585ccb70e3
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/EngineeringAirlockGlass.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -1010,6 +1125,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d586c32e3fd5312c8a1a9bc633c7db8b
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/MedicalAirlock.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d675e0c37e3147a4b8501314b5106f13
     m_Address: Assets/Content/WorldObjects/Furniture/Machines/Generic/Tanks/WaterTank.prefab
     m_ReadOnly: 0
@@ -1037,6 +1157,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: db15899bc1eb2794fb2b24129852a209
     m_Address: Assets/Content/WorldObjects/Items/Clothing/Headset.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: db3cfce179d76313a8e4099a4bb08ede
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/MaintenanceAirlockGlass.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -1072,6 +1197,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: df4cf328d472de046bcbc073cbda2868
     m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Reinforced/TileReinforced.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: df4fadad2e440b678a6498464062c064
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/SupplyAirlock.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -1207,6 +1337,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fdaaabc96a55d824a86a3636906240c1
     m_Address: Assets/Content/WorldObjects/Structures/WallMounts/Posters/Horizontal/PosterHorizontal.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: feea20a91ee07ca20931c4c3e4f152de
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/SurgeryAirlockGlass.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

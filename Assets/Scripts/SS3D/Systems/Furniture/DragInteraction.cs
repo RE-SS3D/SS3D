@@ -64,9 +64,12 @@ namespace SS3D.Systems.Furniture
                 return false;
             }
 
-            draggable.SetDrag(!draggable.Dragged, interactionEvent.Source.GetComponentInParent<Entity>().gameObject.transform);
+            bool drag = !draggable.Dragged;
+            draggable.SetDrag(drag, interactionEvent.Source.GetComponentInParent<Entity>().gameObject.transform);
 
-            interactionEvent.Source.GetComponentInParent<HumanoidLivingController>().IsDragging = draggable.Dragged;
+            // The controller reads Dragged from the target itself, so a remote client's drag starts when the SyncVar
+            // arrives and ends when the target goes away.
+            interactionEvent.Source.GetComponentInParent<HumanoidLivingController>()?.SetDragTarget(drag ? draggable : null);
 
             return false;
         }

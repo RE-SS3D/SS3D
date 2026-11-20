@@ -45,6 +45,9 @@ namespace SS3D.UI.MachineInterface
             Register<OperativeUplinkSnapshot>(
                 snapshot => snapshot.InterfaceId,
                 OperativeUplinkSnapshotMapper.ToViewModel);
+            Register<HealthScanSnapshot>(
+                snapshot => snapshot.InterfaceId,
+                HealthScanSnapshotMapper.ToViewModel);
         }
 
         public static void DispatchOpen<TSnapshot>(

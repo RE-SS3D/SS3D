@@ -2,6 +2,7 @@
 using SS3D.Data.AssetDatabases;
 using SS3D.Systems.Health.Interactions;
 using SS3D.Systems.Inventory.Items;
+using SS3D.UI.MachineInterface;
 using UnityEditor;
 using UnityEngine;
 using DB = UnityEditor.AssetDatabase;
@@ -12,11 +13,13 @@ namespace SS3D.Systems.Inventory.Containers.Editor
     /// Repeatable import of the Doctor's gauze and portable defibrillator from the FBXs written by
     /// Tools/export_item_meshes.py. Gauze copies the medical patch (it keeps <see cref="BandageItemExtension"/>);
     /// the defibrillator copies the health scanner and gains <see cref="DefibrillatorItemExtension"/>.
+    /// The health scanner itself gains <see cref="HealthScannerInterfaceController"/> (its vitals screen).
     /// </summary>
     public static class MedicalItemPrefabSetup
     {
         public const string GauzePath = Medications + "Gauze.prefab";
         public const string DefibrillatorPath = MedicalTools + "PortableDefibrillator.prefab";
+        public const string HealthScannerPath = MedicalTools + "HealthScanner.prefab";
 
         private const string Medications = "Assets/Content/WorldObjects/Items/Consumable/Chemical/Medications/";
         private const string MedicalTools = "Assets/Content/WorldObjects/Items/Functional/Tools/Medical/";
@@ -48,8 +51,25 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                 "Assets/Content/Data/Examine/String/Items/Functional/Tools/Medical/PortableDefibrillator.asset",
                 "A portable defibrillator. Use it on the chest of a patient whose heart has stopped, before the brain dies. "
                 + "Shocking a beating heart burns it.", 2.0f, true);
+            SetupHealthScanner();
             DB.SaveAssets();
-            return 2;
+            return 3;
+        }
+
+        /// <summary>Gives the health scanner its networked vitals screen; the scan interaction comes with it.</summary>
+        public static void SetupHealthScanner()
+        {
+            GameObject root = PrefabUtility.LoadPrefabContents(HealthScannerPath);
+            try
+            {
+                if (!root.TryGetComponent(out HealthScannerInterfaceController _))
+                    root.AddComponent<HealthScannerInterfaceController>();
+                PrefabUtility.SaveAsPrefabAsset(root, HealthScannerPath);
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
         }
 
         private static void Build(string name, string displayName, string art, string template, string path,
@@ -71,6 +91,9 @@ namespace SS3D.Systems.Inventory.Containers.Editor
                 ImportedItemPrefab.SetItem(root, reference, displayName, weight, grip, Vector3.zero, defibrillator, null);
                 if (defibrillator && !root.TryGetComponent(out DefibrillatorItemExtension _))
                     root.AddComponent<DefibrillatorItemExtension>();
+                // A defibrillator copied from a wired scanner must not scan.
+                if (root.TryGetComponent(out HealthScannerInterfaceController scanner))
+                    Object.DestroyImmediate(scanner, true);
                 ImportedItemPrefab.WireExamine(root, key, examinePath, displayName, description);
                 PrefabUtility.SaveAsPrefabAsset(root, path);
             }

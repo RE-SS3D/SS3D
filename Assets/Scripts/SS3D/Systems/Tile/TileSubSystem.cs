@@ -232,18 +232,37 @@ namespace SS3D.Systems.Tile
         }
 
         /// <summary>
-        /// Server entry for blast detonation VFX. One-shot — do not BufferLast.
+        /// Server notice sent before a blast resolves, so the breaks that follow know where it came from and throw their
+        /// debris outward (<see cref="BlastDebrisPush"/>). One-shot — do not BufferLast.
         /// </summary>
         [Server]
-        public void ServerNotifyBlastDetonated(Vector3 worldPosition, float yield, bool smallSound = false)
+        public void ServerNotifyBlastStarted(Vector3 worldPosition, float reach)
         {
-            RpcBlastDetonated(worldPosition, yield, smallSound);
+            RpcBlastStarted(worldPosition, reach);
         }
 
         [ObserversRpc(RunLocally = true)]
-        private void RpcBlastDetonated(Vector3 worldPosition, float yield, bool smallSound)
+        private void RpcBlastStarted(Vector3 worldPosition, float reach)
         {
-            BlastVfxPresenter.Play(worldPosition, yield);
+            if (IsClient)
+                BlastDebrisPush.Begin(worldPosition, reach);
+        }
+
+        /// <summary>
+        /// Server entry for blast detonation VFX, after the blast resolved. <paramref name="flameTiles"/> are the tiles
+        /// it reached (<see cref="BlastFlameTiles.Pack"/>). One-shot — do not BufferLast.
+        /// </summary>
+        [Server]
+        public void ServerNotifyBlastDetonated(Vector3 worldPosition, float yield, bool smallSound = false,
+            byte[] flameTiles = null)
+        {
+            RpcBlastDetonated(worldPosition, yield, smallSound, flameTiles ?? Array.Empty<byte>());
+        }
+
+        [ObserversRpc(RunLocally = true)]
+        private void RpcBlastDetonated(Vector3 worldPosition, float yield, bool smallSound, byte[] flameTiles)
+        {
+            BlastVfxPresenter.Play(worldPosition, yield, flameTiles);
             if (IsClient && _structuralAudio != null)
                 _structuralAudio.OnBlast(worldPosition, yield, smallSound);
         }

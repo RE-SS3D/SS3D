@@ -68,11 +68,16 @@ namespace SS3D.Rendering.URP
             }
         }
 
+        // Null the field: a renderer rebuild (quality change, toggling or editing a feature) disposes this shared
+        // feature and then calls Create() in the same frame. In Play Mode CoreUtils.Destroy is deferred, so
+        // Create() saw the doomed material as alive and kept it; once it died, AddRenderPasses skipped the pick
+        // pass for good and hover read whatever the pick target last held.
         protected override void Dispose(bool disposing)
         {
             _pickPass?.DisposePass();
             _debugBlitPass?.DisposePass();
             CoreUtils.Destroy(_selectionMaterial);
+            _selectionMaterial = null;
         }
 
         sealed class SelectionPickRenderPass : ScriptableRenderPass

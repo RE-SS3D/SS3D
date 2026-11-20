@@ -103,6 +103,9 @@ namespace SS3D.Editor
             VisualTreeAsset uplinkTemplate = LoadRequired<VisualTreeAsset>(MachineUiAssetPaths.OperativeUplinkTemplate, missing);
             StyleSheet uplinkStyle = LoadRequired<StyleSheet>(MachineUiAssetPaths.OperativeUplinkTemplateStyle, missing);
             StyleSheet[] uplinkComponents = LoadStyleSheets(MachineUiAssetPaths.OperativeUplinkComponentStyles, missing);
+            VisualTreeAsset healthScannerTemplate = LoadRequired<VisualTreeAsset>(MachineUiAssetPaths.HealthScannerTemplate, missing);
+            StyleSheet healthScannerStyle = LoadRequired<StyleSheet>(MachineUiAssetPaths.HealthScannerTemplateStyle, missing);
+            StyleSheet[] healthScannerComponents = LoadStyleSheets(MachineUiAssetPaths.HealthScannerComponentStyles, missing);
 
             if (missing.Count > 0)
             {
@@ -167,7 +170,10 @@ namespace SS3D.Editor
                 meterComponents,
                 uplinkTemplate,
                 uplinkStyle,
-                uplinkComponents);
+                uplinkComponents,
+                healthScannerTemplate,
+                healthScannerStyle,
+                healthScannerComponents);
 
             EditorUtility.SetDirty(catalog);
             AssetDatabase.SaveAssets();

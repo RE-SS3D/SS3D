@@ -1,0 +1,457 @@
+/* VSU-5R vitals screen, laid out after the "Vitals Scan Result Spec" design page. */
+
+.health-scan-header {
+    margin-bottom: 8px;
+}
+
+.health-scan-header__title {
+    font-size: 22px;
+    letter-spacing: 2px;
+    padding: 0;
+    color: var(--ss3d-text-primary);
+    white-space: normal;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-header__row {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.health-scan-header__badge {
+    align-self: auto;
+    flex-shrink: 0;
+    margin-right: 10px;
+}
+
+.health-scan-header__sub {
+    font-size: 12px;
+    padding: 0;
+    color: var(--ss3d-text-tertiary);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-section {
+    margin-top: 8px;
+}
+
+.health-scan-monitor {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.health-scan-column {
+    flex-direction: column;
+    flex-shrink: 0;
+    padding: 10px 12px;
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+}
+
+.health-scan-column--left {
+    width: 150px;
+    align-items: center;
+}
+
+.health-scan-column--centre {
+    flex-direction: column;
+    flex-shrink: 0;
+    align-items: center;
+    margin: 0 18px;
+}
+
+.health-scan-column--right {
+    width: 210px;
+}
+
+.health-scan-label {
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 0;
+    margin-top: 8px;
+    color: var(--ss3d-text-tertiary);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-label--centred {
+    -unity-text-align: middle-center;
+    align-self: center;
+}
+
+.health-scan-label--tight {
+    margin-top: -8px;
+}
+
+.health-scan-value {
+    font-size: 13px;
+    padding: 0;
+    margin-top: 2px;
+    align-self: center;
+    white-space: nowrap;
+    color: var(--ss3d-text-secondary);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-small {
+    font-size: 11px;
+    padding: 0;
+    white-space: nowrap;
+    color: var(--ss3d-text-secondary);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-row {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-top: 12px;
+    margin-bottom: 6px;
+}
+
+.health-scan-row .health-scan-label {
+    margin-top: 0;
+}
+
+.health-scan-spo2 {
+    font-size: 20px;
+    padding: 0;
+    white-space: nowrap;
+    color: var(--ss3d-text-secondary);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* Blood vial: a tube that fills from the bottom over a round bulb, as drawn in the design. */
+.health-scan-vial {
+    align-items: center;
+    width: 72px;
+    height: 150px;
+}
+
+.health-scan-vial__tube {
+    width: 29px;
+    height: 105px;
+    margin-top: 17px;
+    justify-content: flex-end;
+    border-width: 1px;
+    border-color: var(--ss3d-border-strong);
+    background-color: var(--ss3d-surface-inset);
+}
+
+.health-scan-vial__fill {
+    width: 100%;
+    height: 100%;
+    background-color: var(--ss3d-text-secondary);
+}
+
+.health-scan-vial__bulb {
+    width: 36px;
+    height: 36px;
+    margin-top: -9px;
+    border-radius: 18px;
+    border-width: 1px;
+    border-color: var(--ss3d-border-strong);
+    background-color: var(--ss3d-text-secondary);
+}
+
+.health-scan-organ-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.health-scan-organ-icon--brain {
+    background-image: url("project://database/Assets/Art/Icons/External/lorc/brain.svg");
+}
+
+.health-scan-organ-icon--heart {
+    background-image: url("project://database/Assets/Art/Icons/External/lorc/heart-organ.svg");
+}
+
+.health-scan-organ-icon--lungs {
+    background-image: url("project://database/Assets/Art/Icons/External/delapouite/lungs.svg");
+}
+
+.health-scan-organ-icon--liver {
+    background-image: url("project://database/Assets/Art/Icons/External/delapouite/liver.svg");
+}
+
+.health-scan-brain {
+    width: 30px;
+    height: 30px;
+    margin-top: 14px;
+}
+
+.health-scan-legend {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 200px;
+    margin-top: 6px;
+}
+
+.health-scan-legend__item {
+    flex-direction: row;
+    align-items: center;
+    margin: 0 7px 4px 7px;
+}
+
+.health-scan-legend__swatch {
+    width: 8px;
+    height: 8px;
+    margin-right: 5px;
+    border-radius: 2px;
+}
+
+.health-scan-legend__swatch--round {
+    border-radius: 4px;
+}
+
+.health-scan-legend__swatch--brute {
+    background-color: var(--ss3d-feedback-danger);
+}
+
+.health-scan-legend__swatch--burn {
+    background-color: var(--ss3d-feedback-warning);
+}
+
+.health-scan-legend__swatch--ok {
+    background-color: var(--ss3d-feedback-success);
+}
+
+.health-scan-legend__swatch--impaired {
+    background-color: var(--ss3d-feedback-warning);
+}
+
+.health-scan-legend__swatch--failing {
+    background-color: var(--ss3d-feedback-danger);
+}
+
+.health-scan-legend__text {
+    font-size: 10px;
+    padding: 0;
+    color: var(--ss3d-text-secondary);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-hint {
+    font-size: 11px;
+    padding: 0;
+    margin-top: 2px;
+    max-width: 200px;
+    white-space: normal;
+    -unity-text-align: upper-center;
+    color: var(--ss3d-text-tertiary);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-gauge {
+    width: 160px;
+    height: 100px;
+    align-self: center;
+}
+
+.health-scan-trace {
+    height: 70px;
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    background-color: var(--ss3d-surface-void);
+}
+
+.health-scan-organs {
+    margin-top: 12px;
+    padding-top: 6px;
+    border-top-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+}
+
+.health-scan-organs__list {
+    margin-top: 6px;
+}
+
+.health-scan-organ-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.health-scan-organ-row .health-scan-organ-icon {
+    margin-right: 8px;
+}
+
+.health-scan-organ-row__label {
+    flex-grow: 1;
+    font-size: 10px;
+    padding: 0;
+    color: var(--ss3d-text-secondary);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-organ-row__value {
+    font-size: 10px;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* Shock & Wounds */
+.health-scan-shock-wounds {
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.health-scan-shock {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    margin-right: 20px;
+}
+
+.health-scan-shock .health-scan-row {
+    margin-top: 0;
+}
+
+.health-scan-shock__track {
+    height: 18px;
+    margin-top: 4px;
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    background-color: var(--ss3d-surface-void);
+}
+
+.health-scan-shock__fill,
+.health-scan-shock__pending {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    background-color: var(--ss3d-feedback-success);
+}
+
+.health-scan-shock__pending {
+    opacity: 0.35;
+}
+
+.health-scan-shock__marker {
+    position: absolute;
+    top: -5px;
+    bottom: -5px;
+    width: 2px;
+    background-color: var(--ss3d-feedback-warning);
+}
+
+.health-scan-shock__marker--stand {
+    width: 1px;
+    background-color: var(--ss3d-text-tertiary);
+}
+
+.health-scan-shock__marker--critical {
+    background-color: var(--ss3d-feedback-danger);
+}
+
+.health-scan-shock__labels {
+    height: 16px;
+    margin-top: 6px;
+}
+
+.health-scan-shock__label {
+    position: absolute;
+    top: 0;
+    font-size: 11px;
+    padding: 0 4px;
+    white-space: nowrap;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-shock__label--stand {
+    translate: -100% 0;
+    color: var(--ss3d-text-tertiary);
+}
+
+.health-scan-shock__label--downed {
+    color: var(--ss3d-feedback-warning);
+}
+
+.health-scan-shock__label--critical {
+    color: var(--ss3d-feedback-danger);
+}
+
+.health-scan-wounds {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+}
+
+.health-scan-wounds .health-scan-label {
+    margin-top: 0;
+    margin-bottom: 4px;
+}
+
+.health-scan-wound {
+    flex-direction: row;
+    align-items: center;
+    margin: 0 0 4px 0;
+    padding: 4px 6px;
+    border-width: 0;
+    border-radius: 0;
+    background-color: var(--ss3d-surface-inset);
+}
+
+.health-scan-wound:hover {
+    background-color: var(--ss3d-diegetic-panel-raised);
+}
+
+.health-scan-wound--pinned {
+    border-width: 1px;
+    border-color: var(--ss3d-accent-rust);
+}
+
+.health-scan-wound__zone {
+    width: 56px;
+    flex-shrink: 0;
+    font-size: 12px;
+    -unity-font-style: bold;
+    padding: 0;
+    color: var(--ss3d-text-primary);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-wound__tier {
+    width: 72px;
+    flex-shrink: 0;
+    font-size: 12px;
+    -unity-font-style: bold;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-wound__numbers {
+    flex-grow: 1;
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-size: 12px;
+    padding: 0;
+    color: var(--ss3d-text-secondary);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-wound__flags {
+    flex-shrink: 1;
+    margin-left: 8px;
+    font-size: 11px;
+    -unity-font-style: bold;
+    padding: 0;
+    white-space: nowrap;
+    -unity-text-align: middle-right;
+    color: var(--ss3d-text-secondary);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.health-scan-wounds__empty {
+    font-size: 12px;
+    padding: 4px 6px;
+    color: var(--ss3d-text-secondary);
+    background-color: var(--ss3d-surface-inset);
+}

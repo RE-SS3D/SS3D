@@ -83,7 +83,7 @@ namespace EditorTests
             Material skin = AssetDatabase.LoadAssetAtPath<Material>(folder + "HumanSkin.mat");
             Material eyes = AssetDatabase.LoadAssetAtPath<Material>(folder + "HumanEye.mat");
             Color originalSkin = skin.GetColor("_Color");
-            Color originalEyes = eyes.GetColor("_BaseColor");
+            Color originalEyes = eyes.GetColor("_Color");
             GameObject first = new("First");
             GameObject second = new("Second");
             try
@@ -97,11 +97,11 @@ namespace EditorTests
                 renderer.GetPropertyBlock(block, 0);
                 Assert.That(block.GetColor("_Color"), Is.EqualTo(Color.red));
                 renderer.GetPropertyBlock(block, 1);
-                Assert.That(block.GetColor("_BaseColor"), Is.EqualTo(Color.blue));
+                Assert.That(block.GetColor("_Color"), Is.EqualTo(Color.blue));
                 other.GetPropertyBlock(block, 0);
                 Assert.That(block.isEmpty, Is.True);
                 Assert.That(skin.GetColor("_Color"), Is.EqualTo(originalSkin));
-                Assert.That(eyes.GetColor("_BaseColor"), Is.EqualTo(originalEyes));
+                Assert.That(eyes.GetColor("_Color"), Is.EqualTo(originalEyes));
             }
             finally
             {

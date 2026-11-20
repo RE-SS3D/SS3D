@@ -62,9 +62,75 @@ prefixes:
   - match: /obj/machinery/door/airlock/public
     kind: door
     so: CivillianAirlock
+  - match: /obj/machinery/door/airlock/external
+    kind: door
+    so: ExternalAirlock
+  - match: /obj/machinery/door/airlock/public/glass
+    kind: door
+    so: CivillianAirlockGlass
+  - match: /obj/machinery/door/airlock/glass
+    kind: door
+    so: AirlockGlass
+  - match: /obj/machinery/door/airlock/security/glass
+    kind: door
+    so: SecurityAirlockGlass
+  - match: /obj/machinery/door/airlock/maintenance
+    kind: door
+    so: MaintenanceAirlock
+  - match: /obj/machinery/door/airlock/maintenance/glass
+    kind: door
+    so: MaintenanceAirlockGlass
+  - match: /obj/machinery/door/airlock/command
+    kind: door
+    so: CommandAirlock
+  - match: /obj/machinery/door/airlock/command/glass
+    kind: door
+    so: CommandAirlockGlass
+  - match: /obj/machinery/door/airlock/engineering
+    kind: door
+    so: EngineeringAirlock
+  - match: /obj/machinery/door/airlock/engineering/glass
+    kind: door
+    so: EngineeringAirlockGlass
+  - match: /obj/machinery/door/airlock/atmos
+    kind: door
+    so: AtmosphericsAirlock
+  - match: /obj/machinery/door/airlock/atmos/glass
+    kind: door
+    so: AtmosphericsAirlockGlass
+  - match: /obj/machinery/door/airlock/medical
+    kind: door
+    so: MedicalAirlock
+  - match: /obj/machinery/door/airlock/medical/glass
+    kind: door
+    so: MedicalAirlockGlass
+  - match: /obj/machinery/door/airlock/virology
+    kind: door
+    so: VirologyAirlock
+  - match: /obj/machinery/door/airlock/virology/glass
+    kind: door
+    so: VirologyAirlockGlass
+  - match: /obj/machinery/door/airlock/research
+    kind: door
+    so: ScienceAirlock
+  - match: /obj/machinery/door/airlock/research/glass
+    kind: door
+    so: ScienceAirlockGlass
+  - match: /obj/machinery/door/airlock/science
+    kind: door
+    so: ScienceAirlock
+  - match: /obj/machinery/door/airlock/science/glass
+    kind: door
+    so: ScienceAirlockGlass
+  - match: /obj/machinery/door/airlock/mining
+    kind: door
+    so: SupplyAirlock
+  - match: /obj/machinery/door/airlock/mining/glass
+    kind: door
+    so: SupplyAirlockGlass
   - match: /obj/machinery/door/airlock
     kind: door
-    so: CivillianAirlock
+    so: Airlock
   - match: /obj/machinery/door/firedoor
     kind: door
     so: CivillianAirlock

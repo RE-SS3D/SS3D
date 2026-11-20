@@ -21,47 +21,22 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: TileWhite
-  m_Shader: {fileID: 4800000, guid: 7cd5de0b884b14f88ab763ef465e1799, type: 3}
+  m_Shader: {fileID: 4800000, guid: aa0515e3ebb249f1a9ddafc24e661f44, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords:
-  - ENABLE_BLOOD
-  - _NORMALMAP
-  - _SEGMENTED_ON
-  - _SPECULARHIGHLIGHTS_OFF
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
-  disabledShaderPasses:
-  - MOTIONVECTORS
+  disabledShaderPasses: []
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _BaseMap:
-        m_Texture: {fileID: 2800000, guid: 28e2e9acc6fe4694fa85ac1a0d5471d6, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _BloodTex:
-        m_Texture: {fileID: 2800000, guid: 97a2aa304fdb4844d8c58bd98e793383, type: 3}
-        m_Scale: {x: 0.5, y: 0.5}
-        m_Offset: {x: 0, y: 0}
     - _BumpMap:
-        m_Texture: {fileID: 2800000, guid: 7fbb27092ffe64b489ecd2b5cd832daf, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _DetailAlbedoMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _DetailMask:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _DetailNormalMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -73,107 +48,19 @@ Material:
         m_Texture: {fileID: 2800000, guid: 28e2e9acc6fe4694fa85ac1a0d5471d6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _MetallicGlossMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _NormalTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _OcclusionMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _ParallaxMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SpecGlossMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _ToonRamp:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - unity_Lightmaps:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - unity_LightmapsInd:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - unity_ShadowMasks:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AddPrecomputedVelocity: 0
-    - _AlphaClip: 0
-    - _AlphaToMask: 0
-    - _AmbientCol: 0
-    - _Blend: 0
-    - _BlendModePreserveSpecular: 1
-    - _Blood: 1
-    - _BloodSmoothness: 0.5
-    - _Bloodiness: 0.5
-    - _BumpScale: 1
-    - _ClearCoatMask: 0
-    - _ClearCoatSmoothness: 0
-    - _Clipped: 0
-    - _ColBright: 0
-    - _ColIntense: 1
-    - _Cull: 2
+    - _BumpScale: 0
+    - _Checker: 0
     - _Cutoff: 0.5
-    - _DetailAlbedoMapScale: 1
-    - _DetailNormalMapScale: 1
-    - _DstBlend: 0
-    - _DstBlendAlpha: 0
-    - _EnvironmentReflections: 1
-    - _GlossMapScale: 1
-    - _Glossiness: 0.1
-    - _GlossyReflections: 1
-    - _HalfToon: 1
-    - _Lumin: 0
-    - _MaxLight: 1
-    - _Metallic: 0
-    - _MinLight: 0
-    - _Mode: 0
-    - _OcclusionStrength: 1
-    - _Offset: 0.405
-    - _Parallax: 0.02
-    - _QueueOffset: 0
-    - _RampStrength: 0
-    - _ReceiveShadows: 1
-    - _Segmented: 1
-    - _ShnIntense: 0
-    - _ShnOverlap: 0
-    - _ShnRange: 0.15
-    - _ShnSmooth: 0
-    - _Smoothness: 0.1
-    - _SmoothnessTextureChannel: 0
-    - _SpecIntensity: 0.14
-    - _SpecPower: 24
-    - _SpecularHighlights: 0
-    - _SrcBlend: 1
-    - _SrcBlendAlpha: 1
-    - _Steps: 3
-    - _StpSmooth: 0
-    - _Surface: 0
-    - _UVSec: 0
-    - _WorkflowMode: 1
-    - _XRMotionVectorsPass: 1
-    - _ZWrite: 1
+    - _DiamondSize: 0.25
+    - _LineWidth: 0.025
+    - _TilesPerCell: 2
     m_Colors:
-    - _BaseColor: {r: 0.8962264, g: 0.8962264, b: 0.8962264, a: 0}
-    - _BloodColor: {r: 0.6666667, g: 0, b: 0, a: 1}
-    - _Color: {r: 0.8962264, g: 0.8962264, b: 0.8962264, a: 0}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _ShadowTint: {r: 0.3, g: 0.35, b: 0.44, a: 1}
-    - _ShnColor: {r: 1, g: 1, b: 0, a: 1}
-    - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
+    - _Color: {r: 0.7169812, g: 0.7169812, b: 0.7169812, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
+    - _GroutColor: {r: 0.4588235, g: 0.4588235, b: 0.4588235, a: 1}
+    - _TileColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+    - _TileColorB: {r: 0.8, g: 0.8, b: 0.8, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

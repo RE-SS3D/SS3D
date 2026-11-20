@@ -250,7 +250,7 @@ namespace SS3D.UI.MachineInterface
             return target != null && target.IsValid && target.IsLocalClient;
         }
 
-        private static bool TryResolveViewerConnection(IInteractionSource source, out NetworkConnection conn)
+        protected static bool TryResolveViewerConnection(IInteractionSource source, out NetworkConnection conn)
         {
             conn = null;
 
