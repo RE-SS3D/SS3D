@@ -176,7 +176,9 @@ namespace SS3D.Systems.Tile
             Renderer[] renderers = root.GetComponentsInChildren<Renderer>(true);
             for (int i = 0; i < renderers.Length; i++)
             {
-                if (renderers[i] != null)
+                // Items stored in the tile (a locker's contents) hide through forceRenderingOff themselves
+                // (Item.SetVisibility); clearing it here would lay them out loose in the locker.
+                if (renderers[i] != null && renderers[i].GetComponentInParent<Inventory.Items.Item>(true) == null)
                     renderers[i].forceRenderingOff = hidden;
             }
         }

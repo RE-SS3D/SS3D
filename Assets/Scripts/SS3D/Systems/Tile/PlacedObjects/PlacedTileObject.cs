@@ -455,8 +455,17 @@ namespace SS3D.Systems.Tile
             Renderer[] renderers = root.GetComponentsInChildren<Renderer>(true);
             for (int i = 0; i < renderers.Length; i++)
             {
-                if (renderers[i] != null && !SS3D.Systems.Interactions.InteractionOutlineView.IsOutlineRenderer(renderers[i]))
-                    renderers[i].enabled = true;
+                Renderer renderer = renderers[i];
+                if (renderer == null || SS3D.Systems.Interactions.InteractionOutlineView.IsOutlineRenderer(renderer))
+                    continue;
+
+                // Items stored in this object (a locker's medkit, and the gauze inside that) are parented under it
+                // but own their visibility (Item.SetVisibility). Showing them here, and so caching them for FishNet
+                // to show again, laid stored items out loose in the locker.
+                if (renderer.GetComponentInParent<Inventory.Items.Item>(true) != null)
+                    continue;
+
+                renderer.enabled = true;
             }
         }
 
