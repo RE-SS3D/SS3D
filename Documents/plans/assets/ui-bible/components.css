@@ -2141,3 +2141,5163 @@ input.map-editor-search-field::placeholder { /* web-only. USS: .unity-text-eleme
 .map-editor-bottom-row--scripts .map-editor-slot--active:hover .map-editor-slot__icon-frame {
     border-color: var(--ui-cat-scripts);
 }
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * Main menu: MainMenu.uss redrawn in the map editor's look
+ * ══════════════════════════════════════════════════════════════════════════
+ * Class names are the shipped MainMenu.uss's and PlayerSettingsPanel.uss's (MainMenuView and PlayerSettingsPanel build
+ * the same trees), so the port is a USS rewrite plus the few C# changes the bible tab marks.
+ *
+ * Plates are the editor's: --ui-editor-panel with the storage panel's 2 px edge and corner, inset 16 px from the screen.
+ * On them, rows and secondary buttons are light tints (--ui-editor-button). The sidebar is the screen's tab column, as
+ * on character setup: the white plate marks where you are, and on the home screen Join holds it as the default action.
+ * Labels (titles, rows, buttons, column heads) in Disket Mono Bold; text (names, addresses, hints, values) in Kode Mono.
+ * Colour only for state: a server's status, a refusal, the update news. The logo keeps its own colours. */
+.main-menu {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    background-color: rgb(0, 0, 0);
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition (KodeMonoSDF) */
+    font-size: var(--ui-type-body);
+    color: var(--ui-text);
+}
+
+.main-menu__wallpaper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover; /* web-only. USS: -unity-background-scale-mode: scale-and-crop */
+    background-position: center;
+    transition-property: opacity;
+    transition-duration: 0.5s;
+}
+
+/* Behind a dialog: the wallpaper blurred. In game this is MainMenuWallpaper's CPU-blurred copy. */
+.main-menu__wallpaper--blurred {
+    filter: blur(10px); /* web-only. USS: the blurred texture */
+    scale: 1.06;
+}
+
+.main-menu__text {
+    margin: 0;
+    padding: 0;
+}
+
+.main-menu__hidden {
+    display: none;
+}
+
+/* ── Plates ── */
+.main-menu__sidebar,
+.main-menu__panel {
+    position: absolute;
+    top: 16px;
+    bottom: 16px;
+    background-color: var(--ui-editor-panel);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
+}
+
+/* A ScrollView in UXML (#sidebar): a short window, or the update banner with the port open, scrolls the column.
+   Port: the ScrollView goes inside the rounded plate, not on it; UITK draws a radius and overflow: hidden on one
+   element as a white block (tile.md Pitfalls). */
+.main-menu__sidebar {
+    left: 16px;
+    width: 344px;
+    padding: 0 20px;
+    overflow-y: auto; /* web-only: a ScrollView */
+}
+
+/* The map editor's thin scroller (web-only: USS styles .unity-scroller the same way MapEditor.uss does). */
+.main-menu__sidebar::-webkit-scrollbar,
+.main-menu__server-scroll::-webkit-scrollbar,
+.settings-panel__scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.main-menu__sidebar::-webkit-scrollbar-thumb,
+.main-menu__server-scroll::-webkit-scrollbar-thumb,
+.settings-panel__scroll::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+.main-menu__sidebar::-webkit-scrollbar-track,
+.main-menu__server-scroll::-webkit-scrollbar-track,
+.settings-panel__scroll::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.main-menu__panel {
+    left: 376px;
+    right: 16px;
+    max-width: 960px;
+}
+
+/* ── Sidebar ── */
+.main-menu__logo {
+    width: 270px;
+    height: 126.5px; /* the logo's 1920 × 900 */
+    margin: 18px 0 2px 0;
+    align-self: center;
+    background-size: contain; /* web-only. USS: -unity-background-scale-mode: scale-to-fit */
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.main-menu__eyebrow {
+    margin-bottom: 6px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition (DisketMonoBoldSDF) */
+    font-size: 10px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+}
+
+.main-menu__identity {
+    margin-top: 16px;
+}
+
+/* The menu's text field on an editor plate: near-black, as the editor's search. */
+.main-menu__input {
+    height: 32px;
+    padding: 0 10px;
+    justify-content: center;
+    background-color: var(--ui-editor-search);
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0);
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 13px;
+    color: var(--ui-text);
+}
+
+.main-menu__input:focus {
+    border-color: var(--ui-editor-cell-edge-hover);
+}
+
+input.main-menu__input { /* web-only selector: in UXML this is a TextField */
+    outline: none; /* web-only */
+}
+
+.main-menu__input::placeholder { /* web-only. USS: .unity-text-element--placeholder */
+    color: var(--ui-text-faint);
+}
+
+.main-menu__hint {
+    margin-top: 6px;
+    font-size: 10.5px;
+    line-height: 1.35; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.main-menu__hint--warning {
+    color: var(--ui-warn);
+}
+
+.main-menu__navigation {
+    margin-top: 18px;
+}
+
+/* A row is a tab: a light tint, the label in Disket, a line of Kode under it. */
+.main-menu__nav {
+    position: relative;
+    flex-direction: row;
+    height: 52px;
+    margin-bottom: 4px;
+    padding: 0 14px 0 11px;
+    justify-content: flex-start;
+    align-items: center;
+    border-left-width: 3px;
+    border-color: rgba(0, 0, 0, 0);
+    background-color: var(--ui-editor-button);
+    transition-property: background-color;
+    transition-duration: var(--ui-fast);
+}
+
+.main-menu__nav:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.main-menu__nav:active {
+    background-color: var(--ui-editor-button-pressed);
+}
+
+.main-menu__title {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 15px;
+    line-height: 1; /* web-only */
+    color: var(--ui-text);
+    white-space: nowrap;
+}
+
+/* Settings and Quit: a title alone, so a shorter row. */
+.main-menu__nav.main-menu__title {
+    height: 40px;
+}
+
+.main-menu__nav-subtitle {
+    margin-top: 6px;
+    font-size: 11px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+}
+
+/* Where you are (C#: --selected on the open screen's row, --accent on Join while nothing else is open): the white
+   plate of a selected menu tab, with the continue button's notch aimed at the panel it opened. */
+.main-menu__nav.main-menu__button--accent,
+.main-menu__nav.main-menu__nav--selected {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+.main-menu__nav.main-menu__button--accent:hover,
+.main-menu__nav.main-menu__nav--selected:hover {
+    background-color: rgb(255, 255, 255);
+}
+
+.main-menu__nav.main-menu__button--accent:active,
+.main-menu__nav.main-menu__nav--selected:active {
+    background-color: rgb(207, 207, 204);
+}
+
+.main-menu__button--accent .main-menu__title,
+.main-menu__nav--selected .main-menu__title,
+.main-menu__nav--selected.main-menu__title {
+    color: var(--ui-text-on-light);
+}
+
+.main-menu__button--accent .main-menu__nav-subtitle,
+.main-menu__nav--selected .main-menu__nav-subtitle {
+    color: rgba(13, 13, 13, 0.6);
+}
+
+.main-menu__nav-tip {
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    margin-top: -6px;
+    rotate: 45deg;
+    background-color: var(--ui-menu-selected);
+    display: none;
+}
+
+.main-menu__nav--selected .main-menu__nav-tip {
+    display: flex;
+}
+
+/* Disabled (USS :disabled): no name yet. The plate fades and so does its text. */
+.main-menu__nav--disabled,
+.main-menu__nav--disabled:hover,
+.main-menu__nav.main-menu__button--accent.main-menu__nav--disabled {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.main-menu__nav--disabled .main-menu__title,
+.main-menu__nav--disabled .main-menu__nav-subtitle {
+    color: var(--ui-menu-tab-text);
+}
+
+.main-menu__local-row {
+    flex-direction: row;
+    margin-bottom: 4px;
+}
+
+.main-menu__local-row > .main-menu__nav {
+    flex-grow: 1;
+    margin-bottom: 0;
+}
+
+/* The port, tucked away: a square at the end of the row. */
+.main-menu__advanced {
+    width: 52px;
+    height: 52px;
+    margin-left: 2px;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--ui-editor-button);
+}
+
+.main-menu__advanced:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.main-menu__advanced-label {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 9px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.main-menu__caret {
+    width: 12px;
+    height: 7px;
+    margin-top: 5px;
+    background-image: url("../../../../Assets/Art/Graphics/UI/Chrome/DropdownArrow.png");
+    background-size: 100% 100%;
+    opacity: 0.6;
+}
+
+.main-menu__caret--up {
+    rotate: 180deg;
+}
+
+.main-menu__port {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 4px;
+    padding: 8px 14px;
+    background-color: rgba(255, 255, 255, 0.035);
+}
+
+.main-menu__port > .main-menu__eyebrow {
+    margin-bottom: 0;
+}
+
+.main-menu__port-input {
+    width: 76px;
+    height: 28px;
+    margin: 0 10px;
+}
+
+.main-menu__port > .main-menu__hint {
+    margin-top: 0;
+    flex-shrink: 1;
+}
+
+.main-menu__spacer {
+    flex-grow: 1;
+    min-height: 12px;
+}
+
+/* ── Music: two cells and a slider ── */
+.main-menu__music {
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.main-menu__music-toggle,
+.main-menu__music-next {
+    width: 28px;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-editor-cell-edge);
+    border-radius: 4.2px; /* 15 % */
+    transition-property: border-color;
+    transition-duration: var(--ui-fast);
+}
+
+.main-menu__music-toggle:hover,
+.main-menu__music-next:hover {
+    border-color: var(--ui-editor-cell-edge-hover);
+}
+
+.main-menu__music-toggle--on,
+.main-menu__music-toggle--on:hover {
+    border-color: var(--ui-line-active);
+}
+
+.main-menu__music-icon {
+    width: 14px;
+    height: 14px;
+    opacity: var(--ui-glyph-placeholder);
+}
+
+.main-menu__music-toggle--on .main-menu__music-icon,
+.main-menu__music-next .main-menu__music-icon {
+    opacity: var(--ui-glyph-item);
+}
+
+.main-menu__music-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 0 10px;
+}
+
+.main-menu__music-eyebrow {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 9px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.main-menu__music-title {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1; /* web-only */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.main-menu__music-volume {
+    width: 72px;
+    margin-left: 10px;
+}
+
+.main-menu__music--off .main-menu__music-title {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.main-menu__music--off .main-menu__music-volume {
+    opacity: 0.4;
+}
+
+/* ── Footer ── */
+.main-menu__footer {
+    padding: 4px 0 14px 0;
+}
+
+.main-menu__row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.main-menu__spread {
+    justify-content: space-between;
+}
+
+.main-menu__end {
+    justify-content: flex-end;
+}
+
+.main-menu__footer > .main-menu__row {
+    margin-top: 6px;
+}
+
+.main-menu__fine {
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+}
+
+.main-menu__link {
+    margin-left: 4px;
+    padding-bottom: 1px;
+    border-bottom-width: 1px;
+    border-color: rgba(255, 255, 255, 0.3);
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.75);
+    white-space: nowrap;
+}
+
+.main-menu__link:hover {
+    border-color: var(--ui-text);
+    color: var(--ui-text);
+}
+
+/* ── Update banner: news, so the info colour on its edge and dot ── */
+.main-menu__update {
+    margin-top: 12px;
+    padding: 12px;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-info);
+    background-color: rgba(120, 196, 236, 0.08);
+}
+
+.main-menu__update-title {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 12px;
+    line-height: 1; /* web-only */
+}
+
+.main-menu__banner-copy {
+    margin: 8px 0 10px 0;
+    font-size: 11px;
+    line-height: 1.35; /* web-only */
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.main-menu__beside {
+    margin-left: 10px;
+    flex-shrink: 1;
+}
+
+.main-menu__dot {
+    width: 8px;
+    height: 8px;
+    margin-right: 10px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.main-menu__dot--ok {
+    background-color: var(--ui-ok);
+}
+
+.main-menu__dot--warn {
+    background-color: var(--ui-warn);
+}
+
+.main-menu__dot--danger {
+    background-color: var(--ui-danger);
+}
+
+.main-menu__dot--info {
+    background-color: var(--ui-info);
+}
+
+/* ── Buttons: a light tint with a Disket label; the primary is the white plate ── */
+.main-menu__button {
+    flex-direction: row;
+    height: 32px;
+    padding: 0 14px;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--ui-editor-button);
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 12px;
+    line-height: 1; /* web-only */
+    color: var(--ui-text);
+    white-space: nowrap;
+    transition-property: background-color, border-color;
+    transition-duration: var(--ui-fast);
+}
+
+.main-menu__button:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.main-menu__button:active {
+    background-color: var(--ui-editor-button-pressed);
+}
+
+.main-menu__button.main-menu__button--accent {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+.main-menu__button.main-menu__button--accent:hover {
+    background-color: rgb(255, 255, 255);
+}
+
+.main-menu__button.main-menu__button--accent:active {
+    background-color: rgb(207, 207, 204);
+}
+
+/* Update a server: the info colour, as the banner. */
+.main-menu__button--blue {
+    border-color: var(--ui-info);
+}
+
+.main-menu__button--danger {
+    border-color: var(--ui-danger);
+}
+
+.main-menu__button--danger:hover {
+    background-color: rgba(235, 98, 82, 0.2);
+}
+
+.main-menu__button--disabled,
+.main-menu__button--disabled:hover,
+.main-menu__button.main-menu__button--accent.main-menu__button--disabled {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-color: rgba(0, 0, 0, 0);
+    color: var(--ui-menu-tab-text);
+}
+
+/* A cell with a glyph (refresh, close): the map editor's popover close. */
+.main-menu__icon-btn {
+    width: 28px;
+    height: 28px;
+    margin-left: 6px;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 4.2px; /* 15 % */
+    font-size: 17px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.main-menu__icon-btn:hover {
+    border-color: var(--ui-editor-cell-edge);
+    color: var(--ui-text);
+}
+
+.main-menu__icon-btn__icon {
+    width: 14px;
+    height: 14px;
+    opacity: 0.6;
+}
+
+.main-menu__icon-btn:hover .main-menu__icon-btn__icon {
+    opacity: 1;
+}
+
+/* A key name: the map editor's chip. */
+.main-menu__key {
+    height: 16px;
+    padding: 0 4px;
+    margin-left: 10px;
+    justify-content: center;
+    border-radius: 2.4px;
+    background-color: rgba(0, 0, 0, 0.45);
+    font-family: var(--ui-font-mark), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 9px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* ── The panel: servers or settings ── */
+.main-menu__header {
+    flex-direction: row;
+    align-items: center;
+    height: 56px;
+    padding: 0 12px 0 20px;
+}
+
+.main-menu__header > .main-menu__title {
+    font-size: 20px;
+}
+
+.main-menu__header > .main-menu__fine {
+    margin-right: 4px;
+}
+
+.main-menu__header-spacer {
+    flex-grow: 1;
+}
+
+.main-menu__server-scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    overflow-y: auto; /* web-only: a ScrollView in UXML */
+}
+
+.main-menu__server-content {
+    padding: 4px 20px 20px 20px;
+}
+
+.main-menu__section {
+    margin-bottom: 22px;
+}
+
+.main-menu__section-heading {
+    margin-bottom: 8px;
+}
+
+.main-menu__section-heading > .main-menu__eyebrow {
+    margin-bottom: 0;
+}
+
+.main-menu__direct-row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.main-menu__address {
+    flex-grow: 1;
+    margin-right: 6px;
+}
+
+/* First launch: the field explained, on a fainter tint. */
+.main-menu__first {
+    padding: 16px;
+    background-color: rgba(255, 255, 255, 0.035);
+}
+
+.main-menu__first-title {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 14px;
+    line-height: 1; /* web-only */
+}
+
+.main-menu__first-copy {
+    margin: 8px 0 12px 0;
+    font-size: 11.5px;
+    line-height: 1.35; /* web-only */
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.main-menu__first > .main-menu__link {
+    align-self: flex-start;
+    margin: 12px 0 0 0;
+}
+
+.main-menu__server-heading {
+    flex-direction: row;
+    padding: 0 10px 0 38px;
+    margin-bottom: 6px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 9px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Column heads reuse the columns' classes for their widths; the type is the heading's. */
+.main-menu__server-heading > .main-menu__text {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 9px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.main-menu__server {
+    margin-bottom: 4px;
+    background-color: var(--ui-editor-button);
+}
+
+.main-menu__server-row {
+    flex-direction: row;
+    align-items: center;
+    height: 52px;
+    padding: 0 10px 0 14px;
+}
+
+.main-menu__server-identity {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    margin-right: 12px;
+}
+
+.main-menu__server-name {
+    font-size: 13px;
+    line-height: 1; /* web-only */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.main-menu__server-address {
+    margin-top: 5px;
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.main-menu__status {
+    width: 150px;
+    margin-right: 12px;
+    font-size: 11.5px;
+    line-height: 1.3; /* web-only */
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.main-menu__status--warn,
+.main-menu__players--warn {
+    color: var(--ui-warn);
+}
+
+.main-menu__status--danger {
+    color: var(--ui-danger);
+}
+
+.main-menu__players,
+.main-menu__ping {
+    width: 52px;
+    margin-right: 12px;
+    font-size: 12px;
+    line-height: 1; /* web-only */
+    text-align: right; /* web-only. USS: -unity-text-align: middle-right */
+}
+
+.main-menu__ping {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.main-menu__actions {
+    width: 156px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.main-menu__details-button {
+    height: 28px;
+    padding: 0 8px;
+    margin-right: 6px;
+    justify-content: center;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 10px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.main-menu__details-button:hover {
+    color: var(--ui-text);
+}
+
+/* Refused last time: the reason under the row, in the danger colour. */
+.main-menu__refusal {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 7px 12px 7px 32px;
+    background-color: rgba(235, 98, 82, 0.12);
+    font-size: 11px;
+    line-height: 1.3; /* web-only */
+    color: rgb(244, 156, 146);
+}
+
+.main-menu__refusal > .main-menu__fine {
+    margin-left: 12px;
+}
+
+.main-menu__details {
+    padding: 4px 12px 12px 32px;
+}
+
+.main-menu__detail-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.main-menu__detail-key {
+    width: 116px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 10px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.main-menu__detail-value {
+    width: 300px;
+    height: 28px;
+}
+
+.main-menu__detail-text {
+    font-size: 12px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.main-menu__details-footer {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+}
+
+.main-menu__details-footer > .main-menu__hint {
+    max-width: 380px;
+    margin: 0 12px 0 0;
+}
+
+/* Nothing here yet: a fainter tint, a title and a line of text. */
+.main-menu__empty {
+    padding: 14px;
+    background-color: rgba(255, 255, 255, 0.035);
+}
+
+.main-menu__empty-title {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 12px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.main-menu__empty > .main-menu__hint {
+    margin-top: 7px;
+}
+
+/* ── Dialogs: connecting, starting, updating, lost. A floating plate over the blurred wallpaper ── */
+.main-menu__overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.main-menu__dialog {
+    width: 440px;
+    background-color: var(--ui-float);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
+}
+
+.main-menu__dialog > .main-menu__header {
+    height: 48px;
+    padding: 0 16px;
+}
+
+.main-menu__dialog > .main-menu__header > .main-menu__title {
+    font-size: 16px;
+}
+
+.main-menu__dialog-body {
+    padding: 0 16px 16px 16px;
+}
+
+.main-menu__overlay-name {
+    font-size: 14px;
+    line-height: 1; /* web-only */
+}
+
+.main-menu__overlay-address {
+    margin-top: 5px;
+    font-size: 11px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.main-menu__steps {
+    margin: 14px 0;
+}
+
+.main-menu__step {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 30px;
+    margin-bottom: 2px;
+    padding: 0 10px;
+    background-color: var(--ui-editor-button);
+    font-size: 12px;
+    line-height: 1; /* web-only */
+}
+
+.main-menu__step--pending {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.main-menu__step-mark {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 10px;
+    line-height: 1; /* web-only */
+}
+
+.main-menu__step-mark--ok {
+    color: var(--ui-ok);
+}
+
+.main-menu__step-mark--failed {
+    color: var(--ui-danger);
+}
+
+.main-menu__step-reason {
+    margin-bottom: 2px;
+    padding: 8px 10px;
+    background-color: rgba(235, 98, 82, 0.12);
+    font-size: 11.5px;
+    line-height: 1.35; /* web-only */
+    color: rgb(244, 156, 146);
+}
+
+.main-menu__token-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.main-menu__token-input {
+    flex-grow: 1;
+    height: 28px;
+}
+
+.main-menu__dialog-action {
+    margin-left: 6px;
+}
+
+/* ── Settings in the panel: PlayerSettingsPanel.uss on the same parts ── */
+.settings-panel {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.settings-panel__header {
+    flex-direction: row;
+    align-items: center;
+    height: 56px;
+    padding: 0 12px 0 20px;
+}
+
+.settings-panel__title {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 20px;
+    line-height: 1; /* web-only */
+}
+
+.settings-panel__context {
+    margin-left: 12px;
+    font-size: 11px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.settings-panel__spacer {
+    flex-grow: 1;
+}
+
+.settings-panel__header > .main-menu__key {
+    margin-right: 8px;
+}
+
+/* Tabs: the map editor's sub-tabs. Selected is a 2 px white line under the label. */
+.settings-panel__tabs {
+    flex-direction: row;
+    padding: 0 14px;
+}
+
+.settings-panel__tab {
+    height: 30px;
+    padding: 1px 10px 0 10px;
+    justify-content: center;
+    border-bottom-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 13px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.settings-panel__tab:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.settings-panel__tab--active,
+.settings-panel__tab--active:hover {
+    border-color: var(--ui-line-active);
+    color: var(--ui-text);
+}
+
+.settings-panel__scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    overflow-y: auto; /* web-only: a ScrollView */
+}
+
+.settings-panel__content {
+    padding: 16px 20px 20px 20px;
+}
+
+.settings-panel__intro-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.settings-panel__intro {
+    flex-shrink: 1;
+    margin-right: 16px;
+    font-size: 11.5px;
+    line-height: 1.35; /* web-only */
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.settings-panel__group {
+    margin-bottom: 18px;
+}
+
+.settings-panel__group-title {
+    margin-bottom: 6px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 10px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.settings-panel__row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 44px;
+    margin-bottom: 2px;
+    padding: 6px 8px 6px 12px;
+    background-color: var(--ui-editor-button);
+}
+
+.settings-panel__row-copy {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-right: 16px;
+}
+
+.settings-panel__row-line {
+    flex-direction: row;
+    align-items: center;
+}
+
+.settings-panel__row-label {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 12px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Changed from the default: a small dot after the label. */
+.settings-panel__changed {
+    width: 6px;
+    height: 6px;
+    margin-left: 8px;
+    border-radius: 3px;
+    background-color: var(--ui-info);
+}
+
+.settings-panel__note-text {
+    margin-top: 5px;
+    font-size: 10.5px;
+    line-height: 1.3; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.settings-panel__note--warning .settings-panel__note-text {
+    color: var(--ui-warn);
+}
+
+.settings-panel__control {
+    flex-direction: row;
+    align-items: center;
+}
+
+/* Segmented: dark plates in the row, the chosen one white (the menu's segmented control, small). */
+.settings-panel__segments {
+    flex-direction: row;
+}
+
+.settings-panel__segment {
+    min-width: 52px;
+    height: 28px;
+    margin-left: 2px;
+    padding: 0 10px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 11px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.45);
+    white-space: nowrap;
+}
+
+.settings-panel__segment:hover {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.settings-panel__segment--on,
+.settings-panel__segment--on:hover {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+/* Locked by another setting: the choice shows, but can't change. */
+.settings-panel__segments--locked {
+    opacity: 0.45;
+}
+
+.settings-panel__select {
+    width: 220px;
+}
+
+.settings-panel__select.menu-dropdown {
+    height: 28px;
+    padding: 0 8px 0 10px;
+    background-color: var(--ui-editor-search);
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.settings-panel__select .menu-dropdown__list {
+    z-index: 2; /* web-only: later siblings paint over it otherwise. USS: a popup on its own layer */
+}
+
+.settings-panel__select .menu-dropdown__item {
+    height: 26px;
+    padding-left: 10px;
+}
+
+.settings-panel__slider {
+    width: 220px;
+}
+
+.settings-panel__slider-value {
+    width: 48px;
+    margin-left: 10px;
+    font-size: 12px;
+    line-height: 1; /* web-only */
+    text-align: right; /* web-only. USS: -unity-text-align: middle-right */
+}
+
+/* Controls: an action and its key, as the map editor's key chips at row size. */
+.settings-panel__keycap {
+    min-width: 64px;
+    height: 26px;
+    padding: 0 10px;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-editor-cell-edge);
+    border-radius: 3.9px; /* 15 % */
+    background-color: rgba(0, 0, 0, 0.45);
+    font-family: var(--ui-font-mark), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 11px;
+    line-height: 1; /* web-only */
+}
+
+.settings-panel__keycap:hover {
+    border-color: var(--ui-editor-cell-edge-hover);
+}
+
+.settings-panel__keycap--listening,
+.settings-panel__keycap--listening:hover {
+    border-color: var(--ui-line-active);
+    color: var(--ui-text);
+}
+
+.settings-panel__bind-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.settings-panel__bind-group {
+    width: 50%;
+    padding-right: 8px;
+    margin-bottom: 18px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * Lobby: Lobby.uss (with LobbyJoin.uss and CharacterSwitcher.uss) redrawn in the main menu's look
+ * ══════════════════════════════════════════════════════════════════════════
+ * Class names are the shipped sheets' (LobbyView, the tab views, LobbyJoinPicker, CharacterSwitcher and
+ * RoundSummaryView build the same trees), so the port is a USS rewrite plus the few C# changes the bible tab marks.
+ *
+ * The sidebar plate sits exactly where the main menu's does, so the column stays put from menu to lobby. Ready (or Join)
+ * is the white plate, the screen's call to action; once you're ready it trades the white for the ok outline. The
+ * panel's tabs are the menu's tab plates in a row (white when open); Settings keeps the editor's sub-tabs under them.
+ * Colour for state only (the round, Ready, map load, admin lines, the round's result) and for departments, which are
+ * identity: a department's colour is its glyph, its outline and its name, never a fill. */
+.lobby {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    background-color: rgb(0, 0, 0);
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition (KodeMonoSDF) */
+    font-size: var(--ui-type-body);
+    color: var(--ui-text);
+}
+
+/* Behind the lobby the live station shows through, blurred (lobby.md §8). Here a station render stands in for it. */
+.lobby__station {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover; /* web-only stand-in: in game the station camera behind the shell */
+    background-position: center;
+    filter: blur(8px); /* web-only */
+    scale: 1.06;
+}
+
+.lobby__veil {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.lobby__text {
+    margin: 0;
+    padding: 0;
+}
+
+.lobby__grow {
+    flex-grow: 1;
+}
+
+.lobby__row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.lobby__eyebrow {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition (DisketMonoBoldSDF) */
+    font-size: 10px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+}
+
+/* Glyphs: white sprites tinted per use. Web-only: a mask filled with the element's colour, so one rule tints it.
+   USS: background-image plus -unity-background-image-tint-color. */
+.lobby__icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 0.6);
+    -webkit-mask-size: contain; /* web-only */
+    -webkit-mask-repeat: no-repeat; /* web-only */
+    -webkit-mask-position: center; /* web-only */
+    mask-size: contain; /* web-only */
+    mask-repeat: no-repeat; /* web-only */
+    mask-position: center; /* web-only */
+}
+
+/* A department sets --dept; whatever shows it reads var(--dept) (USS custom properties inherit the same way). */
+.lb-dept--command { --dept: var(--ui-dept-command); }
+.lb-dept--security { --dept: var(--ui-dept-security); }
+.lb-dept--engineering { --dept: var(--ui-dept-engineering); }
+.lb-dept--medical { --dept: var(--ui-dept-medical); }
+.lb-dept--science { --dept: var(--ui-dept-science); }
+.lb-dept--cargo { --dept: var(--ui-dept-cargo); }
+.lb-dept--service { --dept: var(--ui-dept-service); }
+.lb-dept--civilian { --dept: var(--ui-dept-civilian); }
+
+.lobby__text.lb-dept-text {
+    color: var(--dept);
+}
+
+.lobby__icon.lb-tint {
+    background-color: var(--dept); /* USS: -unity-background-image-tint-color: var(--dept) */
+}
+
+.lb-swatch {
+    width: 8px;
+    height: 8px;
+    margin-right: 6px;
+    border-radius: 1.2px;
+    background-color: var(--dept);
+}
+
+.lobby__dot {
+    width: 8px;
+    height: 8px;
+    margin-right: 8px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.lobby__dot--live {
+    background-color: var(--ui-ok);
+}
+
+.lobby__dot--warning {
+    background-color: var(--ui-warn);
+}
+
+.lobby__status {
+    font-size: 11px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.lobby__status--live {
+    color: var(--ui-ok);
+}
+
+.lobby__status--warning {
+    color: var(--ui-warn);
+}
+
+/* A key name: the map editor's chip. */
+.lobby__keycap {
+    height: 16px;
+    padding: 0 4px;
+    margin-left: 8px;
+    justify-content: center;
+    border-radius: 2.4px;
+    background-color: rgba(0, 0, 0, 0.45);
+    font-family: var(--ui-font-mark), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 9px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* ── Plates ── */
+.lobby__sidebar,
+.lobby__main {
+    position: absolute;
+    background-color: var(--ui-editor-panel);
+    border-color: var(--ui-panel-edge);
+}
+
+/* The sidebar runs the screen's full height from its left edge, as the shipped lobby's, with an edge on its right
+   only. It has no corner, so in UXML the ScrollView can be the sidebar itself. */
+.lobby__sidebar {
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 360px;
+    padding: 0 24px 16px 24px;
+    border-right-width: var(--ui-hairline);
+    overflow-y: auto; /* web-only: a ScrollView */
+}
+
+.lobby__main {
+    left: 376px;
+    top: 16px;
+    right: 16px;
+    bottom: 16px;
+    border-width: var(--ui-hairline);
+    border-radius: var(--ui-panel-radius);
+}
+
+.lobby__sidebar::-webkit-scrollbar,
+.lobby-info__motd-scroll::-webkit-scrollbar,
+.lobby-info__log::-webkit-scrollbar,
+.lobby-chat__log::-webkit-scrollbar,
+.lobby-admin__scroll::-webkit-scrollbar,
+.lobby-join__job-list::-webkit-scrollbar,
+.lobby-join__manifest-scroll::-webkit-scrollbar,
+.round-end__roster::-webkit-scrollbar,
+.switcher__list::-webkit-scrollbar,
+.lobby-admin__input::-webkit-scrollbar {
+    width: 6px;
+}
+
+.lobby__sidebar::-webkit-scrollbar-thumb,
+.lobby-info__motd-scroll::-webkit-scrollbar-thumb,
+.lobby-info__log::-webkit-scrollbar-thumb,
+.lobby-chat__log::-webkit-scrollbar-thumb,
+.lobby-admin__scroll::-webkit-scrollbar-thumb,
+.lobby-join__job-list::-webkit-scrollbar-thumb,
+.lobby-join__manifest-scroll::-webkit-scrollbar-thumb,
+.round-end__roster::-webkit-scrollbar-thumb,
+.switcher__list::-webkit-scrollbar-thumb,
+.lobby-admin__input::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+/* ── Sidebar ── */
+/* The logo sits above a rule that crosses the whole sidebar, as the shipped lobby's. */
+.lobby__wordmark-block {
+    align-items: center;
+    margin: 0 -24px 4px -24px;
+    padding: 18px 0 16px 0;
+    border-bottom-width: 1px;
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.lobby__wordmark {
+    width: 188px;
+    height: 88px; /* the logo's 1920 × 900 */
+    background-size: contain; /* web-only. USS: -unity-background-scale-mode: scale-to-fit */
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.lobby__section {
+    margin-top: 12px;
+}
+
+/* The round: a tint with its state, the big readout and a note. */
+.lobby__round {
+    padding: 12px 14px;
+    background-color: var(--ui-editor-button);
+}
+
+.lobby__round-caption {
+    margin-top: 10px;
+    font-size: 11px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* No readout (waiting for players, or for an admin): the caption is the headline. */
+.lobby__round--waiting .lobby__round-caption {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 15px;
+    color: var(--ui-text);
+}
+
+.lobby__timer-wrap {
+    position: relative;
+    margin-top: 6px;
+    align-self: flex-start;
+}
+
+.lobby__timer {
+    font-size: 36px;
+    line-height: 1; /* web-only */
+    letter-spacing: 1px;
+}
+
+.lobby__timer-strike {
+    position: absolute;
+    left: -2px;
+    right: -2px;
+    top: 50%;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.45);
+    display: none;
+}
+
+.lobby__timer-wrap--held .lobby__timer {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.lobby__timer-wrap--held .lobby__timer-strike {
+    display: flex;
+}
+
+.lobby__note {
+    margin-top: 10px;
+    align-items: flex-start;
+}
+
+.lobby__note-icon {
+    width: 12px;
+    height: 12px;
+    margin: 0 6px 0 0;
+    background-color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby__note-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-size: 10.5px;
+    line-height: 1.35; /* web-only */
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.lobby__note--warning .lobby__note-text {
+    color: var(--ui-warn);
+}
+
+.lobby__note--warning .lobby__note-icon {
+    background-color: var(--ui-warn);
+}
+
+.lobby__map-load {
+    margin-top: 8px;
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lobby__map-load--loading {
+    color: var(--ui-warn);
+}
+
+.lobby__map-load--failed {
+    color: var(--ui-danger);
+}
+
+/* The character: the whole card opens the character window. */
+/* A lighter plate than the round and the rows, with a faint edge (the shipped lobby's inset card). */
+.lobby__card {
+    flex-direction: row;
+    padding: 7px;
+    background-color: rgba(255, 255, 255, 0.13);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.16);
+    transition-property: background-color;
+    transition-duration: var(--ui-fast);
+}
+
+.lobby__card:hover {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+.lobby__card:active {
+    background-color: rgba(255, 255, 255, 0.23);
+}
+
+/* The preview: a viewport with a storage cell's outline. In game the character's render texture fills it. */
+.lobby__preview-frame {
+    width: 64px;
+    height: 104px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-editor-cell-edge);
+    border-radius: 4px;
+}
+
+.lobby__preview-image {
+    width: 40px;
+    height: 72px;
+    background-color: rgba(255, 255, 255, 0.16); /* web-only stand-in: a silhouette where the render goes */
+}
+
+.lobby__card-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    padding-top: 4px;
+}
+
+.lobby__character-name {
+    margin-top: 6px;
+    font-size: 14px;
+    line-height: 1.15; /* web-only */
+}
+
+.lobby__high {
+    margin-top: 8px;
+}
+
+.lobby__high-prefix {
+    margin-right: 4px;
+    font-size: 11px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby__high-job {
+    font-size: 11px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.lobby__card-edit {
+    margin-bottom: 2px;
+}
+
+.lobby__card-edit-label {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 10px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.lobby__card-edit .lobby__icon {
+    width: 12px;
+    height: 12px;
+    margin-left: 4px;
+}
+
+.lobby__card:hover .lobby__card-edit-label {
+    color: var(--ui-text);
+}
+
+/* Switch character: a row that opens the switcher beside it. Open, it is the white plate with the notch at the
+   popover, the main menu's "where you are". */
+.lobby__switch {
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    height: 32px;
+    margin-top: 4px;
+    padding: 0 10px 0 12px;
+    background-color: var(--ui-editor-button);
+    transition-property: background-color;
+    transition-duration: var(--ui-fast);
+}
+
+.lobby__switch:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.lobby__switch .lobby__icon {
+    margin-right: 8px;
+}
+
+.lobby__switch-label {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 11px;
+    line-height: 1; /* web-only */
+}
+
+.lobby__switch-count {
+    margin-right: 8px;
+    font-size: 11px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby__switch .lobby__icon--chevron {
+    width: 12px;
+    height: 12px;
+    margin-right: 0;
+}
+
+.lobby__switch--open,
+.lobby__switch--open:hover {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+.lobby__switch--open .lobby__icon {
+    background-color: var(--ui-text-on-light);
+}
+
+.lobby__switch--open .lobby__switch-count {
+    color: rgba(13, 13, 13, 0.6);
+}
+
+.lobby__switch-tip {
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    margin-top: -6px;
+    rotate: 45deg;
+    background-color: var(--ui-menu-selected);
+    display: none;
+}
+
+.lobby__switch--open .lobby__switch-tip {
+    display: flex;
+}
+
+/* Ready / Join: the screen's call to action, the white plate. */
+.lobby__entry {
+    margin-top: 12px;
+}
+
+.lobby__ready {
+    flex-direction: row;
+    align-items: center;
+    min-height: 56px;
+    padding: 9px 14px;
+    background-color: var(--ui-menu-selected);
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    color: var(--ui-text-on-light);
+    transition-property: background-color, border-color;
+    transition-duration: var(--ui-fast);
+}
+
+.lobby__ready:hover {
+    background-color: rgb(255, 255, 255);
+}
+
+.lobby__ready:active {
+    background-color: rgb(207, 207, 204);
+}
+
+.lobby__ready-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.lobby__ready-title {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 17px;
+    line-height: 1; /* web-only */
+}
+
+.lobby__ready-subtitle {
+    margin-top: 6px;
+    font-size: 11px;
+    line-height: 1.25; /* web-only */
+    color: rgba(13, 13, 13, 0.6);
+}
+
+.lobby__ready-check {
+    width: 18px;
+    height: 18px;
+    margin-right: 12px;
+    background-color: var(--ui-ok);
+    display: none;
+}
+
+/* Ready: done, so no longer the call to action. A tint with the ok outline and a check; a click cancels. */
+.lobby__ready--confirmed,
+.lobby__ready--confirmed:hover {
+    background-color: var(--ui-editor-button);
+    border-color: var(--ui-ok);
+    color: var(--ui-text);
+}
+
+.lobby__ready--confirmed:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.lobby__ready--confirmed .lobby__ready-check {
+    display: flex;
+}
+
+.lobby__ready--confirmed .lobby__ready-subtitle {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* USS :disabled. The plate fades, as the main menu's rows without a name. */
+.lobby__ready--disabled,
+.lobby__ready--disabled:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-color: rgba(0, 0, 0, 0);
+    color: var(--ui-menu-tab-text);
+}
+
+.lobby__ready--disabled .lobby__ready-subtitle {
+    color: var(--ui-menu-tab-text);
+}
+
+.lobby__entry-note {
+    margin-top: 8px;
+    display: none;
+}
+
+.lobby__entry-note--shown {
+    display: flex;
+}
+
+.lobby__observe {
+    flex-direction: row;
+    align-items: center;
+    height: 48px;
+    margin-top: 4px;
+    padding: 0 14px;
+    background-color: var(--ui-editor-button);
+    transition-property: background-color;
+    transition-duration: var(--ui-fast);
+}
+
+.lobby__observe:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.lobby__observe:active {
+    background-color: var(--ui-editor-button-pressed);
+}
+
+.lobby__observe-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 12px;
+    background-color: var(--ui-text);
+}
+
+.lobby__observe-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.lobby__observe-title {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 13px;
+    line-height: 1; /* web-only */
+}
+
+.lobby__observe-subtitle {
+    margin-top: 6px;
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lobby__observe--disabled,
+.lobby__observe--disabled:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.lobby__observe--disabled .lobby__observe-title,
+.lobby__observe--disabled .lobby__observe-subtitle {
+    color: var(--ui-menu-tab-text);
+}
+
+.lobby__observe--disabled .lobby__observe-icon {
+    background-color: var(--ui-menu-tab-text);
+}
+
+.lobby__spacer {
+    flex-grow: 1;
+    min-height: 12px;
+}
+
+/* ── Music: the main menu's row ── */
+.lobby__music {
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.lobby__music-toggle,
+.lobby__music-next {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-editor-cell-edge);
+    border-radius: 4.2px; /* 15 % */
+    transition-property: border-color;
+    transition-duration: var(--ui-fast);
+}
+
+.lobby__music-toggle:hover,
+.lobby__music-next:hover {
+    border-color: var(--ui-editor-cell-edge-hover);
+}
+
+.lobby__music-toggle--on,
+.lobby__music-toggle--on:hover {
+    border-color: var(--ui-line-active);
+}
+
+.lobby__music-toggle .lobby__icon {
+    background-color: rgba(255, 255, 255, 0.48);
+}
+
+.lobby__music-toggle--on .lobby__icon,
+.lobby__music-next .lobby__icon {
+    background-color: var(--ui-text);
+}
+
+.lobby__music-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    margin: 0 10px;
+}
+
+.lobby__music-text > .lobby__eyebrow {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby__music-title {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1; /* web-only */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lobby__music--off .lobby__music-title {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby__music-volume {
+    width: 72px;
+    margin-left: 10px;
+}
+
+.lobby__music--off .lobby__music-volume {
+    opacity: 0.4;
+}
+
+/* ── Footer: two quiet buttons ── */
+.lobby__footer {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 -8px; /* the quiet buttons' labels line up with the plate's padding */
+    padding: 2px 0 12px 0;
+}
+
+.lobby__quiet-button {
+    flex-direction: row;
+    align-items: center;
+    height: 28px;
+    padding: 0 8px;
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    color: rgba(255, 255, 255, 0.6);
+    transition-property: background-color, border-color, color;
+    transition-duration: var(--ui-fast);
+}
+
+.lobby__quiet-button:hover {
+    background-color: var(--ui-editor-button);
+    color: var(--ui-text);
+}
+
+.lobby__footer-button .lobby__icon {
+    margin-right: 8px;
+    background-color: currentColor; /* web-only. USS: the label's colour, set per state */
+}
+
+.lobby__footer-label {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 10px;
+    line-height: 1; /* web-only */
+}
+
+/* Quit, armed: one more click leaves (the danger outline, as Remove on the main menu). */
+.lobby__quit--armed,
+.lobby__quit--armed:hover {
+    border-color: var(--ui-danger);
+    background-color: rgba(235, 98, 82, 0.12);
+    color: rgb(244, 156, 146);
+}
+
+/* ── The panel: header, tabs, content ── */
+.lobby__header {
+    flex-direction: row;
+    align-items: center;
+    height: 54px;
+    padding: 0 12px 0 20px;
+}
+
+.lobby__server-name {
+    margin-right: 18px;
+    flex-shrink: 0;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 17px;
+    line-height: 1; /* web-only */
+    white-space: nowrap;
+}
+
+.lobby__header-meta {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.lobby__meta-key {
+    margin-right: 6px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 9px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby__meta-value {
+    font-size: 12px;
+    line-height: 1; /* web-only */
+    white-space: nowrap;
+}
+
+.lobby__meta-sep {
+    width: 1px;
+    height: 12px;
+    margin: 0 12px;
+    flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.lobby__header-meta > .lobby__dot {
+    margin-right: 6px;
+}
+
+.lobby__back {
+    flex-shrink: 0;
+    display: none;
+}
+
+.lobby__back--shown {
+    display: flex;
+}
+
+.lobby__back-label {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 11px;
+    line-height: 1; /* web-only */
+}
+
+/* Tabs: the menu's tab plates in a row. Light tints on the plate; the open one is the white plate. */
+.lobby__tabs {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 0 12px 0 20px;
+}
+
+.lobby__tab {
+    flex-direction: row;
+    align-items: center;
+    height: 30px;
+    margin-right: 4px;
+    padding: 0 12px;
+    background-color: var(--ui-editor-button);
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 12px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.75);
+    white-space: nowrap;
+    transition-property: background-color, color;
+    transition-duration: var(--ui-fast);
+}
+
+.lobby__tab:hover {
+    background-color: var(--ui-editor-button-hover);
+    color: var(--ui-text);
+}
+
+.lobby__tab--active,
+.lobby__tab--active:hover {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+.lobby__tab--hidden {
+    display: none;
+}
+
+.lobby__tab-badge {
+    height: 14px;
+    margin-left: 8px;
+    padding: 0 4px;
+    justify-content: center;
+    border-radius: 2.1px;
+    background-color: rgba(0, 0, 0, 0.45);
+    font-family: var(--ui-font-mark), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 8px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.lobby__tab--active .lobby__tab-badge {
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.lobby__admin {
+    flex-direction: row;
+    align-items: center;
+}
+
+.lobby__admin-label {
+    margin-right: 8px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 9px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* A switch: a dark track, white when on, the knob a storage cell's corner. */
+.lobby__switch-toggle {
+    position: relative;
+    width: 30px;
+    height: 16px;
+    flex-shrink: 0;
+    border-radius: 2.4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-editor-cell-edge);
+}
+
+.lobby__switch-toggle:hover {
+    border-color: var(--ui-editor-cell-edge-hover);
+}
+
+.lobby__switch-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 1.2px;
+    background-color: rgba(255, 255, 255, 0.55);
+}
+
+.lobby__switch-toggle--on,
+.lobby__switch-toggle--on:hover {
+    background-color: var(--ui-menu-selected);
+    border-color: var(--ui-menu-selected);
+}
+
+.lobby__switch-toggle--on .lobby__switch-knob {
+    left: 16px;
+    background-color: var(--ui-text-on-light);
+}
+
+.lobby__tab-content {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+/* ── Server Info ── */
+.lobby-info {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-direction: row;
+    min-height: 0;
+    padding: 16px 20px 20px 20px;
+}
+
+.lobby-info__left {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    margin-right: 20px;
+}
+
+/* Decoration only, framed in its own art: fitted, never cropped. C# sets the height from the width (1920 × 750). */
+.lobby-info__banner {
+    height: 176px;
+    flex-shrink: 0;
+    margin-bottom: 16px;
+    background-size: contain; /* web-only. USS: -unity-background-scale-mode: scale-to-fit */
+    background-repeat: no-repeat;
+    background-position: left center;
+}
+
+.lobby-info__motd-scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    margin-top: 8px;
+    overflow-y: auto; /* web-only: a ScrollView */
+}
+
+.lobby-info__motd {
+    max-width: 520px;
+    font-size: 12px;
+    line-height: 1.5; /* web-only */
+    color: rgba(255, 255, 255, 0.85);
+    white-space: pre-line; /* web-only: the sample's line breaks */
+}
+
+.lobby-info__right {
+    width: 300px;
+    flex-shrink: 0;
+}
+
+.lobby-info__right > .lobby__eyebrow {
+    margin-bottom: 8px;
+}
+
+.lobby-info__kv {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 30px;
+    margin-bottom: 2px;
+    padding: 0 10px;
+    flex-shrink: 0;
+    background-color: var(--ui-editor-button);
+}
+
+.lobby-info__key {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 9px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby-info__value {
+    font-size: 12px;
+    line-height: 1; /* web-only */
+}
+
+.lobby-info__section-gap {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    margin-top: 18px;
+}
+
+.lobby-info__links {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.lobby-info__log {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    overflow-y: auto; /* web-only: a ScrollView */
+}
+
+.lobby-info__release {
+    padding: 10px 0;
+    flex-shrink: 0;
+    border-bottom-width: 1px;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.lobby-info__release-head {
+    flex-direction: row;
+    align-items: center;
+}
+
+.lobby-info__release-version {
+    margin-right: 10px;
+    font-size: 12px;
+    line-height: 1; /* web-only */
+}
+
+.lobby-info__release-date {
+    flex-grow: 1;
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby-info__link {
+    flex-direction: row;
+    align-items: center;
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.lobby-info__link:hover {
+    color: var(--ui-text);
+}
+
+.lobby-info__link .lobby__icon {
+    width: 10px;
+    height: 10px;
+    margin-left: 5px;
+    background-color: currentColor; /* web-only. USS: the label's colour, set per state */
+}
+
+.lobby-info__entry {
+    flex-direction: row;
+    align-items: flex-start;
+    margin-top: 7px;
+}
+
+.lobby-info__bullet {
+    width: 4px;
+    height: 4px;
+    margin: 5px 10px 0 2px;
+    flex-shrink: 0;
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.35);
+}
+
+.lobby-info__entry-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-size: 11px;
+    line-height: 1.35; /* web-only */
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.lobby-info__entry--link:hover .lobby-info__entry-text {
+    color: var(--ui-text);
+}
+
+.lobby-info__entry-ref {
+    margin-left: 8px;
+    flex-shrink: 0;
+    font-size: 10px;
+    line-height: 1.5; /* web-only */
+    color: rgba(255, 255, 255, 0.45);
+}
+
+/* ── Chat: a near-black log and composer, the editor's search ── */
+.lobby-chat {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    padding: 16px 20px 16px 20px;
+}
+
+.lobby-chat__log {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    padding: 10px 14px;
+    background-color: var(--ui-editor-search);
+    overflow-y: auto; /* web-only: a ScrollView */
+}
+
+.lobby-chat__line {
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 3px 0;
+}
+
+.lobby-chat__time {
+    width: 44px;
+    flex-shrink: 0;
+    font-size: 10.5px;
+    line-height: 1.45; /* web-only */
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.lobby-chat__channel {
+    width: 46px;
+    flex-shrink: 0;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 9px;
+    line-height: 1.7; /* web-only */
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby-chat__channel--admin,
+.lobby-chat__name--admin {
+    color: var(--ui-warn);
+}
+
+.lobby-chat__body {
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.lobby-chat__name {
+    margin-right: 6px;
+    font-size: 12px;
+    line-height: 1.3; /* web-only */
+}
+
+.lobby-chat__text {
+    flex-shrink: 1;
+    font-size: 12px;
+    line-height: 1.3; /* web-only */
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.lobby-chat__system {
+    flex-shrink: 1;
+    font-size: 11px;
+    line-height: 1.4; /* web-only */
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby-chat__composer {
+    flex-direction: row;
+    align-items: stretch;
+    height: 32px;
+    margin-top: 8px;
+    flex-shrink: 0;
+}
+
+/* Channels: the settings' segmented control. */
+.lobby-chat__channel-button {
+    min-width: 52px;
+    margin-right: 2px;
+    padding: 0 10px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 11px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby-chat__channel-button:hover {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.lobby-chat__channel-button--active,
+.lobby-chat__channel-button--active:hover {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+.lobby-chat__input {
+    flex-grow: 1;
+    margin: 0 6px 0 4px;
+    padding: 0 10px;
+    background-color: var(--ui-editor-search);
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0);
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 12px;
+    color: var(--ui-text);
+}
+
+.lobby-chat__input:focus {
+    border-color: var(--ui-editor-cell-edge-hover);
+}
+
+input.lobby-chat__input,
+input.lobby-admin__input { /* web-only selector: in UXML these are TextFields */
+    outline: none; /* web-only */
+}
+
+.lobby-chat__input::placeholder,
+.lobby-admin__input::placeholder { /* web-only. USS: .unity-text-element--placeholder */
+    color: var(--ui-text-faint);
+}
+
+.lobby-chat__send {
+    flex-direction: row;
+    align-items: center;
+    padding: 0 12px;
+    background-color: var(--ui-editor-button);
+}
+
+.lobby-chat__send:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.lobby-chat__send .lobby__icon {
+    width: 13px;
+    height: 13px;
+    margin-right: 8px;
+    background-color: var(--ui-text);
+}
+
+.lobby-chat__send-label {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 11px;
+    line-height: 1; /* web-only */
+}
+
+.lobby-chat__hint {
+    margin-top: 8px;
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.45);
+}
+
+/* ── Settings: PlayerSettingsPanel without its header; its sub-tabs sit under the lobby's tab plates ── */
+.lobby__settings-host {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    padding-top: 8px;
+}
+
+/* ── Server Settings (admin) ── */
+.lobby-admin__scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    overflow-y: auto; /* web-only: a ScrollView */
+}
+
+.lobby-admin {
+    max-width: 600px;
+    padding: 16px 20px 20px 20px;
+    flex-shrink: 0;
+}
+
+.lobby-admin__card {
+    padding: 12px 14px;
+    flex-shrink: 0;
+    background-color: var(--ui-editor-button);
+}
+
+.lobby-admin__card-body {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 10px;
+}
+
+.lobby-admin__round-state {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 16px;
+    line-height: 1; /* web-only */
+}
+
+.lobby-admin__round-detail {
+    margin-top: 7px;
+    font-size: 11px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.lobby-admin__ready-label {
+    text-align: right; /* web-only. USS: -unity-text-align: middle-right */
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 9px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby-admin__ready-ratio {
+    margin-top: 5px;
+    text-align: right; /* web-only. USS: -unity-text-align: middle-right */
+    font-size: 20px;
+    line-height: 1; /* web-only */
+}
+
+/* Section titles: the settings' group titles. */
+.lobby-admin__section-title {
+    margin: 18px 0 8px 0;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 10px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby-admin__controls {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+/* The main menu's button: a tint with a Disket label, Start the white primary. */
+.lobby-admin__button {
+    height: 30px;
+    margin: 0 4px 4px 0;
+    padding: 0 12px;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--ui-editor-button);
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 11px;
+    line-height: 1; /* web-only */
+    white-space: nowrap;
+    transition-property: background-color;
+    transition-duration: var(--ui-fast);
+}
+
+.lobby-admin__button:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.lobby-admin__button:active {
+    background-color: var(--ui-editor-button-pressed);
+}
+
+.lobby-admin__button--start,
+.lobby-admin__button--start:hover {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+.lobby-admin__button--start:hover {
+    background-color: rgb(255, 255, 255);
+}
+
+.lobby-admin__button--danger {
+    border-color: var(--ui-danger);
+}
+
+.lobby-admin__button--danger:hover {
+    background-color: rgba(235, 98, 82, 0.2);
+}
+
+.lobby-admin__button--disabled,
+.lobby-admin__button--disabled:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+    color: var(--ui-menu-tab-text);
+}
+
+/* A field: a Disket label over the editor's near-black input. */
+.lobby-admin__text,
+.lobby-admin__select,
+.lobby-admin__number {
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.lobby-admin__label {
+    margin-bottom: 6px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: .unity-base-field__label */
+    font-size: 9px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby-admin__input {
+    height: 30px;
+    padding: 0 10px;
+    background-color: var(--ui-editor-search);
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0);
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 12px;
+    color: var(--ui-text);
+}
+
+.lobby-admin__input:focus {
+    border-color: var(--ui-editor-cell-edge-hover);
+}
+
+.lobby-admin__text--multiline .lobby-admin__input {
+    height: 76px;
+    padding: 8px 10px;
+    line-height: 1.4; /* web-only */
+    resize: none; /* web-only */
+}
+
+.lobby-admin__select.menu-dropdown,
+.lobby-admin__select .menu-dropdown {
+    height: 30px;
+    padding: 0 8px 0 10px;
+    background-color: var(--ui-editor-search);
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.lobby-admin__select .menu-dropdown__list {
+    z-index: 2; /* web-only: later siblings paint over it otherwise. USS: a popup on its own layer */
+}
+
+.lobby-admin__select .menu-dropdown__item {
+    height: 26px;
+    padding-left: 10px;
+}
+
+.lobby-admin__map-load {
+    margin: -4px 0 10px 0;
+    font-size: 10.5px;
+    line-height: 1.35; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby-admin__map-load--loading {
+    color: var(--ui-warn);
+}
+
+.lobby-admin__map-load--ready {
+    color: var(--ui-ok);
+}
+
+.lobby-admin__map-load--failed {
+    color: var(--ui-danger);
+}
+
+.lobby-admin__numbers {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-right: -8px;
+}
+
+.lobby-admin__number {
+    width: 33.33%;
+    padding-right: 8px;
+}
+
+/* A rule: a storage cell as the box, white with a dark check when on. */
+.lobby-admin__toggle {
+    flex-direction: row;
+    align-items: center;
+    height: 30px;
+    margin-bottom: 2px;
+    padding: 0 10px;
+    background-color: var(--ui-editor-button);
+}
+
+.lobby-admin__toggle:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.lobby-admin__checkmark {
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-editor-cell-edge);
+    border-radius: 2.4px; /* 15 % */
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+.lobby-admin__checkmark .lobby__icon {
+    width: 11px;
+    height: 11px;
+    background-color: var(--ui-text-on-light);
+    display: none;
+}
+
+.lobby-admin__toggle--on .lobby-admin__checkmark {
+    border-color: var(--ui-menu-selected);
+    background-color: var(--ui-menu-selected);
+}
+
+.lobby-admin__toggle--on .lobby-admin__checkmark .lobby__icon {
+    display: flex;
+}
+
+.lobby-admin__toggle-text {
+    flex-grow: 1;
+    font-size: 12px;
+    line-height: 1; /* web-only */
+}
+
+.lobby-admin__toggle-reason {
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby-admin__status {
+    margin-top: 12px;
+    font-size: 10.5px;
+    line-height: 1.35; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Unsaved-map Stop prompt: the main menu's dialog ── */
+.lobby-prompt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+.lobby-prompt__card {
+    width: 460px;
+    padding: 16px;
+    background-color: var(--ui-float);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
+}
+
+.lobby-prompt__title {
+    margin-bottom: 12px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 16px;
+    line-height: 1; /* web-only */
+}
+
+.lobby-prompt__text {
+    margin-bottom: 12px;
+    font-size: 11.5px;
+    line-height: 1.4; /* web-only */
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.lobby-prompt__error {
+    margin-bottom: 8px;
+    font-size: 11px;
+    line-height: 1.35; /* web-only */
+    color: var(--ui-danger);
+}
+
+.lobby-prompt__buttons {
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: 4px;
+}
+
+.lobby-prompt__buttons > .lobby-admin__button {
+    margin: 0 0 0 4px;
+}
+
+/* ── Join picker: a floating plate over the lobby ── */
+.lobby-join {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.35);
+    display: none;
+}
+
+.lobby-join--open {
+    display: flex;
+}
+
+.lobby-join__card {
+    width: 1040px;
+    height: 600px;
+    max-width: 96%;
+    max-height: 94%;
+    background-color: var(--ui-float);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
+}
+
+.lobby-join__header {
+    flex-direction: row;
+    align-items: center;
+    height: 52px;
+    flex-shrink: 0;
+    padding: 0 12px 0 20px;
+}
+
+.lobby-join__title {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 17px;
+    line-height: 1; /* web-only */
+}
+
+.lobby-join__meta-key {
+    margin-left: 18px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 9px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby-join__clock {
+    margin-left: 6px;
+    font-size: 12px;
+    line-height: 1; /* web-only */
+}
+
+/* Close: the main menu's glyph cell. */
+.lobby-join__close {
+    width: 28px;
+    height: 28px;
+    margin-left: 6px;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 4.2px; /* 15 % */
+}
+
+.lobby-join__close:hover {
+    border-color: var(--ui-editor-cell-edge);
+}
+
+.lobby-join__close .lobby__icon {
+    background-color: rgba(255, 255, 255, 0.55);
+}
+
+.lobby-join__close:hover .lobby__icon {
+    background-color: var(--ui-text);
+}
+
+.lobby-join__body {
+    flex-direction: row;
+    flex-grow: 1;
+    min-height: 0;
+}
+
+.lobby-join__jobs {
+    width: 440px;
+    flex-shrink: 0;
+    padding: 4px 20px 20px 20px;
+}
+
+.lobby-join__section-head {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    height: 20px;
+    margin-bottom: 8px;
+}
+
+.lobby-join__section-title {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 10px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby-join__section-count {
+    margin-left: 8px;
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby-join__hint {
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby-join__empty {
+    font-size: 11px;
+    line-height: 1.35; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* A notice: news in the info colour (only Assistant is open), the job you picked filling in warn. */
+.lobby-join__notice {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 8px 10px;
+    flex-shrink: 0;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-info);
+    background-color: rgba(120, 196, 236, 0.08);
+}
+
+.lobby-join__notice .lobby__icon {
+    margin-right: 10px;
+    background-color: var(--ui-info);
+}
+
+.lobby-join__notice-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-size: 11px;
+    line-height: 1.35; /* web-only */
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.lobby-join__notice--warning {
+    border-color: var(--ui-warn);
+    background-color: rgba(238, 186, 78, 0.08);
+}
+
+.lobby-join__notice--warning .lobby__icon {
+    background-color: var(--ui-warn);
+}
+
+.lobby-join__notice--hidden {
+    display: none;
+}
+
+.lobby-join__job-list {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    overflow-y: auto; /* web-only: a ScrollView */
+}
+
+.lobby-join__job-item {
+    margin-bottom: 4px;
+    flex-shrink: 0;
+}
+
+/* A job: a tint. Picked, it takes the white outline (the active hand's line); the ring fills. */
+.lobby-join__job {
+    flex-direction: row;
+    align-items: center;
+    height: 46px;
+    padding: 0 12px;
+    flex-shrink: 0;
+    background-color: var(--ui-editor-button);
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    transition-property: background-color, border-color;
+    transition-duration: var(--ui-fast);
+}
+
+.lobby-join__job:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.lobby-join__job-item--on .lobby-join__job {
+    border-color: var(--ui-line-active);
+}
+
+.lobby-join__ring {
+    width: 14px;
+    height: 14px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: rgba(255, 255, 255, 0.35);
+    border-radius: 7px;
+}
+
+.lobby-join__ring-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+}
+
+.lobby-join__job-item--on .lobby-join__ring {
+    border-color: var(--ui-text);
+}
+
+.lobby-join__job-item--on .lobby-join__ring-dot {
+    background-color: var(--ui-text);
+}
+
+/* The job's glyph in a storage cell outlined in its department's colour (the map editor's category coding). */
+.lobby-join__job-frame {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: var(--dept);
+    border-radius: 4.5px; /* 15 % */
+    background-color: rgba(0, 0, 0, 0.35);
+}
+
+.lobby-join__job-frame .lobby__icon {
+    width: 18px;
+    height: 18px;
+}
+
+.lobby-join__job-text {
+    flex-shrink: 1;
+}
+
+.lobby-join__job-name {
+    font-size: 13px;
+    line-height: 1; /* web-only */
+}
+
+.lobby-join__job-dept {
+    margin-top: 5px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 9px;
+    line-height: 1; /* web-only */
+}
+
+.lobby-join__job-count {
+    font-size: 12px;
+    line-height: 1; /* web-only */
+}
+
+.lobby-join__job-count-word {
+    margin-left: 6px;
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby-join__description {
+    margin-top: 2px;
+    padding: 8px 12px 9px 38px;
+    background-color: rgba(255, 255, 255, 0.035);
+    font-size: 11px;
+    line-height: 1.4; /* web-only */
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.lobby-join__as {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    margin-top: 8px;
+    padding: 6px 8px;
+    background-color: var(--ui-editor-button);
+}
+
+.lobby-join__portrait-frame {
+    width: 28px;
+    height: 38px;
+    margin-right: 10px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-editor-cell-edge);
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.lobby-join__portrait {
+    width: 18px;
+    height: 28px;
+    background-color: rgba(255, 255, 255, 0.16); /* web-only stand-in, as the sidebar's preview */
+}
+
+.lobby-join__as-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.lobby-join__as-text > .lobby__eyebrow {
+    font-size: 9px;
+}
+
+.lobby-join__character {
+    margin-top: 5px;
+    font-size: 12.5px;
+    line-height: 1; /* web-only */
+}
+
+.lobby-join__change {
+    flex-direction: row;
+    align-items: center;
+    height: 28px;
+    padding: 0 10px;
+    flex-shrink: 0;
+    background-color: var(--ui-editor-button);
+}
+
+.lobby-join__change:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.lobby-join__change .lobby__icon {
+    width: 13px;
+    height: 13px;
+    margin-right: 8px;
+    background-color: var(--ui-text);
+}
+
+.lobby-join__change-label {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 10px;
+    line-height: 1; /* web-only */
+}
+
+/* Join: the white plate, as Ready. */
+.lobby-join__confirm {
+    flex-direction: row;
+    align-items: center;
+    height: 52px;
+    margin-top: 8px;
+    padding: 0 14px;
+    flex-shrink: 0;
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+    transition-property: background-color;
+    transition-duration: var(--ui-fast);
+}
+
+.lobby-join__confirm:hover {
+    background-color: rgb(255, 255, 255);
+}
+
+.lobby-join__confirm:active {
+    background-color: rgb(207, 207, 204);
+}
+
+.lobby-join__confirm-text {
+    flex-grow: 1;
+}
+
+.lobby-join__confirm-title {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 16px;
+    line-height: 1; /* web-only */
+}
+
+.lobby-join__confirm-subtitle {
+    margin-top: 7px;
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(13, 13, 13, 0.6);
+}
+
+.lobby-join__confirm .lobby__keycap {
+    background-color: rgba(0, 0, 0, 0.12);
+    color: rgba(13, 13, 13, 0.7);
+}
+
+.lobby-join__confirm--disabled,
+.lobby-join__confirm--disabled:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+    color: var(--ui-menu-tab-text);
+}
+
+.lobby-join__confirm--disabled .lobby-join__confirm-subtitle,
+.lobby-join__confirm--disabled .lobby__keycap {
+    color: var(--ui-menu-tab-text);
+}
+
+.lobby-join__confirm--disabled .lobby__keycap {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* The crew manifest: departments as tinted groups, two columns. */
+.lobby-join__manifest-section {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    padding: 4px 20px 20px 0;
+}
+
+.lobby-join__manifest-scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    overflow-y: auto; /* web-only: a ScrollView */
+}
+
+.lobby-join__manifest {
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.lobby-join__column {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+}
+
+.lobby-join__column--left {
+    margin-right: 8px;
+}
+
+.lobby-join__group {
+    margin-bottom: 6px;
+    flex-shrink: 0;
+    background-color: var(--ui-editor-button);
+}
+
+.lobby-join__group-head {
+    flex-direction: row;
+    align-items: center;
+    height: 30px;
+    padding: 0 10px;
+}
+
+.lobby-join__group-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+}
+
+.lobby-join__group-name {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 10px;
+    line-height: 1; /* web-only */
+}
+
+.lobby-join__group-count {
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby-join__crew {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 6px 10px;
+    border-top-width: 1px;
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.lobby-join__crew-name {
+    flex-shrink: 1;
+    font-size: 11.5px;
+    line-height: 1.1; /* web-only */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.lobby-join__crew-job {
+    margin-left: 12px;
+    flex-shrink: 0;
+    font-size: 10.5px;
+    line-height: 1.2; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* A gap a latejoiner could fill ("No Doctor aboard"): news, so the info colour. */
+.lobby-join__crew-missing {
+    padding: 6px 10px;
+    border-top-width: 1px;
+    border-color: rgba(255, 255, 255, 0.06);
+    font-size: 11px;
+    line-height: 1.1; /* web-only */
+    color: var(--ui-info);
+}
+
+/* ── Character switcher: a floating plate beside Switch character ── */
+.switcher {
+    position: absolute;
+    width: 380px;
+    background-color: var(--ui-float);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
+    display: none;
+}
+
+.switcher--open {
+    display: flex;
+}
+
+.switcher__head {
+    flex-direction: row;
+    align-items: center;
+    height: 44px;
+    flex-shrink: 0;
+    padding: 0 12px 0 14px;
+}
+
+.switcher__title {
+    margin-right: 8px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 14px;
+    line-height: 1; /* web-only */
+}
+
+.switcher__count,
+.switcher__hint {
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.switcher__list {
+    max-height: 420px;
+    flex-shrink: 1;
+    padding: 0 8px;
+    overflow-y: auto; /* web-only: a ScrollView */
+}
+
+.switcher__row {
+    flex-direction: row;
+    align-items: center;
+    height: 54px;
+    margin-bottom: 2px;
+    padding: 0 6px 0 8px;
+    flex-shrink: 0;
+    background-color: var(--ui-editor-button);
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.switcher__row:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+/* The character you play: the white outline, as a picked job. */
+.switcher__row--selected,
+.switcher__row--selected:hover {
+    border-color: var(--ui-line-active);
+}
+
+.switcher__portrait {
+    width: 28px;
+    height: 38px;
+    margin-right: 10px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-editor-cell-edge);
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.switcher__silhouette {
+    width: 18px;
+    height: 28px;
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+.switcher__text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.switcher__name {
+    font-size: 12.5px;
+    line-height: 1.1; /* web-only */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.switcher__high {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+.switcher__high-prefix,
+.switcher__high-job {
+    margin-right: 4px;
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+}
+
+.switcher__high-job {
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.switcher__selected {
+    flex-direction: row;
+    align-items: center;
+    margin: 0 8px;
+}
+
+.switcher__selected .lobby__icon {
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    background-color: var(--ui-ok);
+}
+
+.switcher__selected-label {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 9px;
+    line-height: 1; /* web-only */
+}
+
+/* Duplicate, delete: glyph cells, faint until the row is hovered or selected. */
+.switcher__action {
+    width: 26px;
+    height: 26px;
+    margin-left: 2px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 3.9px; /* 15 % */
+    opacity: 0.45;
+}
+
+.switcher__row:hover .switcher__action,
+.switcher__row--selected .switcher__action {
+    opacity: 1;
+}
+
+.switcher__action:hover {
+    border-color: var(--ui-editor-cell-edge);
+}
+
+.switcher__action .lobby__icon {
+    width: 13px;
+    height: 13px;
+}
+
+.switcher__action--disabled,
+.switcher__row--selected .switcher__action--disabled {
+    opacity: 0.2;
+}
+
+.switcher__confirm {
+    margin-bottom: 4px;
+    padding: 10px 12px;
+    flex-shrink: 0;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-danger);
+    background-color: rgba(235, 98, 82, 0.1);
+}
+
+.switcher__confirm-text {
+    margin-bottom: 10px;
+    font-size: 11.5px;
+    line-height: 1.35; /* web-only */
+}
+
+.switcher__confirm-buttons {
+    flex-direction: row;
+}
+
+.switcher__confirm-button {
+    flex-direction: row;
+    align-items: center;
+    height: 28px;
+    margin-right: 4px;
+    padding: 0 10px;
+    background-color: var(--ui-editor-button);
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.switcher__confirm-button:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.switcher__confirm-button--danger {
+    border-color: var(--ui-danger);
+}
+
+.switcher__confirm-button--danger:hover {
+    background-color: rgba(235, 98, 82, 0.2);
+}
+
+.switcher__confirm-button .lobby__icon {
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    background-color: var(--ui-text);
+}
+
+.switcher__confirm-label {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 10px;
+    line-height: 1; /* web-only */
+}
+
+.switcher__foot {
+    padding: 6px 8px 10px 8px;
+    flex-shrink: 0;
+}
+
+.switcher__new {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    background-color: var(--ui-editor-button);
+}
+
+.switcher__new:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.switcher__new .lobby__icon {
+    width: 12px;
+    height: 12px;
+    margin-right: 8px;
+    background-color: var(--ui-text);
+}
+
+.switcher__new-label {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 11px;
+    line-height: 1; /* web-only */
+}
+
+.switcher__new--disabled,
+.switcher__new--disabled:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+    color: var(--ui-menu-tab-text);
+}
+
+.switcher__new--disabled .lobby__icon {
+    background-color: var(--ui-menu-tab-text);
+}
+
+.switcher__full {
+    margin-top: 6px;
+    font-size: 10.5px;
+    line-height: 1.35; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.switcher__full--hidden {
+    display: none;
+}
+
+/* ── Last Round: RoundEnd.uss's tab, on the same parts ── */
+.round-end--tab {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    padding: 16px 20px 20px 20px;
+}
+
+.round-end__header {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    margin-bottom: 10px;
+}
+
+.round-end__header > .lobby__text {
+    margin-left: 10px;
+    font-size: 11px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.round-end__header > .lobby__eyebrow {
+    margin-left: 0;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.round-end__spacer {
+    flex-grow: 1;
+}
+
+.round-end__header > .round-end__tab-note {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.round-end__tab-empty {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+.round-end__tab-note {
+    font-size: 11px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* The result: a tint with the winning side's colour as a 3 px left edge, the map editor's mode-tab coding. Crew in
+   the info colour, operatives in danger, nobody in grey. */
+.round-end__result {
+    flex-shrink: 0;
+    padding: 12px 14px 14px 14px;
+    background-color: var(--ui-editor-button);
+    border-left-width: 3px;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.round-end--ops .round-end__result {
+    border-color: var(--ui-danger);
+}
+
+.round-end--crew .round-end__result {
+    border-color: var(--ui-info);
+}
+
+.round-end__result-row {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.round-end__title {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 22px;
+    line-height: 1; /* web-only */
+}
+
+.round-end--ops .round-end__title {
+    color: var(--ui-danger);
+}
+
+.round-end--crew .round-end__title {
+    color: var(--ui-info);
+}
+
+.round-end__destroyed {
+    height: 18px;
+    margin-left: 12px;
+    padding: 0 6px;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-danger);
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 9px;
+    line-height: 1; /* web-only */
+    color: var(--ui-danger);
+}
+
+.round-end__reason {
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.35; /* web-only */
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.round-end__facts {
+    flex-direction: row;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.round-end__fact {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    padding: 10px 14px;
+    background-color: var(--ui-editor-button);
+}
+
+.round-end__fact--divided {
+    margin-left: 4px;
+}
+
+.round-end__fact-value {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.round-end__mode,
+.round-end__mode-configured {
+    margin-right: 8px;
+    font-size: 13px;
+    line-height: 1; /* web-only */
+}
+
+.round-end__mode-configured {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.round-end__struck {
+    text-decoration: line-through; /* web-only. USS: the <s> rich-text tag */
+}
+
+.round-end__fate {
+    margin-right: 10px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 13px;
+    line-height: 1; /* web-only */
+}
+
+.round-end__fate-who {
+    flex-shrink: 1;
+    font-size: 11px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.round-end__ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.round-end__alive {
+    color: var(--ui-ok);
+}
+
+.round-end__dead {
+    color: var(--ui-danger);
+}
+
+.round-end__neutral {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.round-end__section {
+    flex-shrink: 0;
+    margin-top: 14px;
+}
+
+.round-end__crew {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    margin-top: 14px;
+}
+
+/* Operatives two to a line. */
+.round-end__ops-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.round-end__row--half {
+    width: 49.5%;
+    margin-right: 0.5%;
+}
+
+.round-end__section-head {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    margin-bottom: 8px;
+}
+
+.round-end__section-label {
+    margin-right: 8px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 10px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.round-end__section-label--antag {
+    color: var(--ui-danger);
+}
+
+.round-end__section-head > .lobby__text {
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.round-end__objective {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 4px;
+    padding: 8px 10px;
+    background-color: var(--ui-editor-button);
+}
+
+.round-end__objective-label {
+    height: 16px;
+    margin-right: 10px;
+    padding: 0 4px;
+    justify-content: center;
+    border-radius: 2.4px;
+    background-color: rgba(0, 0, 0, 0.45);
+    font-family: var(--ui-font-mark), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 8px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.round-end__objective-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-size: 11px;
+    line-height: 1.3; /* web-only */
+}
+
+.round-end__objective-result {
+    margin-left: 10px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 10px;
+    line-height: 1; /* web-only */
+}
+
+.round-end__objective-result--met {
+    color: var(--ui-ok);
+}
+
+.round-end__objective-result--failed {
+    color: var(--ui-danger);
+}
+
+.round-end__roster {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    overflow-y: auto; /* web-only: a ScrollView */
+}
+
+.round-end__row {
+    flex-direction: row;
+    align-items: center;
+    height: 30px;
+    margin-bottom: 2px;
+    padding: 0 10px;
+    flex-shrink: 0;
+    background-color: var(--ui-editor-button);
+}
+
+/* You: the white plate's chip, where you are. */
+.round-end__row--you {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.round-end__row-name {
+    width: 190px;
+    flex-shrink: 1;
+    font-size: 12px;
+    line-height: 1; /* web-only */
+}
+
+.round-end__row--half .round-end__row-name {
+    width: auto;
+    flex-grow: 1;
+}
+
+.round-end__row-name--dead {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.round-end__you {
+    height: 14px;
+    margin-right: 10px;
+    padding: 0 4px;
+    justify-content: center;
+    border-radius: 2.1px;
+    background-color: var(--ui-menu-selected);
+    font-family: var(--ui-font-mark), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 8px;
+    line-height: 1; /* web-only */
+    color: var(--ui-text-on-light);
+}
+
+.round-end__row-job {
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-size: 11px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.round-end__row-status {
+    margin-left: 10px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 9px;
+    line-height: 1; /* web-only */
+}
+
+.round-end__empty {
+    font-size: 11px;
+    line-height: 1.35; /* web-only */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Lobby: colour coding ──
+ * As the map editor codes tools and categories, the lobby codes four things, with the shipped lobby's colours:
+ *   departments  --dept (LobbyTokens' pastels): a 3 px left edge on whatever belongs to one (a job, a crew group, a
+ *                character by its High job, a roster line), its glyph and its name. A picked job outlines in it and
+ *                Join fills with it
+ *   the round    --tone: info while it counts down, warn loading, starting, held or over, ok in progress. The round
+ *                section's left edge, its dot and word, the header's round, the admin card
+ *   chat         --chan: OOC white, LOOC info, admin warn. The line's tag, the chosen channel's plate, the field's edge
+ *   admin        warn: the Admin badge, the switch when on, admin names and lines
+ * Ready, once ready, is the ok plate. The call to action (Ready up, Join, Start Round) stays the white plate. */
+.lb-tone--neutral { --tone: rgba(255, 255, 255, 0.3); }
+.lb-tone--info { --tone: var(--ui-info); }
+.lb-tone--warning { --tone: var(--ui-warn); }
+.lb-tone--live { --tone: var(--ui-ok); }
+
+.lobby__dot--info {
+    background-color: var(--ui-info);
+}
+
+.lobby__status--info {
+    color: var(--ui-info);
+}
+
+/* The round: its state as the section's left edge (the map editor's mode-tab edge). */
+.lobby__round,
+.lobby-admin__card {
+    padding-left: 11px;
+    border-left-width: 3px;
+    border-color: var(--tone);
+}
+
+/* Ready: done is the ok plate, dark text and check (the shipped lobby's green). */
+.lobby__ready--confirmed,
+.lobby__ready--confirmed:hover {
+    background-color: var(--ui-ok);
+    border-color: var(--ui-ok);
+    color: var(--ui-text-on-light);
+}
+
+.lobby__ready--confirmed:hover {
+    background-color: rgb(150, 222, 144);
+    border-color: rgb(150, 222, 144);
+}
+
+.lobby__ready--confirmed .lobby__ready-check {
+    background-color: var(--ui-text-on-light);
+}
+
+.lobby__ready--confirmed .lobby__ready-subtitle {
+    color: rgba(13, 13, 13, 0.65);
+}
+
+/* Departments: the character by its High job. */
+.lobby__card--dept {
+    padding-left: 5px;
+    border-left-width: 3px;
+    border-left-color: var(--dept);
+}
+
+.switcher__row--dept {
+    padding-left: 6px;
+    border-left-width: 3px;
+    border-left-color: var(--dept);
+}
+
+/* A job: its department's edge; picked, the whole outline and the ring in that colour; Join fills with it. */
+.lobby-join__job {
+    border-left-width: 3px;
+    border-left-color: var(--dept);
+}
+
+.lobby-join__job-item--on .lobby-join__job {
+    border-color: var(--dept);
+}
+
+.lobby-join__job-item--on .lobby-join__ring {
+    border-color: var(--dept);
+}
+
+.lobby-join__job-item--on .lobby-join__ring-dot {
+    background-color: var(--dept);
+}
+
+.lobby-join__description {
+    border-left-width: 3px;
+    border-color: var(--dept);
+}
+
+.lobby-join__confirm--dept,
+.lobby-join__confirm--dept:hover {
+    background-color: var(--dept);
+}
+
+.lobby-join__confirm--dept:active {
+    opacity: 0.85;
+}
+
+/* The manifest: each department's group carries its edge, glyph and name. */
+.lobby-join__group {
+    border-left-width: 3px;
+    border-color: var(--dept);
+}
+
+.lobby-join__group-name {
+    color: var(--dept);
+}
+
+/* The last round's roster: a line's edge and job in its department; an operative's edge in danger. */
+.round-end__row {
+    border-left-width: 3px;
+    border-color: var(--dept, rgba(0, 0, 0, 0));
+}
+
+.round-end__row--antag {
+    --dept: var(--ui-danger);
+}
+
+/* Chat: each channel's colour on its tag, its plate when chosen, and the field's edge while it's chosen. */
+.lobby-chat__channel--ooc,
+.lobby-chat__channel-button--ooc,
+.lobby-chat__composer--ooc {
+    --chan: var(--ui-menu-selected);
+}
+
+.lobby-chat__channel--looc,
+.lobby-chat__channel-button--looc,
+.lobby-chat__composer--looc {
+    --chan: var(--ui-info);
+}
+
+.lobby-chat__channel--admin,
+.lobby-chat__channel-button--admin,
+.lobby-chat__composer--admin {
+    --chan: var(--ui-warn);
+}
+
+.lobby-chat__channel {
+    color: var(--chan);
+}
+
+.lobby-chat__channel--ooc {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby-chat__channel-button--active,
+.lobby-chat__channel-button--active:hover {
+    background-color: var(--chan);
+}
+
+.lobby-chat__input,
+.lobby-chat__input:focus {
+    border-left-width: 3px;
+    border-left-color: var(--chan);
+}
+
+/* Admin: amber, as the shipped lobby's badge. */
+.lobby__tab-badge {
+    border-width: 1px;
+    border-color: var(--ui-warn);
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--ui-warn);
+}
+
+.lobby__tab--active .lobby__tab-badge {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.lobby__switch-toggle--on,
+.lobby__switch-toggle--on:hover {
+    background-color: var(--ui-warn);
+    border-color: var(--ui-warn);
+}
+
+/* Round controls by consequence: forcing or holding in warn, stopping in danger. */
+.lobby-admin__button--warn {
+    border-color: var(--ui-warn);
+}
+
+.lobby-admin__button--warn:hover {
+    background-color: rgba(238, 186, 78, 0.18);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Lobby, layout B: the character stage (an alternative to the layout above)
+   A narrow sidebar, the character you play large in the middle (about 47 % of the width), the panel narrow on
+   the right. The character card leaves the sidebar: its name, High job, Switch character and Edit character
+   frame the model. Settings, Last Round and Server Settings need the room, so the panel widens over the stage
+   while they're open.
+   ══════════════════════════════════════════════════════════════════════ */
+.lobby--stage .lobby__sidebar {
+    width: 264px;
+    padding: 0 18px 12px 18px;
+}
+
+.lobby--stage .lobby__wordmark-block {
+    margin: 0 -18px 4px -18px;
+    padding: 16px 0 14px 0;
+}
+
+.lobby--stage .lobby__wordmark {
+    width: 150px;
+    height: 70px;
+}
+
+.lobby--stage .lobby__music-volume {
+    width: 48px;
+}
+
+/* Observe's reason wraps rather than cuts off; the footer's two buttons stack. */
+.lobby--stage .lobby__observe {
+    height: auto;
+    min-height: 48px;
+    padding: 9px 14px;
+}
+
+.lobby--stage .lobby__observe-subtitle {
+    line-height: 1.3; /* web-only */
+    white-space: normal;
+}
+
+.lobby--stage .lobby__footer {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-bottom: 8px;
+}
+
+.lobby--stage .lobby__main {
+    left: auto;
+    width: 360px;
+}
+
+.lobby--stage .lobby__main--wide {
+    left: 280px;
+    width: auto;
+}
+
+/* The stage: between the plates, over the station. */
+.lobby__stage {
+    position: absolute;
+    left: 264px;
+    right: 376px;
+    top: 0;
+    bottom: 0;
+    align-items: center;
+    padding: 16px 0 12px 0;
+}
+
+.lobby__stage--neutral {
+    --dept: rgba(255, 255, 255, 0.5);
+}
+
+.lobby__stage--covered {
+    visibility: hidden;
+}
+
+/* Who you play: a plate over the model, the High job's department on its glyph, word and the bar under it. */
+.lobby__stage-plate {
+    position: relative;
+    align-items: center;
+    padding: 8px 18px 10px 18px;
+    background-color: var(--ui-editor-panel);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
+}
+
+.lobby__stage-plate > .lobby__eyebrow {
+    font-size: 9px;
+}
+
+.lobby__stage-name {
+    margin-top: 5px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition (DisketMonoBoldSDF) */
+    font-size: 18px;
+    line-height: 1; /* web-only */
+    white-space: nowrap;
+}
+
+.lobby__stage-high {
+    margin-top: 6px;
+}
+
+.lobby__stage-dept-icon {
+    width: 12px;
+    height: 12px;
+    margin-right: 5px;
+}
+
+.lobby__stage-accent {
+    position: absolute;
+    left: 50%;
+    bottom: -2px;
+    width: 44px;
+    height: 3px;
+    margin-left: -22px;
+    background-color: var(--dept);
+}
+
+/* The model: the booth's render texture, fitted and standing on the bottom edge; clicking it opens the character
+   window, as the card did. A floor glow in the department's colour, and a contact shadow, ground it. */
+.lobby__stage-figure {
+    position: relative;
+    flex-grow: 1;
+    flex-shrink: 1;
+    align-self: stretch;
+    min-height: 0;
+    margin: 6px 0 6px 0;
+    cursor: pointer; /* web-only */
+}
+
+.lobby__stage-model {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 8px;
+    background-size: contain; /* web-only. USS: -unity-background-scale-mode: scale-to-fit */
+    background-repeat: no-repeat;
+    background-position: center bottom; /* USS: background-position-y: bottom */
+}
+
+.lobby__stage-floor {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 300px;
+    height: 46px;
+    margin-left: -150px;
+    border-radius: 50%;
+    background-color: var(--dept);
+    opacity: 0.16;
+    transition-property: opacity;
+    transition-duration: var(--ui-fast);
+}
+
+.lobby__stage-figure:hover .lobby__stage-floor {
+    opacity: 0.28;
+}
+
+.lobby__stage-shadow {
+    position: absolute;
+    left: 50%;
+    bottom: 11px;
+    width: 176px;
+    height: 22px;
+    margin-left: -88px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Under the model: Switch character (its popover opens above it, the notch pointing up) and Edit character. */
+.lobby__stage-bar {
+    flex-direction: row;
+    align-items: center;
+    padding: 3px;
+    background-color: var(--ui-editor-panel);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
+}
+
+.lobby__stage-bar .lobby__switch {
+    width: 202px;
+    height: 26px;
+    margin-top: 0;
+    padding: 0 8px 0 9px;
+}
+
+.lobby__stage-bar .lobby__icon {
+    width: 12px;
+    height: 12px;
+}
+
+.lobby__stage-bar .lobby__switch .lobby__icon {
+    margin-right: 6px;
+}
+
+.lobby__stage-bar .lobby__switch-label,
+.lobby__stage-bar .lobby__switch-count {
+    font-size: 10px;
+}
+
+.lobby__stage-bar .lobby__switch .lobby__icon--chevron {
+    width: 10px;
+    height: 10px;
+    margin-right: 0;
+}
+
+.lobby--stage .lobby__switch-tip {
+    right: auto;
+    left: 50%;
+    top: -6px;
+    margin: 0 0 0 -6px;
+}
+
+.lobby__stage-edit {
+    flex-direction: row;
+    align-items: center;
+    height: 26px;
+    margin-left: 3px;
+    padding: 0 8px 0 10px;
+    background-color: var(--ui-editor-button);
+    transition-property: background-color;
+    transition-duration: var(--ui-fast);
+}
+
+.lobby__stage-edit:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.lobby__stage-edit:active {
+    background-color: var(--ui-editor-button-pressed);
+}
+
+.lobby__stage-edit .lobby__icon {
+    width: 10px;
+    height: 10px;
+    margin-left: 4px;
+}
+
+.lobby__stage-edit:hover .lobby__card-edit-label {
+    color: var(--ui-text);
+}
+
+/* The narrow panel: name and Back on one line, players, round and the admin switch on the next; short tab names. */
+.lobby__header--stacked {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    padding: 12px 12px 10px 16px;
+}
+
+.lobby__header-row {
+    flex-direction: row;
+    align-items: center;
+    min-height: 26px;
+}
+
+.lobby__header--stacked .lobby__server-name {
+    margin-right: 8px;
+    font-size: 15px;
+}
+
+.lobby--stage .lobby__tabs {
+    padding: 0 12px 0 16px;
+}
+
+.lobby--stage .lobby__tab {
+    margin-right: 3px;
+    padding: 0 9px;
+    font-size: 11px;
+}
+
+/* Server Info in one column: banner, message of the day, server, change log, scrolling together. */
+.lobby--stage .lobby-info {
+    flex-direction: column;
+    padding: 14px 16px 16px 16px;
+    overflow-y: auto; /* web-only: a ScrollView */
+}
+
+.lobby--stage .lobby-info__left {
+    flex-grow: 0;
+    flex-shrink: 0;
+    margin-right: 0;
+}
+
+.lobby--stage .lobby-info__banner {
+    height: 128px;
+    margin-bottom: 12px;
+    background-position: center;
+}
+
+.lobby--stage .lobby-info__motd-scroll,
+.lobby--stage .lobby-info__section-gap,
+.lobby--stage .lobby-info__log {
+    flex-grow: 0;
+    flex-shrink: 0;
+    overflow-y: visible;
+}
+
+.lobby--stage .lobby-info__right {
+    width: auto;
+    flex-shrink: 0;
+    margin-top: 18px;
+}
+
+/* Chat: the channels over the field, so the field keeps the panel's width. */
+.lobby--stage .lobby-chat {
+    padding: 14px 16px 14px 16px;
+}
+
+.lobby-chat__composer--stacked {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+}
+
+.lobby-chat__composer-row {
+    flex-direction: row;
+    height: 26px;
+}
+
+.lobby-chat__composer-row--field {
+    height: 32px;
+    margin-top: 4px;
+}
+
+.lobby-chat__composer-row--field .lobby-chat__input {
+    margin-left: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * Character window: CharacterWindow.uss redrawn in the character setup reference's look
+ * ══════════════════════════════════════════════════════════════════════════
+ * The reference's composition (title and rule, a tab column, labels centred over their controls in one column, the
+ * framed viewport, a continue button) holding the shipped window's content: name, body, colours and styles, jobs and
+ * antags. Jobs and Antags need the width, so .cw--wide hides the viewport while one of them is open. */
+
+.cw-who {
+    flex-direction: row;
+    align-items: center;
+}
+
+.cw-who__label {
+    margin-right: 12px;
+    font-family: "SquareDeal", monospace; /* web-only. USS: -unity-font-definition */
+    font-size: var(--ui-type-heading);
+    line-height: 1; /* web-only */
+    color: var(--ui-menu-tab-text-hover);
+}
+
+.cw-who__picker {
+    width: 220px;
+}
+
+/* A secondary button: the reference's idle tab plate, small. */
+.cw-small-button {
+    height: 30px;
+    padding: 0 14px;
+    align-self: center;
+    justify-content: center;
+    background-color: var(--ui-menu-tab);
+    font-family: "SquareDeal", monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 16px;
+    line-height: 1; /* web-only */
+    color: var(--ui-menu-tab-text-hover);
+    white-space: nowrap;
+    transition-property: background-color, color;
+    transition-duration: var(--ui-fast);
+}
+
+.cw-small-button:hover {
+    background-color: rgba(0, 0, 0, 0.62);
+    color: var(--ui-text);
+}
+
+.cw-small-button--under {
+    margin: -14px 0 26px 0;
+}
+
+.cw-small-button--disabled,
+.cw-small-button--disabled:hover {
+    background-color: var(--ui-menu-tab);
+    color: var(--ui-menu-tab-text);
+}
+
+.cw-note {
+    font-size: var(--ui-type-body);
+    line-height: 1.35; /* web-only */
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.cw-column .cw-note {
+    align-self: center;
+    text-align: center; /* web-only. USS: -unity-text-align: middle-center */
+}
+
+.cw-note--top {
+    margin-bottom: 18px;
+}
+
+/* Colours: swatches in a centred row, the picked one outlined white. */
+.cw-swatches {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 6px;
+}
+
+.cw-swatch {
+    width: 24px;
+    height: 24px;
+    margin: 3px;
+    border-width: 2px;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 3px;
+}
+
+.cw-swatch:hover {
+    border-color: rgba(255, 255, 255, 0.45);
+}
+
+.cw-swatch--selected,
+.cw-swatch--selected:hover {
+    border-color: var(--ui-menu-selected);
+}
+
+/* Styles: the reference's style tiles, three across, the game's baked pictures in them. */
+.cw-styles {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-self: center;
+    width: 276px; /* three tiles and a thin scroller */
+    height: 262px;
+    margin: 9px -10px 0 0;
+    overflow-y: auto; /* web-only: a ScrollView */
+}
+
+.cw-styles--short {
+    height: 174px;
+}
+
+.cw-style {
+    width: 80px;
+    height: 80px;
+    margin: 0 7px 7px 0;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--ui-menu-tab);
+    background-size: 92%; /* web-only. USS: -unity-background-scale-mode: scale-to-fit */
+    background-position: center;
+    background-repeat: no-repeat;
+    border-width: 3px;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 3px;
+}
+
+.cw-style:hover {
+    border-color: rgba(205, 205, 205, 0.35);
+}
+
+.cw-style--selected,
+.cw-style--selected:hover {
+    background-color: rgba(120, 120, 120, 0.42);
+    border-color: rgba(205, 205, 205, 0.75);
+}
+
+.cw-style-name {
+    margin-top: 6px;
+    align-self: center;
+    font-family: "SquareDeal", monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 16px;
+    line-height: 1; /* web-only */
+    color: var(--ui-menu-tab-text-hover);
+}
+
+.cw-styles::-webkit-scrollbar,
+.cw-jobs__scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.cw-styles::-webkit-scrollbar-thumb,
+.cw-jobs__scroll::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+/* ── Jobs: wide while open ── */
+/* Neutral until a department's class (lb-dept--*) sets its own colour on the group. */
+.cw-jobs {
+    height: 100%;
+    --dept: rgba(255, 255, 255, 0.5);
+}
+
+.cw-jobs__head {
+    margin-bottom: 12px;
+}
+
+.cw-jobs__head > .cw-note {
+    max-width: 620px;
+}
+
+.cw-jobs__scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    overflow-y: auto; /* web-only: a ScrollView */
+}
+
+.cw-jobs__grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-right: 8px;
+}
+
+.cw-dept {
+    width: 386px;
+    margin-bottom: 10px;
+}
+
+.cw-dept__head {
+    flex-direction: row;
+    align-items: center;
+    height: 30px;
+    padding: 0 10px;
+    border-left-width: 3px;
+    border-color: var(--dept);
+    background-color: var(--ui-menu-tab);
+}
+
+.cw-dept__glyph {
+    width: 14px;
+    height: 14px;
+    background-color: var(--dept); /* web-only mask fill. USS: -unity-background-image-tint-color */
+    -webkit-mask-size: contain; /* web-only */
+    -webkit-mask-repeat: no-repeat; /* web-only */
+    -webkit-mask-position: center; /* web-only */
+    mask-size: contain; /* web-only */
+    mask-repeat: no-repeat; /* web-only */
+    mask-position: center; /* web-only */
+}
+
+.cw-dept__name {
+    margin-left: 8px;
+    font-family: "SquareDeal", monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 17px;
+    line-height: 1; /* web-only */
+    color: var(--dept);
+}
+
+.cw-job {
+    flex-direction: row;
+    align-items: center;
+    height: 36px;
+    margin-top: 2px;
+    padding: 0 6px 0 10px;
+    background-color: rgba(0, 0, 0, 0.28);
+}
+
+.cw-job__icon {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    background-size: contain; /* web-only. USS: -unity-background-scale-mode: scale-to-fit */
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.cw-job__name {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-left: 8px;
+    font-size: 12.5px;
+    line-height: 1; /* web-only */
+    white-space: nowrap;
+}
+
+.cw-job__slots {
+    margin-right: 8px;
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.4);
+    white-space: nowrap;
+}
+
+.cw-job--locked .cw-job__name {
+    color: var(--ui-menu-tab-text-hover);
+}
+
+.cw-job--locked .cw-job__icon {
+    opacity: 0.45;
+}
+
+.cw-job__locked {
+    width: 192px;
+    height: 24px;
+    padding: 0 10px;
+    justify-content: center;
+    background-color: var(--ui-menu-field);
+    font-size: 11px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.32);
+}
+
+/* The reference's segmented control, small: job levels, angles, on/off. */
+.cw-seg .menu-segmented__option {
+    width: auto;
+    height: 24px;
+    margin: 0 0 0 2px;
+    padding: 0 9px;
+    font-size: 14px;
+}
+
+.cw-job .cw-seg .menu-segmented__option {
+    width: 46px;
+    padding: 0;
+    font-size: 13px;
+}
+
+/* High is the one choice that matters most: the department's colour fills it. */
+.cw-job .cw-seg .cw-level--high.menu-segmented__option--selected {
+    background-color: var(--dept);
+}
+
+.cw-seg--wide .menu-segmented__option {
+    height: 30px;
+    padding: 0 16px;
+    font-size: 16px;
+}
+
+.cw-fallback {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+}
+
+.cw-fallback__label {
+    font-family: "SquareDeal", monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 17px;
+    line-height: 1; /* web-only */
+    color: var(--ui-menu-tab-text-hover);
+}
+
+/* ── Antags ── */
+.cw-antags__title {
+    margin-bottom: 10px;
+    font-family: "SquareDeal", monospace; /* web-only. USS: -unity-font-definition */
+    font-size: var(--ui-type-heading);
+    line-height: 1; /* web-only */
+}
+
+.cw-antags > .cw-note {
+    max-width: 560px;
+}
+
+.cw-info {
+    max-width: 640px;
+    margin: 14px 0;
+    padding: 10px 12px;
+    border-left-width: 3px;
+    border-color: var(--ui-info);
+    background-color: rgba(120, 196, 236, 0.1);
+    font-size: var(--ui-type-body);
+    line-height: 1.35; /* web-only */
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.cw-antag {
+    flex-direction: row;
+    align-items: center;
+    max-width: 640px;
+    padding: 12px 14px;
+    background-color: var(--ui-menu-tab);
+}
+
+.cw-antag__icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    margin-right: 14px;
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.24);
+    border-radius: 3px;
+    background-size: 70%; /* web-only. USS: -unity-background-scale-mode: scale-to-fit */
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.cw-antag__text {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.cw-antag__name {
+    font-family: "SquareDeal", monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 18px;
+    line-height: 1; /* web-only */
+}
+
+.cw-antag__copy {
+    margin-top: 6px;
+    font-size: var(--ui-type-body);
+    line-height: 1.3; /* web-only */
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* ── Under the viewport, save state ── */
+.cw-under {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cw-under > .menu-segmented {
+    margin-left: -2px;
+}
+
+.cw-hint {
+    font-family: "SquareDeal", monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 15px;
+    line-height: 1; /* web-only */
+    color: var(--ui-menu-tab-text);
+}
+
+.cw-save {
+    flex-direction: row;
+    align-items: center;
+}
+
+.cw-save__state {
+    margin-right: 12px;
+    font-family: "SquareDeal", monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 17px;
+    line-height: 1; /* web-only */
+    color: var(--ui-ok);
+}
+
+.cw-save--dirty .cw-save__state {
+    color: var(--ui-warn);
+}
+
+.cw-save > .cw-small-button {
+    margin-left: 6px;
+}
+
+.cw-continue {
+    width: 214px;
+}
+
+/* Jobs and Antags open wide: the viewport steps aside. */
+.cw--wide .cw-frame,
+.cw--wide .cw-under {
+    display: none;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * Main menu: icons, colour and motion (2026-11-21)
+ * ══════════════════════════════════════════════════════════════════════════
+ * Join a server is info and Play locally ok, as their dialogs: the row's left edge and its icon. A server's state is an
+ * icon in its colour. The dialog eases in, and its colour (--op) says what it is doing: hosting ok, joining info,
+ * updating warn, lost or failed danger; the icon, the progress bar and the working step take it. In game the working
+ * step's icon and a Checking server's icon are spun by MainMenuView (style.rotate), and the glint is moved by it too;
+ * here they are keyframes (web-only). Glyphs are masks filled with their colour (USS: background-image and
+ * -unity-background-image-tint-color). */
+
+.main-menu__nav-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.main-menu__nav-icon,
+.main-menu__state-icon,
+.main-menu__op-icon,
+.main-menu__step-icon {
+    flex-shrink: 0;
+    -webkit-mask-size: contain; /* web-only */
+    -webkit-mask-repeat: no-repeat; /* web-only */
+    -webkit-mask-position: center; /* web-only */
+    mask-size: contain; /* web-only */
+    mask-repeat: no-repeat; /* web-only */
+    mask-position: center; /* web-only */
+}
+
+.main-menu__nav-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 12px;
+    background-color: rgba(255, 255, 255, 0.7); /* web-only mask fill. USS: -unity-background-image-tint-color */
+    transition-property: translate, background-color;
+    transition-duration: 0.14s;
+    transition-timing-function: cubic-bezier(0.33, 1, 0.68, 1); /* USS: ease-out-cubic */
+}
+
+.main-menu__nav:hover > .main-menu__nav-icon {
+    translate: 3px 0;
+}
+
+.main-menu__nav--join {
+    border-color: var(--ui-info);
+}
+
+.main-menu__nav--local {
+    border-color: var(--ui-ok);
+}
+
+.main-menu__nav--join > .main-menu__nav-icon {
+    background-color: var(--ui-info);
+}
+
+.main-menu__nav--local > .main-menu__nav-icon {
+    background-color: var(--ui-ok);
+}
+
+.main-menu__nav--settings > .main-menu__nav-icon,
+.main-menu__nav--quit > .main-menu__nav-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.main-menu__nav--quit:hover > .main-menu__nav-icon {
+    background-color: var(--ui-danger);
+}
+
+.main-menu__button--accent > .main-menu__nav-icon,
+.main-menu__nav--selected > .main-menu__nav-icon {
+    background-color: var(--ui-text-on-light);
+}
+
+.main-menu__nav--disabled > .main-menu__nav-icon {
+    background-color: var(--ui-menu-tab-text);
+}
+
+.main-menu__state-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 10px;
+    background-color: rgba(255, 255, 255, 0.35);
+}
+
+.main-menu__state-icon--online {
+    background-color: var(--ui-ok);
+}
+
+.main-menu__state-icon--update,
+.main-menu__state-icon--checking {
+    background-color: var(--ui-info);
+}
+
+.main-menu__state-icon--full,
+.main-menu__state-icon--older {
+    background-color: var(--ui-warn);
+}
+
+.main-menu__state-icon--offline {
+    background-color: var(--ui-danger);
+}
+
+/* ── The dialog ── */
+.main-menu__overlay {
+    --op: var(--ui-info);
+    background-color: rgba(0, 0, 0, 0);
+    transition: background-color 0.25s;
+}
+
+.main-menu__overlay--in {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.main-menu__overlay--host {
+    --op: var(--ui-ok);
+}
+
+.main-menu__overlay--update {
+    --op: var(--ui-warn);
+}
+
+.main-menu__overlay--lost,
+.main-menu__overlay--failed {
+    --op: var(--ui-danger);
+}
+
+.main-menu__dialog {
+    opacity: 0;
+    scale: 0.94;
+    translate: 0 12px;
+    border-top-width: 3px;
+    border-top-color: var(--op);
+    transition-property: opacity, scale, translate, border-top-color;
+    transition-duration: 0.2s, 0.32s, 0.32s, 0.3s;
+    transition-timing-function: cubic-bezier(0.33, 1, 0.68, 1), cubic-bezier(0.34, 1.56, 0.64, 1), cubic-bezier(0.33, 1, 0.68, 1), linear; /* USS: ease-out-cubic, ease-out-back, ease-out-cubic, linear */
+}
+
+.main-menu__overlay--in .main-menu__dialog {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+}
+
+.main-menu__op-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    background-color: var(--op); /* web-only mask fill. USS: -unity-background-image-tint-color */
+}
+
+.main-menu__progress {
+    position: relative;
+    height: 3px;
+    margin: 0 16px 14px 16px;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.main-menu__progress--hidden {
+    display: none;
+}
+
+.main-menu__progress-fill {
+    position: relative;
+    height: 100%;
+    width: 0;
+    overflow: hidden;
+    background-color: var(--op);
+    transition-property: width, background-color;
+    transition-duration: 0.5s, 0.3s;
+    transition-timing-function: cubic-bezier(0.33, 1, 0.68, 1), linear;
+}
+
+.main-menu__progress-glint {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -60px;
+    width: 60px;
+    background-color: rgba(255, 255, 255, 0.45);
+    display: none;
+}
+
+.main-menu__progress--working .main-menu__progress-glint {
+    display: flex;
+    animation: mm-glint 1.4s linear infinite; /* web-only: MainMenuView moves it */
+}
+
+@keyframes mm-glint { /* web-only */
+    from { left: -60px; }
+    to { left: 100%; }
+}
+
+.main-menu__step {
+    justify-content: flex-start;
+    padding: 0 10px 0 7px;
+    border-left-width: 3px;
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.main-menu__step-label {
+    flex-grow: 1;
+}
+
+.main-menu__step--active {
+    border-color: var(--op);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.main-menu__step--failed {
+    border-color: var(--ui-danger);
+}
+
+.main-menu__step-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 10px;
+}
+
+.main-menu__step-icon--pending {
+    width: 6px;
+    height: 6px;
+    margin: 0 14px 0 4px;
+    border-width: 1px;
+    border-radius: 3px;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.main-menu__step-icon--active {
+    background-color: var(--op);
+    scale: 0.85;
+    animation: mm-spin 1.2s linear infinite; /* web-only: MainMenuView sets style.rotate */
+}
+
+@keyframes mm-spin { /* web-only */
+    to { rotate: 360deg; }
+}
+
+.main-menu__step-icon--done {
+    background-color: var(--ui-ok);
+}
+
+.main-menu__step-icon--done.is-new {
+    animation: mm-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); /* web-only: in game a scale transition from 0.85 */
+}
+
+@keyframes mm-pop { /* web-only */
+    from { scale: 0.85; }
+    to { scale: 1; }
+}
+
+.main-menu__step-icon--failed {
+    background-color: var(--ui-danger);
+}

@@ -38,6 +38,9 @@
     <div class="nav__group">Screens</div>
     <a href="#setup">character setup</a>
     <a href="#editor">map editor</a>
+    <a href="#mainmenu">main menu</a>
+    <a href="#lobby">lobby</a>
+    <a href="#charwin">character</a>
     <div class="nav__group">Porting</div>
     <a href="#port">css → uss</a>
     <a href="#questions">open questions</a>
@@ -515,6 +518,251 @@
         <li><b>Severity colours</b> (<code>--ui-danger</code>, <code>--ui-warn</code>, <code>--ui-ok</code>) are new; no reference shows them.</li>
         <li><b>Idle mode tabs.</b> The plate is now black at 80 % and each tab carries its category's stripe, so the rail reads over space. The label is still the menu's idle text; an editor may want it brighter than a menu's.</li>
         <li><b>Not drawn yet:</b> the systems legend and sim bar, the trace panel, the room properties and gas marker popovers, the show-UI button, and the side headings a long sub-tab (machines) gets.</li>
+    </ol>
+</section>
+
+<section id="mainmenu">
+    <h2>main menu</h2>
+    <p class="sec-lede">The main menu redrawn in the map editor's look. <b>design</b> switches to the shipped menu (<b>old</b>: <code>MainMenuPreviewWindow</code>'s sample states captured at 1920 × 1080; Settings shows the shipped panel from the lobby), or shows both side by side or overlaid. The layout, text and states are the shipped <code>MainMenu.uxml</code> and <code>MainMenuView</code>'s, the settings screen in the panel is <code>PlayerSettingsPanel</code>'s, and the wallpaper is Clownin, the menu's only one. The chips jump to each state; it is also live: type a name, open Join or Settings, join a server, play locally. <b>Esc</b> is Back while the pointer is over the screen.</p>
+    <div class="stage" id="mm-stage" data-cmp="mainmenu">
+        <div class="spec__bar"><span class="spec__name">main-menu</span><span class="spec__src">MainMenu.uss · 1200 × 675</span><div class="spec__tools"><button class="chip-btn" data-fullscreen>full screen</button></div></div>
+        <div class="cmp-bar"><span>state</span><div class="cmp-bar__group mm-chips" data-mm-chips></div></div>
+        <div class="stage__viewport">
+            <div class="stage__canvas ui" id="mm-canvas"></div>
+        </div>
+    </div>
+
+    <h2>what changed</h2>
+    <p class="sec-lede">The same tree as the shipped menu, so the port is a rewrite of <code>MainMenu.uss</code> and <code>PlayerSettingsPanel.uss</code> on <code>ui-tokens.uss</code>, plus the C# changes marked. Behaviour and text are unchanged.</p>
+    <table class="port">
+        <tr><th>Part</th><th>Before</th><th>Now</th></tr>
+        <tr><td>Plates</td><td>A full-height sidebar (<code>#222</code> at 97 %), a <code>#353538</code> panel with a <code>#161616</code> header band</td><td>Floating plates 16 px from the screen's edges: <code>--ui-editor-panel</code> with the storage panel's 2 px edge and corner, as on the map editor. A header is a title on the plate, with no band</td></tr>
+        <tr><td>Sidebar rows</td><td>Dark plates, Join in rust, Gurajada at 20 px</td><td>A tab column, as on character setup. Rows are light tints (<code>--ui-editor-button</code>). The open screen's row is the white plate with the continue button's notch, and on the home screen Join holds it as the default action (C#: <code>--accent</code> on Join only while no screen is open, <code>--selected</code> on the open row)</td></tr>
+        <tr><td>Port</td><td>An "Advanced ▾" text button</td><td>A square at the end of the Play locally row: PORT over a caret</td></tr>
+        <tr><td>Music</td><td>Icon button, a "Next" text button, a round slider</td><td>Two storage cells at 28 px: the toggle outlined white when on, next track as a glyph (UXML: an icon in the Button), and the menu slider</td></tr>
+        <tr><td>Update banner</td><td>Blue edge, blue button</td><td>The info colour (<code>--ui-info</code>, new) on its edge and dot; Update and restart is the white primary</td></tr>
+        <tr><td>Servers</td><td>Outlined cards on <code>#2a2a2e</code>, rust Join, colours set in C#</td><td>Tints separated by spacing. The status dot and status text carry the state: ok, warn (full), info (needs an update), danger (offline). Join is white on the first joinable recent server, Update has the info outline, a button that can't be used fades (C#: the colours move from <code>MainMenuView</code> into dot and status classes)</td></tr>
+        <tr><td>Refusals, details</td><td>A red-tinted strip; inline fields</td><td>The same strip in the danger colour; details are label and field rows, Remove with the danger outline</td></tr>
+        <tr><td>Dialogs</td><td>A 440 px panel over a 55 % dim</td><td>The floating surface (<code>--ui-float</code>) over the blurred wallpaper and a 30 % dim. Steps are tints: OK in the ok colour, FAILED and the reason in the danger colour</td></tr>
+        <tr><td>Settings</td><td>Its own palette (<code>--sp-*</code>), Gurajada tabs, rust for the chosen option</td><td>The same plate and parts: the map editor's sub-tabs (a white line under the open one), rows as tints, segmented options as dark plates with the chosen one white, keys as the editor's chips at row size. The changed-from-default dot takes the info colour</td></tr>
+        <tr><td>Type</td><td>Gurajada titles, Liberation Sans text, Spessman for values, as raw TTFs</td><td>Disket Mono Bold for labels (titles, rows, buttons, column heads), Kode Mono for text (names, addresses, hints, values), both the baked font assets</td></tr>
+    </table>
+
+    <h2>decided</h2>
+    <ol class="qs">
+        <li><b>Where you are</b> is the white plate: Join holds it on the home screen and gives it up while Settings is open. The open row keeps the notch.</li>
+        <li><b>News</b> is <code>--ui-info</code> (sky): the update banner, a server that needs an update, a changed setting.</li>
+        <li><b>In this pass:</b> the settings panel (so the lobby's Settings tab changes too), the sidebar layout as drawn, Disket Mono Bold titles.</li>
+        <li><b>One wallpaper:</b> Clownin, always. The game no longer picks one at random, rotates every 60 s or plays video wallpapers.</li>
+        <li><b>Not drawn yet:</b> the admin-token prompt in the dialog and Settings' "Keep these settings?" prompt.</li>
+        <li><b>Scale:</b> the port draws the menu as this tab does. <code>UiReferenceScale</code> lays its root out at 1200 × 675 and scales it to the screen (1.6× at 1080p), times the UI scale, so <code>MainMenu.uss</code> keeps these numbers. Ported 2026-11-21.</li>
+    </ol>
+</section>
+
+<section id="lobby">
+    <h2>lobby</h2>
+    <p class="sec-lede">The lobby in the main menu's look. <b>design</b> switches to the shipped lobby (<b>old</b>, captured in the Editor at 1920 × 1080), or shows both side by side or overlaid; the state chips pick the old capture nearest each state. Layout, text and states are the shipped <code>Lobby.uxml</code> and <code>LobbyView</code>'s, with the tab views, the Join picker, the character switcher and the Last Round summary. Settings is the same <code>PlayerSettingsPanel</code> as the main menu's, without its header. A station render stands in for the live station behind it. The chips jump to each state; it is also live: ready up, open the tabs, switch characters, pick a job and join, chat, flip the admin switch. The clock runs. <b>Esc</b> closes the top thing while the pointer is over the screen. <b>layout</b> switches between B, the character stage below (chosen 2026-11-21), and A, the shipped layout; the page remembers your pick.</p>
+    <div class="stage" id="lb-stage" data-cmp="lobby">
+        <div class="spec__bar"><span class="spec__name">lobby</span><span class="spec__src">Lobby.uss · LobbyJoin.uss · CharacterSwitcher.uss · 1200 × 675</span><div class="spec__tools"><button class="chip-btn" data-fullscreen>full screen</button></div></div>
+        <div class="cmp-bar"><span>layout</span><div class="cmp-bar__group"><button class="chip-btn" data-lb-layout="b" title="A narrow sidebar and panel, the character large between them">B · character stage</button><button class="chip-btn" data-lb-layout="a" title="Today's layout: the character card in a wide sidebar">A · card in the sidebar</button></div></div>
+        <div class="cmp-bar"><span>state</span><div class="cmp-bar__group mm-chips" data-lb-chips></div></div>
+        <div class="stage__viewport">
+            <div class="stage__canvas ui" id="lb-canvas"></div>
+        </div>
+    </div>
+
+    <h2>layout b: the character stage</h2>
+    <p class="sec-lede">The owner's pick over A (2026-11-21): a narrow sidebar on the left, a narrow panel on the right, and the character you play large between them, about 47 % of the width. Everything else (states, colours, the Join picker, the prompt) is A's.</p>
+    <table class="port">
+        <tr><th>Part</th><th>Layout B</th></tr>
+        <tr><td>Sidebar</td><td>264 px instead of 360, full height: logo, round, Ready / Join, Observe (its reason wraps), music, and the footer's two buttons stacked. The character card moves to the stage</td></tr>
+        <tr><td>Stage</td><td>560 px between the plates, over the station. A plate with "Playing as", the name and the High job (its department's glyph and colour, and a bar under the plate); the model standing on a floor glow in the department's colour; under it Switch character and Edit character. Clicking the model opens the character window, as the card did. The switcher opens above its button, the notch pointing up</td></tr>
+        <tr><td>Model</td><td>In game the booth's live render texture (<code>CharacterPreviewBooth</code>, as the card's preview today); its 3 : 4 full-body frame fits the stage. Here a still of it, rendered in the Editor (<code>renders/lobby-character.png</code>), stands in for every character</td></tr>
+        <tr><td>Panel</td><td>360 px on the right: the server name and Back on one line, players, round and the admin switch on the next (map and mode stay in Info's server table); short tab names (Info, Chat, Settings, Last round, Server). Info runs in one scrolling column; Chat puts the channels over the field</td></tr>
+        <tr><td>Wide tabs</td><td>Settings, Last round and Server settings need the room, so the panel widens over the stage while they're open, and the stage hides</td></tr>
+    </table>
+    <ol class="qs">
+        <li><b>Chosen:</b> B over A (2026-11-21), with a compact name plate and a small switch bar near the screen's bottom.</li>
+        <li><b>Turning the model:</b> the booth turns the character in 90° steps today (<code>SetAngleIndex</code>). Drag to turn, arrows beside the model, or neither?</li>
+        <li><b>Wide tabs:</b> widening over the stage keeps Settings readable but hides the character. The other way is a narrow Settings (one column of rows), which Server settings would also need.</li>
+        <li><b>Scale:</b> the stage is the part the shell's scale question matters least for: the model fills whatever room is left.</li>
+    </ol>
+
+    <h2>what changed</h2>
+    <p class="sec-lede">The same trees as the shipped lobby, so the port is a rewrite of <code>Lobby.uss</code>, <code>LobbyJoin.uss</code> and <code>CharacterSwitcher.uss</code> on <code>ui-tokens.uss</code>, retiring <code>LobbyTokens.uss</code>, plus the C# changes marked. Behaviour and text are unchanged.</p>
+    <table class="port">
+        <tr><th>Part</th><th>Before</th><th>Now</th></tr>
+        <tr><td>Plates</td><td>A full-height 400 px sidebar at 97 %, a <code>#353538</code> panel with a <code>#161616</code> header band and tab strip</td><td>The sidebar runs the full height from the left edge, as today's, on <code>--ui-editor-panel</code> with an edge on its right; the logo sits above a rule across it. The panel is the main menu's floating plate. Header and tabs sit on the plate, with no band</td></tr>
+        <tr><td>Round</td><td>A section with a 48 px Spessman timer, green and amber status</td><td>A tint whose 3 px left edge, dot and word carry the round's state: info while it counts down, warn loading, starting, held or over, ok in progress (C#: <code>LobbyTone</code> gains <code>Info</code> for the running countdown). The readout in Kode Mono at 36 px, struck and dimmed while held. The header's round word takes the same colour</td></tr>
+        <tr><td>Character</td><td>An inset card, a 124 × 211 preview, Gurajada "EDIT CHARACTER"</td><td>A lighter plate than the round's, with a faint edge, the preview in a storage cell's outline inside, the name in Kode, the High job in its department's colour behind its swatch; the card's left edge takes that colour too (C#: <code>lobby__card--dept</code> and the department class from the High job). Switch character is a row; open, it is the white plate with the notch aimed at the switcher (C#: <code>lobby__switch--open</code> while the popover is up)</td></tr>
+        <tr><td>Ready / Join</td><td>A rust plate, green when ready</td><td>Ready up and Join are the white plate, the screen's call to action. Once ready it is the ok plate (green, dark text and check): done, click to cancel. Off, it fades (C#: <code>--disabled</code> in place of <code>:disabled</code>'s opacity rule). Observe is a tint with the ghost, its subtitle under the title (UXML: the two labels in <code>lobby__observe-text</code>)</td></tr>
+        <tr><td>Music, footer</td><td>The menu's old music row; quiet text buttons</td><td>The main menu's music row (two cells, the slider; Next as a glyph). Report a bug and Quit stay quiet buttons with Disket labels; Quit armed takes the danger outline</td></tr>
+        <tr><td>Header, tabs</td><td>Gurajada server name and tabs on dark bands; an amber ADMIN badge; a green switch</td><td>The server name in Disket, the meta as Disket keys over Kode values. Tabs are the menu's tab plates in a row, the open one white. Admin is amber, as now: the ADMIN badge's outline and text, the switch when on</td></tr>
+        <tr><td>Server Info</td><td>Banner, MOTD, key-value rows with hairlines, the change log</td><td>The same, the rows as tints; the change log in Kode with faint refs and links</td></tr>
+        <tr><td>Chat</td><td>An inset log, rust for the chosen channel, LOOC in blue</td><td>The log and composer near-black, as the editor's search. Each channel has a colour, as now: OOC white, LOOC info, Admin warn. It colours the line's tag, the chosen channel's plate (the settings' segmented control) and the field's left edge (C#: <code>lobby-chat__composer--&lt;channel&gt;</code> with the chosen button). Admin names stay warn</td></tr>
+        <tr><td>Settings</td><td>The shared panel in its own palette</td><td>The main menu's panel without its header (<code>showHeader: false</code>): its sub-tabs sit under the lobby's tab plates, so the two levels read apart</td></tr>
+        <tr><td>Server Settings</td><td>Cards with header bands, inset fields, rust Start and checkboxes</td><td>A tint for the round's state with its colour on the left edge, the settings' group titles, the main menu's buttons by consequence (Start white; Force Start, Cancel Countdown and Hold Summary outlined warn; Stop Round danger), near-black fields and dropdowns, rules as tints with a cell for a checkbox that turns white</td></tr>
+        <tr><td>Join picker</td><td>A 1280 × 800 panel, rust selection and Join, department tints</td><td>The floating surface over the lobby. Departments code everything, as the map editor's categories: each job row has its department's left edge, glyph cell and label; the picked one outlines in that colour, fills its ring and shows its description, and Join fills with it ("Join as Doctor" in medical). Manifest groups carry the edge and a coloured name. A gap in the manifest ("No Doctor aboard") is news, in info</td></tr>
+        <tr><td>Switcher</td><td>A dark popover, rows on <code>#2a2a2e</code></td><td>The floating surface; rows are tints with their High job's department edge and name, the character you play has the white outline and an ok check. Delete asks inline with the danger outline</td></tr>
+        <tr><td>Last Round</td><td>RoundEnd.uss: arcade and terminal fonts, the result in team colours</td><td>The same sections on the same parts. The result is a tint with the winning side as a 3 px left edge (crew info, operatives danger), the title in Disket; fates and objectives in ok and danger. Roster lines carry their department's edge and job colour, operatives a danger edge; you are the white chip</td></tr>
+        <tr><td>Colour</td><td>Rust accent, per-department fills, its own pastel palette</td><td>Colour coding, as on the map editor: four things, each with its colour in fixed places. Departments (<code>--ui-dept-*</code>, LobbyTokens' pastels as new tokens) as a 3 px left edge, a glyph, a name, a picked outline. The round's state, chat channels and admin, in <code>--ui-ok</code> / <code>--ui-warn</code> / <code>--ui-danger</code> / <code>--ui-info</code>. No rust: the call to action is the white plate, as on the main menu</td></tr>
+        <tr><td>Compact layout</td><td><code>LobbyView</code> adds <code>.lobby--compact</code> below 1600 px of panel width (1366 × 768)</td><td>Kept as a switch; its sizes are retuned once the scale question below is settled</td></tr>
+        <tr><td>Type</td><td>Gurajada, Liberation Sans, Spessman, as raw TTFs</td><td>Disket Mono Bold for labels, Kode Mono for text, the baked font assets</td></tr>
+    </table>
+
+    <h2>open questions</h2>
+    <ol class="qs">
+        <li><b>Scale (settled):</b> as the main menu's port, the lobby's root goes through <code>UiReferenceScale</code> (1200 × 675, scaled to the screen), so <code>Lobby.uss</code> keeps these numbers.</li>
+        <li><b>The call to action.</b> Ready up, Join and Start Round are the white plate, as Join on the main menu; everything else is colour-coded. The shipped lobby makes them rust. Keep white, or give the primary its own colour?</li>
+        <li><b>Last Round and the round-end overlay.</b> The tab is RoundEnd.uss, which also draws the in-round summary over the station. Restyling the tab restyles that overlay too: in this pass, or keep the arcade look for both until the overlay gets its own bible tab?</li>
+        <li><b>The character window</b> opens from the card. Its restyle belongs to the <a href="#setup">character setup</a> tab's look, but the window is the new Appearance / Jobs / Antags one, which the bible doesn't draw yet. Its own tab next, before the port?</li>
+        <li><b>Not drawn yet:</b> the map-load failure lines, the in-round Escape menu's own differences beyond Back to round, and the first-connect state (a random character, nothing set).</li>
+    </ol>
+</section>
+
+<section id="charwin">
+    <h2>character</h2>
+    <p class="sec-lede">The character window (Appearance, Jobs, Antags, opened from the lobby's character), redrawn in the old reference's look: the <a href="#setup">character setup</a> tab's title and rule, its column of tabs, labels centred over their controls and the framed viewport, with <b>return to lobby</b> as its continue button. The content is the shipped <code>CharacterWindowView</code>'s, and the style pictures and job icons are the game's own. <b>design</b> switches to the shipped window (<b>old</b>, captured in the Editor at 1920 × 1080). Tabs, sliders, swatches, styles, the job levels and the antag switch all work; the save state follows your changes.</p>
+    <div class="stage" id="cw-stage" data-cmp="charwin">
+        <div class="spec__bar"><span class="spec__name">character</span><span class="spec__src">CharacterWindow.uss · 1200 × 675</span><div class="spec__tools"><button class="chip-btn" data-fullscreen>full screen</button></div></div>
+        <div class="stage__viewport">
+            <div class="stage__canvas ui bd-menu cs cw" id="cw-canvas">
+                <div class="zone" style="left:102px;top:24px"><div class="screen-title">character setup</div></div>
+                <div class="zone screen-rule" style="left:97px;right:97px;top:74px"></div>
+
+                <!-- Who you're editing: the switcher as the reference's dropdown, at the end of the title line. -->
+                <div class="zone cw-who" style="right:97px;top:30px">
+                    <div class="cw-who__label">character</div>
+                    <div class="menu-dropdown cw-who__picker" data-cw-picker><div class="menu-dropdown__value">Omar Maddox</div><div class="menu-dropdown__arrow"></div><div class="menu-dropdown__list" data-cw-chars></div></div>
+                </div>
+
+                <div class="zone" style="left:105px;top:116px">
+                    <div class="menu-tabs" data-tabs data-cw-tabs>
+                        <div class="menu-tab menu-tab--selected" data-tab="profile">profile</div>
+                        <div class="menu-tab" data-tab="body">body</div>
+                        <div class="menu-tab" data-tab="skin">skin &amp; eyes</div>
+                        <div class="menu-tab" data-tab="hair">hair</div>
+                        <div class="menu-tab" data-tab="beard">facial hair</div>
+                        <div class="menu-tab" data-tab="jobs">jobs</div>
+                        <div class="menu-tab" data-tab="antags">antags</div>
+                    </div>
+                </div>
+
+                <!-- The centre column: labels over their controls, as the reference. -->
+                <div class="zone cw-column" style="left:297px;top:125.5px;width:248px">
+                    <div class="cs-pane" data-pane="profile">
+                        <div class="menu-field"><div class="menu-field__label">name</div><input class="menu-text-field" value="Omar Maddox" spellcheck="false" data-cw-name></div>
+                        <div class="cw-small-button cw-small-button--under" data-cw="random-name">randomize name</div>
+                        <div class="menu-field"><div class="menu-field__label">job outfit preview</div>
+                            <div class="menu-dropdown" data-cw-outfit><div class="menu-dropdown__value">high job (none: assistant)</div><div class="menu-dropdown__arrow"></div>
+                                <div class="menu-dropdown__list"><div class="menu-dropdown__item">high job (none: assistant)</div><div class="menu-dropdown__item">naked</div><div class="menu-dropdown__item">captain</div><div class="menu-dropdown__item">security</div><div class="menu-dropdown__item">engineer</div><div class="menu-dropdown__item">doctor</div></div></div></div>
+                        <div class="screen-rule screen-rule--short" style="margin:7px 0 30px"></div>
+                        <div class="menu-field"><div class="menu-field__label">everything else</div><div class="cw-small-button" data-cw="random-look">randomize appearance</div></div>
+                        <div class="cw-note">Everything here is visible to other players.</div>
+                    </div>
+
+                    <div class="cs-pane is-hidden" data-pane="body">
+                        <div class="menu-field"><div class="menu-field__label">height</div><div class="menu-slider" data-value="0.65"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                        <div class="menu-field"><div class="menu-field__label">female</div><div class="menu-slider" data-value="0.92"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                        <div class="menu-field"><div class="menu-field__label">fat</div><div class="menu-slider" data-value="0.26"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                        <div class="menu-field"><div class="menu-field__label">muscle</div><div class="menu-slider" data-value="0.02"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                        <div class="menu-field"><div class="menu-field__label">chest</div><div class="menu-slider" data-value="0.07"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                        <div class="menu-field"><div class="menu-field__label">jaw</div><div class="menu-slider" data-value="0.35"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                    </div>
+
+                    <div class="cs-pane is-hidden" data-pane="skin">
+                        <div class="menu-field"><div class="menu-field__label">skin tone</div><div class="cw-swatches" data-cw-swatches="skin"></div></div>
+                        <div class="menu-field"><div class="menu-field__label">eye colour</div><div class="cw-swatches" data-cw-swatches="eyes"></div></div>
+                        <div class="menu-field__label">eyebrows</div>
+                        <div class="cw-styles cw-styles--short" data-cw-styles="eyebrows"></div>
+                        <div class="cw-style-name" data-cw-style-name="eyebrows"></div>
+                    </div>
+
+                    <div class="cs-pane is-hidden" data-pane="hair">
+                        <div class="menu-field"><div class="menu-field__label">colour</div><div class="cw-swatches" data-cw-swatches="hair"></div></div>
+                        <div class="menu-field__label">style</div>
+                        <div class="cw-styles" data-cw-styles="hair"></div>
+                        <div class="cw-style-name" data-cw-style-name="hair"></div>
+                    </div>
+
+                    <div class="cs-pane is-hidden" data-pane="beard">
+                        <div class="cw-note cw-note--top">Facial hair takes the hair's colour.</div>
+                        <div class="menu-field__label">style</div>
+                        <div class="cw-styles" data-cw-styles="beard"></div>
+                        <div class="cw-style-name" data-cw-style-name="beard"></div>
+                    </div>
+                </div>
+
+                <!-- Jobs and Antags need the width: they take the viewport's place while open. -->
+                <div class="zone cw-wide" style="left:297px;top:116px;width:789px;height:452px">
+                    <div class="cs-pane cw-jobs is-hidden" data-pane="jobs">
+                        <div class="cw-jobs__head">
+                            <div class="cw-note">Rank the jobs you want. One job can be high; medium and low take as many as you like. Everyone's choices are settled together when the round starts.</div>
+                        </div>
+                        <div class="cw-jobs__scroll"><div class="cw-jobs__grid" data-cw-jobs></div></div>
+                        <div class="cw-fallback">
+                            <div class="cw-fallback__label">if none of my jobs is open</div>
+                            <div class="menu-segmented cw-seg cw-seg--wide" data-cw-fallback><div class="menu-segmented__option menu-segmented__option--selected">become assistant</div><div class="menu-segmented__option">return to lobby</div></div>
+                        </div>
+                    </div>
+
+                    <div class="cs-pane cw-antags is-hidden" data-pane="antags">
+                        <div class="cw-antags__title">antagonist eligibility</div>
+                        <div class="cw-note">Switching a role on lets the round pick you for it. It is not a job: you still spawn in your job, and most rounds you will never be drawn. Every role starts off.</div>
+                        <div class="cw-info">These roles are only drawn if their gamemode is picked for the round. The lobby never shows which mode will run, so a "secret" round stays secret.</div>
+                        <div class="cw-antag">
+                            <div class="cw-antag__icon"></div>
+                            <div class="cw-antag__text">
+                                <div class="cw-antag__name">nuclear operative</div>
+                                <div class="cw-antag__copy">A member of a Syndicate strike team sent to destroy the station with a nuclear device.</div>
+                            </div>
+                            <div class="menu-segmented cw-seg" data-cw-antag><div class="menu-segmented__option menu-segmented__option--selected">off</div><div class="menu-segmented__option">on</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="zone preview-frame cw-frame" style="left:604px;top:124px;width:482px;height:444px" title="In game: drag to turn">
+                    <div class="preview-frame__viewport cw-viewport" data-cw-viewport>
+                        <div class="cs-dome"></div>
+                        <div class="cw-model" data-cw-model></div>
+                    </div>
+                </div>
+                <div class="zone cw-under" style="left:604px;top:580px;width:482px">
+                    <div class="menu-segmented cw-seg" data-cw-angle><div class="menu-segmented__option menu-segmented__option--selected">front</div><div class="menu-segmented__option">side</div><div class="menu-segmented__option">back</div></div>
+                    <div class="cw-hint">drag to turn</div>
+                </div>
+
+                <!-- Save state, then the continue button: back to the lobby. -->
+                <div class="zone cw-save" style="left:105px;bottom:32px" data-cw-save>
+                    <div class="cw-save__state" data-cw-state>saved</div>
+                    <div class="cw-small-button" data-cw="discard">discard</div>
+                    <div class="cw-small-button" data-cw="save">save</div>
+                </div>
+                <div class="zone" style="right:114px;bottom:28px">
+                    <div class="menu-button cw-continue" data-cw="lobby"><div class="menu-button__tip"></div><div class="menu-button__text">return to lobby</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2>what changed</h2>
+    <p class="sec-lede">The same content as the shipped window, in the reference's composition. The port is a rewrite of <code>CharacterWindow.uxml</code> / <code>.uss</code> (off <code>LobbyClassic.uss</code>) and of <code>CharacterWindowView</code>'s layout; the model and saving are unchanged.</p>
+    <table class="port">
+        <tr><th>Part</th><th>Before</th><th>Now</th></tr>
+        <tr><td>Frame</td><td>A full-screen panel with a header band: CHARACTER, the switcher, Saved, Discard, Save, Return to lobby</td><td>The reference's title and rule over the blurred station. The switcher is a dropdown at the end of the title line; save state, Discard and Save sit at the bottom left; Return to lobby is the continue button at the bottom right</td></tr>
+        <tr><td>Tabs</td><td>Appearance, Jobs, Antags across the top</td><td>The reference's tab column: profile, body, skin &amp; eyes, hair, facial hair, jobs, antags. Appearance splits into the first five, so each pane fits the centre column</td></tr>
+        <tr><td>Appearance</td><td>Two columns: name and body sliders with values; a 7-wide grid of hair and beard pictures with names</td><td>One control column, labels centred over their controls: name and randomize; body sliders without numbers; skin, eye and hair colours as swatch rows; styles as 3-wide grids of the game's pictures, the picked one named under the grid</td></tr>
+        <tr><td>Preview</td><td>A framed render on the left with Front / Side / Back and Show clothing</td><td>The reference's framed viewport on the right, Front / Side / Back under it, and drag to turn (as in the lobby). Show clothing becomes the reference's "job outfit preview" dropdown (high job, naked, or a job)</td></tr>
+        <tr><td>Jobs</td><td>Two columns of departments; per job a High / Medium / Low / Never control or "Not in the game yet"</td><td>The same, wide over the viewport while open: departments with their colour on the edge, glyph and name; the levels as the reference's segmented control; the fallback as one at the foot</td></tr>
+        <tr><td>Antags</td><td>A card with an Off switch</td><td>The same in the reference's parts: the role and its line, Off / On as a segmented control</td></tr>
+        <tr><td>Type</td><td>Liberation Sans, Gurajada</td><td>The reference's SquareDeal for labels and controls, as the character setup tab</td></tr>
+    </table>
+
+    <h2>open questions</h2>
+    <ol class="qs">
+        <li><b>Jobs over the viewport.</b> Jobs needs the width, so it covers the preview, and the High job's outfit can't be watched while ranking. Keep it, or a narrower one-column list beside the viewport?</li>
+        <li><b>Font (decided 2026-11-21):</b> the reference's SquareDeal, as drawn here, not the lobby's Disket / Kode. The project has it only as a raw TTF (<code>Assets/Art/Font/Fonts/SquareDeal.ttf</code>); the port bakes a static SDF asset beside <code>DisketMonoBoldSDF</code> and <code>KodeMonoSDF</code>, set to the standard text generator as they are.</li>
+        <li><b>Hair colour.</b> The reference picks it on a colour wheel; the game stores an index into a palette (saves keep indices), so this draws the palette's swatches.</li>
     </ol>
 </section>
 

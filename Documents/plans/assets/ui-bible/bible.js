@@ -18,6 +18,12 @@
         UI: 'Assets/Art/Graphics/UI/',
         MapEditor: 'Assets/Art/Icons/map-editor/',
         External: 'Assets/Art/Icons/External/',
+        Wallpapers: 'Assets/Art/Textures/UI/Wallpapers/',
+        Logos: 'Assets/Art/Textures/UI/Logos/',
+        Renders: 'Assets/Art/Textures/UI/Renders/',
+        Banners: 'Assets/Art/Textures/Lobby/Banners/',
+        Styles: 'Assets/Art/Icons/Lobby/Styles/',
+        Jobs: 'Assets/Art/Icons/Lobby/Jobs/',
     };
     // A key names a PNG unless it gives its own extension (the map editor's icons are SVGs).
     const assetPath = key => {
@@ -681,6 +687,8 @@
         ['Text', [['--ui-text', 'primary, active hand mark'], ['--ui-mark', 'idle hand mark'], ['--ui-text-faint', 'placeholder'], ['--ui-text-on-light', 'on white plates']]],
         ['Menus', [['--ui-menu-tab', 'idle tab, segmented'], ['--ui-menu-field', 'inputs'], ['--ui-menu-selected', 'selected, primary button'], ['--ui-menu-rule', 'title rule'], ['--ui-frame-outer', 'preview frame line'], ['--ui-frame-mat', 'preview frame mat']]],
         ['Map editor severity (new)', [['--ui-danger', 'error'], ['--ui-warn', 'warning'], ['--ui-ok', 'clear']]],
+        ['State and news (new)', [['--ui-info', 'news: an update, a changed setting, a countdown, LOOC']]],
+        ['Departments (lobby)', ['command', 'security', 'engineering', 'medical', 'science', 'cargo', 'service', 'civilian'].map(d => ['--ui-dept-' + d, d])],
     ];
 
     function buildSwatches() {
@@ -804,6 +812,21 @@
             { img: 'character-setup-appearance', tab: 'appearance', scale: 1.87, blur: 1.35, at: [72, 320], to: '[data-tab=appearance]' },
             { img: 'character-setup-hair', tab: 'hair', scale: 1.87, blur: 1.35, at: [177, 416], to: '[data-tab=hair]' },
         ],
+        // The shipped screens ("old"), captured in the Editor at 1920 × 1080: the main menu from MainMenuPreviewWindow's
+        // sample states (at 1600 × 900), the lobby from a local host session. The shell panel is 1920 px wide there
+        // (constant pixel size), so each capture spans the whole stage and the old UI keeps its true share of the screen.
+        // The preview leaves Settings' panel empty (it needs the running game), so Settings shows the same panel as
+        // shipped in the lobby.
+        mainmenu: ['home', 'first-launch', 'no-name', 'update', 'join', 'details', 'refused', 'settings', 'connecting',
+            'failed', 'connection-lost', 'hosting', 'updating']
+            .map(n => (n === 'settings'
+                ? { img: 'old/lobby-settings', tab: 'settings (lobby)', scale: 1920 / 1200, blur: 0.5, at: [0, 0], to: '.main-menu', old: true }
+                : { img: 'old/main-menu-' + n, tab: n.replace(/-/g, ' '), scale: 1600 / 1200, blur: 0.5, at: [0, 0], to: '.main-menu', old: true })),
+        // The shipped character window, captured in the Editor at 1920 × 1080 (one per tab).
+        charwin: ['appearance', 'jobs', 'antags']
+            .map(n => ({ img: 'old/charwin-' + n, tab: n, scale: 1920 / 1200, blur: 0.5, at: [0, 0], to: '.cw', old: true })),
+        lobby: ['pre-round', 'ready', 'in-progress', 'join', 'switcher', 'chat', 'settings', 'round-over', 'server-settings']
+            .map(n => ({ img: 'old/lobby-' + n, tab: n.replace(/-/g, ' '), scale: 1920 / 1200, blur: 0.5, at: [0, 0], to: '.lobby', old: true })),
     };
 
     // Hand nudges (drag, scale) per specimen and screenshot, in the specimen's own units; per browser only.
@@ -853,9 +876,12 @@
             (isStage ? $('.stage__viewport', host) : $('.spec__stage', host)).append(st.layer);
 
             const bar = h('div', 'cmp-bar');
-            bar.append(h('span', '', { text: 'reference' }));
+            const old = refs[0].old;
+            bar.append(h('span', '', { text: old ? 'design' : 'reference' }));
             const modes = h('div', 'cmp-bar__group');
-            [['ui', 'ui only'], ['side', 'side by side'], ['overlay', 'overlay']].forEach(([m, text]) => {
+            const modeList = old ? [['ui', 'new'], ['old', 'old'], ['side', 'side by side'], ['overlay', 'overlay']]
+                : [['ui', 'ui only'], ['side', 'side by side'], ['overlay', 'overlay']];
+            modeList.forEach(([m, text]) => {
                 const b = h('button', 'chip-btn' + (m === 'ui' ? ' is-on' : ''), { text });
                 b.type = 'button';
                 b.addEventListener('click', () => {
@@ -1987,6 +2013,2164 @@
     }
 
     // ══════════════════════════════════════════════════════════════════════
+    // Main menu: MainMenuView's tree (and PlayerSettingsPanel's) in the map editor's look
+    // ══════════════════════════════════════════════════════════════════════
+    // The menu's only wallpaper (owner, 2026-11-21): no random pick, rotation or video.
+    const MM_WALLPAPER = 'Clownin';
+    const MM_TRACKS = ['Breach', 'Gateway to the Forest', 'Space Theme', "Spaceman's Lullaby", 'Title 1', 'Title 2', 'Title 3'];
+    // Sample servers. The addresses are documentation ranges; the LAN one is main-menu.md's example C.
+    const MM_SERVERS = [
+        { id: 'sandbox', name: 'RE:SS3D Sandbox', address: 'sandbox.ss3d.space:1151', state: 'ok', players: '12/32', ping: '38 ms' },
+        { id: 'night', name: 'Night shift', address: '203.0.113.24:1151', state: 'full', players: '16/16', ping: '64 ms' },
+        { id: 'friday', name: 'Friday build test', address: '198.51.100.7:7777', state: 'update', players: '3/16', ping: '112 ms' },
+        { id: 'lan', name: 'LAN party', address: '192.168.1.20:1151', state: 'offline', players: '—', ping: '—' },
+    ];
+    const MM_STATUS = {
+        ok: ['Online', 'ok', ''],
+        full: ['Full', 'warn', 'warn'],
+        update: ['Needs v0.5.0 — update', 'info', ''],
+        offline: ['Offline', 'danger', 'danger'],
+    };
+    // One chip per state MainMenuView can show (MainMenuPreviewWindow's sample states, roughly).
+    const MM_STATES = {
+        'home': {},
+        'first launch': { first: true },
+        'no name': { name: '' },
+        'update': { update: true },
+        'join': { screen: 'servers' },
+        'details': { screen: 'servers', expanded: 'sandbox' },
+        'refused': { screen: 'servers', refused: true },
+        'settings': { screen: 'settings' },
+        'connecting': { overlay: 'connect', step: 1 },
+        'failed': { overlay: 'connect', step: 1, failed: true },
+        'connection lost': { overlay: 'connect', lost: true },
+        'hosting': { overlay: 'host', step: 0 },
+        'updating': { overlay: 'update', step: 0 },
+    };
+    const MM_STEPS = {
+        connect: ['Contacting server', 'Checking version', 'Loading world', 'Logging in'],
+        host: ['Starting host', 'Loading world', 'Opening lobby'],
+        update: ['Downloading update', 'Keeping maps and settings', 'Restarting'],
+    };
+    const MM_OFF_ON = ['Off', 'On'];
+    const MM_SETTINGS = {
+        display: {
+            intro: 'Changes apply right away. Resolution and window mode ask before they stick, and revert after 15 s if not kept.',
+            groups: [
+                ['Screen', [
+                    { key: 'resolution', label: 'Resolution', select: ['2560 × 1440', '1920 × 1080', '1600 × 900', '1280 × 720'] },
+                    { key: 'windowMode', label: 'Window mode', seg: ['Fullscreen', 'Borderless', 'Windowed'] },
+                    { key: 'vsync', label: 'VSync', seg: MM_OFF_ON },
+                    { key: 'frameCap', label: 'Frame cap', seg: ['Off', '30', '60', '120', '144', '240'],
+                        locked: s => s.vsync === 1, note: s => (s.vsync === 1 ? 'Not used while VSync is on.' : '') },
+                ]],
+                ['Rendering', [
+                    { key: 'quality', label: 'Quality preset', seg: ['Low', 'Medium', 'High', 'Ultra'],
+                        note: () => 'Shadow distance, shadow resolution and similar.' },
+                    { key: 'renderScale', label: 'Render scale', seg: ['100 %', '77 %', '67 %', '50 %'] },
+                    { key: 'upscaler', label: 'Upscaler', seg: ['STP', 'FSR 1', 'Bilinear'],
+                        note: s => (s.renderScale === 0 ? 'Only upscales below 100 % render scale.' : '') },
+                    { key: 'aa', label: 'Anti-aliasing', seg: ['Off', 'FXAA', 'SMAA', 'TAA'] },
+                ]],
+                ['Interface', [
+                    { key: 'uiScale', label: 'UI scale', slider: [75, 150, ' %'], note: () => 'Applies as you drag.' },
+                    { key: 'showFps', label: 'Show FPS counter', seg: MM_OFF_ON },
+                    { key: 'showLog', label: 'Show log indicator', seg: MM_OFF_ON,
+                        note: () => 'On-screen error and warning count, for bug reports.' },
+                ]],
+            ],
+        },
+        audio: {
+            intro: 'Changes apply right away.',
+            groups: [
+                ['Volume', ['Master', 'Music', 'SFX', 'Ambience', 'Personal'].map(l => ({ key: 'vol' + l, label: l, slider: [0, 100, ' %'] }))],
+                ['Muting', [
+                    { key: 'muteAll', label: 'Mute all', seg: MM_OFF_ON, note: () => 'Silences output. Levels stay as set.' },
+                    { key: 'muteUnfocused', label: 'Mute when window unfocused', seg: MM_OFF_ON },
+                ]],
+                ['Main menu', [
+                    { key: 'menuMusic', label: 'Menu music', seg: MM_OFF_ON, note: () => 'Plays on the main menu and in the lobby.' },
+                ]],
+            ],
+        },
+        controls: {
+            intro: 'Click an action, then press a key or mouse button 3–5. Esc or a second click cancels. Taking a key another action uses swaps the two.',
+            binds: [
+                ['Movement', [['Move up', 'W'], ['Move left', 'A'], ['Move down', 'S'], ['Move right', 'D'], ['Run', 'Shift']]],
+                ['Hands', [['Swap hands', 'X'], ['Drop', 'Q'], ['Throw', 'R'], ['Use in hand', 'Z']]],
+                ['Communication', [['Talk', 'T'], ['Radio', 'Y'], ['Emote', 'M']]],
+                ['Map Editor', [['Open the editor', 'B'], ['Rotate', 'R'], ['Undo', 'Ctrl + Z']]],
+            ],
+        },
+    };
+    const MM_SETTING_DEFAULTS = {
+        resolution: '1920 × 1080', windowMode: 1, vsync: 1, frameCap: 0, quality: 2, renderScale: 0, upscaler: 0, aa: 3,
+        uiScale: 100, showFps: 0, showLog: 0, volMaster: 80, volMusic: 50, volSFX: 80, volAmbience: 70, volPersonal: 80,
+        muteAll: 0, muteUnfocused: 0, menuMusic: 1,
+    };
+    const MM_BASE = {
+        screen: 'home', overlay: null, step: 0, failed: false, lost: false, first: false, update: false, refused: false,
+        expanded: null, name: 'Spessman', port: '1151', advanced: false, address: '', music: true, track: 0, volume: 0.5,
+        tab: 'display', listening: null,
+    };
+    const mm = { ...MM_BASE, chip: 'home', settings: { ...MM_SETTING_DEFAULTS, windowMode: 0, quality: 3 } };
+    let mmTimer = 0;
+
+    function mmText(parent, text, cls) {
+        const e = h('div', 'main-menu__text' + (cls ? ' ' + cls : ''), { text });
+        parent.append(e);
+        return e;
+    }
+
+    function mmEl(parent, cls) {
+        const e = h('div', cls);
+        parent.append(e);
+        return e;
+    }
+
+    // A white glyph tinted by its CSS background colour (web-only mask; USS: background-image and
+    // -unity-background-image-tint-color).
+    function mmGlyph(parent, cls, key) {
+        const e = mmEl(parent, cls);
+        const u = cssUrl('Heroicons/Outline/' + key);
+        e.style.webkitMaskImage = u;
+        e.style.maskImage = u;
+        return e;
+    }
+
+    const MM_NAV_ICONS = { join: 'GlobeAlt', local: 'Server', settings: 'Cog', quit: 'Logout' };
+    // A server's state as its icon (main-menu__state-icon--*); the Checking one spins in game.
+    const MM_STATE_ICONS = { ok: ['online', 'StatusOnline'], full: ['full', 'UserGroup'], update: ['update', 'CloudDownload'],
+        offline: ['offline', 'StatusOffline'] };
+    // The dialog's kind sets its colour (--op): hosting ok, joining info, updating warn, lost or failed danger.
+    const MM_OP_ICONS = { host: 'Server', join: 'GlobeAlt', update: 'CloudDownload', lost: 'StatusOffline', failed: 'Exclamation' };
+    const MM_STEP_ICONS = { active: 'Refresh', done: 'Check', failed: 'X' };
+    let mmOverlayShown = false;
+    let mmLastShare = 0;
+
+    function mmButton(parent, text, cls, action, arg) {
+        const b = mmText(parent, text, 'main-menu__button' + (cls ? ' ' + cls : ''));
+        if (action) b.dataset.mm = action;
+        if (arg) b.dataset.arg = arg;
+        return b;
+    }
+
+    function mmInput(parent, field, value, cls, placeholder, password) {
+        const i = h('input', 'main-menu__input' + (cls ? ' ' + cls : ''));
+        i.value = value;
+        i.spellcheck = false;
+        i.dataset.field = field;
+        if (placeholder) i.placeholder = placeholder;
+        if (password) i.type = 'password';
+        parent.append(i);
+        return i;
+    }
+
+    function mmSlider(parent, value, cls, key) {
+        const s = h('div', 'menu-slider ' + cls);
+        s.append(h('div', 'menu-slider__tracker'), h('div', 'menu-slider__fill'), h('div', 'menu-slider__dragger'));
+        s.dataset.mmSlider = key;
+        parent.append(s);
+        setSlider(s, value);
+        return s;
+    }
+
+    function mmSidebar(root) {
+        const hasName = mm.name.trim() !== '';
+        const side = mmEl(root, 'main-menu__sidebar');
+        side.id = 'sidebar';
+        const logo = mmEl(side, 'main-menu__logo');
+        logo.style.backgroundImage = cssUrl('Logos/SS3DLogo');
+
+        if (mm.update) {
+            const up = mmEl(side, 'main-menu__update');
+            const head = mmEl(up, 'main-menu__row');
+            mmEl(head, 'main-menu__dot main-menu__dot--info');
+            mmText(head, 'New version available', 'main-menu__update-title');
+            mmText(up, 'v0.5.0 is out; this is v0.4.2. 1 server in your list needs it.', 'main-menu__banner-copy');
+            const row = mmEl(up, 'main-menu__row');
+            mmButton(row, 'Update and restart', 'main-menu__button--accent', 'overlay', 'update');
+            mmText(row, 'Keeps maps and settings', 'main-menu__hint main-menu__beside');
+        }
+
+        const id = mmEl(side, 'main-menu__identity');
+        mmText(id, 'Name', 'main-menu__eyebrow');
+        mmInput(id, 'name', mm.name, '', 'Your name');
+        if (!hasName) mmText(id, 'Enter a name to join or play.', 'main-menu__hint main-menu__hint--warning');
+        else if (mm.first) mmText(id, "Taken from this computer's user name. Change it any time.", 'main-menu__hint');
+
+        const nav = mmEl(side, 'main-menu__navigation');
+        let joinSub = 'Recent, public or direct connect';
+        if (!hasName) joinSub = 'Needs a name';
+        else if (mm.first) joinSub = 'Paste an address from Discord';
+        else joinSub = 'Last played: ' + MM_SERVERS[0].name;
+        const selected = mm.screen === 'servers' ? 'join' : mm.screen === 'settings' ? 'settings' : null;
+        const row = (parent, name, title, sub, extra) => {
+            const r = mmEl(parent, 'main-menu__nav main-menu__nav--' + name + (extra ? ' ' + extra : ''));
+            r.dataset.mm = name;
+            mmGlyph(r, 'main-menu__nav-icon', MM_NAV_ICONS[name]);
+            if (sub == null) {
+                r.classList.add('main-menu__title');
+                mmText(r, title, '');
+            } else {
+                const text = mmEl(r, 'main-menu__nav-text');
+                mmText(text, title, 'main-menu__title');
+                mmText(text, sub, 'main-menu__nav-subtitle');
+            }
+            if (selected === name) r.classList.add('main-menu__nav--selected');
+            r.append(h('div', 'main-menu__nav-tip'));
+            return r;
+        };
+        const join = row(nav, 'join', 'Join a server', joinSub, selected ? '' : 'main-menu__button--accent');
+        const localRow = mmEl(nav, 'main-menu__local-row');
+        const local = row(localRow, 'local', 'Play locally', hasName ? `Host on this computer, port ${mm.port}` : 'Needs a name');
+        if (!hasName) [join, local].forEach(r => r.classList.add('main-menu__nav--disabled'));
+        const adv = mmEl(localRow, 'main-menu__advanced');
+        adv.dataset.mm = 'advanced';
+        mmText(adv, 'Port', 'main-menu__advanced-label');
+        mmEl(adv, 'main-menu__caret' + (mm.advanced ? ' main-menu__caret--up' : ''));
+        if (mm.advanced) {
+            const port = mmEl(nav, 'main-menu__port');
+            mmText(port, 'Port', 'main-menu__eyebrow');
+            mmInput(port, 'port', mm.port, 'main-menu__port-input');
+            mmText(port, 'Friends on your network join on this port.', 'main-menu__hint');
+        }
+        row(nav, 'settings', 'Settings');
+        row(nav, 'quit', 'Quit');
+
+        mmEl(side, 'main-menu__spacer');
+        const music = mmEl(side, 'main-menu__music' + (mm.music ? '' : ' main-menu__music--off'));
+        const toggle = mmEl(music, 'main-menu__music-toggle' + (mm.music ? ' main-menu__music-toggle--on' : ''));
+        toggle.dataset.mm = 'music';
+        toggle.title = mm.music ? 'Turn music off' : 'Turn music on';
+        toggle.append(h('div', 'main-menu__music-icon', { icon: 'Heroicons/Solid/MusicNote' }));
+        const text = mmEl(music, 'main-menu__music-text');
+        mmText(text, 'Music', 'main-menu__music-eyebrow');
+        mmText(text, mm.music ? MM_TRACKS[mm.track] : 'Off', 'main-menu__music-title');
+        const next = mmEl(music, 'main-menu__music-next');
+        next.dataset.mm = 'next';
+        next.title = 'Next track';
+        next.append(h('div', 'main-menu__music-icon', { icon: 'Heroicons/Solid/FastForward' }));
+        mmSlider(music, mm.volume, 'main-menu__music-volume', 'volume');
+
+        const foot = mmEl(side, 'main-menu__footer');
+        const a = mmEl(foot, 'main-menu__row main-menu__spread');
+        mmText(a, 'v0.4.2 pre-alpha', 'main-menu__fine');
+        mmText(a, 'Discord', 'main-menu__link').dataset.mm = 'discord';
+        const b = mmEl(foot, 'main-menu__row');
+        mmText(b, 'Wallpapers:', 'main-menu__fine');
+        mmText(b, 'RE:SS3D art contributors', 'main-menu__link').dataset.mm = 'credits';
+    }
+
+    function mmServer(parent, s, primary) {
+        const hasName = mm.name.trim() !== '';
+        const [status, , tone] = MM_STATUS[s.state];
+        const card = mmEl(parent, 'main-menu__server');
+        const row = mmEl(card, 'main-menu__server-row');
+        const [stateIcon, stateKey] = MM_STATE_ICONS[s.state];
+        mmGlyph(row, 'main-menu__state-icon main-menu__state-icon--' + stateIcon, stateKey);
+        const id = mmEl(row, 'main-menu__server-identity');
+        mmText(id, s.name, 'main-menu__server-name');
+        mmText(id, s.address, 'main-menu__server-address');
+        mmText(row, status, 'main-menu__status' + (tone ? ' main-menu__status--' + tone : ''));
+        mmText(row, s.players, 'main-menu__players' + (s.state === 'full' ? ' main-menu__players--warn' : ''));
+        mmText(row, s.ping, 'main-menu__ping');
+        const actions = mmEl(row, 'main-menu__actions');
+        const open = mm.expanded === s.id;
+        mmText(actions, open ? 'Hide' : 'Details', 'main-menu__details-button').dataset.mm = 'details';
+        actions.lastChild.dataset.arg = s.id;
+        const update = s.state === 'update';
+        let cls = update ? 'main-menu__button--blue' : primary ? 'main-menu__button--accent' : '';
+        if (!hasName || s.state === 'full' || s.state === 'offline') cls += ' main-menu__button--disabled';
+        mmButton(actions, update ? 'Update' : 'Join', cls, update ? 'overlay' : 'join-server', update ? 'update' : s.id);
+        if (mm.refused && s.state === 'full') {
+            const r = mmEl(card, 'main-menu__refusal');
+            mmText(r, 'The server is full. You can try again when a slot opens.', '');
+            mmText(r, '2 min ago', 'main-menu__fine');
+        }
+        if (open) {
+            const d = mmEl(card, 'main-menu__details');
+            const line = key => {
+                const l = mmEl(d, 'main-menu__detail-row');
+                mmText(l, key, 'main-menu__detail-key');
+                return l;
+            };
+            mmInput(line('Name'), 'server-name', s.name, 'main-menu__detail-value');
+            mmText(line('Address'), s.address, 'main-menu__detail-text');
+            const tok = line('Admin token');
+            mmInput(tok, 'token', '', 'main-menu__detail-value', 'Optional', true);
+            mmText(tok, 'Show', 'main-menu__details-button').dataset.mm = 'show-token';
+            const foot = mmEl(d, 'main-menu__details-footer');
+            mmText(foot, 'Saved automatically. The token is sent when joining; admins join like everyone else.', 'main-menu__hint');
+            mmButton(foot, 'Remove', 'main-menu__button--danger', 'toast', 'In game: the server leaves your recent list');
+        }
+    }
+
+    function mmServers(panel) {
+        const hasName = mm.name.trim() !== '';
+        const head = mmEl(panel, 'main-menu__header');
+        mmText(head, 'Join a server', 'main-menu__title');
+        mmEl(head, 'main-menu__header-spacer');
+        mmText(head, 'Checked 12 s ago', 'main-menu__fine');
+        const refresh = mmEl(head, 'main-menu__icon-btn');
+        refresh.title = 'Refresh';
+        refresh.dataset.mm = 'toast';
+        refresh.dataset.arg = 'In game: every server is asked again';
+        refresh.append(h('div', 'main-menu__icon-btn__icon', { icon: 'Heroicons/Solid/Refresh' }));
+        mmText(head, 'Esc', 'main-menu__key');
+        const close = mmText(head, '×', 'main-menu__icon-btn');
+        close.dataset.mm = 'back';
+        close.title = 'Back';
+
+        const scroll = mmEl(panel, 'main-menu__server-scroll');
+        const content = mmEl(scroll, 'main-menu__server-content');
+        const direct = mmEl(content, 'main-menu__section');
+        if (mm.first) {
+            direct.classList.add('main-menu__first');
+            mmText(direct, 'Paste a server address', 'main-menu__first-title');
+            mmText(direct, 'Server addresses are shared in the SS3D Discord. Copy one there and paste it here; the menu remembers it after the first join.', 'main-menu__first-copy');
+        } else {
+            mmText(direct, 'Direct connect', 'main-menu__eyebrow');
+        }
+        const dr = mmEl(direct, 'main-menu__direct-row');
+        mmInput(dr, 'address', mm.address, 'main-menu__address', mm.first ? 'address or address:port' : 'Paste address or address:port');
+        const can = hasName && mm.address.trim() !== '';
+        mmButton(dr, 'Connect', 'main-menu__button--accent' + (can ? '' : ' main-menu__button--disabled'), 'connect');
+        if (mm.first) mmText(direct, 'Open the SS3D Discord', 'main-menu__link').dataset.mm = 'discord';
+
+        const recent = mm.first ? [] : MM_SERVERS;
+        const section = (title, list, count, empty) => {
+            const sec = mmEl(content, 'main-menu__section');
+            const hd = mmEl(sec, 'main-menu__row main-menu__spread main-menu__section-heading');
+            mmText(hd, title, 'main-menu__eyebrow');
+            mmText(hd, count, 'main-menu__fine');
+            if (!list.length) {
+                const e = mmEl(sec, 'main-menu__empty');
+                mmText(e, empty[0], 'main-menu__empty-title');
+                mmText(e, empty[1], 'main-menu__hint');
+                return;
+            }
+            const cols = mmEl(sec, 'main-menu__server-heading');
+            [['Server', 'main-menu__server-identity'], ['Status', 'main-menu__status'], ['Players', 'main-menu__players'],
+                ['Ping', 'main-menu__ping'], ['', 'main-menu__actions']].forEach(([t, c]) => mmText(cols, t, c));
+            let primary = true;
+            list.forEach(s => {
+                mmServer(sec, s, primary && s.state === 'ok');
+                if (s.state === 'ok') primary = false;
+            });
+        };
+        section('Recent', recent, recent.length + ' / 5', ['No recent servers', 'Servers you join show up here, newest first. The last five are kept.']);
+        section('Public', [], '0', ['No public servers yet', 'The project lists servers here once they go public. Until then, addresses are shared on Discord.']);
+    }
+
+    // PlayerSettingsPanel: the main menu mounts it with its header; the lobby's Settings tab without (showHeader).
+    function mmSettings(panel, opts = {}) {
+        const sp = mmEl(panel, 'settings-theme settings-panel');
+        if (opts.header !== false) {
+            const head = mmEl(sp, 'settings-panel__header');
+            mmText(head, 'Settings', 'settings-panel__title');
+            mmText(head, opts.context || 'Main menu', 'settings-panel__context');
+            mmEl(head, 'settings-panel__spacer');
+            mmText(head, 'Esc', 'main-menu__key');
+            mmButton(head, 'Back', '', 'back');
+        }
+
+        const tabs = mmEl(sp, 'settings-panel__tabs');
+        Object.keys(MM_SETTINGS).forEach(k => {
+            const t = mmText(tabs, k, 'settings-panel__tab' + (mm.tab === k ? ' settings-panel__tab--active' : ''));
+            t.dataset.mm = 'tab';
+            t.dataset.arg = k;
+        });
+        const scroll = mmEl(sp, 'settings-panel__scroll');
+        const content = mmEl(scroll, 'settings-panel__content');
+        const def = MM_SETTINGS[mm.tab];
+        const intro = mmEl(content, 'settings-panel__intro-row');
+        mmText(intro, def.intro, 'settings-panel__intro');
+        mmButton(intro, 'Reset ' + mm.tab, '', 'reset');
+        const s = mm.settings;
+
+        if (def.binds) {
+            const grid = mmEl(content, 'settings-panel__bind-grid');
+            def.binds.forEach(([title, rows]) => {
+                const g = mmEl(grid, 'settings-panel__bind-group');
+                mmText(g, title, 'settings-panel__group-title');
+                rows.forEach(([label, key]) => {
+                    const r = mmEl(g, 'settings-panel__row');
+                    const copy = mmEl(r, 'settings-panel__row-copy');
+                    mmText(copy, label, 'settings-panel__row-label');
+                    const listening = mm.listening === label;
+                    if (listening) mmText(copy, 'Esc or click again to cancel', 'settings-panel__note-text');
+                    const cap = mmText(r, listening ? 'Press a key' : key, 'settings-panel__keycap' + (listening ? ' settings-panel__keycap--listening' : ''));
+                    cap.dataset.mm = 'listen';
+                    cap.dataset.arg = label;
+                });
+            });
+            return;
+        }
+
+        def.groups.forEach(([title, rows]) => {
+            const g = mmEl(content, 'settings-panel__group');
+            mmText(g, title, 'settings-panel__group-title');
+            rows.forEach(d => {
+                const r = mmEl(g, 'settings-panel__row');
+                const copy = mmEl(r, 'settings-panel__row-copy');
+                const line = mmEl(copy, 'settings-panel__row-line');
+                mmText(line, d.label, 'settings-panel__row-label');
+                if (s[d.key] !== MM_SETTING_DEFAULTS[d.key]) mmEl(line, 'settings-panel__changed').title = 'Changed from default';
+                const note = d.note && d.note(s);
+                if (note) mmText(copy, note, 'settings-panel__note-text');
+                const ctl = mmEl(r, 'settings-panel__control');
+                if (d.seg) {
+                    const segs = mmEl(ctl, 'settings-panel__segments' + (d.locked && d.locked(s) ? ' settings-panel__segments--locked' : ''));
+                    d.seg.forEach((label, i) => {
+                        const on = (d.locked && d.locked(s) ? 0 : s[d.key]) === i;
+                        const o = mmText(segs, label, 'settings-panel__segment' + (on ? ' settings-panel__segment--on' : ''));
+                        if (!(d.locked && d.locked(s))) {
+                            o.dataset.mm = 'seg';
+                            o.dataset.arg = d.key + ':' + i;
+                        }
+                    });
+                } else if (d.select) {
+                    const dd = mmEl(ctl, 'menu-dropdown settings-panel__select');
+                    mmText(dd, s[d.key], 'menu-dropdown__value');
+                    mmEl(dd, 'menu-dropdown__arrow');
+                    const list = mmEl(dd, 'menu-dropdown__list');
+                    d.select.forEach(v => mmText(list, v, 'menu-dropdown__item'));
+                } else if (d.slider) {
+                    const [lo, hi, unit] = d.slider;
+                    mmSlider(ctl, (s[d.key] - lo) / (hi - lo), 'settings-panel__slider', d.key);
+                    const v = mmText(ctl, s[d.key] + unit, 'settings-panel__slider-value');
+                    v.dataset.valueFor = d.key;
+                }
+            });
+        });
+    }
+
+    function mmOverlay(root) {
+        let kind = mm.overlay === 'connect' ? 'join' : mm.overlay;
+        if (mm.lost) kind = 'lost';
+        else if (mm.failed) kind = 'failed';
+        // In game the dialog stays and its classes change; here it is rebuilt each step, so it eases in only when it
+        // first shows (--in a frame later, as MainMenuView does).
+        const ov = mmEl(root, 'main-menu__overlay main-menu__overlay--' + kind + (mmOverlayShown ? ' main-menu__overlay--in' : ''));
+        ov.id = 'overlay';
+        if (!mmOverlayShown) {
+            mmOverlayShown = true;
+            requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('main-menu__overlay--in')));
+        }
+        const dlg = mmEl(ov, 'main-menu__dialog');
+        const head = mmEl(dlg, 'main-menu__header');
+        let title = 'Connecting';
+        if (mm.overlay === 'update') title = 'Update and restart';
+        else if (mm.overlay === 'host') title = 'Starting local session';
+        else if (mm.lost) title = 'Connection lost';
+        mmGlyph(head, 'main-menu__op-icon', MM_OP_ICONS[kind]);
+        mmText(head, title, 'main-menu__title');
+        const labels = MM_STEPS[mm.overlay];
+        const working = !mm.lost && !mm.failed && mm.step < labels.length;
+        const progress = mmEl(dlg, 'main-menu__progress' + (mm.lost ? ' main-menu__progress--hidden' : '')
+            + (working ? ' main-menu__progress--working' : ''));
+        const fill = mmEl(progress, 'main-menu__progress-fill');
+        mmEl(fill, 'main-menu__progress-glint');
+        // Done steps and half the working one; a failure fills up to the step that failed. From the last share, eased.
+        const share = Math.min(1, (mm.step + (mm.failed ? 1 : 0.5)) / labels.length) * 100;
+        fill.style.width = mmLastShare + '%';
+        requestAnimationFrame(() => requestAnimationFrame(() => { fill.style.width = share + '%'; }));
+        mmLastShare = share;
+        const body = mmEl(dlg, 'main-menu__dialog-body');
+        const local = mm.overlay === 'host';
+        mmText(body, local ? 'Your session' : mm.overlay === 'update' ? 'SS3D v0.5.0' : MM_SERVERS[0].name, 'main-menu__overlay-name');
+        mmText(body, local ? `127.0.0.1:${mm.port}` : mm.overlay === 'update' ? 'github.com/RE-SS3D/SS3D/releases' : MM_SERVERS[0].address, 'main-menu__overlay-address');
+        const steps = mmEl(body, 'main-menu__steps');
+        steps.id = 'progress-steps';
+        if (mm.lost) {
+            mmText(steps, 'The server stopped responding. It may have restarted or gone offline.', 'main-menu__step-reason');
+        } else {
+            MM_STEPS[mm.overlay].forEach((label, i) => {
+                const failed = mm.failed && i === mm.step;
+                const done = i < mm.step;
+                const active = !mm.failed && i === mm.step;
+                const state = failed ? 'failed' : done ? 'done' : active ? 'active' : 'pending';
+                const row = mmEl(steps, 'main-menu__step' + (i > mm.step ? ' main-menu__step--pending' : '')
+                    + (active ? ' main-menu__step--active' : '') + (failed ? ' main-menu__step--failed' : ''));
+                const icon = MM_STEP_ICONS[state]
+                    ? mmGlyph(row, 'main-menu__step-icon main-menu__step-icon--' + state, MM_STEP_ICONS[state])
+                    : mmEl(row, 'main-menu__step-icon main-menu__step-icon--pending');
+                // The check that just appeared pops (in game: a scale transition from the spinner's size).
+                if (done && i === mm.step - 1) icon.classList.add('is-new');
+                mmText(row, label, 'main-menu__step-label');
+                let mark = '';
+                let cls = '';
+                if (done) { mark = 'OK'; cls = ' main-menu__step-mark--ok'; }
+                else if (failed) { mark = 'Failed'; cls = ' main-menu__step-mark--failed'; }
+                mmText(row, mark, 'main-menu__step-mark' + cls);
+                if (failed) mmText(steps, 'The server runs v0.5.0; this is v0.4.2. Update to join it.', 'main-menu__step-reason');
+            });
+        }
+        const actions = mmEl(body, 'main-menu__row main-menu__end');
+        const done = mm.failed || mm.lost;
+        if (!done && mm.overlay !== 'update') mmButton(actions, 'Cancel', '', 'cancel');
+        if (done) {
+            mmButton(actions, 'Back to servers', '', 'back-to-servers');
+            mmButton(actions, 'Retry', 'main-menu__button--accent main-menu__dialog-action', 'retry');
+        }
+    }
+
+    function mmRender() {
+        const cv = $('#mm-canvas');
+        if (!cv) return;
+        const focus = document.activeElement && cv.contains(document.activeElement) ? document.activeElement : null;
+        const field = focus && focus.dataset.field;
+        const caret = focus && focus.selectionStart;
+        clearInterval(mmTimer);
+
+        if (!mm.overlay) {
+            mmOverlayShown = false;
+            mmLastShare = 0;
+        }
+        let root = $('.main-menu', cv);
+        if (!root) {
+            root = h('div', 'main-menu');
+            cv.append(root);
+        }
+        // The wallpaper stays across renders, so it doesn't reload; everything else is rebuilt from the state.
+        let wall = $('.main-menu__wallpaper', root);
+        if (!wall) {
+            wall = h('div', 'main-menu__wallpaper');
+            root.append(wall);
+        }
+        wall.style.backgroundImage = cssUrl('Wallpapers/' + MM_WALLPAPER);
+        wall.classList.toggle('main-menu__wallpaper--blurred', !!mm.overlay);
+        $$(':scope > :not(.main-menu__wallpaper)', root).forEach(e => e.remove());
+
+        if (mm.overlay) {
+            mmOverlay(root);
+        } else {
+            mmSidebar(root);
+            if (mm.screen !== 'home') {
+                const panel = mmEl(root, 'main-menu__panel');
+                panel.id = mm.screen === 'settings' ? 'settings-host' : 'side-panel';
+                if (mm.screen === 'servers') mmServers(panel);
+                else mmSettings(panel);
+            }
+        }
+        $$('[data-mm-chip]').forEach(c => c.classList.toggle('is-on', c.dataset.mmChip === mm.chip));
+
+        if (field) {
+            const again = $(`[data-field="${field}"]`, cv);
+            if (again) {
+                again.focus();
+                if (caret != null) again.setSelectionRange(caret, caret);
+            }
+        }
+        // A running operation steps on by itself; at the end the lobby would open.
+        if (mm.overlay && !mm.failed && !mm.lost && mm.chip === null) {
+            mmTimer = setInterval(() => {
+                mm.step++;
+                if (mm.step >= MM_STEPS[mm.overlay].length) {
+                    clearInterval(mmTimer);
+                    toast(mm.overlay === 'update' ? 'In game: the new version starts, on the menu' : 'In game: the lobby opens');
+                    Object.assign(mm, { overlay: null, step: 0, screen: 'home' });
+                }
+                mmRender();
+            }, 650);
+        }
+    }
+
+    function mmState(name) {
+        Object.assign(mm, MM_BASE, MM_STATES[name], { chip: name });
+        mmRender();
+        syncOld('#mm-stage', name === 'settings' ? 'lobby-settings' : 'main-menu-' + name.replace(/ /g, '-'));
+    }
+
+    // While comparing, a state chip shows the old design's capture of the same state, or its nearest.
+    function syncOld(stageSel, img) {
+        const host = $(stageSel);
+        const st = host && host._cmp;
+        if (!st) return;
+        const i = st.refs.findIndex(r => r.img === 'old/' + img);
+        if (i >= 0 && i !== st.i) setRef(host, i);
+    }
+
+    // The settings panel's own actions (tabs, options, reset, key capture), shared by the main menu and the lobby.
+    function settingsAct(action, arg) {
+        switch (action) {
+            case 'tab':
+                mm.tab = arg;
+                mm.listening = null;
+                return true;
+            case 'seg': {
+                const [k, i] = arg.split(':');
+                mm.settings[k] = Number(i);
+                return true;
+            }
+            case 'reset':
+                Object.keys(mm.settings).forEach(k => {
+                    const inTab = MM_SETTINGS[mm.tab].groups && MM_SETTINGS[mm.tab].groups.some(([, rows]) => rows.some(r => r.key === k));
+                    if (inTab) mm.settings[k] = MM_SETTING_DEFAULTS[k];
+                });
+                if (mm.tab === 'controls') toast('In game: every binding goes back to its default');
+                return true;
+            case 'listen':
+                mm.listening = mm.listening === arg ? null : arg;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    // A menu slider under the pointer. Sliders are rebuilt on each render, so their canvas drives them.
+    function dragMenuSlider(e, apply, done) {
+        const sl = e.target.closest('[data-mm-slider]');
+        if (!sl) return;
+        const move = ev => {
+            const r = sl.getBoundingClientRect();
+            const v = Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width));
+            setSlider(sl, v);
+            apply(sl.dataset.mmSlider, v);
+        };
+        sl.setPointerCapture(e.pointerId);
+        sl.classList.add('menu-slider--dragging');
+        move(e);
+        const up = () => {
+            sl.classList.remove('menu-slider--dragging');
+            sl.removeEventListener('pointermove', move);
+            sl.removeEventListener('pointerup', up);
+            if (done) done(sl.dataset.mmSlider);
+        };
+        sl.addEventListener('pointermove', move);
+        sl.addEventListener('pointerup', up);
+    }
+
+    // A settings slider sets its value in steps of 5 and updates its label in place.
+    function settingFromSlider(cv, key, v) {
+        const d = Object.values(MM_SETTINGS).flatMap(t => (t.groups || []).flatMap(([, rows]) => rows)).find(x => x.key === key);
+        if (!d) return;
+        const [lo, hi, unit] = d.slider;
+        mm.settings[key] = Math.round((lo + v * (hi - lo)) / 5) * 5;
+        const label = $(`[data-value-for="${key}"]`, cv);
+        if (label) label.textContent = mm.settings[key] + unit;
+    }
+
+    function mmAct(action, arg) {
+        mm.chip = null;
+        if (settingsAct(action, arg)) {
+            mmRender();
+            return;
+        }
+        const hasName = mm.name.trim() !== '';
+        switch (action) {
+            case 'join':
+                if (!hasName) return;
+                mm.screen = mm.screen === 'servers' ? 'home' : 'servers';
+                break;
+            case 'settings':
+                mm.screen = mm.screen === 'settings' ? 'home' : 'settings';
+                break;
+            case 'back':
+                mm.screen = 'home';
+                break;
+            case 'local':
+                if (!hasName) return;
+                Object.assign(mm, { overlay: 'host', step: 0, failed: false, lost: false });
+                break;
+            case 'quit':
+                toast('In game: the game closes at once (no confirm)');
+                return;
+            case 'advanced':
+                mm.advanced = !mm.advanced;
+                break;
+            case 'music':
+                mm.music = !mm.music;
+                break;
+            case 'next':
+                mm.track = (mm.track + 1) % MM_TRACKS.length;
+                mm.music = true;
+                break;
+            case 'discord':
+            case 'credits':
+                toast(action === 'discord' ? 'In game: opens the SS3D Discord' : 'In game: opens the SS3D-Art repository');
+                return;
+            case 'details':
+                mm.expanded = mm.expanded === arg ? null : arg;
+                break;
+            case 'show-token': {
+                const t = $('#mm-canvas [data-field="token"]');
+                if (t) t.type = t.type === 'password' ? 'text' : 'password';
+                return;
+            }
+            case 'join-server':
+            case 'connect':
+            case 'retry':
+                Object.assign(mm, { overlay: 'connect', step: 0, failed: false, lost: false });
+                break;
+            case 'overlay':
+                Object.assign(mm, { overlay: arg, step: 0, failed: false, lost: false });
+                break;
+            case 'cancel':
+            case 'back-to-servers':
+                Object.assign(mm, { overlay: null, step: 0, failed: false, lost: false, screen: action === 'cancel' && mm.overlay === 'host' ? 'home' : 'servers' });
+                break;
+            case 'toast':
+                toast(arg);
+                return;
+            default:
+                return;
+        }
+        mmRender();
+    }
+
+    function buildMainMenu() {
+        const cv = $('#mm-canvas');
+        if (!cv) return;
+        const chips = $('[data-mm-chips]');
+        Object.keys(MM_STATES).forEach(name => {
+            const b = h('button', 'chip-btn', { text: name });
+            b.dataset.mmChip = name;
+            b.addEventListener('click', () => mmState(name));
+            chips.append(b);
+        });
+
+        cv.addEventListener('click', e => {
+            const t = e.target.closest('[data-mm]');
+            if (!t || t.classList.contains('main-menu__button--disabled')) return;
+            mmAct(t.dataset.mm, t.dataset.arg);
+        });
+        cv.addEventListener('input', e => {
+            const f = e.target.dataset.field;
+            if (!f) return;
+            if (f === 'name' || f === 'port' || f === 'address') {
+                mm[f] = e.target.value;
+                mm.chip = null;
+                mmRender();
+            }
+        });
+        cv.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && e.target.dataset.field === 'address' && mm.address.trim() && mm.name.trim()) mmAct('connect');
+        });
+        cv.addEventListener('pointerdown', e => dragMenuSlider(e, (key, v) => {
+            if (key === 'volume') mm.volume = v;
+            else settingFromSlider(cv, key, v);
+        }, key => {
+            if (key !== 'volume') mmRender(); // the changed-from-default dot
+        }));
+        // Resolution: the dropdown is wired page-wide (wireMenus); keep its pick in the state.
+        cv.addEventListener('click', e => {
+            const item = e.target.closest('.settings-panel__select .menu-dropdown__item');
+            if (item) mm.settings.resolution = item.textContent;
+        });
+
+        // Esc is Back while the pointer is over the screen, as in game.
+        let over = false;
+        cv.addEventListener('pointerenter', () => { over = true; });
+        cv.addEventListener('pointerleave', () => { over = false; });
+        document.addEventListener('keydown', e => {
+            if (!over || e.key !== 'Escape') return;
+            if (mm.listening) mmAct('listen', mm.listening);
+            else if (mm.overlay && !mm.failed && !mm.lost && mm.overlay !== 'update') mmAct('cancel');
+            else if (mm.screen !== 'home') mmAct('back');
+        });
+        mmState('home');
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // Lobby: LobbyView's tree (with the tab views, the Join picker and the switcher) in the main menu's look
+    // ══════════════════════════════════════════════════════════════════════
+    const LB_ICON = {
+        lock: 'Heroicons/Outline/LockClosed', info: 'Heroicons/Outline/InformationCircle', warning: 'Heroicons/Outline/Exclamation',
+        chevron: 'Heroicons/Outline/ChevronRight', down: 'Heroicons/Outline/ChevronDown', up: 'Heroicons/Outline/ChevronUp', users: 'Heroicons/Outline/Users',
+        check: 'Heroicons/Outline/Check', tick: 'Heroicons/Solid/Check', user: 'Heroicons/Solid/User',
+        ghost: 'External/lorc/ghost.svg', bug: 'External/lorc/long-antennae-bug.svg', logout: 'Heroicons/Outline/Logout',
+        music: 'Heroicons/Solid/MusicNote', next: 'Heroicons/Solid/FastForward', external: 'Heroicons/Outline/ExternalLink',
+        send: 'Heroicons/Outline/PaperAirplane', duplicate: 'Heroicons/Outline/Duplicate', trash: 'Heroicons/Outline/Trash',
+        plus: 'Heroicons/Outline/Plus', x: 'Heroicons/Outline/X',
+    };
+    // Department symbols (game-icons.net, CC BY 3.0), as Lobby.uss's lobby__icon--dept-*.
+    const LB_DEPT_ICON = {
+        command: 'External/delapouite/captain-hat-profile.svg', security: 'External/delapouite/police-target.svg',
+        engineering: 'External/lorc/cog.svg', medical: 'External/lorc/hospital-cross.svg', science: 'External/skoll/atom.svg',
+        cargo: 'External/delapouite/cargo-crate.svg', service: 'External/lorc/beer-stein.svg', civilian: 'External/delapouite/bed.svg',
+    };
+    const LB_DEPTS = Object.keys(LB_DEPT_ICON);
+    const LB_JOBS = {
+        Captain: 'command', 'Head of Personnel': 'command', 'Head of Security': 'security', 'Security Officer': 'security',
+        Detective: 'security', 'Chief Engineer': 'engineering', Engineer: 'engineering', 'Atmospheric Technician': 'engineering',
+        Doctor: 'medical', Chemist: 'medical', Scientist: 'science', Quartermaster: 'cargo', 'Cargo Technician': 'cargo',
+        Bartender: 'service', Chef: 'service', Janitor: 'service', Assistant: 'civilian',
+    };
+    const LB_CHARS = [
+        { name: 'Rory Lindqvist', high: 'Security Officer' },
+        { name: 'Ada Brandt', high: 'Doctor' },
+        { name: 'Mags Okafor', high: null },
+    ];
+    const LB_NAMES = ['Tamsin Reyes', 'Ezra Holm', 'Noor Vance', 'Felix Adeyemi', 'Wren Castillo', 'Idris Kowal', 'Petra Lund'];
+    // Open jobs during a round: open / total slots ('' is uncapped), and the description the picked one shows.
+    const LB_OPEN = [
+        ['Doctor', '2/2', 'Treats the injured and the sick in medbay: bandages, pills, surgery. Brings the dead back while it still can.'],
+        ['Engineer', '1/4', 'Keeps the station powered and airtight: the engine, the wiring, the breaches. Has access to most maintenance.'],
+        ['Cargo Technician', '1/2', 'Orders, moves and delivers the station\'s supplies from the cargo bay.'],
+        ['Assistant', '', 'No department and no special access. Helps out wherever someone will have them.'],
+    ];
+    const LB_CREW = [
+        ['Hal Mercer', 'Captain'], ['Juno Park', 'Head of Personnel'], ['Ines Duarte', 'Head of Security'],
+        ['Theo Brandt', 'Security Officer'], ['Sam Achebe', 'Detective'], ['Oskar Vale', 'Chief Engineer'], ['Lia Moreau', 'Engineer'],
+        ['Pip Hollis', 'Atmospheric Technician'], ['Ana Sousa', 'Chemist'], ['Remy Laine', 'Scientist'], ['Bo Kessler', 'Quartermaster'],
+        ['Nell Ortiz', 'Bartender'], ['Ike Brandvold', 'Chef'], ['Dot Pruitt', 'Assistant'],
+    ];
+    const LB_CHAT = [
+        { t: '20:58', ch: 'ooc', sys: 'Theo Brandt connected.' },
+        { t: '20:59', ch: 'ooc', who: 'Juno', text: 'anyone up for engineering this round?' },
+        { t: '21:00', ch: 'ooc', who: 'Oskar', text: "I'll take Chief Engineer if two of you come along" },
+        { t: '21:01', ch: 'looc', who: 'Pip', text: 'spare toolbox is by the lockers, grab it on your way' },
+        { t: '21:02', ch: 'ooc', who: 'Hal', admin: true, text: 'Secret tonight. We start when the timer runs out, play nice.' },
+        { t: '21:02', ch: 'admin', who: 'Hal', admin: true, text: 'holding a minute if Lia is still loading' },
+        { t: '21:03', ch: 'ooc', who: 'Ada', text: 'o7' },
+    ];
+    const LB_MOTD = 'Welcome to the RE:SS3D sandbox.\n\nRounds start on their own once four players are connected. Secret is on: anyone could be an operative, so lock your doors.\n\nFound a bug? F8 files it with your log attached. Be kind in OOC; the admins are on the Discord.';
+    // Sample entries: the change log is the client build's merged PR titles under the release that shipped them.
+    const LB_CHANGES = [
+        ['v0.4.2', '12 Nov 2026', [['Station lighting is flat and even, no dark corners', '#1551'], ['Department colours: darker Command, Security and Science', '#1550'], ['Map editor: Map Check opens from the warning cell', '#1547']]],
+        ['v0.4.1', '30 Oct 2026', [['Late joiners pick a job beside the crew manifest', '#1532'], ['Observe goes in as a ghost at once', '#1524'], ['Lobby chat keeps the last 200 lines', '#1519']]],
+    ];
+    const LB_LAST_CREW = [
+        { name: 'Hal Mercer', job: 'Captain', alive: false }, { name: 'Rory Lindqvist', job: 'Security Officer', alive: false, you: true },
+        { name: 'Ines Duarte', job: 'Head of Security', alive: true }, { name: 'Oskar Vale', job: 'Chief Engineer', alive: true },
+        { name: 'Lia Moreau', job: 'Engineer', alive: false }, { name: 'Ana Sousa', job: 'Chemist', alive: true },
+        { name: 'Remy Laine', job: 'Scientist', alive: true }, { name: 'Bo Kessler', job: 'Quartermaster', alive: false },
+        { name: 'Nell Ortiz', job: 'Bartender', alive: true }, { name: 'Ike Brandvold', job: 'Chef', alive: true },
+        { name: 'Dot Pruitt', job: 'Assistant', alive: true },
+    ];
+    // The clock each round state starts from, in seconds.
+    const LB_SECS = { countdown: 161, held: 72, starting: 45, ongoing: 2832, ending: 24 };
+    const LB_BASE = {
+        round: 'countdown', ready: false, spawned: false, lateJoin: true, autoStart: true, endHeld: false, tab: 'info',
+        adminOn: false, join: false, picked: null, onlyFallback: false, filled: null, switcher: false, confirmDelete: null,
+        prompt: false, quitArmed: false, channel: 'ooc', noLast: false, mapName: 'Box Station (edited)',
+    };
+    // One chip per state LobbyView shows (the lobby canvas's sidebar states and boards, roughly).
+    const LB_STATES = {
+        'pre-round': {},
+        'ready': { ready: true },
+        'waiting for players': { round: 'waiting' },
+        'countdown held': { round: 'held' },
+        'loading': { round: 'loading' },
+        'starting': { round: 'starting', ready: true },
+        'in progress': { round: 'ongoing' },
+        'late join off': { round: 'ongoing', lateJoin: false },
+        'escape menu': { round: 'ongoing', spawned: true },
+        'round over': { round: 'ending', tab: 'last' },
+        'join': { round: 'ongoing', join: true, picked: 'Doctor' },
+        'join: job filled': { round: 'ongoing', join: true, filled: 'Doctor' },
+        'join: only assistant': { round: 'ongoing', join: true, onlyFallback: true },
+        'switch character': { switcher: true },
+        'delete character': { switcher: true, confirmDelete: 2 },
+        'chat': { tab: 'chat' },
+        'settings': { tab: 'settings' },
+        'last round': { tab: 'last' },
+        'server settings': { tab: 'admin', adminOn: true },
+        'unsaved map': { round: 'ongoing', spawned: true, tab: 'admin', adminOn: true, prompt: true },
+    };
+    const lb = { ...LB_BASE, chip: 'pre-round', secs: LB_SECS.countdown, chars: [], selected: 0, chat: [], draft: '',
+        music: true, track: 0, volume: 0.5, fields: {}, layout: 'b' };
+    // Layout B (the character stage): these tabs need the room, so the panel widens over the stage while they're open.
+    const LB_WIDE_TABS = ['settings', 'last', 'admin'];
+    const lbStageLayout = () => lb.layout === 'b';
+    let lbQuitTimer = 0;
+
+    const lbClock = s => `${String(Math.floor(Math.max(0, s) / 60)).padStart(2, '0')}:${String(Math.max(0, s) % 60).padStart(2, '0')}`;
+    const lbLong = s => `${String(Math.floor(s / 3600)).padStart(2, '0')}:${lbClock(s % 3600)}`;
+    const lbCap = s => s[0].toUpperCase() + s.slice(1);
+    const lbIdle = () => ['countdown', 'held', 'waiting', 'manual'].includes(lb.round);
+
+    function lbText(parent, text, cls) {
+        const e = h('div', 'lobby__text' + (cls ? ' ' + cls : ''), { text });
+        parent.append(e);
+        return e;
+    }
+
+    function lbEl(parent, cls) {
+        const e = h('div', cls);
+        parent.append(e);
+        return e;
+    }
+
+    // A white glyph, tinted by its rule's background colour (web-only mask; USS: background-image and tint).
+    function lbIcon(parent, key, cls) {
+        const e = h('div', 'lobby__icon' + (cls ? ' ' + cls : ''));
+        const u = cssUrl(LB_ICON[key] || key);
+        e.style.webkitMaskImage = u;
+        e.style.maskImage = u;
+        parent.append(e);
+        return e;
+    }
+
+    function lbOn(el, action, arg) {
+        el.dataset.lb = action;
+        if (arg != null) el.dataset.arg = arg;
+        return el;
+    }
+
+    // LobbySidebarModel.Round: the round section's words, readout and note.
+    function lbRound() {
+        const s = lb.secs;
+        const base = { status: 'Pre-round', tone: 'info', caption: 'Round starts in', timer: lbClock(s), held: false, note: '', warn: false };
+        switch (lb.round) {
+            case 'loading': return { ...base, status: 'Loading', tone: 'warning', caption: 'Loading the station', timer: '' };
+            case 'starting': return { ...base, status: 'Starting', tone: 'warning' };
+            case 'ongoing': return { ...base, status: 'In progress', tone: 'live', caption: 'Round time', timer: lbLong(s) };
+            case 'ending': return { ...base, status: 'Round over', tone: 'warning', caption: 'Back to the lobby in',
+                timer: lb.endHeld ? '' : lbClock(s), note: lb.endHeld ? 'The summary is held by an admin' : '', warn: true };
+            case 'held': return { ...base, tone: 'warning', held: true, note: 'Countdown held by an admin', warn: true };
+            case 'waiting': return { ...base, tone: '', caption: 'Waiting for players', timer: '', note: '3/4 connected. The countdown starts at 4.' };
+            case 'manual': return { ...base, tone: '', caption: 'Waiting for an admin', timer: '', note: 'An admin starts the round on this server.' };
+            default: return base;
+        }
+    }
+
+    // LobbySidebarModel.Entry and .Observe.
+    function lbEntry() {
+        const first = lb.chars[lb.selected].name.trim().split(' ')[0] || 'your character';
+        const off = (title, subtitle, note) => ({ title, subtitle, look: 'disabled', note });
+        if (lb.round === 'ongoing') {
+            if (lb.spawned) return off('In round', 'You already have a body this round');
+            if (!lb.lateJoin) return off('Join', 'Late joining is off', 'An admin has turned off late joining for this round. You can still observe.');
+            return { title: 'Join', subtitle: 'Pick an open job and spawn now', look: 'accent', action: 'join' };
+        }
+        if (lb.round === 'ending') return off('Ready up', 'The round is ending');
+        if (lb.spawned) return off('In round', 'You already have a body this round');
+        if (lb.ready) return { title: 'Ready', subtitle: "You'll spawn at round start. Click to cancel", look: 'confirmed', action: 'ready' };
+        return { title: 'Ready up', subtitle: `Spawn as ${first} when the round starts`, look: 'accent', action: 'ready' };
+    }
+
+    function lbObserve() {
+        if (lb.spawned) return { subtitle: "You're already in the round" };
+        if (lb.round === 'starting' || lb.round === 'ongoing') return { subtitle: 'Go in now as a ghost, no body', enabled: true };
+        return { subtitle: 'Opens once the station has loaded' };
+    }
+
+    function lbNote(parent, text, warn, cls) {
+        const n = lbEl(parent, 'lobby__row lobby__note' + (warn ? ' lobby__note--warning' : '') + (cls ? ' ' + cls : ''));
+        lbIcon(n, warn ? 'lock' : 'info', 'lobby__note-icon');
+        lbText(n, text, 'lobby__note-text');
+    }
+
+    function lbSidebar(root) {
+        const side = lbEl(root, 'lobby__sidebar');
+        side.id = 'lobby-sidebar';
+        const mark = lbEl(lbEl(side, 'lobby__wordmark-block'), 'lobby__wordmark');
+        mark.style.backgroundImage = cssUrl('Logos/SS3DLogo');
+        mark.title = 'Space Station 3D';
+
+        const r = lbRound();
+        const tone = base => (r.tone ? ` ${base}--${r.tone}` : '');
+        const round = lbEl(side, 'lobby__section lobby__round lb-tone--' + (r.tone || 'neutral') + (r.timer ? '' : ' lobby__round--waiting'));
+        round.id = 'lobby-round';
+        const head = lbEl(round, 'lobby__row');
+        lbText(head, 'Round', 'lobby__eyebrow');
+        lbEl(head, 'lobby__grow');
+        lbEl(head, 'lobby__dot' + tone('lobby__dot'));
+        lbText(head, r.status, 'lobby__status' + tone('lobby__status'));
+        lbText(round, r.caption, 'lobby__round-caption');
+        if (r.timer) {
+            const wrap = lbEl(round, 'lobby__timer-wrap' + (r.held ? ' lobby__timer-wrap--held' : ''));
+            const t = lbText(wrap, r.timer, 'lobby__timer');
+            if (!r.held) t.dataset.lbTimer = '';
+            lbEl(wrap, 'lobby__timer-strike');
+        }
+        if (r.note) lbNote(round, r.note, r.warn);
+        if (lb.round === 'loading') lbText(round, 'Loading map: Box Station…', 'lobby__map-load lobby__map-load--loading');
+
+        if (!lbStageLayout()) lbCharacterCard(side);
+
+        const e = lbEntry();
+        const entry = lbEl(side, 'lobby__section lobby__entry');
+        const ready = lbEl(entry, 'lobby__ready' + (e.look === 'accent' ? '' : ' lobby__ready--' + e.look));
+        ready.id = 'lobby-ready';
+        if (e.action) lbOn(ready, e.action);
+        lbIcon(ready, 'check', 'lobby__ready-check');
+        const rt = lbEl(ready, 'lobby__ready-text');
+        lbText(rt, e.title, 'lobby__ready-title');
+        lbText(rt, e.subtitle, 'lobby__ready-subtitle');
+        if (e.note) lbNote(entry, e.note, false, 'lobby__entry-note lobby__entry-note--shown');
+        const o = lbObserve();
+        const obs = lbEl(entry, 'lobby__observe' + (o.enabled ? '' : ' lobby__observe--disabled'));
+        if (o.enabled) lbOn(obs, 'observe');
+        lbIcon(obs, 'ghost', 'lobby__observe-icon');
+        const ot = lbEl(obs, 'lobby__observe-text');
+        lbText(ot, 'Observe', 'lobby__observe-title');
+        lbText(ot, o.subtitle, 'lobby__observe-subtitle');
+
+        lbEl(side, 'lobby__spacer');
+        lbMusic(side);
+        lbFooter(side);
+    }
+
+    // Layout A: the character card under the round, with Switch character under it.
+    function lbCharacterCard(side) {
+        const c = lb.chars[lb.selected];
+        const who = lbEl(side, 'lobby__section lobby__character');
+        const card = lbOn(lbEl(who, 'lobby__card' + (c.high ? ' lobby__card--dept lb-dept--' + LB_JOBS[c.high] : '')), 'card');
+        card.title = 'Open the character window';
+        lbIcon(lbEl(card, 'lobby__preview-frame'), 'user', 'lobby__preview-image');
+        const text = lbEl(card, 'lobby__card-text');
+        lbText(text, 'Playing as', 'lobby__eyebrow');
+        lbText(text, c.name, 'lobby__character-name');
+        const high = lbEl(text, 'lobby__row lobby__high');
+        if (c.high) {
+            lbEl(high, 'lb-swatch lb-dept--' + LB_JOBS[c.high]);
+            lbText(high, 'High:', 'lobby__high-prefix');
+            lbText(high, c.high, 'lobby__high-job lb-dept-text');
+        } else {
+            lbText(high, 'No job preferences', 'lobby__high-prefix');
+        }
+        lbEl(text, 'lobby__grow');
+        const edit = lbEl(text, 'lobby__row lobby__card-edit');
+        lbText(edit, 'Edit character', 'lobby__card-edit-label');
+        lbIcon(edit, 'chevron');
+        lbSwitchRow(who);
+    }
+
+    function lbSwitchRow(parent) {
+        const open = lb.switcher && !lb.join;
+        const sw = lbOn(lbEl(parent, 'lobby__switch' + (open ? ' lobby__switch--open' : '')), 'switcher');
+        sw.id = 'lobby-switch-character';
+        sw.title = 'Switch to another of your characters';
+        lbIcon(sw, 'users');
+        lbText(sw, 'Switch character', 'lobby__switch-label');
+        lbEl(sw, 'lobby__grow');
+        lbText(sw, `${lb.chars.length}/10`, 'lobby__switch-count');
+        lbIcon(sw, open && lbStageLayout() ? 'up' : 'down', 'lobby__icon--chevron');
+        lbEl(sw, 'lobby__switch-tip');
+        return sw;
+    }
+
+    function lbMusic(side) {
+        const music = lbEl(side, 'lobby__music' + (lb.music ? '' : ' lobby__music--off'));
+        const toggle = lbOn(lbEl(music, 'lobby__music-toggle' + (lb.music ? ' lobby__music-toggle--on' : '')), 'music');
+        toggle.title = lb.music ? 'Turn music off' : 'Turn music on';
+        lbIcon(toggle, 'music');
+        const mt = lbEl(music, 'lobby__music-text');
+        lbText(mt, 'Music', 'lobby__eyebrow');
+        lbText(mt, lb.music ? MM_TRACKS[lb.track] : 'Off', 'lobby__music-title');
+        const next = lbOn(lbEl(music, 'lobby__music-next'), 'next');
+        next.title = 'Next track';
+        lbIcon(next, 'next');
+        mmSlider(music, lb.volume, 'lobby__music-volume', 'volume');
+    }
+
+    function lbFooter(side) {
+        const foot = lbEl(side, 'lobby__footer');
+        const bug = lbOn(lbEl(foot, 'lobby__quiet-button lobby__footer-button'), 'bug');
+        bug.title = 'Report a bug (F8)';
+        lbIcon(bug, 'bug');
+        lbText(bug, 'Report a bug', 'lobby__footer-label');
+        lbText(bug, 'F8', 'lobby__keycap');
+        const quit = lbOn(lbEl(foot, 'lobby__quiet-button lobby__footer-button lobby__quit' + (lb.quitArmed ? ' lobby__quit--armed' : '')), 'quit');
+        lbIcon(quit, 'logout');
+        lbText(quit, lb.quitArmed ? 'Click again to quit' : 'Quit to menu', 'lobby__footer-label');
+    }
+
+    // Layout B: the character you play, large, between the narrow sidebar and the narrow panel. In game the booth's
+    // live render texture (CharacterPreviewBooth); here a still of it, taken in the Editor, for every character.
+    function lbStage(root) {
+        const c = lb.chars[lb.selected];
+        const dept = c.high ? LB_JOBS[c.high] : null;
+        const covered = LB_WIDE_TABS.includes(lb.tab) ? ' lobby__stage--covered' : '';
+        const st = lbEl(root, 'lobby__stage' + (dept ? ' lb-dept--' + dept : ' lobby__stage--neutral') + covered);
+        st.id = 'lobby-character-stage';
+
+        const plate = lbEl(st, 'lobby__stage-plate');
+        lbText(plate, 'Playing as', 'lobby__eyebrow');
+        lbText(plate, c.name, 'lobby__stage-name');
+        const high = lbEl(plate, 'lobby__row lobby__stage-high');
+        if (c.high) {
+            lbIcon(high, LB_DEPT_ICON[dept], 'lobby__stage-dept-icon lb-tint');
+            lbText(high, 'High:', 'lobby__high-prefix');
+            lbText(high, c.high, 'lobby__high-job lb-dept-text');
+        } else {
+            lbText(high, 'No job preferences', 'lobby__high-prefix');
+        }
+        lbEl(plate, 'lobby__stage-accent');
+
+        const fig = lbOn(lbEl(st, 'lobby__stage-figure'), 'card');
+        fig.id = 'lobby-preview-image';
+        fig.title = 'Open the character window';
+        lbEl(fig, 'lobby__stage-floor');
+        lbEl(fig, 'lobby__stage-shadow');
+        lbEl(fig, 'lobby__stage-model').style.backgroundImage = 'url(renders/lobby-character.png)'; /* web-only stand-in */
+
+        const bar = lbEl(st, 'lobby__stage-bar');
+        lbSwitchRow(bar);
+        const edit = lbOn(lbEl(bar, 'lobby__stage-edit'), 'card');
+        edit.title = 'Open the character window';
+        lbText(edit, 'Edit character', 'lobby__card-edit-label');
+        lbIcon(edit, 'chevron');
+    }
+
+    function lbMain(root) {
+        const stage = lbStageLayout();
+        const main = lbEl(root, 'lobby__main' + (stage && LB_WIDE_TABS.includes(lb.tab) ? ' lobby__main--wide' : ''));
+        main.id = 'lobby-shell-window';
+        if (stage) lbStackedHeader(main);
+        else lbHeader(main);
+
+        const tabs = lbEl(main, 'lobby__tabs');
+        tabs.id = 'lobby-tabs';
+        const names = stage
+            ? [['info', 'Info'], ['chat', 'Chat'], ['settings', 'Settings'], ['last', 'Last round'], ['admin', 'Server']]
+            : [['info', 'Server info'], ['chat', 'Chat'], ['settings', 'Settings'], ['last', 'Last round'], ['admin', 'Server settings']];
+        names.forEach(([id, label]) => {
+            let cls = 'lobby__tab' + (lb.tab === id ? ' lobby__tab--active' : '');
+            if (id === 'admin' && !lb.adminOn) cls += ' lobby__tab--hidden';
+            const t = lbOn(lbText(tabs, id === 'admin' ? '' : label, cls), 'tab', id);
+            if (id === 'admin') {
+                lbText(t, label, 'lobby__tab-label');
+                lbText(t, 'Admin', 'lobby__tab-badge');
+            }
+        });
+        if (!stage) {
+            lbEl(tabs, 'lobby__grow');
+            lbAdminSwitch(tabs);
+        }
+
+        const content = lbEl(main, 'lobby__tab-content');
+        content.id = 'lobby-tab-content';
+        if (lb.tab === 'info') lbInfo(content);
+        else if (lb.tab === 'chat') lbChat(content);
+        else if (lb.tab === 'settings') mmSettings(lbEl(content, 'lobby__settings-host'), { header: false });
+        else if (lb.tab === 'last') lbLast(content);
+        else lbAdmin(content);
+    }
+
+    function lbAdminSwitch(parent) {
+        const admin = lbEl(parent, 'lobby__admin');
+        lbText(admin, 'Admin', 'lobby__admin-label');
+        const sw = lbOn(lbEl(admin, 'lobby__switch-toggle' + (lb.adminOn ? ' lobby__switch-toggle--on' : '')), 'admin');
+        sw.title = lb.adminOn ? 'Hide Server Settings' : 'Show Server Settings';
+        lbEl(sw, 'lobby__switch-knob');
+    }
+
+    function lbBack(parent) {
+        const back = lbOn(lbEl(parent, 'lobby__quiet-button lobby__back' + (lb.spawned ? ' lobby__back--shown' : '')), 'back');
+        back.title = 'Close this menu (Esc)';
+        lbText(back, 'Back to round', 'lobby__back-label');
+        lbText(back, 'Esc', 'lobby__keycap');
+    }
+
+    function lbRoundMeta(meta) {
+        const r = lbRound();
+        lbEl(meta, 'lobby__dot' + (r.tone ? ' lobby__dot--' + r.tone : ''));
+        lbText(meta, r.status, 'lobby__meta-value' + (r.tone ? ' lobby__status--' + r.tone : ''));
+    }
+
+    // Layout B: map and mode live in Info's server table; the header keeps players and the round.
+    function lbStackedHeader(main) {
+        const head = lbEl(main, 'lobby__header lobby__header--stacked');
+        const top = lbEl(head, 'lobby__header-row');
+        lbText(top, 'RE:SS3D Sandbox', 'lobby__server-name');
+        lbEl(top, 'lobby__grow');
+        lbBack(top);
+        const bottom = lbEl(head, 'lobby__header-row');
+        const meta = lbEl(bottom, 'lobby__header-meta');
+        lbText(meta, 'Players', 'lobby__meta-key');
+        lbText(meta, lb.round === 'waiting' ? '3/40' : '14/40', 'lobby__meta-value');
+        lbEl(meta, 'lobby__meta-sep');
+        lbText(meta, 'Round', 'lobby__meta-key');
+        lbRoundMeta(meta);
+        lbEl(bottom, 'lobby__grow');
+        lbAdminSwitch(bottom);
+    }
+
+    function lbHeader(main) {
+        const head = lbEl(main, 'lobby__header');
+        lbText(head, 'RE:SS3D Sandbox', 'lobby__server-name');
+        const meta = lbEl(head, 'lobby__header-meta');
+        const pair = (k, v, sep = true) => {
+            if (sep) lbEl(meta, 'lobby__meta-sep');
+            lbText(meta, k, 'lobby__meta-key');
+            if (v != null) lbText(meta, v, 'lobby__meta-value');
+        };
+        pair('Map', 'Box Station', false);
+        pair('Mode', 'Secret');
+        pair('Players', lb.round === 'waiting' ? '3/40' : '14/40');
+        pair('Round');
+        lbRoundMeta(meta);
+        lbEl(head, 'lobby__grow');
+        lbBack(head);
+    }
+
+    function lbLink(parent, text, message) {
+        const l = lbOn(lbEl(parent, 'lobby-info__link'), 'toast', message);
+        lbText(l, text, 'lobby-info__link-label');
+        lbIcon(l, 'external');
+        return l;
+    }
+
+    function lbInfo(parent) {
+        const info = lbEl(parent, 'lobby-info');
+        info.id = 'server-info';
+        const left = lbEl(info, 'lobby-info__left');
+        lbEl(left, 'lobby-info__banner').style.backgroundImage = cssUrl('Banners/LobbyBannerBreach');
+        lbText(left, 'Message of the day', 'lobby__eyebrow');
+        lbText(lbEl(left, 'lobby-info__motd-scroll'), LB_MOTD, 'lobby-info__motd');
+
+        const right = lbEl(info, 'lobby-info__right');
+        lbText(right, 'Server', 'lobby__eyebrow');
+        [['Map', 'Box Station'], ['Mode', 'Secret'], ['Build', 'v0.4.2 · bd2ba80'], ['Uptime', '2d 06:14']].forEach(([k, v]) => {
+            const row = lbEl(right, 'lobby-info__kv');
+            lbText(row, k, 'lobby-info__key');
+            lbText(row, v, 'lobby-info__value');
+        });
+        const gap = lbEl(right, 'lobby-info__section-gap');
+        const links = lbEl(gap, 'lobby-info__links');
+        lbText(links, 'Change log', 'lobby__eyebrow');
+        lbLink(links, 'All releases', 'In game: opens the releases page');
+        const log = lbEl(gap, 'lobby-info__log');
+        LB_CHANGES.forEach(([version, date, entries]) => {
+            const group = lbEl(log, 'lobby-info__release');
+            const hd = lbEl(group, 'lobby-info__release-head');
+            lbText(hd, version, 'lobby-info__release-version');
+            lbText(hd, date, 'lobby-info__release-date');
+            lbLink(hd, 'Release notes', `In game: opens the ${version} release notes`);
+            entries.forEach(([subject, ref]) => {
+                const row = lbOn(lbEl(group, 'lobby-info__entry lobby-info__entry--link'), 'toast', `In game: opens ${ref} on GitHub`);
+                lbEl(row, 'lobby-info__bullet');
+                lbText(row, subject, 'lobby-info__entry-text');
+                lbText(row, ref, 'lobby-info__entry-ref');
+            });
+        });
+    }
+
+    function lbChat(parent) {
+        const chat = lbEl(parent, 'lobby-chat');
+        chat.id = 'chat';
+        const log = lbEl(chat, 'lobby-chat__log');
+        log.id = 'chat-log';
+        lb.chat.forEach(m => {
+            const row = lbEl(log, 'lobby-chat__line');
+            lbText(row, m.t, 'lobby-chat__time');
+            lbText(row, m.ch.toUpperCase(), 'lobby-chat__channel lobby-chat__channel--' + m.ch);
+            const body = lbEl(row, 'lobby-chat__body');
+            if (m.sys) {
+                lbText(body, m.sys, 'lobby-chat__system');
+                return;
+            }
+            lbText(body, m.who + ':', 'lobby-chat__name' + (m.admin ? ' lobby-chat__name--admin' : ''));
+            lbText(body, m.text, 'lobby-chat__text');
+        });
+        const stacked = lbStageLayout();
+        const composer = lbEl(chat, 'lobby-chat__composer lobby-chat__composer--' + lb.channel + (stacked ? ' lobby-chat__composer--stacked' : ''));
+        const channels = stacked ? lbEl(composer, 'lobby-chat__composer-row') : composer;
+        [['ooc', 'OOC'], ['looc', 'LOOC'], ['admin', 'Admin']].forEach(([id, label]) =>
+            lbOn(lbText(channels, label, `lobby-chat__channel-button lobby-chat__channel-button--${id}` + (lb.channel === id ? ' lobby-chat__channel-button--active' : '')), 'channel', id));
+        const line = stacked ? lbEl(composer, 'lobby-chat__composer-row lobby-chat__composer-row--field') : composer;
+        const input = h('input', 'lobby-chat__input');
+        input.value = lb.draft;
+        input.spellcheck = false;
+        input.dataset.field = 'chat';
+        input.placeholder = { ooc: 'Say something out of character', looc: 'Say something to players near your character', admin: 'Message the other admins' }[lb.channel];
+        line.append(input);
+        const send = lbOn(lbEl(line, 'lobby-chat__send'), 'send');
+        send.title = 'Send (Enter)';
+        lbIcon(send, 'send');
+        lbText(send, 'Send', 'lobby-chat__send-label');
+        lbText(chat, 'Enter sends to the selected channel. LOOC reaches players near your character.', 'lobby-chat__hint');
+    }
+
+    function lbLast(parent) {
+        const root = lbEl(parent, 'round-end round-end--tab ' + (lb.noLast ? 'round-end--none' : 'round-end--ops'));
+        root.id = 'last-round';
+        const head = lbEl(root, 'round-end__header');
+        lbText(head, 'Last round', 'lobby__eyebrow');
+        lbText(head, 'Round 13 · 52 min', '');
+        lbEl(head, 'round-end__spacer');
+        lbText(head, 'Kept until the next round ends.', 'round-end__tab-note');
+
+        const result = lbEl(root, 'round-end__result');
+        result.id = 'round-end-result';
+        lbText(result, 'Round result', 'lobby__eyebrow');
+        const rr = lbEl(result, 'round-end__result-row');
+        lbText(rr, 'Operatives win', 'round-end__title');
+        lbText(rr, 'Station destroyed', 'round-end__destroyed');
+        lbText(result, 'The nuclear device went off in the vault, three minutes before the shuttle docked.', 'round-end__reason');
+
+        const facts = lbEl(root, 'round-end__facts');
+        const fact = (label, divided) => {
+            const f = lbEl(facts, 'round-end__fact' + (divided ? ' round-end__fact--divided' : ''));
+            lbText(f, label, 'lobby__eyebrow');
+            return lbEl(f, 'round-end__fact-value');
+        };
+        const mode = fact('Gamemode');
+        lbText(mode, 'Secret', 'round-end__mode-configured round-end__struck');
+        lbText(mode, '→', 'round-end__mode-configured');
+        lbText(mode, 'Nuclear Emergency', 'round-end__mode round-end__ellipsis');
+        const fate = fact('Your fate', true);
+        lbText(fate, 'Died', 'round-end__fate round-end__dead');
+        lbText(fate, 'Rory Lindqvist, Security Officer', 'round-end__fate-who round-end__ellipsis');
+
+        const row = (parent, r, half) => {
+            const dept = half ? ' round-end__row--antag' : ' lb-dept--' + LB_JOBS[r.job];
+            const e = lbEl(parent, 'round-end__row' + dept + (half ? ' round-end__row--half' : '') + (r.you ? ' round-end__row--you' : ''));
+            lbText(e, r.name, 'round-end__row-name round-end__ellipsis' + (r.alive ? '' : ' round-end__row-name--dead'));
+            if (r.you) lbText(e, 'You', 'round-end__you');
+            if (!half) lbText(e, r.job, 'round-end__row-job round-end__ellipsis lb-dept-text');
+            lbText(e, r.alive ? 'Alive' : 'Dead', 'round-end__row-status ' + (r.alive ? 'round-end__alive' : 'round-end__dead'));
+        };
+        const ops = lbEl(root, 'round-end__section');
+        ops.id = 'round-end-antagonists';
+        const oh = lbEl(ops, 'round-end__section-head');
+        lbText(oh, 'Operatives', 'round-end__section-label round-end__section-label--antag');
+        lbText(oh, '3', '');
+        const obj = lbEl(ops, 'round-end__objective');
+        lbText(obj, 'Objective', 'round-end__objective-label');
+        lbText(obj, 'Detonate the nuclear device on the station', 'round-end__objective-text');
+        lbText(obj, 'Met', 'round-end__objective-result round-end__objective-result--met');
+        const grid = lbEl(ops, 'round-end__ops-grid');
+        [{ name: 'Vex Arden', alive: true }, { name: 'Kai Moreno', alive: true }, { name: 'Lu Petrov', alive: false }].forEach(r => row(grid, r, true));
+
+        const crew = lbEl(root, 'round-end__crew');
+        crew.id = 'round-end-crew';
+        const ch = lbEl(crew, 'round-end__section-head');
+        lbText(ch, 'Crew', 'round-end__section-label');
+        lbText(ch, String(LB_LAST_CREW.length), '');
+        const roster = lbEl(crew, 'round-end__roster');
+        LB_LAST_CREW.forEach(r => row(roster, r, false));
+    }
+
+    // LobbyServerSettingsView's Refresh: the round's state in words, and which controls it offers.
+    function lbAdmin(parent) {
+        const scroll = lbEl(parent, 'lobby-admin__scroll');
+        const form = lbEl(scroll, 'lobby-admin');
+        form.id = 'server-settings';
+        const idle = lbIdle();
+        const warming = lb.round === 'starting';
+        const card = lbEl(form, 'lobby-admin__card lb-tone--' + (lbRound().tone || 'neutral'));
+        lbText(card, 'Round state', 'lobby__eyebrow');
+        const body = lbEl(card, 'lobby-admin__card-body');
+        const state = lbEl(body, '');
+        const title = warming ? 'Starting in' : ({ loading: 'Loading station', ongoing: 'Round in progress', ending: 'Ending round' }[lb.round] || 'Waiting for players');
+        let detail = 'Please wait…';
+        if (warming) detail = lbClock(lb.secs);
+        else if (lb.round === 'countdown') detail = 'Auto start in ' + lbClock(lb.secs);
+        else if (lb.round === 'manual') detail = 'Manual start';
+        else if (lb.round === 'held') detail = 'Auto start held. Start resumes it.';
+        else if (idle) detail = 'Auto start at 4 connected';
+        else if (lb.round === 'ongoing') detail = lbLong(lb.secs) + ' elapsed';
+        else if (lb.round === 'ending') detail = lb.endHeld ? 'Summary held' : 'Lobby in ' + lbClock(lb.secs);
+        lbText(state, title, 'lobby-admin__round-state');
+        lbText(state, detail, 'lobby-admin__round-detail');
+        const ready = lbEl(body, '');
+        lbText(ready, 'Ready', 'lobby-admin__ready-label');
+        lbText(ready, lb.round === 'waiting' ? '1/3' : `${lb.ready ? 7 : 6}/14`, 'lobby-admin__ready-ratio');
+
+        lbText(form, 'Round controls', 'lobby-admin__section-title');
+        const controls = lbEl(form, 'lobby-admin__controls');
+        const button = (label, show, enabled, cls) => {
+            if (!show) return;
+            const b = lbText(controls, label, 'lobby-admin__button' + (cls ? ' ' + cls : '') + (enabled ? '' : ' lobby-admin__button--disabled'));
+            if (enabled) lbOn(b, 'round-admin', label);
+        };
+        button('Start Round', idle, true, 'lobby-admin__button--start');
+        button('Force Start', idle || warming, warming, 'lobby-admin__button--warn');
+        button('Extend Timer', idle || warming, warming);
+        button('Cancel Countdown', idle || warming, warming || lb.round === 'countdown', 'lobby-admin__button--warn');
+        button('Stop Round', lb.round === 'ongoing', true, 'lobby-admin__button--danger');
+        button('Hold Summary', lb.round === 'ending' && !lb.endHeld, true, 'lobby-admin__button--warn');
+        button('Resume Summary', lb.round === 'ending' && lb.endHeld, true);
+
+        lbText(form, 'Server info', 'lobby-admin__section-title');
+        lbField(form, 'Server Name', 'RE:SS3D Sandbox');
+        lbField(form, 'Message of the Day', LB_MOTD, true);
+
+        lbText(form, 'Map and mode', 'lobby-admin__section-title');
+        lbSelect(form, 'Map', 'Box Station', ['Box Station', 'Delta Station', 'Untitled map']);
+        if (lb.round === 'loading') lbText(form, 'Loading map: Box Station…', 'lobby-admin__map-load lobby-admin__map-load--loading');
+        else lbText(form, 'Map ready: Box Station', 'lobby-admin__map-load lobby-admin__map-load--ready');
+        lbSelect(form, 'Game Mode', 'Secret', ['Secret', 'Extended', 'Nuclear Emergency']);
+        const numbers = lbEl(form, 'lobby-admin__numbers');
+        [['Player Cap', 40], ['Round Length (min)', 60], ['Minimum Connected', 4], ['Countdown (s)', 180], ['Minimum Operatives', 2]].forEach(([label, v]) => {
+            const col = lbEl(numbers, 'lobby-admin__number');
+            lbText(col, label, 'lobby-admin__label');
+            lbInput(col, label, String(v));
+        });
+
+        lbText(form, 'Round rules', 'lobby-admin__section-title');
+        lbRule(form, 'Allow Late Join', 'lateJoin', lb.lateJoin, '');
+        lbRule(form, 'Auto Start Rounds', 'autoStart', lb.autoStart, 'Counts down on its own at 4 connected');
+        lbText(form, 'Saved. Players see changes at once.', 'lobby-admin__status');
+    }
+
+    function lbInput(parent, key, value, multiline) {
+        const i = h(multiline ? 'textarea' : 'input', 'lobby-admin__input');
+        i.value = lb.fields[key] != null ? lb.fields[key] : value;
+        i.spellcheck = false;
+        i.dataset.field = 'admin:' + key;
+        parent.append(i);
+        return i;
+    }
+
+    function lbField(parent, label, value, multiline) {
+        const f = lbEl(parent, 'lobby-admin__text' + (multiline ? ' lobby-admin__text--multiline' : ''));
+        lbText(f, label, 'lobby-admin__label');
+        lbInput(f, label, value, multiline);
+    }
+
+    function lbSelect(parent, label, value, items) {
+        const f = lbEl(parent, 'lobby-admin__select');
+        lbText(f, label, 'lobby-admin__label');
+        const dd = lbEl(f, 'menu-dropdown');
+        lbText(dd, lb.fields[label] || value, 'menu-dropdown__value');
+        lbEl(dd, 'menu-dropdown__arrow');
+        const list = lbEl(dd, 'menu-dropdown__list');
+        items.forEach(v => lbText(list, v, 'menu-dropdown__item'));
+        dd.dataset.select = label;
+    }
+
+    function lbRule(parent, label, key, on, reason) {
+        const t = lbOn(lbEl(parent, 'lobby-admin__toggle' + (on ? ' lobby-admin__toggle--on' : '')), 'rule', key);
+        if (reason) t.title = reason;
+        lbIcon(lbEl(t, 'lobby-admin__checkmark'), 'tick');
+        lbText(t, label, 'lobby-admin__toggle-text');
+        if (reason) lbText(t, reason, 'lobby-admin__toggle-reason');
+    }
+
+    function lbJoin(root) {
+        const overlay = lbEl(root, 'lobby-join lobby-join--open');
+        overlay.id = 'lobby-join';
+        const card = lbEl(overlay, 'lobby-join__card');
+        const head = lbEl(card, 'lobby-join__header');
+        lbText(head, 'Join the round', 'lobby-join__title');
+        lbText(head, 'Round time', 'lobby-join__meta-key');
+        lbText(head, lbLong(lb.secs), 'lobby-join__clock').dataset.lbClock = '';
+        lbEl(head, 'lobby__grow');
+        lbText(head, 'Esc', 'lobby__keycap');
+        const close = lbOn(lbEl(head, 'lobby-join__close'), 'join-close');
+        close.title = 'Close (Esc)';
+        lbIcon(close, 'x');
+
+        const body = lbEl(card, 'lobby-join__body');
+        const jobs = lbEl(body, 'lobby-join__jobs');
+        const open = lb.onlyFallback ? LB_OPEN.filter(([job]) => job === 'Assistant') : LB_OPEN.filter(([job]) => job !== lb.filled);
+        const sh = lbEl(jobs, 'lobby-join__section-head');
+        lbText(sh, 'Open jobs', 'lobby-join__section-title');
+        lbText(sh, open.length + ' open', 'lobby-join__section-count');
+        lbEl(sh, 'lobby__grow');
+        lbText(sh, 'Pick a job to see what it does', 'lobby-join__hint');
+        if (lb.filled || lb.onlyFallback) {
+            const n = lbEl(jobs, 'lobby-join__notice' + (lb.filled ? ' lobby-join__notice--warning' : ''));
+            lbIcon(n, lb.filled ? 'warning' : 'info');
+            lbText(n, lb.filled ? `${lb.filled} filled up while you were choosing. Pick another job.`
+                : 'Every other job is full right now. Assistant is always open, or you can observe instead.', 'lobby-join__notice-text');
+        }
+        const list = lbEl(jobs, 'lobby-join__job-list');
+        open.forEach(([job, count, description]) => {
+            const dept = LB_JOBS[job];
+            const on = lb.picked === job;
+            const item = lbEl(list, 'lobby-join__job-item lb-dept--' + dept + (on ? ' lobby-join__job-item--on' : ''));
+            const row = lbOn(lbEl(item, 'lobby-join__job'), 'pick', job);
+            lbEl(lbEl(row, 'lobby-join__ring'), 'lobby-join__ring-dot');
+            lbIcon(lbEl(row, 'lobby-join__job-frame lb-dept--' + dept), LB_DEPT_ICON[dept], 'lb-tint');
+            const text = lbEl(row, 'lobby-join__job-text');
+            lbText(text, job, 'lobby-join__job-name');
+            lbText(text, lbCap(dept), 'lobby-join__job-dept lb-dept-text lb-dept--' + dept);
+            lbEl(row, 'lobby__grow');
+            if (count) {
+                lbText(row, count, 'lobby-join__job-count');
+                lbText(row, 'open', 'lobby-join__job-count-word');
+            } else {
+                lbText(row, 'unlimited', 'lobby-join__job-count-word');
+            }
+            if (on) lbText(item, description, 'lobby-join__description');
+        });
+        const as = lbEl(jobs, 'lobby-join__as');
+        lbIcon(lbEl(as, 'lobby-join__portrait-frame'), 'user', 'lobby-join__portrait');
+        const at = lbEl(as, 'lobby-join__as-text');
+        lbText(at, 'Joining as', 'lobby__eyebrow');
+        lbText(at, lb.chars[lb.selected].name, 'lobby-join__character');
+        const change = lbOn(lbEl(as, 'lobby-join__change'), 'switcher');
+        change.id = 'lobby-join-change';
+        change.title = 'Join as another of your characters';
+        lbIcon(change, 'users');
+        lbText(change, 'Change', 'lobby-join__change-label');
+        const ok = lbEl(jobs, 'lobby-join__confirm' + (lb.picked ? ' lobby-join__confirm--dept lb-dept--' + LB_JOBS[lb.picked] : ' lobby-join__confirm--disabled'));
+        if (lb.picked) lbOn(ok, 'join-confirm');
+        const ct = lbEl(ok, 'lobby-join__confirm-text');
+        lbText(ct, lb.picked ? 'Join as ' + lb.picked : 'Join', 'lobby-join__confirm-title');
+        lbText(ct, 'Spawns you on the station straight away', 'lobby-join__confirm-subtitle');
+        lbText(ok, 'Enter', 'lobby__keycap');
+
+        // The manifest: who is aboard, by department; an open job nobody holds shows as a gap.
+        const man = lbEl(body, 'lobby-join__manifest-section');
+        const mh = lbEl(man, 'lobby-join__section-head');
+        lbText(mh, 'Crew manifest', 'lobby-join__section-title');
+        lbText(mh, LB_CREW.length + ' aboard', 'lobby-join__section-count');
+        const grid = lbEl(lbEl(man, 'lobby-join__manifest-scroll'), 'lobby-join__manifest');
+        const cols = [lbEl(grid, 'lobby-join__column lobby-join__column--left'), lbEl(grid, 'lobby-join__column')];
+        LB_DEPTS.forEach((dept, i) => {
+            const crew = LB_CREW.filter(([, job]) => LB_JOBS[job] === dept);
+            const gaps = open.filter(([job]) => LB_JOBS[job] === dept && !LB_CREW.some(([, j]) => j === job));
+            if (!crew.length && !gaps.length) return;
+            const g = lbEl(cols[i < 4 ? 0 : 1], 'lobby-join__group lb-dept--' + dept);
+            const gh = lbEl(g, 'lobby-join__group-head');
+            lbIcon(gh, LB_DEPT_ICON[dept], 'lobby-join__group-icon lb-tint');
+            lbText(gh, lbCap(dept), 'lobby-join__group-name');
+            lbEl(gh, 'lobby__grow');
+            lbText(gh, String(crew.length), 'lobby-join__group-count');
+            crew.forEach(([name, job]) => {
+                const r = lbEl(g, 'lobby-join__crew');
+                lbText(r, name, 'lobby-join__crew-name');
+                lbText(r, job, 'lobby-join__crew-job');
+            });
+            gaps.forEach(([job]) => lbText(g, `No ${job} aboard`, 'lobby-join__crew-missing'));
+        });
+    }
+
+    function lbSwitcher(root) {
+        const sw = lbEl(root, 'switcher switcher--open');
+        sw.id = 'switcher';
+        const head = lbEl(sw, 'switcher__head');
+        lbText(head, 'Characters', 'switcher__title');
+        lbText(head, `${lb.chars.length}/10`, 'switcher__count');
+        lbEl(head, 'lobby__grow');
+        lbText(head, 'Pick who you play', 'switcher__hint');
+        const list = lbEl(sw, 'switcher__list');
+        const full = lb.chars.length >= 10;
+        lb.chars.forEach((c, i) => {
+            const selected = i === lb.selected;
+            const dept = c.high ? ' switcher__row--dept lb-dept--' + LB_JOBS[c.high] : '';
+            const row = lbOn(lbEl(list, 'switcher__row' + dept + (selected ? ' switcher__row--selected' : '')), 'select-char', i);
+            lbIcon(lbEl(row, 'switcher__portrait'), 'user', 'switcher__silhouette');
+            const text = lbEl(row, 'switcher__text');
+            lbText(text, c.name, 'switcher__name');
+            const high = lbEl(text, 'switcher__high');
+            if (c.high) {
+                lbEl(high, 'lb-swatch lb-dept--' + LB_JOBS[c.high]);
+                lbText(high, 'High:', 'switcher__high-prefix');
+                lbText(high, c.high, 'switcher__high-job lb-dept-text');
+            } else {
+                lbText(high, 'No job preferences', 'switcher__high-prefix');
+            }
+            if (selected) {
+                const s = lbEl(row, 'switcher__selected');
+                lbIcon(s, 'check');
+                lbText(s, 'Selected', 'switcher__selected-label');
+            }
+            const dup = lbEl(row, 'switcher__action' + (full ? ' switcher__action--disabled' : ''));
+            dup.title = 'Duplicate';
+            if (!full) lbOn(dup, 'duplicate', i);
+            lbIcon(dup, 'duplicate');
+            const only = lb.chars.length <= 1;
+            const del = lbEl(row, 'switcher__action' + (only ? ' switcher__action--disabled' : ''));
+            del.title = 'Delete';
+            if (!only) lbOn(del, 'delete', i);
+            lbIcon(del, 'trash');
+            if (lb.confirmDelete === i) {
+                const cf = lbEl(list, 'switcher__confirm');
+                lbText(cf, `Delete ${c.name}? Their look, jobs and antag choices go with them. This can't be undone.`, 'switcher__confirm-text');
+                const bs = lbEl(cf, 'switcher__confirm-buttons');
+                const yes = lbOn(lbEl(bs, 'switcher__confirm-button switcher__confirm-button--danger'), 'delete-yes', i);
+                lbIcon(yes, 'trash');
+                lbText(yes, 'Delete', 'switcher__confirm-label');
+                lbText(lbOn(lbEl(bs, 'switcher__confirm-button'), 'delete-no'), 'Keep', 'switcher__confirm-label');
+            }
+        });
+        const foot = lbEl(sw, 'switcher__foot');
+        const add = lbEl(foot, 'switcher__new' + (full ? ' switcher__new--disabled' : ''));
+        if (!full) lbOn(add, 'new-char');
+        lbIcon(add, 'plus');
+        lbText(add, 'New character', 'switcher__new-label');
+        lbText(foot, 'Ten characters is the most you can keep. Delete one to make room.', 'switcher__full' + (full ? '' : ' switcher__full--hidden'));
+        return sw;
+    }
+
+    // Beside the button that opened it, vertically centred on it and kept on screen (LobbyView places it in C#).
+    function lbPlaceSwitcher(root, sw) {
+        const anchor = $(lb.join ? '#lobby-join-change' : '#lobby-switch-character', root);
+        if (!anchor) return;
+        const box = root.getBoundingClientRect();
+        const scale = box.width / root.offsetWidth || 1;
+        const a = anchor.getBoundingClientRect();
+        if (lbStageLayout() && !lb.join) {
+            const centre = (a.left + a.width / 2 - box.left) / scale;
+            sw.style.left = Math.max(16, Math.min(root.offsetWidth - sw.offsetWidth - 16, centre - sw.offsetWidth / 2)) + 'px';
+            sw.style.top = Math.max(16, (a.top - box.top) / scale - sw.offsetHeight - 14) + 'px';
+            return;
+        }
+        const left = (a.right - box.left) / scale + 14;
+        const mid = (a.top + a.height / 2 - box.top) / scale;
+        const top = Math.max(16, Math.min(root.offsetHeight - sw.offsetHeight - 16, mid - 70));
+        sw.style.left = left + 'px';
+        sw.style.top = top + 'px';
+    }
+
+    function lbPrompt(root) {
+        const p = lbEl(root, 'lobby-prompt');
+        p.id = 'map-stop-prompt';
+        const card = lbEl(p, 'lobby-prompt__card');
+        lbText(card, 'Unsaved map changes', 'lobby-prompt__title');
+        lbText(card, 'This new map has unsaved changes. Stopping the round unloads the station. Save and stop saves it under a new name first; Discard loses these edits.', 'lobby-prompt__text');
+        const f = lbEl(card, 'lobby-admin__text');
+        lbText(f, 'New map name', 'lobby-admin__label');
+        const i = h('input', 'lobby-admin__input');
+        i.value = lb.mapName;
+        i.spellcheck = false;
+        i.dataset.field = 'mapName';
+        f.append(i);
+        const named = lb.mapName.trim() !== '';
+        if (!named) lbText(card, 'Give the map a name to save it.', 'lobby-prompt__error');
+        const bs = lbEl(card, 'lobby-prompt__buttons');
+        lbOn(lbText(bs, 'Cancel', 'lobby-admin__button'), 'prompt', 'cancel');
+        lbOn(lbText(bs, 'Discard and stop', 'lobby-admin__button lobby-admin__button--danger'), 'prompt', 'discard');
+        const save = lbText(bs, 'Save and stop', 'lobby-admin__button lobby-admin__button--start' + (named ? '' : ' lobby-admin__button--disabled'));
+        if (named) lbOn(save, 'prompt', 'save');
+    }
+
+    function lbRender() {
+        const cv = $('#lb-canvas');
+        if (!cv) return;
+        const focus = document.activeElement && cv.contains(document.activeElement) ? document.activeElement : null;
+        const field = focus && focus.dataset.field;
+        const caret = focus && focus.selectionStart;
+        let root = $('.lobby', cv);
+        if (!root) {
+            root = h('div', 'lobby');
+            const station = h('div', 'lobby__station');
+            station.style.backgroundImage = cssUrl('Renders/PnCampfire');
+            root.append(station, h('div', 'lobby__veil'));
+            cv.append(root);
+        }
+        $$(':scope > :not(.lobby__station):not(.lobby__veil)', root).forEach(e => e.remove());
+        root.classList.toggle('lobby--stage', lbStageLayout());
+        lbSidebar(root);
+        if (lbStageLayout()) lbStage(root);
+        lbMain(root);
+        if (lb.join) lbJoin(root);
+        if (lb.switcher) lbPlaceSwitcher(root, lbSwitcher(root));
+        if (lb.prompt) lbPrompt(root);
+        $$('[data-lb-chip]').forEach(c => c.classList.toggle('is-on', c.dataset.lbChip === lb.chip));
+        $$('[data-lb-layout]').forEach(c => c.classList.toggle('is-on', c.dataset.lbLayout === lb.layout));
+        const log = $('#chat-log', root);
+        if (log) log.scrollTop = log.scrollHeight;
+        if (field) {
+            const again = $(`[data-field="${field}"]`, cv);
+            if (again) {
+                again.focus();
+                if (caret != null) again.setSelectionRange(caret, caret);
+            }
+        }
+    }
+
+    // The shipped lobby's capture nearest each state (the local session showed "waiting for an admin", no countdown).
+    const LB_OLD = {
+        'pre-round': 'pre-round', 'ready': 'ready', 'waiting for players': 'pre-round', 'countdown held': 'pre-round',
+        'loading': 'pre-round', 'starting': 'in-progress', 'in progress': 'in-progress', 'late join off': 'in-progress',
+        'escape menu': 'in-progress', 'round over': 'round-over', 'join': 'join', 'join: job filled': 'join',
+        'join: only assistant': 'join', 'switch character': 'switcher', 'delete character': 'switcher', 'chat': 'chat',
+        'settings': 'settings', 'last round': 'round-over', 'server settings': 'server-settings', 'unsaved map': 'server-settings',
+    };
+
+    function lbState(name) {
+        Object.assign(lb, LB_BASE, LB_STATES[name], { chip: name, chars: LB_CHARS.map(c => ({ ...c })), selected: 0, fields: {} });
+        lb.secs = LB_SECS[lb.round] || 0;
+        lbRender();
+        syncOld('#lb-stage', 'lobby-' + LB_OLD[name]);
+    }
+
+    function lbSetRound(round) {
+        lb.round = round;
+        lb.secs = LB_SECS[round] || 0;
+    }
+
+    function lbSend() {
+        const text = lb.draft.trim();
+        if (!text) return;
+        const now = new Date();
+        const t = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        lb.chat.push({ t, ch: lb.channel, who: mm.name.trim() || 'Spessman', admin: true, text });
+        lb.draft = '';
+    }
+
+    function lbDo(action, arg) {
+        lb.chip = null;
+        const c = lb.chars[lb.selected];
+        switch (action) {
+            case 'ready':
+                lb.ready = !lb.ready;
+                break;
+            case 'join':
+                Object.assign(lb, { join: true, picked: null, filled: null, onlyFallback: false, switcher: false });
+                break;
+            case 'join-close':
+                Object.assign(lb, { join: false, switcher: false });
+                break;
+            case 'pick':
+                lb.picked = arg;
+                break;
+            case 'join-confirm':
+                toast(`In game: the lobby closes and ${c.name} spawns as ${lb.picked}`);
+                Object.assign(lb, { join: false, switcher: false, picked: null, spawned: true });
+                break;
+            case 'observe':
+                toast('In game: the lobby closes and you go in as a ghost');
+                return;
+            case 'card':
+                toast('In game: the character window opens (the character setup tab)');
+                return;
+            case 'switcher':
+                lb.switcher = !lb.switcher;
+                lb.confirmDelete = null;
+                break;
+            case 'select-char':
+                lb.selected = Number(arg);
+                lb.switcher = false;
+                break;
+            case 'duplicate': {
+                const i = Number(arg);
+                lb.chars.splice(i + 1, 0, { ...lb.chars[i], name: lb.chars[i].name + ' (copy)' });
+                if (i < lb.selected) lb.selected++;
+                break;
+            }
+            case 'delete':
+                lb.confirmDelete = Number(arg);
+                break;
+            case 'delete-no':
+                lb.confirmDelete = null;
+                break;
+            case 'delete-yes': {
+                const i = Number(arg);
+                lb.chars.splice(i, 1);
+                if (i < lb.selected || lb.selected >= lb.chars.length) lb.selected = Math.max(0, lb.selected - 1);
+                lb.confirmDelete = null;
+                break;
+            }
+            case 'new-char':
+                lb.chars.push({ name: LB_NAMES[lb.chars.length % LB_NAMES.length], high: null });
+                break;
+            case 'music':
+                lb.music = !lb.music;
+                break;
+            case 'next':
+                lb.track = (lb.track + 1) % MM_TRACKS.length;
+                lb.music = true;
+                break;
+            case 'bug':
+                toast('In game: the bug report opens, with your log attached');
+                return;
+            case 'quit':
+                clearTimeout(lbQuitTimer);
+                if (lb.quitArmed) {
+                    toast('In game: you leave the server, back to the main menu');
+                    lb.quitArmed = false;
+                } else {
+                    lb.quitArmed = true;
+                    lbQuitTimer = setTimeout(() => {
+                        lb.quitArmed = false;
+                        lbRender();
+                    }, 3000);
+                }
+                break;
+            case 'quit-disarm':
+                clearTimeout(lbQuitTimer);
+                lb.quitArmed = false;
+                break;
+            case 'back':
+                toast('In game: the menu closes, back to your body');
+                return;
+            case 'tab':
+                lb.tab = arg;
+                break;
+            case 'admin':
+                lb.adminOn = !lb.adminOn;
+                if (!lb.adminOn && lb.tab === 'admin') lb.tab = 'info';
+                break;
+            case 'channel':
+                lb.channel = arg;
+                break;
+            case 'send':
+                lbSend();
+                break;
+            case 'rule':
+                if (arg === 'lateJoin') {
+                    lb.lateJoin = !lb.lateJoin;
+                } else {
+                    lb.autoStart = !lb.autoStart;
+                    if (lbIdle()) lbSetRound(lb.autoStart ? 'countdown' : 'manual');
+                }
+                break;
+            case 'round-admin':
+                if (arg === 'Start Round') lbSetRound('starting');
+                else if (arg === 'Force Start') lbSetRound('ongoing');
+                else if (arg === 'Extend Timer') lb.secs += 60;
+                else if (arg === 'Cancel Countdown') lb.round === 'starting' ? lbSetRound('countdown') : lbSetRound('held');
+                else if (arg === 'Stop Round') lb.prompt = true;
+                else lb.endHeld = arg === 'Hold Summary';
+                break;
+            case 'prompt':
+                lb.prompt = false;
+                if (arg !== 'cancel') {
+                    toast(arg === 'save' ? `In game: "${lb.mapName.trim()}" is saved, the station unloads` : 'In game: the edits are dropped, the station unloads');
+                    Object.assign(lb, { spawned: false, ready: false });
+                    lbSetRound('countdown');
+                }
+                break;
+            case 'toast':
+                toast(arg);
+                return;
+            default:
+                return;
+        }
+        lbRender();
+    }
+
+    // The clock runs: a countdown to the start (then the warm-up, then the round), round time up, the summary down.
+    function lbTick() {
+        if (!$('#lb-canvas')) return;
+        const r = lb.round;
+        if (r === 'ongoing') {
+            lb.secs++;
+        } else if (r === 'countdown' || r === 'starting' || (r === 'ending' && !lb.endHeld)) {
+            lb.secs--;
+            if (lb.secs <= 0) {
+                if (r === 'countdown') {
+                    toast('In game: the station loads, then a short warm-up');
+                    lbSetRound('starting');
+                } else if (r === 'starting') {
+                    toast(lb.ready ? 'In game: the round starts and you spawn' : 'In game: the round starts; you can still join');
+                    if (lb.ready) lb.spawned = true;
+                    lbSetRound('ongoing');
+                } else {
+                    toast('In game: everyone is back in the lobby');
+                    Object.assign(lb, { spawned: false, ready: false });
+                    lbSetRound('countdown');
+                }
+                lb.chip = null;
+                lbRender();
+                return;
+            }
+        } else {
+            return;
+        }
+        $$('[data-lb-timer]').forEach(e => { e.textContent = r === 'ongoing' ? lbLong(lb.secs) : lbClock(lb.secs); });
+        $$('[data-lb-clock]').forEach(e => { e.textContent = lbLong(lb.secs); });
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // Character window: the shipped window's content in the character setup reference's look
+    // ══════════════════════════════════════════════════════════════════════
+    const CW_SKIN = ['#f6c6a6', '#f0d3bf', '#e2b48f', '#d6a079', '#b77a52', '#8f5a3c', '#6f432e', '#4a2c22'];
+    const CW_EYES = ['#3a2a20', '#4d7fb0', '#4d8f5e', '#8a7d34', '#7d8a8a', '#b8862f', '#6a3f2a', '#2c2c30'];
+    const CW_HAIR_COLOURS = ['#141414', '#3b2416', '#6e4126', '#8a3a1c', '#9a6a3e', '#b8923c', '#e3c77a', '#f1ead6', '#8d8d8d',
+        '#f4f4f4', '#c0281c', '#e0601c', '#f2a183', '#ef8fb8', '#8a3ec6', '#2f5fe0', '#2f9e4a', '#1aa3a0'];
+    // Names as the shipped window shows them, keyed to the baked pictures (Art/Icons/Lobby/Styles).
+    const CW_STYLES = {
+        hair: [['None', 'hair-none'], ['Anime', 'anime'], ['Beep', 'beep'], ['Fry', 'fry'], ['Afro', 'afro'], ['Afro 2', 'afro2'],
+            ['Balding 1', 'balding1'], ['Balding 2', 'balding2'], ['Big CEO', 'bigceo'], ['Clown', 'clown'], ['Crew Cut', 'crewcut'],
+            ['Dyhr', 'dyhr'], ['Emo', 'emo'], ['Fancy Kid', 'fancykid'], ['Grizzly Outlaw', 'grizzlyoutlaw'],
+            ['Hipster Ponytail', 'hipsterponytail2'], ['Long Hair Long', 'longhairlong'], ['Long Hair Medium', 'longhairmedium'],
+            ['Long Hair Short', 'longhairshort'], ['Mane', 'mane'], ['Mohawk', 'mohawk'], ['Mohawk Alt', 'mohawkalternative'],
+            ['Mullet', 'mullet'], ['Poofy Bangs', 'poofybangsshort'], ['Short Hair', 'shorthair'], ['Short Messy', 'shortmessy'],
+            ['Simple 1', 'simple1'], ['Simple 2', 'simple2'], ['Simple 3', 'simple3'], ['Simple Hime', 'simplehime']]
+            .map(([name, key]) => [name, key === 'hair-none' ? key : 'hair-humanhair' + key]),
+        beard: [['None', 'beard-none'], ['Danish Full', 'danishfull'], ['Amish', 'amish'], ['Cabron', 'cabron'], ['Chaplin', 'chaplin'],
+            ['Dali', 'dali'], ['Danish Mustache', 'danishmustache'], ['Freeman', 'freeman'], ['Frenchie', 'frenchie'], ['Full', 'full'],
+            ['Fuller', 'fuller'], ['Fu Manchu', 'fumanchu'], ['Goatee', 'goatee'], ['Mayor', 'mayor'], ['Mustache', 'mustache'],
+            ['Mutton Chops', 'muttonchops'], ['Plumber', 'plumber'], ['Rancher', 'rancher'], ['Saxon', 'saxonthegnsstache'],
+            ['Shadow', 'shadow'], ['Usual Mike', 'usualmike']]
+            .map(([name, key]) => [name, key === 'beard-none' ? key : 'beard-humanfacehair' + key]),
+        eyebrows: [['None', 'eyebrows-none'], ['Default', 'default'], ['Bold', 'bold'], ['Circle', 'circle'], ['Classic', 'classic'],
+            ['Dainty', 'dainty']].map(([name, key]) => [name, key === 'eyebrows-none' ? key : 'eyebrows-humaneyebrows' + key]),
+    };
+    // Departments and jobs as the shipped Jobs tab lists them; null slots = not in the game yet.
+    const CW_JOBS = [
+        ['command', [['Captain', 'Captain', '1 slot'], ['Head of Personnel', null, null]]],
+        ['science', [['Research Director', null, null], ['Scientist', null, null]]],
+        ['security', [['Head of Security', null, null], ['Security', 'SecurityOfficer', '1 slot'], ['Detective', null, null]]],
+        ['cargo', [['Quartermaster', null, null], ['Cargo Technician', 'CargoTechnician', null]]],
+        ['engineering', [['Chief Engineer', 'ChiefEngineer', null], ['Engineer', 'Engineer', 'unlimited'], ['Atmospheric Technician', null, null]]],
+        ['service', [['Bartender', 'Bartender', null], ['Chef', 'Chef', null], ['Janitor', 'Janitor', null]]],
+        ['medical', [['Chief Medical Officer', null, null], ['Doctor', 'Doctor', 'unlimited'], ['Chemist', 'Chemist', null]]],
+        ['civilian', [['Assistant', 'Assistant', 'unlimited']]],
+    ];
+    const CW_LEVELS = ['high', 'medium', 'low', 'never'];
+    const CW_WIDE = ['jobs', 'antags'];
+    // The shipped window's capture behind each tab of the design switch.
+    const CW_OLD = { profile: 'appearance', body: 'appearance', skin: 'appearance', hair: 'appearance', beard: 'appearance', jobs: 'jobs', antags: 'antags' };
+    const cw = {
+        swatch: { skin: 1, eyes: 3, hair: 1 },
+        style: { hair: 'Long Hair Medium', beard: 'None', eyebrows: 'Default' },
+        jobs: {},
+        dirty: false,
+    };
+
+    function cwMarkDirty(dirty = true) {
+        cw.dirty = dirty;
+        const save = $('[data-cw-save]');
+        if (!save) return;
+        save.classList.toggle('cw-save--dirty', dirty);
+        $('[data-cw-state]', save).textContent = dirty ? 'unsaved changes' : 'saved';
+        $$('.cw-small-button', save).forEach(b => b.classList.toggle('cw-small-button--disabled', !dirty));
+    }
+
+    function cwSwatches() {
+        const sets = { skin: CW_SKIN, eyes: CW_EYES, hair: CW_HAIR_COLOURS };
+        $$('[data-cw-swatches]').forEach(host => {
+            const kind = host.dataset.cwSwatches;
+            host.textContent = '';
+            sets[kind].forEach((colour, i) => {
+                const s = h('div', 'cw-swatch' + (cw.swatch[kind] === i ? ' cw-swatch--selected' : ''));
+                s.style.backgroundColor = colour;
+                s.dataset.cwSwatch = kind + ':' + i;
+                host.append(s);
+            });
+        });
+    }
+
+    function cwStyles() {
+        $$('[data-cw-styles]').forEach(host => {
+            const kind = host.dataset.cwStyles;
+            host.textContent = '';
+            CW_STYLES[kind].forEach(([name, file]) => {
+                const t = h('div', 'cw-style' + (cw.style[kind] === name ? ' cw-style--selected' : ''));
+                t.style.backgroundImage = cssUrl('Styles/' + file);
+                t.title = name;
+                t.dataset.cwStyle = kind + ':' + name;
+                host.append(t);
+            });
+            const label = $(`[data-cw-style-name="${kind}"]`);
+            if (label) label.textContent = cw.style[kind].toLowerCase();
+        });
+    }
+
+    function cwJobs() {
+        const host = $('[data-cw-jobs]');
+        if (!host) return;
+        host.textContent = '';
+        CW_JOBS.forEach(([dept, jobs]) => {
+            const box = h('div', 'cw-dept lb-dept--' + dept);
+            const head = h('div', 'cw-dept__head');
+            const glyph = h('div', 'cw-dept__glyph');
+            const u = cssUrl(LB_DEPT_ICON[dept]);
+            glyph.style.webkitMaskImage = u;
+            glyph.style.maskImage = u;
+            head.append(glyph, h('div', 'cw-dept__name', { text: dept }));
+            box.append(head);
+            jobs.forEach(([name, icon, slots]) => {
+                const open = slots != null;
+                const row = h('div', 'cw-job' + (open ? '' : ' cw-job--locked'));
+                const ic = h('div', 'cw-job__icon');
+                if (icon) ic.style.backgroundImage = cssUrl('Jobs/' + icon);
+                else {
+                    ic.classList.add('cw-dept__glyph');
+                    ic.style.webkitMaskImage = u;
+                    ic.style.maskImage = u;
+                }
+                row.append(ic, h('div', 'cw-job__name', { text: name }));
+                if (open) {
+                    row.append(h('div', 'cw-job__slots', { text: slots }));
+                    const seg = h('div', 'menu-segmented cw-seg');
+                    const level = cw.jobs[name] || 'never';
+                    CW_LEVELS.forEach(l => {
+                        const o = h('div', 'menu-segmented__option cw-level--' + l + (l === level ? ' menu-segmented__option--selected' : ''),
+                            { text: l === 'medium' ? 'med' : l });
+                        o.dataset.cwJob = name + ':' + l;
+                        seg.append(o);
+                    });
+                    row.append(seg);
+                } else {
+                    row.append(h('div', 'cw-job__locked', { text: 'not in the game yet' }));
+                }
+                box.append(row);
+            });
+            host.append(box);
+        });
+    }
+
+    function cwPicker() {
+        const list = $('[data-cw-chars]');
+        if (!list) return;
+        ['Omar Maddox', 'Ada Brandt', 'Mags Okafor'].forEach(n => list.append(h('div', 'menu-dropdown__item', { text: n })));
+        list.append(h('div', 'menu-dropdown__item', { text: '+ new character' }));
+    }
+
+    function cwSetHigh(name, level) {
+        // One job can be High: setting another demotes the old one to Medium, as the shipped window does.
+        if (level === 'high') Object.keys(cw.jobs).forEach(k => { if (cw.jobs[k] === 'high' && k !== name) cw.jobs[k] = 'medium'; });
+        cw.jobs[name] = level;
+        const high = Object.keys(cw.jobs).find(k => cw.jobs[k] === 'high');
+        const outfit = $('[data-cw-outfit] .menu-dropdown__value');
+        if (outfit && outfit.textContent.startsWith('high job')) outfit.textContent = `high job (${high ? high.toLowerCase() : 'none: assistant'})`;
+        cwJobs();
+    }
+
+    function buildCharwin() {
+        const cv = $('#cw-canvas');
+        if (!cv) return;
+        $('[data-cw-model]', cv).style.backgroundImage = 'url(renders/lobby-character.png)';
+        cwSwatches();
+        cwStyles();
+        cwJobs();
+        cwPicker();
+        cwMarkDirty(false);
+
+        cv.addEventListener('click', e => {
+            const tab = e.target.closest('[data-cw-tabs] > .menu-tab');
+            if (tab) {
+                cv.classList.toggle('cw--wide', CW_WIDE.includes(tab.dataset.tab));
+                syncOld('#cw-stage', 'charwin-' + CW_OLD[tab.dataset.tab]);
+                return;
+            }
+            const sw = e.target.closest('[data-cw-swatch]');
+            if (sw) {
+                const [kind, i] = sw.dataset.cwSwatch.split(':');
+                cw.swatch[kind] = Number(i);
+                cwSwatches();
+                cwMarkDirty();
+                return;
+            }
+            const st = e.target.closest('[data-cw-style]');
+            if (st) {
+                const [kind, name] = st.dataset.cwStyle.split(':');
+                cw.style[kind] = name;
+                cwStyles();
+                cwMarkDirty();
+                return;
+            }
+            const job = e.target.closest('[data-cw-job]');
+            if (job) {
+                const [name, level] = job.dataset.cwJob.split(':');
+                cwSetHigh(name, level);
+                cwMarkDirty();
+                return;
+            }
+            const picked = e.target.closest('[data-cw-chars] > .menu-dropdown__item');
+            if (picked) {
+                toast(picked.textContent.startsWith('+') ? 'In game: a new random character, saved at once'
+                    : `In game: switches to ${picked.textContent}${cw.dirty ? ', asking to save or discard first' : ''}`);
+                return;
+            }
+            if (e.target.closest('[data-cw-angle] .menu-segmented__option')) {
+                toast('In game: the booth turns the character to that side; dragging turns it freely');
+                return;
+            }
+            if (e.target.closest('[data-cw-antag] .menu-segmented__option, [data-cw-fallback] .menu-segmented__option, [data-cw-outfit] .menu-dropdown__item')) {
+                cwMarkDirty();
+                return;
+            }
+            const act = e.target.closest('[data-cw]');
+            if (!act) return;
+            switch (act.dataset.cw) {
+                case 'random-name': {
+                    const input = $('[data-cw-name]', cv);
+                    input.value = LB_NAMES[Math.floor(Math.random() * LB_NAMES.length)];
+                    cwMarkDirty();
+                    break;
+                }
+                case 'random-look':
+                    cw.swatch.skin = Math.floor(Math.random() * CW_SKIN.length);
+                    cw.swatch.eyes = Math.floor(Math.random() * CW_EYES.length);
+                    cw.swatch.hair = Math.floor(Math.random() * CW_HAIR_COLOURS.length);
+                    ['hair', 'beard', 'eyebrows'].forEach(k => { cw.style[k] = CW_STYLES[k][Math.floor(Math.random() * CW_STYLES[k].length)][0]; });
+                    cwSwatches();
+                    cwStyles();
+                    cwMarkDirty();
+                    toast('In game: body, colours and styles roll; the name and jobs stay');
+                    break;
+                case 'save':
+                    if (cw.dirty) toast('In game: saved to your profile');
+                    cwMarkDirty(false);
+                    break;
+                case 'discard':
+                    if (cw.dirty) toast('In game: back to the last save');
+                    cwMarkDirty(false);
+                    break;
+                case 'lobby':
+                    toast(cw.dirty ? 'In game: asks to save or discard, then back to the lobby' : 'In game: back to the lobby');
+                    break;
+                default:
+                    break;
+            }
+        });
+        cv.addEventListener('input', e => { if (e.target.matches('[data-cw-name]')) cwMarkDirty(); });
+        cv.addEventListener('pointerup', e => { if (e.target.closest('.menu-slider')) cwMarkDirty(); });
+        $('[data-cw-viewport]', cv).addEventListener('pointerdown', () => toast('In game: drag turns the character (the lobby stage does the same)'));
+    }
+
+    function buildLobby() {
+        const cv = $('#lb-canvas');
+        if (!cv) return;
+        const chips = $('[data-lb-chips]');
+        Object.keys(LB_STATES).forEach(name => {
+            const b = h('button', 'chip-btn', { text: name });
+            b.dataset.lbChip = name;
+            b.addEventListener('click', () => lbState(name));
+            chips.append(b);
+        });
+        lb.layout = store.get('lobby-layout') === 'a' ? 'a' : 'b';
+        $$('[data-lb-layout]').forEach(b => b.addEventListener('click', () => {
+            lb.layout = b.dataset.lbLayout;
+            store.set('lobby-layout', lb.layout);
+            lbRender();
+        }));
+        lb.chat = LB_CHAT.slice();
+        cv.addEventListener('click', e => {
+            const t = e.target.closest('[data-lb], [data-mm]');
+            if (!t || !cv.contains(t)) return;
+            if (t.dataset.lb) {
+                lbDo(t.dataset.lb, t.dataset.arg);
+            } else if (settingsAct(t.dataset.mm, t.dataset.arg)) {
+                lb.chip = null;
+                lbRender();
+            }
+        });
+        cv.addEventListener('input', e => {
+            const f = e.target.dataset.field;
+            if (!f) return;
+            if (f === 'chat') lb.draft = e.target.value;
+            else if (f.startsWith('admin:')) lb.fields[f.slice(6)] = e.target.value;
+            else if (f === 'mapName') {
+                lb.mapName = e.target.value;
+                lbRender();
+            }
+        });
+        cv.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && e.target.dataset.field === 'chat') lbDo('send');
+        });
+        cv.addEventListener('pointerdown', e => dragMenuSlider(e, (key, v) => {
+            if (key === 'volume') lb.volume = v;
+            else settingFromSlider(cv, key, v);
+        }, key => {
+            if (key !== 'volume') lbRender(); // the changed-from-default dot
+        }));
+        // Dropdowns are wired page-wide (wireMenus); keep their picks in the state.
+        cv.addEventListener('click', e => {
+            const item = e.target.closest('.menu-dropdown__item');
+            if (!item) return;
+            if (item.closest('.settings-panel__select')) mm.settings.resolution = item.textContent;
+            const dd = item.closest('[data-select]');
+            if (dd) lb.fields[dd.dataset.select] = item.textContent;
+        });
+
+        // Esc closes the top thing while the pointer is over the screen, as in game.
+        let over = false;
+        cv.addEventListener('pointerenter', () => { over = true; });
+        cv.addEventListener('pointerleave', () => { over = false; });
+        document.addEventListener('keydown', e => {
+            if (!over || e.key !== 'Escape') return;
+            if (mm.listening && lb.tab === 'settings') {
+                settingsAct('listen', mm.listening);
+                lbRender();
+            }
+            else if (lb.prompt) lbDo('prompt', 'cancel');
+            else if (lb.switcher) lbDo('switcher');
+            else if (lb.join) lbDo('join-close');
+            else if (lb.quitArmed) lbDo('quit-disarm');
+            else if (lb.spawned) lbDo('back');
+        });
+        setInterval(lbTick, 1000);
+        lbState('pre-round');
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
     // States: every element in each of its states
     // ══════════════════════════════════════════════════════════════════════
     // Hover, pressed and focus are pseudo-classes. To show them side by side, each :hover / :active / :focus rule in
@@ -2199,6 +4383,9 @@
             $$('[data-build="camera-dial"]').forEach(buildCameraDial);
             buildMapEditor();
         });
+        step('main menu', buildMainMenu);
+        step('lobby', buildLobby);
+        step('charwin', buildCharwin);
         step('slots', expandSlots);
         step('icons', () => $$('[data-icon]').forEach(el => setIcon(el, el.dataset.icon)));
         step('hair styles', buildStyles);

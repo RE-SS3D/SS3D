@@ -16,16 +16,17 @@ Then open `http://localhost:8642/Documents/plans/assets/ui-bible/`. In the Claud
 |---|---|---|
 | `tokens.css` | Every colour, size and type decision as a `--ui-*` custom property | A token USS on the UiShell root, same names |
 | `components.css` | The components, written in the subset of CSS that USS also speaks; lines that can't port say `web-only` | Component USS, mostly line for line |
-| `index.html` | One tab per section: overview, all elements, states, foundations, one per component (each compared against its reference screenshot), the character setup screen and the map editor (B) at 1200 × 675 reference px, the CSS → USS notes and open questions | UXML (each specimen's **uxml** button copies its tree) |
+| `index.html` | One tab per section: overview, all elements, states, foundations, one per component (each compared against its reference screenshot), the character setup screen, the map editor (B), the main menu, the lobby and the character window at 1200 × 675 reference px, the CSS → USS notes and open questions | UXML (each specimen's **uxml** button copies its tree) |
 | `bible.js` | Builders and demo behaviour standing in for the C# views | Nothing; C# views |
 | `bible.css` | The page's own chrome and the stand-in backdrops | Nothing |
-| `references/` | The old-build screenshots each specimen is compared against (JPEG copies) | Nothing |
+| `references/` | The old-build screenshots each specimen is compared against (JPEG copies); `old/` holds the shipped main menu, lobby and character window, captured in the Editor at 1920 × 1080, behind those tabs' **design → old** switch | Nothing |
+| `renders/` | Stand-ins rendered in the Editor for what the page can't draw: the lobby's character model (`lobby-character.png`, the preview booth's camera with a transparent background), also the character tab's. That tab's style pictures and job icons are the game's own, from `Assets/Art/Icons/Lobby/` | Nothing; the live render texture |
 | `serve.py` | A no-cache server rooted at the repo, so the page can load `Assets/` | Nothing |
 | `fonts/` | Disket Mono for the page. Disket Mono Bold and Kode Mono are now in the project too, for the map editor (`Assets/Art/Font/Fonts/`, baked UI font assets in `Assets/Content/Systems/UI/Font/Fonts/`); the page still loads Kode Mono from Google Fonts | `Assets/Art/Font/Fonts/` plus a baked SDF asset |
 
 ## Conventions
 
-- Sizes are UI Toolkit reference px. PanelSettings scales from 1200 × 800 matching width, so a 1920 × 1080 screen is 1200 × 675 here and every number draws 1.6× larger in game.
+- Sizes are UI Toolkit reference px. The shell's PanelSettings are constant pixel size (1 px per screen px at 96 dpi), so a screen tab (main menu, lobby) is drawn on a 1200 × 675 stage and the port scales its root to fill the screen (`UiReferenceScale`, 1.6× at 1080p). The map editor shipped its numbers as they are.
 - Class names reuse the shipped USS where one exists (`inventory-slot`, `hands-gear-strip`, `storage-panel`, `radial-interaction-menu`, …).
 - Sprites and fonts come from `Assets/`; nothing is copied in, except the trial fonts in `fonts/`.
 - Only what the reference screenshots show is built. New pieces (vitals, alerts, the full HUD) wait until these are polished.
@@ -37,4 +38,4 @@ The page is tabbed: one section at a time, named by the URL hash (`#strip`, `#se
 
 ## In the game
 
-The **map editor** tab is built in UI Toolkit: `Assets/Content/Systems/UI/MapEditor/MapEditor.uss` over `Assets/Content/Systems/UI/Tokens/ui-tokens.uss` (this folder's `tokens.css` under the same names; the glyph alphas become tint colours there), with the layout in `MapEditorView` ([tile](../../../architecture/systems/tile.md) map). Change a token or rule here first, then copy it across. The rest of the bible (HUD, character setup) is not ported yet.
+The **map editor** tab is built in UI Toolkit: `Assets/Content/Systems/UI/MapEditor/MapEditor.uss` over `Assets/Content/Systems/UI/Tokens/ui-tokens.uss` (this folder's `tokens.css` under the same names; the glyph alphas become tint colours there), with the layout in `MapEditorView` ([tile](../../../architecture/systems/tile.md) map). The **main menu** tab is `Assets/Content/Systems/UI/MainMenu/MainMenu.uss` and its Settings state `SettingsPanel/Resources/PlayerSettingsPanel.uss` ([ui-shell-main-menu](../../../architecture/systems/ui-shell-main-menu.md)). The **lobby** tab's layout B is `Assets/Content/Systems/UI/Lobby/Lobby.uss` with `LobbyJoin.uss` and `CharacterSwitcher.uss` ([rounds-lobby](../../../architecture/systems/rounds-lobby.md)); its Last Round summary is not ported. Change a token or rule here first, then copy it across. One deliberate difference: `--ui-float` is opaque in game, because UI Toolkit blends in linear space. The **character** tab is `Assets/Content/Systems/UI/Lobby/CharacterWindow.uss`, which imports `Lobby.uss`. The rest of the bible (HUD, character setup) is not ported yet.

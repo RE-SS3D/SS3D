@@ -493,8 +493,19 @@ p {
 [data-cmp-mode="side"] .cmp-ref,
 [data-cmp-mode="overlay"] .cmp-ref,
 [data-cmp-mode="side"] .stage__ref,
-[data-cmp-mode="overlay"] .stage__ref {
+[data-cmp-mode="overlay"] .stage__ref,
+[data-cmp-mode="old"] .stage__ref {
     display: block;
+}
+
+/* Old: the shipped screen's capture alone, in the UI's place. */
+[data-cmp-mode="old"] .stage__ref {
+    z-index: 1;
+    cursor: default;
+}
+
+[data-cmp-mode="old"] .stage__canvas {
+    visibility: hidden;
 }
 
 /* Low res: the UI blurred by the screenshot's own softness (--cmp-blur, set per reference in bible.js). */
@@ -1200,4 +1211,21 @@ table.port th {
 
 .state-pad {
     padding: 6px;
+}
+
+/* ── Main menu tab: the state chips wrap ── */
+.mm-chips {
+    flex-wrap: wrap;
+}
+
+/* ── Character tab: the booth's render stands in for the live preview ── */
+.cw-model {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 6%;
+    bottom: 4%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center bottom;
 }
