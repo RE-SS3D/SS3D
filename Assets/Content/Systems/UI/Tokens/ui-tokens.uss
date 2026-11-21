@@ -3,8 +3,10 @@
  * component USS reads them through var(). Values come from the old-build reference screenshots; the map editor's own
  * entries (dial, tool, palette, severity) are new and have no reference.
  *
- * Units are reference px (PanelSettings scales from 1200 x 800, matching width). The world shows through every HUD
- * surface; the active state is a light line, not a hue. Edit values in the bible first, then copy them here.
+ * Units are reference px. The shell's PanelSettings are constant pixel size (1 px per screen px at 96 dpi), so the map
+ * editor draws them as they are; the main menu lays its root out at the bible's 1200 x 675 and scales it to the screen
+ * (UiReferenceScale). The world shows through every HUD surface; the active state is a light line, not a hue. Edit
+ * values in the bible first, then copy them here.
  */
 :root {
     /* Surfaces over the world */
@@ -18,8 +20,10 @@
     --ui-sheet: rgba(30, 30, 30, 0.53);
     --ui-plate: rgba(16, 20, 16, 0.54);
     --ui-sheet-line: rgba(255, 255, 255, 0.24);
-    /* Floating surfaces (dropdown lists, popovers, tool hints) open over other UI, so they are nearly opaque. */
-    --ui-float: rgba(14, 14, 14, 0.96);
+    /* Floating surfaces (dropdown lists, popovers, tool hints, the lobby's Join picker) open over other UI. Opaque
+       here, where the bible has 96 %: UI Toolkit blends in linear space, so 4 % of white text under the plate shows as
+       about 20 % grey, and the UI underneath reads through. */
+    --ui-float: rgb(14, 14, 14);
 
     /* Lines */
     --ui-line-active: rgb(242, 242, 240);
@@ -54,6 +58,10 @@
     --ui-menu-field: rgba(0, 0, 0, 0.48);
     --ui-menu-field-text: rgba(255, 255, 255, 0.32);
     --ui-menu-selected: rgb(253, 253, 251);
+    --ui-menu-rule: rgba(255, 255, 255, 0.5);
+    --ui-frame-outer: #e6e6e3;     /* preview frame: light outer line */
+    --ui-frame-mat: #6c6f6e;       /* preview frame: grey mat */
+    --ui-viewport: #000000;
 
     /* Sizes */
     --ui-slot: 64px;
@@ -93,6 +101,17 @@
     --ui-danger: rgb(235, 98, 82);
     --ui-warn: rgb(238, 186, 78);
     --ui-ok: rgb(128, 204, 122);
+    /* News, not a fault: a newer version, a changed setting (main menu, settings) */
+    --ui-info: rgb(120, 196, 236);
+    /* Departments (lobby): a department's colour is its glyph, its edge and its name, never a fill */
+    --ui-dept-command: rgb(143, 180, 242);
+    --ui-dept-security: rgb(242, 145, 168);
+    --ui-dept-engineering: rgb(236, 211, 94);
+    --ui-dept-medical: rgb(98, 208, 214);
+    --ui-dept-science: rgb(207, 157, 240);
+    --ui-dept-cargo: rgb(201, 162, 124);
+    --ui-dept-service: rgb(142, 219, 156);
+    --ui-dept-civilian: rgb(221, 215, 203);
 
     /* Type sizes; fonts are set per rule with -unity-font-definition (Disket Mono Bold labels, Kode Mono text) */
     --ui-type-label: 11px;

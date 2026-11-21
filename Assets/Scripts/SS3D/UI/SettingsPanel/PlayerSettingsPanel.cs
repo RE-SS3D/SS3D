@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SS3D.Systems.Settings;
+using SS3D.UI.Shell;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static SS3D.UI.SettingsPanel.SettingsUi;
@@ -88,6 +89,8 @@ namespace SS3D.UI.SettingsPanel
             _root = new VisualElement { name = "settings-panel" };
             _root.AddToClassList("settings-theme");
             _root.AddToClassList("settings-panel");
+            // A select's list opens on the panel, so it draws over the rows and scales with its host.
+            _root.AddToClassList(UiSelect.ListHostClassName);
             if (style != null) _root.styleSheets.Add(style);
             else Debug.LogWarning($"[Settings] Resources/{StyleResource}.uss is missing; the Settings screen is unstyled.");
 
@@ -178,6 +181,7 @@ namespace SS3D.UI.SettingsPanel
             if (_disposed) return;
             if (IsCapturingKey) _settings.CancelKeyCapture();
             Disarm();
+            _root?.Query<UiSelect>().ForEach(select => select.Close());
         }
 
         public void Dispose()

@@ -1,158 +1,1443 @@
-/* Archive palette scoped to the menu; shared gameplay chrome is unchanged. */
+@import url("../Tokens/ui-tokens.uss");
+
+/*
+ * Main menu, drawn with the UI bible's parts (Documents/plans/assets/ui-bible, "main menu" tab; its components.css
+ * main-menu section is this sheet line for line, in USS):
+ *   plates        --ui-editor-panel with the storage panel's 2 px edge and corner, 16 px from the screen's edges
+ *   sidebar       the screen's tab column: light tints, Disket titles, Kode subtitles. The white plate marks where you
+ *                 are: Join on the home screen (--accent), the open screen's row (--selected) with the notch
+ *   server list   tints separated by spacing; colour only for a server's state, a refusal and the update news
+ *   dialogs       a floating plate (--ui-float) over the blurred wallpaper. It eases in, and its colour (--op) says
+ *                 what it is doing: hosting ok, joining info, updating warn, lost or failed danger. The icon, the
+ *                 progress bar and the working step take it; MainMenuView spins the working step's icon
+ *   colour code   Join a server is info and Play locally ok, as their dialogs: the row's left edge and its icon.
+ *                 A server's state is an icon in its colour (the Checking one spins)
+ * Sizes are the bible's reference px: MainMenuView lays .main-menu out at 1200 × 675 and scales it to fill the
+ * screen (UiReferenceScale), times the player's UI scale.
+ * Labels are Disket Mono Bold, which draws only capitals; text is Kode Mono.
+ * Buttons keep the runtime theme's .unity-button class, so every Button class here sets its own background, border and
+ * colour for :hover and :active too, or the theme's light grey shows through.
+ */
+
 .main-menu {
-    --menu-panel: #353538; --menu-header: #161616; --menu-inset: #2a2a2e;
-    --menu-border: rgba(216,216,216,0.18); --menu-subtle: rgba(216,216,216,0.1);
-    position: absolute; left: 0; right: 0; top: 0; bottom: 0; overflow: hidden;
-    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
-    font-size: 13px; color: white; -unity-font-style: normal; background-color: black;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    background-color: rgb(0, 0, 0);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
+    /* The baked fonts are static font assets, which only the standard generator draws (editor panels default to the
+       advanced one, so the preview window would show no text). */
+    -unity-text-generator: standard;
+    font-size: 12px;
+    color: var(--ui-text);
 }
-.main-menu__text { margin: 0; padding: 0; }
-.main-menu Button { margin: 0; border-width: 0; color: white; -unity-font-style: normal; }
-.main-menu__wallpaper { position: absolute; left: 0; right: 0; top: 0; bottom: 0; -unity-background-scale-mode: scale-and-crop; }
-.main-menu__video-wallpaper { opacity: 0; transition: opacity 0.5s; }
-.main-menu__video-wallpaper--visible { opacity: 1; }
-.main-menu__wallpaper-veil { background-color: black; opacity: 0; transition: opacity 0.5s; }
-.main-menu__wallpaper-veil--on { opacity: 1; }
-.main-menu__sidebar { position: absolute; left: 0; top: 0; bottom: 0; width: 400px; background-color: rgba(34,34,34,0.97); border-right-width: 1px; border-right-color: var(--menu-border); }
 
-.main-menu__logo { height: 140.625px; width: 300px; margin: 32px 49px 8px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; }
-.main-menu__identity { margin: 20px 24px 0; flex-shrink: 0; }
-.main-menu__eyebrow { font-size: 11px; letter-spacing: 1.32px; color: #aaaaaa; margin-bottom: 6px; }
-.main-menu__input { margin: 0; padding: 0; min-width: 0; }
-.main-menu__input > .unity-text-field__input { margin: 0; padding: 9px 10px; border-width: 1px; border-color: var(--menu-border); border-radius: 0; background-color: var(--menu-inset); color: white; font-size: 13px; -unity-font-style: normal; }
-.main-menu__input > .unity-text-field__input:focus { border-color: #717c7f; }
-.main-menu__input .unity-base-text-field__input--placeholder { color: #717c7f; }
-.main-menu__navigation { margin: 20px 24px 0; flex-shrink: 0; }
-.main-menu .main-menu__nav { align-items: flex-start; justify-content: center; padding: 14px 16px; margin-bottom: 4px; border-radius: 4px; background-color: var(--menu-header); -unity-text-align: middle-left; }
-.main-menu .main-menu__nav:hover, .main-menu .main-menu__advanced:hover { background-color: var(--menu-inset); }
-.main-menu .main-menu__nav:active, .main-menu .main-menu__button:active { background-color: #93351f; }
-.main-menu__title, .main-menu__button { -unity-font-definition: url("project://database/Assets/Art/Font/Fonts/GurajadaRegular.ttf"); font-size: 20px; letter-spacing: 1.6px; -unity-font-style: normal; }
-.main-menu__nav-subtitle { font-size: 12px; margin-top: 4px; letter-spacing: 0; }
-.main-menu .main-menu__button--accent { background-color: #c54f30; color: #fff8ef; }
-.main-menu .main-menu__button--accent:hover { background-color: #dc5528; }
-.main-menu__local-row { flex-direction: row; margin-bottom: 4px; }
-.main-menu .main-menu__local { flex-grow: 1; flex-basis: 0; margin: 0 2px 0 0; border-top-right-radius: 0; border-bottom-right-radius: 0; padding-top: 12px; padding-bottom: 12px; }
-.main-menu .main-menu__advanced { width: 84px; background-color: var(--menu-header); color: #aaaaaa; font-size: 12px; border-radius: 0; border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
-.main-menu__port { flex-direction: row; align-items: center; padding: 10px 16px; margin-bottom: 4px; background-color: var(--menu-inset); border-width: 1px; border-color: var(--menu-subtle); }
-.main-menu__port-input { width: 72px; margin: 0 10px; }
-.main-menu__port-input > .unity-text-field__input { background-color: #222222; padding: 6px 8px; }
-.main-menu__spacer { flex-grow: 1; min-height: 16px; }
-.main-menu__footer { padding: 12px 24px 18px; border-top-width: 1px; border-top-color: var(--menu-subtle); flex-shrink: 0; }
-.main-menu__music { flex-direction: row; align-items: center; padding: 10px 24px; border-top-width: 1px; border-top-color: var(--menu-subtle); margin-top: 16px; flex-shrink: 0; }
-.main-menu .main-menu__music-toggle { width: 32px; height: 32px; padding: 0; margin: 0 10px 0 0; border-width: 0; border-radius: 2px; background-color: transparent; align-items: center; justify-content: center; flex-shrink: 0; }
-.main-menu .main-menu__music-toggle--on { background-color: var(--menu-header); }
-.main-menu .main-menu__music-toggle:hover, .main-menu .main-menu__music-next:hover { background-color: var(--menu-inset); color: white; }
-.main-menu__music-icon { width: 16px; height: 16px; -unity-background-image-tint-color: #e0e0e0; }
-.main-menu__music-text { flex-grow: 1; flex-shrink: 1; min-width: 0; }
-.main-menu__music-eyebrow { font-size: 10px; letter-spacing: 1.2px; color: #aaaaaa; }
-.main-menu__music-title { margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.main-menu__music--off .main-menu__music-title { color: #aaaaaa; }
-.main-menu__music--off .main-menu__music-icon, .main-menu__music--off .main-menu__music-volume { opacity: 0.4; }
-.main-menu .main-menu__music-next { height: 32px; padding: 0 8px; margin: 0 0 0 10px; border-width: 0; border-radius: 2px; background-color: transparent; color: #aaaaaa; font-size: 12px; flex-shrink: 0; }
-/* Unity's slider has an 18px+ field box with the tracker near its top; pin every part to a 16px box centred in the row. */
-.main-menu #music-volume { width: 96px; height: 16px; min-height: 16px; margin: 0 0 0 10px; padding: 0; flex-shrink: 0; align-self: center; }
-.main-menu #music-volume > .unity-base-slider__input { height: 16px; min-height: 16px; margin: 0; padding: 0; }
-.main-menu #music-volume .unity-base-slider__drag-container { height: 16px; margin: 0; padding: 0; }
-.main-menu #music-volume .unity-base-slider__tracker { top: 5px; height: 6px; margin: 0; background-color: var(--menu-inset); border-width: 1px; border-color: var(--menu-border); border-radius: 3px; }
-.main-menu #music-volume .unity-base-slider__dragger { position: absolute; top: 1px; width: 14px; height: 14px; margin: 0; background-color: #aaaaaa; border-width: 0; border-radius: 7px; }
-.main-menu #music-volume .unity-base-slider__dragger-border { display: none; }
-.main-menu__footer > .main-menu__row { margin-top: 4px; }
-.main-menu .main-menu__link { padding: 0; background-color: transparent; color: #d8d8d8; font-size: 12px; border-radius: 0; border-bottom-width: 1px; border-bottom-color: #aaaaaa; margin-left: 3px; }
-.main-menu .main-menu__link:hover { color: white; border-bottom-color: white; }
-.main-menu__row { flex-direction: row; align-items: center; }
-.main-menu__spread { justify-content: space-between; }
-.main-menu__end { justify-content: flex-end; }
-.main-menu__secondary { color: #aaaaaa; }
-.main-menu__mono { -unity-font-definition: url("project://database/Assets/Art/Font/Fonts/SpessmanFont.ttf"); font-size: 12px; }
-.main-menu__tiny { font-size: 11px; }
-.main-menu__wrap { white-space: normal; }
-.main-menu__bold { -unity-font-style: bold; }
-.main-menu__large { font-size: 15px; }
-.main-menu__beside { margin-left: 12px; }
-.main-menu__update { margin: 8px 24px 0; padding: 12px; border-width: 1px; border-color: #3d6089; border-radius: 2px; background-color: var(--menu-inset); flex-shrink: 0; }
-.main-menu__banner-copy { font-size: 12px; margin: 8px 0; }
-.main-menu__dot { width: 8px; height: 8px; border-radius: 8px; background-color: #88b36a; margin-right: 8px; flex-shrink: 0; }
-.main-menu__dot--blue { background-color: #5f86b3; }
-.main-menu .main-menu__button { height: 40px; padding: 0 16px; background-color: var(--menu-header); border-radius: 4px; flex-shrink: 0; -unity-text-align: middle-center; }
-.main-menu .main-menu__button:hover { background-color: var(--menu-inset); }
-.main-menu .main-menu__button--blue { background-color: #3d6089; }
-.main-menu .main-menu__button--blue:hover { background-color: #5f86b3; }
-.main-menu .main-menu__button--danger { background-color: #b13d3d; }
-.main-menu .main-menu__button:disabled, .main-menu .main-menu__nav:disabled { background-color: var(--menu-inset); color: #5a5d60; }
-.main-menu .main-menu__nav:disabled Label { color: #5a5d60; }
-.main-menu__panel { position: absolute; left: 424px; top: 24px; bottom: 24px; right: 24px; max-width: 960px; background-color: var(--menu-panel); border-width: 1px; border-color: var(--menu-border); border-radius: 4px; }
-/* Rounded overflow clipping renders solid white at runtime on Linux; round the header instead. */
-.main-menu__header { flex-direction: row; align-items: center; padding: 10px 12px 10px 16px; background-color: var(--menu-header); flex-shrink: 0; min-height: 60px; border-top-left-radius: 3px; border-top-right-radius: 3px; }
-.main-menu__header > Button { margin-left: 12px; }
-.main-menu__server-scroll { flex-grow: 1; min-height: 0; }
-.main-menu__server-content { padding: 16px; }
-.main-menu__section { margin-bottom: 20px; }
-.main-menu__direct-row { flex-direction: row; align-items: center; margin-top: 6px; }
-.main-menu__address { flex-grow: 1; flex-basis: 0; margin-right: 8px; }
-.main-menu__first { padding: 16px; border-width: 1px; border-color: var(--menu-border); background-color: var(--menu-inset); border-radius: 2px; }
-.main-menu__first > Label { margin-bottom: 10px; }
-.main-menu__first > .main-menu__link { align-self: flex-start; margin-top: 10px; }
-.main-menu__server { background-color: var(--menu-inset); border-width: 1px; border-color: var(--menu-subtle); border-radius: 2px; margin-top: 6px; }
-.main-menu__server-row { flex-direction: row; align-items: center; padding: 8px 12px; min-height: 58px; }
-.main-menu__server-heading { flex-direction: row; padding: 0 13px; color: #aaaaaa; font-size: 11px; margin-top: 6px; }
-.main-menu__server-identity { flex-grow: 1; flex-basis: 0; min-width: 0; margin-right: 12px; }
-.main-menu__server-name { -unity-font-style: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.main-menu__server-address { margin-top: 3px; font-size: 11px; color: #aaaaaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.main-menu__status { width: 200px; margin-right: 12px; font-size: 12px; }
-.main-menu__players { width: 52px; margin-right: 12px; -unity-text-align: middle-right; }
-.main-menu__ping { width: 60px; margin-right: 12px; -unity-text-align: middle-right; color: #aaaaaa; }
-.main-menu__actions { width: 148px; flex-direction: row; justify-content: flex-end; align-items: center; }
-.main-menu .main-menu__details-button { font-size: 12px; color: #aaaaaa; background-color: transparent; padding: 6px; margin-right: 8px; }
-.main-menu .main-menu__details-button:hover { color: white; background-color: var(--menu-panel); }
-.main-menu__refusal { flex-direction: row; justify-content: space-between; padding: 7px 12px 7px 34px; border-top-width: 1px; border-top-color: var(--menu-subtle); background-color: rgba(185,72,72,0.14); font-size: 12px; color: #d17a7a; }
-.main-menu__details { padding: 12px 12px 12px 34px; border-top-width: 1px; border-top-color: var(--menu-subtle); }
-.main-menu__detail-row { flex-direction: row; align-items: center; margin-bottom: 10px; }
-.main-menu__detail-key { width: 122px; color: #aaaaaa; font-size: 12px; }
-.main-menu__detail-value { width: 360px; flex-shrink: 1; }
-.main-menu__empty { padding: 14px 12px; border-width: 1px; border-color: var(--menu-border); border-radius: 2px; margin-top: 6px; }
-.main-menu__empty > Label { margin-bottom: 4px; }
-.main-menu__overlay { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(22,22,22,0.55); align-items: center; justify-content: center; }
-.main-menu__dialog { width: 440px; background-color: var(--menu-panel); border-width: 1px; border-color: var(--menu-border); border-radius: 4px; }
-.main-menu__dialog > .main-menu__header { min-height: 44px; padding: 12px 16px; }
-.main-menu__dialog-body { padding: 16px; }
-.main-menu__dialog-body > .main-menu__mono { margin-top: 3px; }
-.main-menu__steps { margin: 14px 0; }
-.main-menu__step { flex-direction: row; justify-content: space-between; padding: 6px 10px; background-color: var(--menu-inset); border-radius: 2px; margin-bottom: 2px; }
-.main-menu__step-reason { padding: 7px 10px; margin-bottom: 2px; border-radius: 2px; background-color: rgba(185,72,72,0.14); font-size: 12px; color: #d17a7a; }
-.main-menu__token-row { flex-direction: row; align-items: center; margin-bottom: 14px; }
-.main-menu__token-input { flex-grow: 1; flex-shrink: 1; }
-.main-menu .main-menu__dialog-action { margin-left: 8px; }
-.main-menu__hint { margin-top: 6px; }
-.main-menu .main-menu__hidden { display: none; }
-/* The 720p reference keeps the sidebar fixed and lets long list columns contract. */
-.main-menu--compact .main-menu__status { width: 116px; }
-.main-menu--compact .main-menu__players { width: 44px; }
-.main-menu--compact .main-menu__ping { width: 48px; }
-.main-menu--compact .main-menu__actions { width: 132px; }
+.main-menu .unity-disabled {
+    opacity: 1;
+}
 
-/* Fixed text boxes reproduce the reference's line-height: 1 titling without the font's tall metrics. */
-.main-menu__nav > .main-menu__title { height: 20px; flex-shrink: 0; -unity-text-align: middle-left; }
-.main-menu__nav > .main-menu__nav-subtitle { height: 14px; flex-shrink: 0; }
-.main-menu .main-menu__nav.main-menu__title { height: 48px; }
-.main-menu__header > .main-menu__title { height: 20px; -unity-text-align: middle-left; }
-.main-menu .main-menu__details-button, .main-menu .main-menu__link { height: auto; -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf"); letter-spacing: 0; }
-.main-menu__banner-copy { margin: 8px 0; }
-.main-menu__update > .main-menu__row > .main-menu__beside { flex-shrink: 1; }
+.main-menu .main-menu__text {
+    margin: 0;
+    padding: 0;
+}
 
-.main-menu .main-menu__button.main-menu__button--accent { background-color: #c54f30; }
-.main-menu .main-menu__button.main-menu__button--accent:hover { background-color: #dc5528; }
+.main-menu .main-menu__hidden {
+    display: none;
+}
 
-.main-menu .main-menu__button { font-size: 15px; padding-left: 20px; padding-right: 20px; }
-.main-menu .main-menu__details-button, .main-menu .main-menu__link { padding-left: 6px; padding-right: 6px; font-size: 12px; }
-.main-menu .main-menu__link { padding: 0; }
+.main-menu__wallpaper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-scale-mode: scale-and-crop;
+}
 
-.main-menu .main-menu__button:disabled { background-color: var(--menu-inset); color: #5a5d60; opacity: 1; }
-.main-menu .main-menu__advanced { flex-direction: row; align-items: center; justify-content: center; }
-.main-menu__caret { width: 0; height: 0; margin-left: 4px; border-left-width: 3px; border-right-width: 3px; border-top-width: 4px; border-left-color: transparent; border-right-color: transparent; border-top-color: #aaaaaa; }
-.main-menu__caret--up { rotate: 180deg; }
+/* ── Thin scrollers: the map editor's ── */
+.main-menu .unity-scroller--vertical {
+    width: 6px;
+    min-width: 6px;
+    margin-left: 2px;
+}
 
-.main-menu .main-menu__nav:disabled { opacity: 1; }
-.main-menu .main-menu__nav.main-menu__nav--selected { background-color: var(--menu-panel); }
-.main-menu__empty { border-color: transparent; }
+.main-menu .unity-scroller--vertical .unity-scroller__low-button,
+.main-menu .unity-scroller--vertical .unity-scroller__high-button {
+    display: none;
+}
 
-.main-menu .main-menu__music-volume-fill { position: absolute; left: 0; top: 0; bottom: 0; background-color: #aaaaaa; border-radius: 3px; }
+.main-menu .unity-scroller--vertical .unity-scroller__slider {
+    width: 6px;
+    min-width: 6px;
+    margin: 0;
+}
+
+.main-menu .unity-scroller--vertical .unity-base-slider__tracker {
+    width: 6px;
+    left: 0;
+    border-width: 0;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.main-menu .unity-scroller--vertical .unity-base-slider__dragger {
+    width: 6px;
+    left: 0;
+    margin-left: 0;
+    border-width: 0;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+.main-menu .unity-scroller--vertical .unity-base-slider__dragger:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.main-menu .unity-scroller--vertical .unity-base-slider__dragger-border {
+    display: none;
+}
+
+/* ── Plates ── */
+.main-menu__sidebar,
+.main-menu__panel {
+    position: absolute;
+    top: 16px;
+    bottom: 16px;
+    background-color: var(--ui-editor-panel);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
+}
+
+/* The ScrollView sits inside the rounded plate, not on it: a radius and overflow: hidden on one element draw white. */
+.main-menu__sidebar {
+    left: 16px;
+    width: 344px;
+}
+
+.main-menu__sidebar-scroll {
+    flex-grow: 1;
+}
+
+.main-menu__sidebar-scroll .unity-scroll-view__content-container {
+    padding: 0 20px;
+}
+
+.main-menu__panel {
+    left: 376px;
+    right: 16px;
+    max-width: 960px;
+}
+
+/* ── Sidebar ── */
+.main-menu__logo {
+    width: 270px;
+    height: 126.5px; /* the logo's 1920 × 900 */
+    margin: 18px 0 2px 0;
+    flex-shrink: 0;
+    align-self: center;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.main-menu .main-menu__eyebrow {
+    margin-bottom: 6px;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+}
+
+.main-menu__identity {
+    margin-top: 16px;
+    flex-shrink: 0;
+}
+
+/* The menu's text field on an editor plate: near-black, as the editor's search. */
+.main-menu .main-menu__input {
+    height: 32px;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.main-menu .main-menu__input > .unity-base-text-field__input {
+    margin: 0;
+    padding: 0 10px;
+    border-width: 1px;
+    border-radius: 0;
+    border-color: rgba(0, 0, 0, 0);
+    background-color: var(--ui-editor-search);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
+    font-size: 13px;
+    color: var(--ui-text);
+    -unity-text-align: middle-left;
+    --unity-cursor-color: rgb(242, 242, 240);
+    --unity-selection-color: rgba(255, 255, 255, 0.25);
+}
+
+.main-menu .main-menu__input:hover > .unity-base-text-field__input {
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.main-menu .main-menu__input:focus > .unity-base-text-field__input,
+.main-menu .main-menu__input > .unity-base-text-field__input:focus {
+    border-color: var(--ui-editor-cell-edge-hover);
+}
+
+.main-menu .main-menu__input .unity-base-text-field__input--placeholder {
+    color: var(--ui-text-faint);
+}
+
+.main-menu .main-menu__hint {
+    margin-top: 6px;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: normal;
+}
+
+.main-menu .main-menu__hint--warning {
+    color: var(--ui-warn);
+}
+
+.main-menu .main-menu__hint--error {
+    color: rgb(244, 156, 146);
+}
+
+.main-menu__navigation {
+    margin-top: 18px;
+    flex-shrink: 0;
+}
+
+/* A row is a tab: a light tint, the label in Disket, a line of Kode under it. */
+.main-menu .main-menu__nav {
+    flex-direction: row;
+    height: 52px;
+    margin: 0 0 4px 0;
+    padding: 0 14px 0 11px;
+    justify-content: flex-start;
+    align-items: center;
+    border-width: 0 0 0 3px;
+    border-radius: 0;
+    border-color: rgba(0, 0, 0, 0);
+    background-color: var(--ui-editor-button);
+    transition-property: background-color;
+    transition-duration: 0.09s;
+}
+
+.main-menu .main-menu__nav:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.main-menu .main-menu__nav:active,
+.main-menu .main-menu__nav:hover:active {
+    background-color: var(--ui-editor-button-pressed);
+}
+
+/* Settings and Quit: a title alone, so a shorter row. */
+.main-menu .main-menu__nav--short {
+    height: 40px;
+}
+
+.main-menu .main-menu__title {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 15px;
+    color: var(--ui-text);
+    white-space: nowrap;
+}
+
+.main-menu .main-menu__nav-subtitle {
+    margin-top: 6px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+}
+
+.main-menu .main-menu__nav-subtitle--error {
+    color: rgb(244, 156, 146);
+}
+
+/* Where you are: the white plate of a selected menu tab; the open screen's row adds the notch aimed at its panel. */
+.main-menu .main-menu__nav.main-menu__button--accent,
+.main-menu .main-menu__nav.main-menu__nav--selected {
+    background-color: var(--ui-menu-selected);
+}
+
+.main-menu .main-menu__nav.main-menu__button--accent:hover,
+.main-menu .main-menu__nav.main-menu__nav--selected:hover {
+    background-color: rgb(255, 255, 255);
+}
+
+.main-menu .main-menu__nav.main-menu__button--accent:active,
+.main-menu .main-menu__nav.main-menu__button--accent:hover:active,
+.main-menu .main-menu__nav.main-menu__nav--selected:active,
+.main-menu .main-menu__nav.main-menu__nav--selected:hover:active {
+    background-color: rgb(207, 207, 204);
+}
+
+.main-menu .main-menu__button--accent .main-menu__title,
+.main-menu .main-menu__nav--selected .main-menu__title {
+    color: var(--ui-text-on-light);
+}
+
+.main-menu .main-menu__button--accent .main-menu__nav-subtitle,
+.main-menu .main-menu__nav--selected .main-menu__nav-subtitle {
+    color: rgba(13, 13, 13, 0.6);
+}
+
+.main-menu__nav-tip {
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    margin-top: -6px;
+    rotate: 45deg;
+    background-color: var(--ui-menu-selected);
+    display: none;
+}
+
+.main-menu .main-menu__nav--selected > .main-menu__nav-tip {
+    display: flex;
+}
+
+/* Disabled (no name yet): the plate fades and so does its text. */
+.main-menu .main-menu__nav:disabled,
+.main-menu .main-menu__nav.main-menu__button--accent:disabled {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.main-menu .main-menu__nav:disabled .main-menu__title,
+.main-menu .main-menu__nav:disabled .main-menu__nav-subtitle {
+    color: var(--ui-menu-tab-text);
+}
+
+.main-menu__local-row {
+    flex-direction: row;
+    margin-bottom: 4px;
+}
+
+.main-menu .main-menu__local-row > .main-menu__nav {
+    flex-grow: 1;
+    margin-bottom: 0;
+}
+
+/* The port, tucked away: a square at the end of the row. */
+.main-menu .main-menu__advanced {
+    width: 52px;
+    height: 52px;
+    margin: 0 0 0 2px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: 0;
+    border-radius: 0;
+    background-color: var(--ui-editor-button);
+}
+
+.main-menu .main-menu__advanced:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.main-menu .main-menu__advanced:active,
+.main-menu .main-menu__advanced:hover:active {
+    background-color: var(--ui-editor-button-pressed);
+}
+
+.main-menu .main-menu__advanced-label {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.main-menu__caret {
+    width: 12px;
+    height: 7px;
+    margin-top: 5px;
+    background-image: url("project://database/Assets/Art/Graphics/UI/Chrome/DropdownArrow.png");
+    -unity-background-scale-mode: stretch-to-fill;
+    opacity: 0.6;
+}
+
+.main-menu__caret--up {
+    rotate: 180deg;
+}
+
+.main-menu__port {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 4px;
+    padding: 8px 14px;
+    background-color: rgba(255, 255, 255, 0.035);
+}
+
+.main-menu .main-menu__port > .main-menu__eyebrow {
+    margin-bottom: 0;
+}
+
+.main-menu .main-menu__port-input {
+    width: 76px;
+    height: 28px;
+    margin: 0 10px;
+    flex-shrink: 0;
+}
+
+.main-menu .main-menu__port > .main-menu__hint {
+    margin-top: 0;
+    flex-shrink: 1;
+}
+
+.main-menu__spacer {
+    flex-grow: 1;
+    min-height: 12px;
+}
+
+/* ── Music: two cells and a slider ── */
+.main-menu__music {
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 0;
+    flex-shrink: 0;
+}
+
+.main-menu .main-menu__music-toggle,
+.main-menu .main-menu__music-next {
+    width: 28px;
+    height: 28px;
+    margin: 0;
+    padding: 0;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-editor-cell-edge);
+    border-radius: 4.2px; /* 15 % */
+    background-color: rgba(0, 0, 0, 0);
+    transition-property: border-color;
+    transition-duration: 0.09s;
+}
+
+.main-menu .main-menu__music-toggle:hover,
+.main-menu .main-menu__music-next:hover,
+.main-menu .main-menu__music-toggle:active,
+.main-menu .main-menu__music-next:active,
+.main-menu .main-menu__music-toggle:hover:active,
+.main-menu .main-menu__music-next:hover:active {
+    border-color: var(--ui-editor-cell-edge-hover);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.main-menu .main-menu__music-toggle--on,
+.main-menu .main-menu__music-toggle--on:hover {
+    border-color: var(--ui-line-active);
+}
+
+.main-menu__music-icon {
+    width: 14px;
+    height: 14px;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.48);
+}
+
+.main-menu__music-icon--next {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Solid/FastForward.png");
+}
+
+.main-menu .main-menu__music-toggle--on .main-menu__music-icon,
+.main-menu .main-menu__music-next .main-menu__music-icon {
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+
+.main-menu .main-menu__music-next:disabled .main-menu__music-icon {
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.16);
+}
+
+.main-menu__music-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    margin: 0 10px;
+}
+
+.main-menu .main-menu__music-eyebrow {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.main-menu .main-menu__music-title {
+    margin-top: 4px;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.main-menu .main-menu__music--off .main-menu__music-title {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+/* The menu slider: a dark track, a light line for the level, a small plate for the dragger. */
+.main-menu #music-volume {
+    width: 72px;
+    height: 16px;
+    min-height: 16px;
+    margin: 0 0 0 10px;
+    padding: 0;
+    flex-shrink: 0;
+    align-self: center;
+}
+
+.main-menu #music-volume > .unity-base-slider__input {
+    height: 16px;
+    min-height: 16px;
+    margin: 0;
+    padding: 0;
+}
+
+.main-menu #music-volume .unity-base-slider__drag-container {
+    height: 16px;
+    margin: 0;
+    padding: 0;
+}
+
+.main-menu #music-volume .unity-base-slider__tracker {
+    top: 4px;
+    height: 8px;
+    margin: 0;
+    border-width: 0;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+.main-menu #music-volume .unity-base-slider__dragger {
+    position: absolute;
+    top: 1px;
+    width: 27px;
+    height: 14px;
+    margin: 0;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.24);
+    border-radius: 3px;
+    background-color: rgba(42, 38, 40, 0.96);
+}
+
+.main-menu #music-volume:hover .unity-base-slider__dragger {
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.main-menu #music-volume .unity-base-slider__dragger-border {
+    display: none;
+}
+
+.main-menu .main-menu__music-volume-fill {
+    position: absolute;
+    left: 0;
+    top: 3px;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.36);
+}
+
+.main-menu .main-menu__music--off #music-volume {
+    opacity: 0.4;
+}
+
+/* ── Footer ── */
+.main-menu__footer {
+    padding: 4px 0 14px 0;
+    flex-shrink: 0;
+}
+
+.main-menu__row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.main-menu__spread {
+    justify-content: space-between;
+}
+
+.main-menu__end {
+    justify-content: flex-end;
+}
+
+.main-menu__footer > .main-menu__row {
+    margin-top: 6px;
+}
+
+.main-menu .main-menu__fine {
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+}
+
+.main-menu .main-menu__link,
+.main-menu .main-menu__link:hover,
+.main-menu .main-menu__link:active,
+.main-menu .main-menu__link:hover:active {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.main-menu .main-menu__link {
+    margin: 0 0 0 4px;
+    padding: 0 0 1px 0;
+    border-width: 0 0 1px 0;
+    border-radius: 0;
+    border-color: rgba(255, 255, 255, 0.3);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.75);
+    white-space: nowrap;
+    -unity-text-align: middle-left;
+}
+
+.main-menu .main-menu__link:hover {
+    border-color: var(--ui-text);
+    color: var(--ui-text);
+}
+
+/* ── Update banner: news, so the info colour on its edge and dot ── */
+.main-menu__update {
+    margin-top: 12px;
+    padding: 12px;
+    flex-shrink: 0;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-info);
+    background-color: rgba(120, 196, 236, 0.08);
+}
+
+.main-menu .main-menu__update-title {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 12px;
+}
+
+.main-menu .main-menu__banner-copy {
+    margin: 8px 0 10px 0;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
+    white-space: normal;
+}
+
+.main-menu .main-menu__beside {
+    margin: 0 0 0 10px;
+    flex-shrink: 1;
+}
+
+.main-menu__dot {
+    width: 8px;
+    height: 8px;
+    margin-right: 10px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.main-menu__dot--ok {
+    background-color: var(--ui-ok);
+}
+
+.main-menu__dot--warn {
+    background-color: var(--ui-warn);
+}
+
+.main-menu__dot--danger {
+    background-color: var(--ui-danger);
+}
+
+.main-menu__dot--info {
+    background-color: var(--ui-info);
+}
+
+/* ── Buttons: a light tint with a Disket label; the primary is the white plate ── */
+.main-menu .main-menu__button {
+    flex-direction: row;
+    height: 32px;
+    margin: 0;
+    padding: 0 14px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-radius: 0;
+    border-color: rgba(0, 0, 0, 0);
+    background-color: var(--ui-editor-button);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 12px;
+    color: var(--ui-text);
+    white-space: nowrap;
+    -unity-text-align: middle-center;
+    transition-property: background-color, border-color;
+    transition-duration: 0.09s;
+}
+
+.main-menu .main-menu__button:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.main-menu .main-menu__button:active,
+.main-menu .main-menu__button:hover:active {
+    background-color: var(--ui-editor-button-pressed);
+}
+
+.main-menu .main-menu__button.main-menu__button--accent {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+.main-menu .main-menu__button.main-menu__button--accent:hover {
+    background-color: rgb(255, 255, 255);
+}
+
+.main-menu .main-menu__button.main-menu__button--accent:active,
+.main-menu .main-menu__button.main-menu__button--accent:hover:active {
+    background-color: rgb(207, 207, 204);
+}
+
+/* Update a server: the info colour, as the banner. */
+.main-menu .main-menu__button--blue {
+    border-color: var(--ui-info);
+}
+
+.main-menu .main-menu__button--danger {
+    border-color: var(--ui-danger);
+}
+
+.main-menu .main-menu__button--danger:hover,
+.main-menu .main-menu__button--danger:hover:active {
+    background-color: rgba(235, 98, 82, 0.2);
+}
+
+.main-menu .main-menu__button:disabled,
+.main-menu .main-menu__button.main-menu__button--accent:disabled {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-color: rgba(0, 0, 0, 0);
+    color: var(--ui-menu-tab-text);
+}
+
+/* A cell with a glyph (refresh, close): the map editor's popover close. */
+.main-menu .main-menu__icon-btn,
+.main-menu .main-menu__icon-btn:active,
+.main-menu .main-menu__icon-btn:hover:active {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.main-menu .main-menu__icon-btn {
+    width: 28px;
+    height: 28px;
+    margin: 0 0 0 6px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 4.2px; /* 15 % */
+}
+
+.main-menu .main-menu__icon-btn:hover {
+    border-color: var(--ui-editor-cell-edge);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.main-menu__icon-btn__icon {
+    width: 14px;
+    height: 14px;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.6);
+}
+
+.main-menu .main-menu__icon-btn:hover .main-menu__icon-btn__icon {
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+
+.main-menu__icon-btn__icon--refresh {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Solid/Refresh.png");
+}
+
+.main-menu__icon-btn__icon--close {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Solid/X.png");
+}
+
+/* A key name: the map editor's chip. */
+.main-menu .main-menu__key {
+    height: 16px;
+    margin-left: 10px;
+    padding: 0 4px;
+    justify-content: center;
+    border-radius: 2.4px;
+    background-color: rgba(0, 0, 0, 0.45);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.7);
+    -unity-text-align: middle-center;
+}
+
+/* ── The panel: servers or settings ── */
+.main-menu__header {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    height: 56px;
+    padding: 0 12px 0 20px;
+}
+
+.main-menu .main-menu__header > .main-menu__title {
+    font-size: 20px;
+}
+
+.main-menu .main-menu__header > .main-menu__fine {
+    margin-right: 4px;
+}
+
+.main-menu__header-spacer {
+    flex-grow: 1;
+}
+
+.main-menu__server-scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.main-menu__server-content {
+    padding: 4px 20px 20px 20px;
+}
+
+.main-menu__section {
+    margin-bottom: 22px;
+    flex-shrink: 0;
+}
+
+.main-menu__section-heading {
+    margin-bottom: 8px;
+}
+
+.main-menu .main-menu__section-heading > .main-menu__eyebrow {
+    margin-bottom: 0;
+}
+
+.main-menu__direct-row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.main-menu .main-menu__address {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-right: 6px;
+}
+
+/* First launch: the field explained, on a fainter tint. */
+.main-menu__first {
+    padding: 16px;
+    background-color: rgba(255, 255, 255, 0.035);
+}
+
+.main-menu .main-menu__first-title {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 14px;
+}
+
+.main-menu .main-menu__first-copy {
+    margin: 8px 0 12px 0;
+    font-size: 11.5px;
+    color: rgba(255, 255, 255, 0.6);
+    white-space: normal;
+}
+
+.main-menu .main-menu__first > .main-menu__link {
+    align-self: flex-start;
+    margin: 12px 0 0 0;
+}
+
+.main-menu__server-heading {
+    flex-direction: row;
+    padding: 0 10px 0 38px;
+    margin-bottom: 6px;
+}
+
+/* Column heads reuse the columns' classes for their widths; the type is the heading's. */
+.main-menu .main-menu__server-heading > .main-menu__text {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.main-menu__server {
+    margin-bottom: 4px;
+    background-color: var(--ui-editor-button);
+}
+
+.main-menu__server-row {
+    flex-direction: row;
+    align-items: center;
+    height: 52px;
+    padding: 0 10px 0 14px;
+}
+
+.main-menu .main-menu__server-identity {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    min-width: 0;
+    margin-right: 12px;
+}
+
+.main-menu .main-menu__server-name {
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.main-menu .main-menu__server-address {
+    margin-top: 5px;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.5);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.main-menu .main-menu__status {
+    width: 150px;
+    flex-shrink: 0;
+    margin-right: 12px;
+    font-size: 11.5px;
+    color: rgba(255, 255, 255, 0.7);
+    white-space: normal;
+}
+
+.main-menu .main-menu__status--warn,
+.main-menu .main-menu__players--warn {
+    color: var(--ui-warn);
+}
+
+.main-menu .main-menu__status--danger {
+    color: var(--ui-danger);
+}
+
+.main-menu .main-menu__players,
+.main-menu .main-menu__ping {
+    width: 52px;
+    flex-shrink: 0;
+    margin-right: 12px;
+    font-size: 12px;
+    -unity-text-align: middle-right;
+}
+
+.main-menu .main-menu__ping {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.main-menu .main-menu__actions {
+    width: 156px;
+    flex-shrink: 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Details / Hide / Show: a quiet text button. */
+.main-menu .main-menu__details-button,
+.main-menu .main-menu__details-button:hover,
+.main-menu .main-menu__details-button:active,
+.main-menu .main-menu__details-button:hover:active {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.main-menu .main-menu__details-button {
+    height: 28px;
+    margin: 0 6px 0 0;
+    padding: 0 8px;
+    justify-content: center;
+    border-width: 0;
+    border-radius: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.55);
+    -unity-text-align: middle-center;
+}
+
+.main-menu .main-menu__details-button:hover {
+    color: var(--ui-text);
+}
+
+/* Refused last time: the reason under the row, in the danger colour. */
+.main-menu__refusal {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 7px 12px 7px 32px;
+    background-color: rgba(235, 98, 82, 0.12);
+}
+
+.main-menu .main-menu__refusal > .main-menu__text {
+    flex-shrink: 1;
+    font-size: 11px;
+    color: rgb(244, 156, 146);
+    white-space: normal;
+}
+
+.main-menu .main-menu__refusal > .main-menu__fine {
+    flex-shrink: 0;
+    margin-left: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+}
+
+.main-menu__details {
+    padding: 4px 12px 12px 32px;
+}
+
+.main-menu__detail-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.main-menu .main-menu__detail-key {
+    width: 116px;
+    flex-shrink: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.main-menu .main-menu__detail-value {
+    width: 300px;
+    height: 28px;
+    flex-shrink: 1;
+}
+
+.main-menu .main-menu__detail-text {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.main-menu__details-footer {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+}
+
+.main-menu .main-menu__details-footer > .main-menu__hint {
+    max-width: 380px;
+    flex-shrink: 1;
+    margin: 0 12px 0 0;
+}
+
+/* Nothing here yet: a fainter tint, a title and a line of text. */
+.main-menu__empty {
+    padding: 14px;
+    background-color: rgba(255, 255, 255, 0.035);
+}
+
+.main-menu .main-menu__empty-title {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.main-menu .main-menu__empty > .main-menu__hint {
+    margin-top: 7px;
+}
+
+/* ── Dialogs: connecting, starting, updating, lost. A floating plate over the blurred wallpaper ── */
+.main-menu__overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.main-menu__dialog {
+    width: 440px;
+    background-color: var(--ui-float);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
+}
+
+.main-menu .main-menu__dialog > .main-menu__header {
+    height: 48px;
+    padding: 0 16px;
+}
+
+.main-menu .main-menu__dialog > .main-menu__header > .main-menu__title {
+    font-size: 16px;
+}
+
+.main-menu__dialog-body {
+    padding: 0 16px 16px 16px;
+}
+
+.main-menu .main-menu__overlay-name {
+    font-size: 14px;
+}
+
+.main-menu .main-menu__overlay-address {
+    margin-top: 5px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.main-menu__steps {
+    margin: 14px 0;
+}
+
+.main-menu__step {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 30px;
+    margin-bottom: 2px;
+    padding: 0 10px;
+    background-color: var(--ui-editor-button);
+}
+
+.main-menu .main-menu__step > .main-menu__text {
+    font-size: 12px;
+}
+
+.main-menu .main-menu__step--pending > .main-menu__text {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.main-menu .main-menu__step > .main-menu__step-mark {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+    color: var(--ui-text);
+}
+
+.main-menu .main-menu__step > .main-menu__step-mark--ok {
+    color: var(--ui-ok);
+}
+
+.main-menu .main-menu__step > .main-menu__step-mark--failed {
+    color: var(--ui-danger);
+}
+
+.main-menu__step-reason {
+    margin-bottom: 2px;
+    padding: 8px 10px;
+    background-color: rgba(235, 98, 82, 0.12);
+}
+
+.main-menu .main-menu__step-reason > .main-menu__text {
+    font-size: 11.5px;
+    color: rgb(244, 156, 146);
+    white-space: normal;
+}
+
+.main-menu__token-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.main-menu .main-menu__token-input {
+    flex-grow: 1;
+    flex-shrink: 1;
+    height: 28px;
+}
+
+.main-menu .main-menu__dialog-action {
+    margin-left: 6px;
+}
+
+/* ══ Sidebar icons and colour ══ */
+.main-menu__nav-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    /* Left-aligned at their own width: a Button's centred text alignment is inherited. */
+    align-items: flex-start;
+}
+
+.main-menu__nav-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.7);
+    transition-property: translate, -unity-background-image-tint-color;
+    transition-duration: 0.14s;
+    transition-timing-function: ease-out-cubic;
+}
+
+.main-menu .main-menu__nav:hover > .main-menu__nav-icon {
+    translate: 3px 0;
+}
+
+.main-menu .main-menu__nav--join {
+    --nav: var(--ui-info);
+    border-color: var(--ui-info);
+}
+
+.main-menu .main-menu__nav--local {
+    --nav: var(--ui-ok);
+    border-color: var(--ui-ok);
+}
+
+.main-menu__nav--join > .main-menu__nav-icon {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/GlobeAlt.png");
+    -unity-background-image-tint-color: var(--ui-info);
+}
+
+.main-menu__nav--local > .main-menu__nav-icon {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Server.png");
+    -unity-background-image-tint-color: var(--ui-ok);
+}
+
+.main-menu__nav--settings > .main-menu__nav-icon {
+    width: 16px;
+    height: 16px;
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Cog.png");
+}
+
+.main-menu__nav--quit > .main-menu__nav-icon {
+    width: 16px;
+    height: 16px;
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Logout.png");
+}
+
+.main-menu .main-menu__nav--quit:hover > .main-menu__nav-icon {
+    -unity-background-image-tint-color: var(--ui-danger);
+}
+
+/* On the white plate the icon goes dark; the edge keeps its colour. */
+.main-menu .main-menu__button--accent > .main-menu__nav-icon,
+.main-menu .main-menu__nav--selected > .main-menu__nav-icon {
+    -unity-background-image-tint-color: var(--ui-text-on-light);
+}
+
+.main-menu .main-menu__nav:disabled > .main-menu__nav-icon {
+    -unity-background-image-tint-color: var(--ui-menu-tab-text);
+}
+
+/* ══ A server's state: an icon in its colour ══ */
+.main-menu__state-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 10px;
+    flex-shrink: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.35);
+}
+
+.main-menu__state-icon--online {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/StatusOnline.png");
+    -unity-background-image-tint-color: var(--ui-ok);
+}
+
+.main-menu__state-icon--update {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/CloudDownload.png");
+    -unity-background-image-tint-color: var(--ui-info);
+}
+
+.main-menu__state-icon--full {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/UserGroup.png");
+    -unity-background-image-tint-color: var(--ui-warn);
+}
+
+.main-menu__state-icon--offline {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/StatusOffline.png");
+    -unity-background-image-tint-color: var(--ui-danger);
+}
+
+.main-menu__state-icon--older {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Exclamation.png");
+    -unity-background-image-tint-color: var(--ui-warn);
+}
+
+.main-menu__state-icon--checking {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Refresh.png");
+    -unity-background-image-tint-color: var(--ui-info);
+}
+
+/* ══ Dialogs: the operation's colour (--op), easing in, progress and step icons ══ */
+.main-menu__overlay {
+    --op: var(--ui-info);
+    transition-property: background-color;
+    transition-duration: 0.25s;
+}
+
+.main-menu__overlay--host {
+    --op: var(--ui-ok);
+}
+
+.main-menu__overlay--join {
+    --op: var(--ui-info);
+}
+
+.main-menu__overlay--update {
+    --op: var(--ui-warn);
+}
+
+.main-menu__overlay--lost,
+.main-menu__overlay--failed {
+    --op: var(--ui-danger);
+}
+
+/* Shown at once without --in; MainMenuView adds it a frame later, so the plate eases in. */
+.main-menu .main-menu__overlay {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.main-menu .main-menu__overlay--in {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.main-menu .main-menu__dialog {
+    opacity: 0;
+    scale: 0.94 0.94;
+    translate: 0 12px;
+    border-top-width: 3px;
+    border-top-color: var(--op);
+    transition-property: opacity, scale, translate, border-top-color;
+    transition-duration: 0.2s, 0.32s, 0.32s, 0.3s;
+    transition-timing-function: ease-out-cubic, ease-out-back, ease-out-cubic, linear;
+}
+
+.main-menu .main-menu__overlay--in .main-menu__dialog {
+    opacity: 1;
+    scale: 1 1;
+    translate: 0 0;
+}
+
+.main-menu__op-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    flex-shrink: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--op);
+}
+
+.main-menu__overlay--host .main-menu__op-icon {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Server.png");
+}
+
+.main-menu__overlay--join .main-menu__op-icon {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/GlobeAlt.png");
+}
+
+.main-menu__overlay--update .main-menu__op-icon {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/CloudDownload.png");
+}
+
+.main-menu__overlay--lost .main-menu__op-icon {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/StatusOffline.png");
+}
+
+.main-menu__overlay--failed .main-menu__op-icon {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Exclamation.png");
+}
+
+/* Progress: the done share in --op, eased; a glint runs along it while a step works. */
+.main-menu__progress {
+    height: 3px;
+    margin: 0 16px 14px 16px;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.main-menu__progress--hidden {
+    display: none;
+}
+
+.main-menu__progress-fill {
+    height: 100%;
+    width: 0;
+    overflow: hidden;
+    background-color: var(--op);
+    transition-property: width, background-color;
+    transition-duration: 0.5s, 0.3s;
+    transition-timing-function: ease-out-cubic, linear;
+}
+
+.main-menu__progress-glint {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -60px;
+    width: 60px;
+    background-color: rgba(255, 255, 255, 0.45);
+    display: none;
+}
+
+.main-menu__progress--working .main-menu__progress-glint {
+    display: flex;
+}
+
+/* Steps: an icon for the state (pending dot, the working spinner in --op, a check, a cross), the working row's edge in
+   --op. The check grows in from the spinner's size, a small pop. */
+.main-menu .main-menu__step {
+    justify-content: flex-start;
+    padding: 0 10px 0 7px;
+    border-left-width: 3px;
+    border-color: rgba(0, 0, 0, 0);
+    transition-property: background-color, border-color;
+    transition-duration: 0.25s;
+}
+
+.main-menu .main-menu__step > .main-menu__step-label {
+    flex-grow: 1;
+    transition-property: color;
+    transition-duration: 0.25s;
+}
+
+.main-menu .main-menu__step--active {
+    border-color: var(--op);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.main-menu .main-menu__step--failed {
+    border-color: var(--ui-danger);
+}
+
+.main-menu__step-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 10px;
+    flex-shrink: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    scale: 0.7 0.7;
+    transition-property: scale, -unity-background-image-tint-color;
+    transition-duration: 0.35s, 0.25s;
+    transition-timing-function: ease-out-back, linear;
+}
+
+.main-menu__step-icon--pending {
+    width: 6px;
+    height: 6px;
+    margin: 0 14px 0 4px;
+    border-width: 1px;
+    border-radius: 3px;
+    border-color: rgba(255, 255, 255, 0.3);
+    scale: 1 1;
+}
+
+.main-menu__step-icon--active {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Refresh.png");
+    -unity-background-image-tint-color: var(--op);
+    scale: 0.85 0.85;
+}
+
+.main-menu__step-icon--done {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Check.png");
+    -unity-background-image-tint-color: var(--ui-ok);
+    scale: 1 1;
+}
+
+.main-menu__step-icon--failed {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/X.png");
+    -unity-background-image-tint-color: var(--ui-danger);
+    scale: 1 1;
+}

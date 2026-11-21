@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
@@ -11,6 +12,10 @@ namespace SS3D.UI.Shell.MainMenu
     /// <see cref="FieldChanged"/>; the owner (<c>MainMenuSubSystem</c>, or the editor preview, which
     /// ignores them) applies them and calls <see cref="Present"/> again.
     /// </summary>
+    /// <remarks>
+    /// The look is the UI bible's (MainMenu.uss): every colour is a USS class, so the view only picks classes. The menu
+    /// is laid out at the bible's 1200 × 675 reference and scaled to fill the screen (<see cref="UiReferenceScale"/>).
+    /// </remarks>
     public sealed class MainMenuView : IUiSurface
     {
         public VisualElement Root { get; }
@@ -19,8 +24,18 @@ namespace SS3D.UI.Shell.MainMenu
         public VisualElement SettingsHost => Root.Q("settings-host");
         private readonly MainMenuAssetCatalog _catalog;
         private Texture2D _blurredWallpaper;
-        private Texture _blurredSource;
         private MainMenuPresentation _model = new();
+
+        /// <summary>The dialog's kinds, as <c>main-menu__overlay--*</c> classes: each sets the dialog's colour (--op).</summary>
+        private static readonly string[] OperationKinds = { "host", "join", "update", "lost", "failed" };
+
+        /// <summary>The steps last built; while it holds, a Present updates their classes in place, so transitions run.</summary>
+        private string _stepsBuilt;
+
+        private readonly VisualElement _overlay;
+        private readonly VisualElement _progress;
+        private readonly VisualElement _progressFill;
+        private readonly VisualElement _progressGlint;
 
         /// <summary>A button or link; server commands pass the server id, others an empty string.</summary>
         public event Action<MainMenuCommand, string> CommandIssued;
@@ -36,12 +51,10 @@ namespace SS3D.UI.Shell.MainMenu
             Root.styleSheets.Add(catalog.Style);
             Root.Q("logo").style.backgroundImage = catalog.Logo;
             Root.Q("music-icon").style.backgroundImage = catalog.MusicIcon;
-            Root.Query(className: "main-menu__empty").ForEach(DashedBorder);
-            Root.Q("main-menu").RegisterCallback<GeometryChangedEvent>(e =>
-            {
-                Root.Q("main-menu").EnableInClassList("main-menu--compact", e.newRect.width < 1450);
-                Root.Q<ScrollView>("sidebar").contentContainer.style.minHeight = e.newRect.height;
-            });
+            UiReferenceScale.Fit(Root, Root.Q("main-menu"), () => catalog.PanelSettings != null ? catalog.PanelSettings.scale : 1f);
+            // The spacer pushes music and the footer to the bottom: the column is at least as tall as its plate.
+            ScrollView sidebar = Root.Q<ScrollView>("sidebar-scroll");
+            sidebar.RegisterCallback<GeometryChangedEvent>(e => sidebar.contentContainer.style.minHeight = e.newRect.height);
             Command("join", MainMenuCommand.Join);
             Command("local", MainMenuCommand.PlayLocally);
             Command("advanced", MainMenuCommand.ToggleAdvanced);
@@ -82,6 +95,25 @@ namespace SS3D.UI.Shell.MainMenu
                 Issue(MainMenuCommand.Back);
                 e.StopPropagation();
             }, TrickleDown.TrickleDown);
+            _overlay = Root.Q("overlay");
+            _progress = Root.Q("overlay-progress");
+            _progressFill = Root.Q("overlay-progress-fill");
+            _progressGlint = Root.Q("overlay-progress-glint");
+            Root.schedule.Execute(Animate).Every(16);
+        }
+
+        /// <summary>Spins what is working (the dialog's step, a server being checked) and runs the progress bar's glint.</summary>
+        private void Animate()
+        {
+            if (Root.panel == null) return;
+            float time = Time.realtimeSinceStartup;
+            Rotate spin = new(new Angle(time * 300f % 360f, AngleUnit.Degree));
+            Root.Query(className: "main-menu__spin").ForEach(element => element.style.rotate = spin);
+            if (!_progress.ClassListContains("main-menu__progress--working")) return;
+            float width = _progressFill.layout.width;
+            if (width <= 0f || float.IsNaN(width)) return;
+            const float Glint = 60f;
+            _progressGlint.style.left = (time * 220f % (width + Glint)) - Glint;
         }
 
         private void UpdateVolumeFill(float value)
@@ -89,36 +121,11 @@ namespace SS3D.UI.Shell.MainMenu
             Root.Q("music-volume-fill").style.width = Length.Percent(Mathf.Clamp01(value) * 100f);
         }
 
-        /// <summary>The wallpaper alone: unlike <see cref="Present"/> it leaves the server list and its focus alone.</summary>
-        public void PresentWallpaper(MainMenuPresentation model)
+        /// <summary>The wallpaper, blurred behind the operation dialogs (the blur is made once per attach).</summary>
+        private void PresentWallpaper(bool operation)
         {
-            bool operation = model.Screen is MainMenuScreen.Connecting or MainMenuScreen.Hosting or MainMenuScreen.Updating;
-            Texture2D still = _catalog.Wallpaper(model.Wallpaper);
-            Root.Q("wallpaper").style.backgroundImage = still;
-            if (operation)
-            {
-                Texture source = model.VideoWallpaper != null ? model.VideoWallpaper : still;
-                if (_blurredWallpaper == null || _blurredSource != source)
-                {
-                    DestroyBlur();
-                    _blurredSource = source;
-                    _blurredWallpaper = MainMenuWallpaper.Blur(source);
-                }
-                Root.Q("wallpaper").style.backgroundImage = _blurredWallpaper;
-            }
-            else
-            {
-                DestroyBlur(); // A video has moved on by the next dialog.
-            }
-            PresentVideo(model.VideoWallpaper, operation);
-            Root.Q("wallpaper-veil").EnableInClassList("main-menu__wallpaper-veil--on", model.WallpaperVeiled);
-        }
-
-        private void PresentVideo(Texture frame, bool operation)
-        {
-            VisualElement video = Root.Q("video-wallpaper");
-            if (frame is RenderTexture target) video.style.backgroundImage = new StyleBackground(Background.FromRenderTexture(target));
-            video.EnableInClassList("main-menu__video-wallpaper--visible", frame != null && !operation);
+            if (operation && _blurredWallpaper == null) _blurredWallpaper = MainMenuWallpaper.Blur(_catalog.Wallpaper);
+            Root.Q("wallpaper").style.backgroundImage = operation ? _blurredWallpaper : _catalog.Wallpaper;
         }
 
         public void Attach(VisualElement layerRoot) { Detach(); layerRoot.Add(Root); }
@@ -134,7 +141,6 @@ namespace SS3D.UI.Shell.MainMenu
             if (UnityEngine.Application.isPlaying) Object.Destroy(_blurredWallpaper);
             else Object.DestroyImmediate(_blurredWallpaper);
             _blurredWallpaper = null;
-            _blurredSource = null;
         }
 
         public void Present(MainMenuPresentation model)
@@ -154,7 +160,7 @@ namespace SS3D.UI.Shell.MainMenu
             Slider volume = Root.Q<Slider>("music-volume");
             if (!Mathf.Approximately(volume.value, model.MusicVolume)) volume.SetValueWithoutNotify(model.MusicVolume);
             UpdateVolumeFill(volume.value);
-            Root.Q<Button>("update").text = model.CanSelfUpdate ? "UPDATE AND RESTART" : "DOWNLOAD";
+            Root.Q<Button>("update").text = model.CanSelfUpdate ? "Update and restart" : "Download";
             Show("update-hint", model.CanSelfUpdate);
             Root.Q<Label>("update-copy").text = $"v{model.LatestVersion} is out; this is v{model.Version}. {model.UpdateMessage}";
             bool hasName = !string.IsNullOrWhiteSpace(model.PlayerName);
@@ -169,17 +175,22 @@ namespace SS3D.UI.Shell.MainMenu
             localSubtitle.text = hasName ? $"Host on this computer, port {model.Port}" : "Needs a name";
             bool localError = hasName && !string.IsNullOrEmpty(model.LocalError);
             if (localError) localSubtitle.text = model.LocalError;
-            localSubtitle.style.color = localError ? new StyleColor(ColorCode("#d17a7a")) : new StyleColor(StyleKeyword.Null);
+            localSubtitle.EnableInClassList("main-menu__nav-subtitle--error", localError);
             Show("name-hint", !hasName || model.FirstLaunch);
-            Root.Q<Label>("name-hint").text = !hasName ? "Enter a name to join or play." : "Taken from this computer's user name. Change it any time.";
-            Root.Q<Label>("name-hint").style.color = hasName ? new Color(0.667f, 0.667f, 0.667f) : new Color(0.941f, 0.769f, 0.49f);
+            Label nameHint = Root.Q<Label>("name-hint");
+            nameHint.text = !hasName ? "Enter a name to join or play." : "Taken from this computer's user name. Change it any time.";
+            nameHint.EnableInClassList("main-menu__hint--warning", !hasName);
             Show("port-panel", model.Advanced);
             Root.Q("advanced-caret").EnableInClassList("main-menu__caret--up", model.Advanced);
             bool servers = model.Screen == MainMenuScreen.Servers;
             bool settings = model.Screen == MainMenuScreen.Settings;
+            // Where you are: the open screen's row is the white plate with the notch; on the home screen Join holds the
+            // plate as the default action.
+            Root.Q("join").EnableInClassList("main-menu__nav--selected", servers);
+            Root.Q("join").EnableInClassList("main-menu__button--accent", !servers && !settings);
             Root.Q("settings").EnableInClassList("main-menu__nav--selected", settings);
             bool operation = model.Screen is MainMenuScreen.Connecting or MainMenuScreen.Hosting or MainMenuScreen.Updating;
-            PresentWallpaper(model);
+            PresentWallpaper(operation);
             Show("sidebar", !operation);
             Show("side-panel", servers);
             Show("settings-host", settings);
@@ -189,11 +200,23 @@ namespace SS3D.UI.Shell.MainMenu
             if (servers)
             {
                 DirectConnect(content, model);
-                Section(content, "RECENT", model.Recent, true, model);
-                Section(content, "PUBLIC", model.Public, false, model);
+                Section(content, "Recent", model.Recent, true, model);
+                Section(content, "Public", model.Public, false, model);
             }
+            bool shown = !_overlay.ClassListContains("main-menu__hidden");
             Show("overlay", operation);
-            if (operation) Operation(model);
+            if (operation)
+            {
+                Operation(model);
+                // Shown without --in, then given it a frame later: the plate eases in.
+                if (!shown) _overlay.schedule.Execute(() => _overlay.AddToClassList("main-menu__overlay--in")).ExecuteLater(30);
+            }
+            else if (shown)
+            {
+                _overlay.RemoveFromClassList("main-menu__overlay--in");
+                _stepsBuilt = null;
+                _progressFill.style.width = 0;
+            }
         }
 
         private void DirectConnect(VisualElement parent, MainMenuPresentation model)
@@ -202,15 +225,15 @@ namespace SS3D.UI.Shell.MainMenu
             if (model.FirstLaunch)
             {
                 box.AddToClassList("main-menu__first");
-                Text(box, "Paste a server address", "main-menu__bold main-menu__large");
-                Text(box, "Server addresses are shared in the SS3D Discord. Copy one there and paste it here; the menu remembers it after the first join.", "main-menu__secondary main-menu__wrap");
+                Text(box, "Paste a server address", "main-menu__first-title");
+                Text(box, "Server addresses are shared in the SS3D Discord. Copy one there and paste it here; the menu remembers it after the first join.", "main-menu__first-copy");
             }
-            else Text(box, "DIRECT CONNECT", "main-menu__eyebrow");
+            else Text(box, "Direct connect", "main-menu__eyebrow");
             VisualElement row = Element(box, "main-menu__direct-row");
-            TextField address = Input(row, model.Address, "main-menu__address main-menu__mono");
+            TextField address = Input(row, model.Address, "main-menu__address");
             address.name = "direct-address";
             address.textEdition.placeholder = model.FirstLaunch ? "address or address:port" : "Paste address or address:port";
-            Button connect = Action(row, "CONNECT", "main-menu__button--accent");
+            Button connect = Action(row, "Connect", "main-menu__button--accent");
             connect.name = "connect";
             connect.SetEnabled(!string.IsNullOrWhiteSpace(model.Address) && !string.IsNullOrWhiteSpace(model.PlayerName));
             connect.clicked += () => Issue(MainMenuCommand.Connect);
@@ -228,20 +251,20 @@ namespace SS3D.UI.Shell.MainMenu
                 e.StopPropagation();
             }, TrickleDown.TrickleDown);
             if (!string.IsNullOrEmpty(model.AddressError))
-                Text(box, model.AddressError, "main-menu__wrap main-menu__hint").style.color = ColorCode("#d17a7a");
-            if (model.FirstLaunch) Action(box, "Open the SS3D Discord", "main-menu__link").clicked += () => Issue(MainMenuCommand.Discord);
+                Text(box, model.AddressError, "main-menu__hint main-menu__hint--error");
+            if (model.FirstLaunch) Quiet(box, "Open the SS3D Discord", "main-menu__link").clicked += () => Issue(MainMenuCommand.Discord);
         }
 
-        private void Section(VisualElement parent, string title, System.Collections.Generic.IReadOnlyList<MainMenuServerPresentation> servers,
+        private void Section(VisualElement parent, string title, IReadOnlyList<MainMenuServerPresentation> servers,
             bool recent, MainMenuPresentation model)
         {
             VisualElement section = Element(parent, "main-menu__section");
-            VisualElement heading = Element(section, "main-menu__row main-menu__spread");
+            VisualElement heading = Element(section, "main-menu__row main-menu__spread main-menu__section-heading");
             Text(heading, title, "main-menu__eyebrow");
             string count = servers.Count.ToString();
             if (recent) count += " / 5";
             else if (model.PublicList == MainMenuPublicListState.FetchFailed) count = "unavailable";
-            Text(heading, count, "main-menu__mono main-menu__tiny main-menu__secondary");
+            Text(heading, count, "main-menu__fine");
             if (servers.Count == 0 || (!recent && model.PublicList != MainMenuPublicListState.Populated))
             {
                 VisualElement empty = Element(section, "main-menu__empty");
@@ -250,12 +273,12 @@ namespace SS3D.UI.Shell.MainMenu
                 string emptyCopy = "The project lists servers here once they go public. Until then, addresses are shared on Discord.";
                 if (recent) { emptyTitle = "No recent servers"; emptyCopy = "Servers you join show up here, newest first. The last five are kept."; }
                 else if (failed) { emptyTitle = "Couldn't fetch the public list"; emptyCopy = "Recent servers and direct connect still work. Refresh to try again."; }
-                Text(empty, emptyTitle, "");
-                Text(empty, emptyCopy, "main-menu__secondary main-menu__wrap");
+                Text(empty, emptyTitle, "main-menu__empty-title");
+                Text(empty, emptyCopy, "main-menu__hint");
                 return;
             }
+            // Column heads reuse the columns' classes, so they line up with the rows.
             VisualElement columns = Element(section, "main-menu__server-heading");
-            VisualElement gutter = Element(columns, ""); gutter.style.width = 18;
             Text(columns, "Server", "main-menu__server-identity");
             Text(columns, "Status", "main-menu__status");
             Text(columns, "Players", "main-menu__players");
@@ -270,38 +293,47 @@ namespace SS3D.UI.Shell.MainMenu
             }
         }
 
+        /// <summary>A server's state as its icon (<c>main-menu__state-icon--*</c>, coloured in USS) and the status line's colour modifier.</summary>
+        private static (string Icon, string Status) Tone(MainMenuServerState state) => state switch
+        {
+            MainMenuServerState.Compatible => ("online", ""),
+            MainMenuServerState.NeedsUpdate => ("update", ""),
+            MainMenuServerState.Full => ("full", "warn"),
+            MainMenuServerState.Offline => ("offline", "danger"),
+            MainMenuServerState.OlderVersion => ("older", ""),
+            _ => ("checking", ""),
+        };
+
         private void Server(VisualElement parent, MainMenuServerPresentation server, bool recent, bool primary, bool hasName)
         {
             VisualElement card = Element(parent, "main-menu__server"); card.name = $"server-{server.Id}";
             VisualElement row = Element(card, "main-menu__server-row");
-            string color = server.State switch { MainMenuServerState.Compatible => "#88b36a", MainMenuServerState.NeedsUpdate => "#e6ad53", MainMenuServerState.Full => "#e6ad53", MainMenuServerState.Offline => "#b13d3d", _ => "#717c7f" };
+            (string icon, string tone) = Tone(server.State);
             string id = server.Id;
-            Element(row, "main-menu__dot").style.backgroundColor = ColorCode(color);
+            VisualElement stateIcon = Element(row, "main-menu__state-icon main-menu__state-icon--" + icon);
+            stateIcon.pickingMode = PickingMode.Ignore;
+            if (server.State == MainMenuServerState.Checking) stateIcon.AddToClassList("main-menu__spin");
             VisualElement identity = Element(row, "main-menu__server-identity");
             Text(identity, server.Name, "main-menu__server-name");
-            Text(identity, server.Address, "main-menu__server-address main-menu__mono");
+            Text(identity, server.Address, "main-menu__server-address");
             string status = server.State switch { MainMenuServerState.Compatible => "Online", MainMenuServerState.NeedsUpdate => $"Needs v{server.RequiredVersion} — update", MainMenuServerState.Full => "Full", MainMenuServerState.OlderVersion => $"Runs v{server.RequiredVersion}, older than yours", MainMenuServerState.Checking => "Checking…", _ => "Offline" };
-            string statusColor = "#aaaaaa";
-            if (server.State == MainMenuServerState.Compatible) statusColor = "#a8cf8c";
-            else if (server.State is MainMenuServerState.NeedsUpdate or MainMenuServerState.Full) statusColor = "#f0c47d";
-            Text(row, status, "main-menu__status main-menu__wrap").style.color = ColorCode(statusColor);
-            Label players = Text(row, server.Players, "main-menu__players main-menu__mono");
-            if (server.State == MainMenuServerState.Full) players.style.color = ColorCode("#f0c47d");
-            Text(row, server.Ping, "main-menu__ping main-menu__mono");
+            Text(row, status, "main-menu__status" + (tone.Length > 0 ? " main-menu__status--" + tone : ""));
+            Text(row, server.Players, "main-menu__players" + (server.State == MainMenuServerState.Full ? " main-menu__players--warn" : ""));
+            Text(row, server.Ping, "main-menu__ping");
             VisualElement actions = Element(row, "main-menu__actions");
-            if (recent) Action(actions, server.Expanded ? "Hide" : "Details", "main-menu__details-button").clicked += () => Issue(MainMenuCommand.ServerDetails, id);
+            if (recent) Quiet(actions, server.Expanded ? "Hide" : "Details", "main-menu__details-button").clicked += () => Issue(MainMenuCommand.ServerDetails, id);
             bool update = server.State == MainMenuServerState.NeedsUpdate;
             string actionClass = "";
             if (update) actionClass = "main-menu__button--blue";
             else if (primary) actionClass = "main-menu__button--accent";
-            Button join = Action(actions, update ? "UPDATE" : "JOIN", actionClass);
+            Button join = Action(actions, update ? "Update" : "Join", actionClass);
             join.SetEnabled(hasName && (update || server.State is MainMenuServerState.Compatible or MainMenuServerState.Checking));
             join.clicked += () => Issue(update ? MainMenuCommand.ServerUpdate : MainMenuCommand.ServerJoin, id);
             if (!string.IsNullOrEmpty(server.Refusal))
             {
                 VisualElement refusal = Element(card, "main-menu__refusal");
-                Text(refusal, server.Refusal, "main-menu__wrap");
-                Text(refusal, server.RefusalTime, "main-menu__mono main-menu__tiny main-menu__secondary");
+                Text(refusal, server.Refusal, "");
+                Text(refusal, server.RefusalTime, "main-menu__fine");
             }
             if (recent && server.Expanded) Details(card, server);
         }
@@ -314,21 +346,21 @@ namespace SS3D.UI.Shell.MainMenu
             TextField nameField = Input(name, server.Name, "main-menu__detail-value");
             nameField.maxLength = 40;
             nameField.RegisterValueChangedCallback(e => FieldChanged?.Invoke(MainMenuField.ServerName, id, e.newValue));
-            Text(DetailRow(details, "Address"), server.Address, "main-menu__mono");
+            Text(DetailRow(details, "Address"), server.Address, "main-menu__detail-text");
             VisualElement tokenRow = DetailRow(details, "Admin token");
-            TextField token = Input(tokenRow, server.AdminToken, "main-menu__detail-value main-menu__mono");
+            TextField token = Input(tokenRow, server.AdminToken, "main-menu__detail-value");
             token.isPasswordField = true; token.textEdition.placeholder = "Optional";
             token.RegisterValueChangedCallback(e => FieldChanged?.Invoke(MainMenuField.AdminToken, id, e.newValue));
-            Button show = Action(tokenRow, "Show", "main-menu__details-button");
+            Button show = Quiet(tokenRow, "Show", "main-menu__details-button");
+            show.style.marginLeft = 6;
             show.clicked += () =>
             {
                 token.isPasswordField = !token.isPasswordField;
                 show.text = token.isPasswordField ? "Show" : "Hide";
             };
-            VisualElement footer = DetailRow(details, "");
-            Label hint = Text(footer, "Saved automatically. The token is sent when joining; admins join like everyone else.", "main-menu__secondary main-menu__tiny main-menu__wrap");
-            hint.style.maxWidth = 420; hint.style.flexShrink = 1; hint.style.marginRight = 12;
-            Action(footer, "REMOVE", "main-menu__button--danger").clicked += () => Issue(MainMenuCommand.ServerRemove, id);
+            VisualElement footer = Element(details, "main-menu__details-footer");
+            Text(footer, "Saved automatically. The token is sent when joining; admins join like everyone else.", "main-menu__hint");
+            Action(footer, "Remove", "main-menu__button--danger").clicked += () => Issue(MainMenuCommand.ServerRemove, id);
         }
 
         private void Operation(MainMenuPresentation model)
@@ -347,33 +379,81 @@ namespace SS3D.UI.Shell.MainMenu
             Show("back-to-servers", model.OperationFailed);
             Show("overlay-token-row", model.OperationNeedsToken);
             if (model.OperationNeedsToken) SetText("overlay-token", model.OperationToken);
-            VisualElement steps = Root.Q("progress-steps"); steps.Clear();
-            if (model.OperationLost)
-            {
-                Reason(steps, model.OperationReason);
-                return;
-            }
+
+            // Colour coding: hosting ok, joining info, updating warn, lost or failed danger (--op, MainMenu.uss).
+            string kind = "join";
+            if (updating) kind = "update";
+            else if (hosting) kind = "host";
+            if (model.OperationLost) kind = "lost";
+            else if (model.OperationFailed) kind = "failed";
+            foreach (string each in OperationKinds) _overlay.EnableInClassList("main-menu__overlay--" + each, each == kind);
+
             string[] labels = { "Contacting server", "Checking version", "Loading world", "Logging in" };
             if (updating) labels = new string[] { "Downloading update", "Keeping maps and settings", "Restarting" };
             else if (hosting) labels = new string[] { "Starting host", "Loading world", "Opening lobby" };
-            for (int i = 0; i < labels.Length; i++)
+            VisualElement steps = Root.Q("progress-steps");
+            string built = string.Join("|", labels) + "|" + model.OperationLost + "|" + model.OperationFailed + "|" + model.OperationReason;
+            if (built != _stepsBuilt)
             {
-                VisualElement row = Element(steps, "main-menu__step");
-                Text(row, labels[i], i > model.OperationStep ? "main-menu__secondary" : "");
-                bool failed = model.OperationFailed && i == model.OperationStep;
-                string progress = "";
-                if (i < model.OperationStep) progress = "OK";
-                else if (failed) progress = "FAILED";
-                else if (i == model.OperationStep) progress = "…";
-                Label mark = Text(row, progress, "main-menu__mono");
-                if (i < model.OperationStep) mark.style.color = ColorCode("#a8cf8c");
-                else if (failed) mark.style.color = ColorCode("#d17a7a");
-                if (failed) Reason(steps, model.OperationReason);
+                _stepsBuilt = built;
+                steps.Clear();
+                if (model.OperationLost) Reason(steps, model.OperationReason);
+                else
+                {
+                    for (int i = 0; i < labels.Length; i++)
+                    {
+                        VisualElement row = Element(steps, "main-menu__step");
+                        Element(row, "main-menu__step-icon").pickingMode = PickingMode.Ignore;
+                        Text(row, labels[i], "main-menu__step-label");
+                        Text(row, "", "main-menu__step-mark");
+                        if (model.OperationFailed && i == model.OperationStep) Reason(steps, model.OperationReason);
+                    }
+                }
             }
+
+            _progress.EnableInClassList("main-menu__progress--hidden", model.OperationLost);
+            _progress.EnableInClassList("main-menu__progress--working", !model.OperationLost && !model.OperationFailed
+                && model.OperationStep < labels.Length);
+            if (model.OperationLost) return;
+            int index = 0;
+            foreach (VisualElement row in steps.Children())
+            {
+                if (!row.ClassListContains("main-menu__step")) continue;
+                PresentStep(row, index++, model);
+            }
+
+            // Done steps, and half the working one; a failure fills up to the step that failed.
+            float share = (model.OperationStep + (model.OperationFailed ? 1f : 0.5f)) / labels.Length;
+            _progressFill.style.width = Length.Percent(Mathf.Clamp01(share) * 100f);
+        }
+
+        /// <summary>One step's state: pending (a dot), working (the spinner in --op), done (a check, OK), failed (a cross).</summary>
+        private static void PresentStep(VisualElement row, int i, MainMenuPresentation model)
+        {
+            bool failed = model.OperationFailed && i == model.OperationStep;
+            bool done = i < model.OperationStep;
+            bool active = !model.OperationFailed && i == model.OperationStep;
+            bool pending = i > model.OperationStep;
+            row.EnableInClassList("main-menu__step--pending", pending);
+            row.EnableInClassList("main-menu__step--active", active);
+            row.EnableInClassList("main-menu__step--failed", failed);
+            VisualElement icon = row.Q(className: "main-menu__step-icon");
+            icon.EnableInClassList("main-menu__step-icon--pending", pending);
+            icon.EnableInClassList("main-menu__step-icon--active", active);
+            icon.EnableInClassList("main-menu__step-icon--done", done);
+            icon.EnableInClassList("main-menu__step-icon--failed", failed);
+            icon.EnableInClassList("main-menu__spin", active);
+            if (!active) icon.style.rotate = StyleKeyword.Null;
+            Label mark = row.Q<Label>(className: "main-menu__step-mark");
+            mark.text = "";
+            if (done) mark.text = "OK";
+            else if (failed) mark.text = "FAILED";
+            mark.EnableInClassList("main-menu__step-mark--ok", done);
+            mark.EnableInClassList("main-menu__step-mark--failed", failed);
         }
 
         private static void Reason(VisualElement parent, string reason) =>
-            Text(Element(parent, "main-menu__step-reason"), reason, "main-menu__wrap");
+            Text(Element(parent, "main-menu__step-reason"), reason, "");
 
         private void Show(string name, bool visible) => Root.Q(name).EnableInClassList("main-menu__hidden", !visible);
         private void SetText(string name, string value)
@@ -386,45 +466,18 @@ namespace SS3D.UI.Shell.MainMenu
         private void Command(string name, MainMenuCommand command) => Root.Q<Button>(name).clicked += () => Issue(command);
         private void Field(string name, MainMenuField field) =>
             Root.Q<TextField>(name).RegisterValueChangedCallback(e => FieldChanged?.Invoke(field, "", e.newValue));
-        private static Color ColorCode(string value) { ColorUtility.TryParseHtmlString(value, out Color color); return color; }
         private static void Classes(VisualElement element, string classes)
         { foreach (string value in classes.Split(' ')) if (value.Length > 0) element.AddToClassList(value); }
         private static VisualElement Element(VisualElement parent, string classes)
-        {
-            VisualElement element = new(); Classes(element, classes); parent.Add(element);
-            if (element.ClassListContains("main-menu__empty")) DashedBorder(element);
-            return element;
-        }
-
-        private static void DashedBorder(VisualElement element)
-        {
-            element.generateVisualContent += context =>
-            {
-                Painter2D painter = context.painter2D;
-                painter.lineWidth = 1;
-                painter.strokeColor = new Color(0.847f, 0.847f, 0.847f, 0.18f);
-                float width = element.layout.width - 1;
-                float height = element.layout.height - 1;
-                Vector2[] corners = { new(0.5f, 0.5f), new(width, 0.5f), new(width, height), new(0.5f, height) };
-                painter.BeginPath();
-                for (int edge = 0; edge < 4; edge++)
-                {
-                    Vector2 start = corners[edge];
-                    Vector2 delta = corners[(edge + 1) % 4] - start;
-                    float length = delta.magnitude;
-                    for (float distance = 0; distance < length; distance += 10)
-                    {
-                        painter.MoveTo(start + delta.normalized * distance);
-                        painter.LineTo(start + delta.normalized * Mathf.Min(distance + 6, length));
-                    }
-                }
-                painter.Stroke();
-            };
-        }
+        { VisualElement element = new(); Classes(element, classes); parent.Add(element); return element; }
         private static Label Text(VisualElement parent, string text, string classes)
         { Label label = new(text); label.AddToClassList("main-menu__text"); Classes(label, classes); parent.Add(label); return label; }
+        /// <summary>A tinted button with a Disket label (<c>main-menu__button</c>).</summary>
         private static Button Action(VisualElement parent, string text, string classes)
         { Button button = new() { text = text }; button.AddToClassList("main-menu__button"); Classes(button, classes); parent.Add(button); return button; }
+        /// <summary>A text button with no plate: a link or a details toggle.</summary>
+        private static Button Quiet(VisualElement parent, string text, string classes)
+        { Button button = new() { text = text }; Classes(button, classes); parent.Add(button); return button; }
         private static TextField Input(VisualElement parent, string value, string classes)
         { TextField field = new() { value = value }; field.AddToClassList("main-menu__input"); Classes(field, classes); parent.Add(field); return field; }
         private static VisualElement DetailRow(VisualElement parent, string key)

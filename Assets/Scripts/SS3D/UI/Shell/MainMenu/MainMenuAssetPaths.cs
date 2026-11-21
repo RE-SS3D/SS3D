@@ -6,10 +6,8 @@ namespace SS3D.UI.Shell.MainMenu
         public const string Template = "Assets/Content/Systems/UI/MainMenu/MainMenu.uxml";
         public const string Style = "Assets/Content/Systems/UI/MainMenu/MainMenu.uss";
         public const string Logo = "Assets/Art/Textures/UI/Logos/SS3DLogo.png";
-        /// <summary>Every image here joins the wallpaper pick: 1920×1080, no transparency.</summary>
-        public const string WallpaperFolder = "Assets/Art/Textures/UI/Wallpapers";
-        /// <summary>Every clip here joins the wallpaper pick: VP8 .webm, silent, loops cleanly.</summary>
-        public const string WallpaperVideoFolder = "Assets/Art/Videos/Wallpapers";
+        /// <summary>The menu's only wallpaper: 1920×1080, no transparency.</summary>
+        public const string Wallpaper = "Assets/Art/Textures/UI/Wallpapers/Clownin.png";
         public const string MusicIcon = "Assets/Art/Icons/Heroicons/Solid/MusicNote.png";
         /// <summary>Every clip here plays in the menu except the intro stings.</summary>
         public const string MusicFolder = "Assets/Art/Sound/World/Music";

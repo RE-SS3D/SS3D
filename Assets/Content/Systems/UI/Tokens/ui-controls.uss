@@ -1,0 +1,132 @@
+/*
+ * Shared controls drawn with the UI bible's parts, for the sheets that import this one after ui-tokens.uss
+ * (PlayerSettingsPanel.uss, Lobby.uss).
+ *   UiSelect   the bible's menu dropdown: the editor's search field, its list on a floating plate. A consumer sizes the
+ *              control with its own class (width on .ui-select) and styles .ui-select__label for its forms.
+ * Buttons keep the runtime theme's .unity-button class, so every Button class here sets its own background, border and
+ * colour for :hover and :active too.
+ */
+
+.ui-select {
+    flex-shrink: 0;
+}
+
+.ui-select .ui-select__field,
+.ui-select .ui-select__field:hover,
+.ui-select .ui-select__field:active,
+.ui-select .ui-select__field:hover:active {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.ui-select .ui-select__field {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 28px;
+    margin: 0;
+    padding: 0 8px 0 10px;
+    border-width: 1px;
+    border-radius: 0;
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.ui-select .ui-select__field:hover,
+.ui-select--open .ui-select__field,
+.ui-select--open .ui-select__field:hover {
+    border-color: var(--ui-editor-cell-edge-hover);
+}
+
+.ui-select:disabled .ui-select__field {
+    border-color: rgba(0, 0, 0, 0);
+    opacity: 0.45;
+}
+
+.ui-select .ui-select__value {
+    flex-shrink: 1;
+    margin: 0;
+    padding: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ui-select__arrow {
+    width: 10px;
+    height: 6px;
+    margin-left: 8px;
+    flex-shrink: 0;
+    background-image: url("project://database/Assets/Art/Graphics/UI/Chrome/DropdownArrow.png");
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.6);
+}
+
+.ui-select--open .ui-select__arrow {
+    rotate: 180deg;
+}
+
+/* The list: opaque, since at --ui-float's 96 % the rows under it show through. */
+.ui-select__list {
+    max-height: 260px;
+    padding: 4px 0;
+    border-width: var(--ui-hairline);
+    border-radius: 4.2px;
+    border-color: var(--ui-panel-edge);
+    background-color: rgb(14, 14, 14);
+}
+
+.ui-select__scroll {
+    flex-shrink: 1;
+}
+
+.ui-select__list .unity-scroller--vertical {
+    width: 6px;
+    min-width: 6px;
+    margin-left: 2px;
+}
+
+.ui-select__list .unity-scroller__low-button,
+.ui-select__list .unity-scroller__high-button {
+    display: none;
+}
+
+.ui-select__list .unity-base-slider__tracker {
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.ui-select__list .unity-base-slider__dragger {
+    border-width: 0;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+.ui-select__list .ui-select__item,
+.ui-select__list .ui-select__item:active,
+.ui-select__list .ui-select__item:hover:active {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.ui-select__list .ui-select__item {
+    height: 26px;
+    margin: 0;
+    padding: 0 10px;
+    border-width: 0;
+    border-radius: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
+    -unity-text-generator: standard;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    -unity-text-align: middle-left;
+}
+
+.ui-select__list .ui-select__item:hover {
+    background-color: var(--ui-editor-button-hover);
+    color: var(--ui-text);
+}
+
+.ui-select__list .ui-select__item--on {
+    color: var(--ui-text);
+}

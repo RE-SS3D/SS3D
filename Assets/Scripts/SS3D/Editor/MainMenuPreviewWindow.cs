@@ -17,7 +17,6 @@ namespace SS3D.Editor
         public enum PreviewResolution { HD1080, HD720, Ultrawide }
         private PreviewState _state;
         private PreviewResolution _resolution;
-        private int _wallpaper;
         private VisualElement _stage;
         private VisualElement _frame;
         private MainMenuView _view;
@@ -42,8 +41,6 @@ namespace SS3D.Editor
             EnumField resolution = new(_resolution) { name = "preview-resolution" };
             resolution.RegisterValueChangedCallback(e => SetResolution((PreviewResolution)e.newValue));
             toolbar.Add(resolution);
-            ToolbarButton wallpaper = new(() => { _wallpaper++; ShowState(_state); }) { text = "Wallpaper" };
-            toolbar.Add(wallpaper);
             toolbar.Add(new Label("Visual fixture · sample data · actions unwired"));
             rootVisualElement.Add(toolbar);
             _stage = new VisualElement { name = "preview-stage" };
@@ -95,7 +92,6 @@ namespace SS3D.Editor
             _view = new MainMenuView(catalog);
             _view.Attach(_frame);
             MainMenuPresentation model = Sample(state);
-            model.Wallpaper = _wallpaper;
             _view.Present(model);
             Fit();
         }

@@ -298,7 +298,7 @@ Follows the order the [UI shell consolidation](2026-07_ui-shell-consolidation.md
   - A standalone `PlayerSettingsPanel` mounted by both the lobby and the main menu, replacing the "Settings screen placeholder" in `MainMenu.uxml:43`. The panel's behaviour comes from [player settings](2026-10_player-settings.md).
   - The Players search filters rows instead of rebuilding the tab per keystroke.
   - `LobbyUiSubSystem` uses P6.6 events instead of polling.
-- **P7.5 — Split `MainMenuSubSystem`** (1,013 lines): `MainMenuConnectionFlow` (state machine, no UI, EditMode-testable), `MainMenuAmbience` (music, video, wallpaper), and the view host.
+- **P7.5 — Split `MainMenuSubSystem`** (1,013 lines): `MainMenuConnectionFlow` (state machine, no UI, EditMode-testable), `MainMenuAmbience` (music, wallpaper), and the view host.
 - **P7.6 — Catalogs onto `UiAssetCatalogBase`,** in order: MainHud, StoragePanel, Lobby, Examine, MachineUi. Each builder moves onto `UiCatalogBuilderKit` and the umbrella. G5 keeps it that way.
 - **P7.7 — Hosts onto UiShell layers.**
   - `FpsCounterView`, `AlertStackDebugMenuView` and the F1 `DebugMenuView` → `UiLayer.Debug`.
