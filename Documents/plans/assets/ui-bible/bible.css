@@ -1,0 +1,1203 @@
+/*
+ * The bible page itself: tab bar, specimen cards, states, stages, backdrops.
+ * None of this ports to Unity. Game UI lives in components.css.
+ */
+
+:root {
+    --pg-bg: #0e0e0f;
+    --pg-card: #161617;
+    --pg-card-2: #1c1c1e;
+    --pg-line: #2a2a2c;
+    --pg-text: #d9d8d3;
+    --pg-dim: #8b8a85;
+    --pg-faint: #5c5b57;
+    --pg-link: #e6e5df;
+    --pg-mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --pg-sans: system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+    --spec-zoom: 1.6;
+    color-scheme: dark;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--pg-bg);
+    color: var(--pg-text);
+    font: 14px/1.55 var(--pg-sans);
+}
+
+a {
+    color: var(--pg-link);
+}
+
+code {
+    font-family: var(--pg-mono);
+    font-size: 12.5px;
+    color: #e9e3c9;
+    background: #1f1f20;
+    padding: 1px 5px;
+    border-radius: 4px;
+}
+
+/* ── Layout: a tab bar across the top, one section below ─────────────────── */
+.page {
+    min-height: 100vh;
+}
+
+.nav {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--pg-line);
+    background: #0b0b0c;
+}
+
+.nav__brand {
+    flex: none;
+    font: 22px/1 "SquareDeal", monospace;
+    color: #f2f2f0;
+}
+
+/* The tabs: one row, scrolling sideways when it doesn't fit. */
+.nav__tabs {
+    display: flex;
+    align-items: stretch;
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.nav__group {
+    display: flex;
+    align-items: center;
+    flex: none;
+    margin-left: 12px;
+    padding: 0 6px 0 14px;
+    border-left: 1px solid var(--pg-line);
+    font: 10px/1 var(--pg-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pg-faint);
+}
+
+.nav__tabs a {
+    flex: none;
+    padding: 15px 9px 13px;
+    border-bottom: 2px solid transparent;
+    font-size: 13px;
+    white-space: nowrap;
+    color: var(--pg-dim);
+    text-decoration: none;
+}
+
+.nav__tabs a:hover {
+    color: #f2f2f0;
+}
+
+.nav__tabs a.is-current {
+    border-bottom-color: #e6e5df;
+    color: #f2f2f0;
+}
+
+.nav__tabs a:focus-visible {
+    outline: 1px solid #e6e5df;
+    outline-offset: -3px;
+}
+
+main {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 34px 44px 120px;
+}
+
+.hero {
+    margin-bottom: 40px;
+}
+
+.hero h1 {
+    margin: 0;
+    font: 56px/1 "SquareDeal", monospace;
+    color: #f2f2f0;
+    letter-spacing: 1px;
+}
+
+.hero__rule {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.35);
+    margin: 14px 0 18px;
+}
+
+.lede {
+    max-width: 760px;
+    font-size: 15px;
+    color: #c5c4be;
+}
+
+.banner {
+    display: none;
+    margin: 18px 0 0;
+    padding: 12px 14px;
+    max-width: 760px;
+    border: 1px solid rgba(201, 162, 39, 0.5);
+    border-radius: 8px;
+    background: rgba(201, 162, 39, 0.1);
+    font-size: 13px;
+}
+
+.banner.is-shown {
+    display: block;
+}
+
+.banner--error {
+    border-color: rgba(214, 92, 72, 0.6);
+    background: rgba(214, 92, 72, 0.12);
+}
+
+.banner--error pre {
+    margin: 8px 0 0;
+    font: 12px var(--pg-mono);
+    white-space: pre-wrap;
+    color: #f0b7ab;
+}
+
+section {
+    padding-top: 46px;
+}
+
+/* Tabbed: only the current section shows (the attribute is set by bible.js, so without script the page stays one list). */
+[data-tabbed] main > section {
+    padding-top: 0;
+}
+
+[data-tabbed] main > section:not(.is-active) {
+    display: none;
+}
+
+/* Previous / next tab at the bottom of each section. */
+.pager {
+    display: flex;
+    gap: 12px;
+    margin-top: 56px;
+    padding-top: 18px;
+    border-top: 1px solid var(--pg-line);
+}
+
+.pager a {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    padding: 10px 14px;
+    border: 1px solid var(--pg-line);
+    border-radius: 8px;
+    color: #f2f2f0;
+    font: 17px/1.1 "SquareDeal", monospace;
+    text-decoration: none;
+}
+
+.pager a:hover {
+    background: var(--pg-card);
+    border-color: #3a3a3d;
+}
+
+.pager a span {
+    font: 11px/1 var(--pg-mono);
+    color: var(--pg-faint);
+}
+
+.pager__next {
+    margin-left: auto;
+    align-items: flex-end;
+    text-align: right;
+}
+
+section > h2 {
+    margin: 0 0 4px;
+    font: 30px/1.1 "SquareDeal", monospace;
+    color: #f2f2f0;
+}
+
+section > .sec-lede {
+    margin: 0 0 18px;
+    max-width: 780px;
+    color: var(--pg-dim);
+}
+
+h3 {
+    margin: 26px 0 10px;
+    font: 18px/1.2 "SquareDeal", monospace;
+    color: #e7e6e1;
+}
+
+p {
+    max-width: 780px;
+}
+
+.principles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.principle {
+    padding: 14px 16px;
+    border: 1px solid var(--pg-line);
+    border-radius: 10px;
+    background: var(--pg-card);
+}
+
+.principle b {
+    display: block;
+    margin-bottom: 4px;
+    font: 15px/1.2 "SquareDeal", monospace;
+    color: #f2f2f0;
+}
+
+.principle span {
+    font-size: 13px;
+    color: var(--pg-dim);
+}
+
+/* ── States: one row per element, one column per state ─────────────────── */
+/* Top-aligned, so an open dropdown's list hangs below its box and its caption follows. */
+.state-row {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    margin-bottom: 14px;
+}
+
+.state-row > .demo-item {
+    align-items: center;
+}
+
+/* Page-only scaffolding for the states rows. */
+.state-sheet {
+    width: auto !important;
+    height: auto !important;
+    padding: 8px;
+}
+
+.state-radial {
+    zoom: 0.42; /* three wheels side by side */
+}
+
+.state-field {
+    width: 248px;
+}
+
+.state-row .menu-dropdown--open {
+    margin-bottom: 96px;
+}
+
+.state-row__name {
+    align-self: center;
+    width: calc(130px / var(--spec-zoom));
+    margin-right: 6px;
+    font: calc(11px / var(--spec-zoom))/1.2 var(--pg-mono) !important;
+    color: rgba(255, 255, 255, 0.8);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+}
+
+/* ── Specimen cards ─────────────────────────────────────────────────────── */
+.spec {
+    margin: 14px 0 22px;
+    border: 1px solid var(--pg-line);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--pg-card);
+}
+
+.spec__bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--pg-line);
+    background: var(--pg-card-2);
+}
+
+.spec__name {
+    font: 12px var(--pg-mono);
+    color: #e9e3c9;
+}
+
+.spec__src {
+    font: 11px var(--pg-mono);
+    color: var(--pg-faint);
+}
+
+.spec__tools {
+    margin-left: auto;
+    display: flex;
+    gap: 4px;
+}
+
+.chip-btn {
+    padding: 3px 9px;
+    border: 1px solid var(--pg-line);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--pg-dim);
+    font: 11px var(--pg-mono);
+    cursor: pointer;
+}
+
+.chip-btn:hover {
+    color: var(--pg-text);
+    border-color: #444;
+}
+
+.chip-btn.is-on {
+    color: #111;
+    background: #e4e3de;
+    border-color: #e4e3de;
+}
+
+.spec__stage {
+    position: relative;
+    overflow: auto;
+    padding: 28px;
+}
+
+.spec__zoom {
+    zoom: var(--spec-zoom);
+    position: relative;
+    align-items: flex-start; /* components size to content, as they would inside an absolutely placed zone */
+}
+
+.spec__notes {
+    padding: 10px 14px 12px;
+    border-top: 1px solid var(--pg-line);
+    font-size: 13px;
+    color: var(--pg-dim);
+}
+
+.spec__notes ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.demo-row {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.demo-item {
+    align-items: center;
+    margin: 0 14px 4px 0;
+}
+
+.cap {
+    margin-top: 5px;
+    font: calc(11px / var(--spec-zoom))/1.2 var(--pg-mono) !important;
+    color: rgba(255, 255, 255, 0.62);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+    white-space: nowrap;
+}
+
+.bd-floor .cap,
+.bd-floor-green .cap {
+    color: rgba(20, 20, 20, 0.85);
+    text-shadow: none;
+}
+
+/* ── Compare with the reference: side by side, or the UI laid over it ──── */
+.cmp-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 12px;
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--pg-line);
+    background: var(--pg-card-2);
+    font: 11px var(--pg-mono);
+    color: var(--pg-faint);
+}
+
+.cmp-bar__group {
+    display: flex;
+    gap: 4px;
+}
+
+.cmp-bar__ctl {
+    display: none;
+    align-items: center;
+    gap: 6px;
+}
+
+.cmp-bar__ctl input[type="range"] {
+    width: 90px;
+    accent-color: #e4e3de;
+}
+
+.cmp-bar__hint {
+    display: none;
+}
+
+[data-cmp-mode="side"] .cmp-bar__ctl--tune,
+[data-cmp-mode="overlay"] .cmp-bar__ctl--tune,
+[data-cmp-mode="overlay"] .cmp-bar__ctl--overlay {
+    display: flex;
+}
+
+[data-cmp-mode="side"] .cmp-bar__hint,
+[data-cmp-mode="overlay"] .cmp-bar__hint {
+    display: inline;
+}
+
+.cmp-ref,
+.stage__ref {
+    position: absolute;
+    display: none;
+    overflow: hidden;
+    background: #000;
+    cursor: grab;
+    touch-action: none;
+}
+
+.cmp-ref {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 0;
+}
+
+.stage__ref {
+    left: 0;
+    top: 0;
+    width: 1200px;
+    height: 675px;
+    transform-origin: 0 0;
+}
+
+.cmp-ref img,
+.stage__ref img {
+    position: absolute;
+    max-width: none;
+    user-select: none;
+    pointer-events: none;
+}
+
+[data-cmp-mode="side"] .cmp-ref,
+[data-cmp-mode="overlay"] .cmp-ref,
+[data-cmp-mode="side"] .stage__ref,
+[data-cmp-mode="overlay"] .stage__ref {
+    display: block;
+}
+
+/* Low res: the UI blurred by the screenshot's own softness (--cmp-blur, set per reference in bible.js). */
+[data-cmp-lowres] .spec__zoom,
+[data-cmp-lowres] .stage__canvas {
+    filter: blur(var(--cmp-blur, 0px));
+}
+
+/* Side by side: the specimen keeps the left half, the reference fills the right one. */
+[data-cmp-mode="side"] .spec__stage {
+    overflow: hidden;
+    padding-right: 50% !important;
+}
+
+/* Captions aren't in the screenshots: drop them while comparing, so the specimen sits like the reference. */
+[data-cmp-mode]:not([data-cmp-mode="ui"]) .cap {
+    display: none;
+}
+
+/* The specimen sits on the screenshot's own floor tone, so both halves share a surround. */
+[data-cmp-mode="side"][data-cmp-floor] .spec__stage {
+    background: var(--cmp-floor) !important;
+}
+
+[data-cmp-mode="side"] .cmp-ref {
+    left: 50%;
+    border-left: 1px solid var(--pg-line);
+}
+
+/* Overlay: the reference under the whole stage, the UI see-through on top and out of the pointer's way. */
+[data-cmp-mode="overlay"] .spec__stage {
+    overflow: hidden;
+}
+
+[data-cmp-mode="overlay"] .spec__zoom,
+[data-cmp-mode="overlay"] .stage__canvas {
+    z-index: 1;
+    opacity: var(--cmp-alpha, 0.6);
+    pointer-events: none;
+}
+
+/* ── Backdrops: stand-ins for the world behind the UI ───────────────────── */
+.bd-floor {
+    background:
+        radial-gradient(ellipse at 50% 35%, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.16) 85%),
+        linear-gradient(rgba(84, 78, 70, 0.9) 2px, transparent 2px) 0 0 / 58px 58px,
+        linear-gradient(90deg, rgba(84, 78, 70, 0.9) 2px, transparent 2px) 0 0 / 58px 58px,
+        #c3bfb5;
+}
+
+.bd-floor-green {
+    background:
+        radial-gradient(ellipse at 50% 35%, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.2) 85%),
+        linear-gradient(rgba(84, 78, 70, 0.9) 2px, transparent 2px) 0 0 / 58px 58px,
+        linear-gradient(90deg, rgba(84, 78, 70, 0.9) 2px, transparent 2px) 0 0 / 58px 58px,
+        linear-gradient(90deg, transparent 0 58%, rgba(104, 150, 66, 0.7) 58% 82%, transparent 82%),
+        #c3bfb5;
+}
+
+.bd-dark {
+    background: radial-gradient(ellipse at 70% 40%, #2b2b2b, #050505 70%);
+}
+
+.bd-menu {
+    background:
+        radial-gradient(circle at 14% 22%, rgba(140, 120, 110, 0.35), transparent 22%),
+        radial-gradient(circle at 46% 12%, rgba(110, 160, 90, 0.25), transparent 14%),
+        radial-gradient(circle at 78% 10%, rgba(190, 90, 80, 0.3), transparent 18%),
+        radial-gradient(circle at 92% 46%, rgba(170, 70, 70, 0.28), transparent 20%),
+        radial-gradient(circle at 30% 70%, rgba(90, 80, 80, 0.45), transparent 30%),
+        radial-gradient(circle at 70% 85%, rgba(70, 60, 62, 0.5), transparent 30%),
+        linear-gradient(180deg, #3a3033, #221c1e 60%, #2a2325);
+}
+
+/* ── Stages: full screens at the 1200 × 675 reference size, scaled to fit ── */
+.stage {
+    margin: 14px 0 26px;
+    border: 1px solid var(--pg-line);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--pg-card);
+}
+
+.stage__viewport {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: #000;
+}
+
+.stage__canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1200px;
+    height: 675px;
+    transform-origin: 0 0;
+    overflow: hidden;
+}
+
+.stage__viewport:fullscreen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.zone {
+    position: absolute;
+}
+
+.layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.layer > * {
+    pointer-events: auto;
+}
+
+.is-hidden {
+    display: none !important;
+}
+
+/* ── Foundations ───────────────────────────────────────────────────────── */
+.swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.sw {
+    border: 1px solid var(--pg-line);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--pg-card);
+}
+
+.sw__chip {
+    height: 54px;
+}
+
+.sw__meta {
+    padding: 7px 10px 8px;
+}
+
+.sw__name {
+    font: 12px var(--pg-mono);
+    color: #e9e3c9;
+}
+
+.sw__val {
+    font: 11px var(--pg-mono);
+    color: var(--pg-dim);
+    word-break: break-all;
+}
+
+.sw__use {
+    font-size: 11.5px;
+    color: var(--pg-faint);
+}
+
+.type-row {
+    display: grid;
+    grid-template-columns: 210px minmax(0, 1fr);
+    gap: 18px;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--pg-line);
+}
+
+.type-row__meta {
+    font: 12px var(--pg-mono);
+    color: var(--pg-dim);
+}
+
+.type-row__sample {
+    color: #f2f2f0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Font candidates side by side, each named underneath. */
+.type-row__sample--cands {
+    display: flex;
+    gap: 34px;
+    align-items: flex-end;
+}
+
+.type-row__sample--cands > span {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.2;
+}
+
+.sizes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    align-items: flex-end;
+}
+
+.size {
+    text-align: center;
+    font: 11px var(--pg-mono);
+    color: var(--pg-dim);
+}
+
+.size__box {
+    margin: 0 auto 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px dashed rgba(255, 255, 255, 0.35);
+}
+
+.icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+    gap: 6px;
+}
+
+.icon-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 4px 7px;
+    border: 1px solid var(--pg-line);
+    border-radius: 8px;
+    background: #121213;
+    cursor: copy;
+}
+
+.icon-tile:hover {
+    border-color: #555;
+}
+
+.icon-tile__img {
+    width: 44px;
+    height: 44px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.icon-tile__name {
+    margin-top: 6px;
+    font: 10.5px var(--pg-mono);
+    color: var(--pg-dim);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.icon-tile.is-copied {
+    border-color: #6fa055;
+}
+
+table.port {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+table.port th,
+table.port td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--pg-line);
+    text-align: left;
+    vertical-align: top;
+}
+
+/* All elements: the parts table */
+.parts-wrap {
+    overflow-x: auto;
+}
+
+table.parts td {
+    white-space: nowrap;
+}
+
+.parts__group th {
+    padding-top: 20px;
+    color: var(--pg-dim);
+}
+
+.parts__cls {
+    font: 12px var(--pg-mono);
+    color: var(--pg-dim);
+}
+
+.parts__colour {
+    display: inline-grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    column-gap: 6px;
+}
+
+.parts__colour .parts__raw {
+    grid-column: 2;
+}
+
+.parts__sw {
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    border: 1px solid #3a3a3d;
+    border-radius: 2px;
+}
+
+.parts__raw {
+    font: 11px var(--pg-mono);
+    color: var(--pg-faint);
+}
+
+.parts__bw {
+    margin-right: 8px;
+}
+
+table.port th {
+    font: 11px var(--pg-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--pg-faint);
+}
+
+.qs {
+    counter-reset: q;
+    padding: 0;
+    list-style: none;
+}
+
+.qs li {
+    position: relative;
+    padding: 12px 14px 12px 46px;
+    margin-bottom: 8px;
+    border: 1px solid var(--pg-line);
+    border-radius: 10px;
+    background: var(--pg-card);
+    max-width: 900px;
+}
+
+.qs li::before {
+    counter-increment: q;
+    content: counter(q);
+    position: absolute;
+    left: 14px;
+    top: 11px;
+    font: 18px/1 "SquareDeal", monospace;
+    color: var(--pg-faint);
+}
+
+.qs b {
+    color: #f2f2f0;
+}
+
+@media (max-width: 900px) {
+    .nav {
+        gap: 14px;
+        padding: 0 16px;
+    }
+
+    .nav__group {
+        display: none;
+    }
+
+    main {
+        padding: 24px 16px 140px;
+    }
+
+    .type-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+}
+
+/* ── Stand-ins for things the game renders (3D preview, hair thumbnails) ─ */
+.anchored {
+    position: absolute !important;
+    left: 0;
+    top: 0;
+}
+
+.cs-dome {
+    position: absolute;
+    left: -30%;
+    right: -30%;
+    top: 46%;
+    height: 120%;
+    border-radius: 50%;
+    background:
+        repeating-linear-gradient(90deg, rgba(60, 40, 44, 0.35) 0 2px, transparent 2px 46px),
+        repeating-linear-gradient(0deg, rgba(60, 40, 44, 0.35) 0 2px, transparent 2px 40px),
+        radial-gradient(ellipse at 50% 10%, #b39196, #7a5d62 55%, #4c3a3d);
+}
+
+.cs-char {
+    position: absolute;
+    left: 50%;
+    bottom: 16%;
+    width: 150px;
+    height: 296px;
+    margin-left: -75px;
+    transform-origin: 50% 100%;
+    transform: scale(calc(var(--cs-w, 1) * var(--cs-turn, 1)), var(--cs-h, 1));
+    transition: transform 0.12s;
+}
+
+.cs-char__body {
+    position: absolute;
+    inset: 0;
+    background: url("../../../../Assets/Art/Graphics/UI/Harm/HarmBase.png") center / contain no-repeat;
+    /* Darken first: sepia leaves pure white untouched. */
+    filter: brightness(0.62) sepia(1) saturate(1.9) hue-rotate(-18deg) brightness(calc(var(--cs-skin, 0.8) * 1.45));
+}
+
+.cs-char__hair {
+    position: absolute;
+    left: 38.5%;
+    top: 0.2%;
+    width: 23%;
+    height: 8.5%;
+    border-radius: 50% 50% 38% 38%;
+    background: var(--hair, #e98a1c);
+}
+
+.cs-rt-note {
+    position: absolute;
+    right: 10px;
+    bottom: 8px;
+    font: 10px var(--pg-mono) !important;
+    color: rgba(255, 255, 255, 0.28);
+}
+
+.cs-style-row {
+    flex-direction: row !important;
+    margin-top: 9px;
+    margin-left: -11px;
+}
+
+.cs-style-row .menu-scroller {
+    height: 160px;
+    margin-top: 5px;
+    margin-left: 12px;
+}
+
+/* Hair style thumbnails: a black head-and-shoulders silhouette with a coloured shape on top, drawn ~20 % larger
+   than first sketched so the head fills the tile as in the reference. */
+.sil {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    scale: 1.2;
+    transform-origin: 50% 100%;
+}
+
+.sil-shoulders {
+    position: absolute;
+    left: 17px;
+    right: 17px;
+    bottom: -8px;
+    height: 26px;
+    border-radius: 26px 26px 0 0;
+    background: #050505;
+}
+
+.sil-head {
+    position: absolute;
+    left: 50%;
+    bottom: 14px;
+    width: 30px;
+    height: 38px;
+    margin-left: -15px;
+    border-radius: 15px 15px 13px 13px;
+    background: #050505;
+}
+
+.sil-hair {
+    position: absolute;
+    background: var(--hair-tile, var(--hair, #e98a1c));
+}
+
+.sil-hair--pony {
+    left: 50%;
+    bottom: 34px;
+    width: 34px;
+    height: 26px;
+    margin-left: -17px;
+    border-radius: 17px 17px 4px 4px;
+}
+
+.sil-hair--pony-tail {
+    left: 50%;
+    bottom: 56px;
+    width: 9px;
+    height: 16px;
+    margin-left: 2px;
+    border-radius: 5px;
+    rotate: 20deg;
+}
+
+.sil-hair--bob {
+    left: 50%;
+    bottom: 18px;
+    width: 42px;
+    height: 42px;
+    margin-left: -21px;
+    border-radius: 21px 21px 8px 8px;
+}
+
+.sil-hair--afro {
+    left: 50%;
+    bottom: 28px;
+    width: 56px;
+    height: 50px;
+    margin-left: -28px;
+    border-radius: 50%;
+}
+
+.sil-front {
+    z-index: 1;
+}
+
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 26px;
+    z-index: 60;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: #e9e8e3;
+    color: #111;
+    font: 12px var(--pg-mono);
+    transform: translate(-50%, 20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s, transform 0.15s;
+}
+
+.toast.is-shown {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+/* ── Map editor stage (page only): the drawn station, stand-in thumbnails, click-through layers ── */
+.me-world {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1200px;
+    height: 675px;
+}
+
+/* The camera's turn and zoom. */
+.me-world__station {
+    transform-origin: 600px 337.5px;
+    transform-box: view-box;
+    transition: transform 0.35s ease;
+}
+
+/* Systems views: the world dims and the system they show stands out. */
+.me-world--atmos [data-layer="turfs"],
+.me-world--power [data-layer="turfs"] {
+    opacity: 0.3;
+}
+
+.me-world--atmos [data-layer="cables"],
+.me-world--power [data-layer="gas pipes"] {
+    opacity: 0.2;
+}
+
+/* UI Toolkit: pickingMode Ignore. Only the parts that take clicks catch them. */
+.me-popover-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.me-popover-layer > * {
+    pointer-events: auto;
+}
+
+.map-editor-root > .map-editor-hint,
+.map-editor-root > .map-editor-toast,
+.map-editor-cursor-badge {
+    pointer-events: none;
+}
+
+.map-editor-cursor-badge {
+    transition: left 0.35s ease, top 0.35s ease;
+}
+
+/* ScrollViews in UI Toolkit; thin web scrollbars here. */
+.map-editor-grid-scroll,
+.map-check__issues {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+
+/* Stand-ins for baked tile renders: most tiles have no icon sprite yet. */
+.me-thumb {
+    position: relative;
+    width: 54px;
+    height: 54px;
+    border-radius: 4.5px;
+    background-color: var(--c, #888);
+}
+
+.me-thumb--floor {
+    background-image:
+        linear-gradient(90deg, transparent calc(50% - 1.5px), rgba(0, 0, 0, 0.28) calc(50% - 1.5px) calc(50% + 1.5px), transparent calc(50% + 1.5px)),
+        linear-gradient(transparent calc(50% - 1.5px), rgba(0, 0, 0, 0.28) calc(50% - 1.5px) calc(50% + 1.5px), transparent calc(50% + 1.5px)),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(0, 0, 0, 0.14));
+}
+
+.me-thumb--checker {
+    background: repeating-conic-gradient(#d6d6d6 0 25%, #3b3b3b 0 50%) 0 0 / 50% 50%;
+}
+
+.me-thumb--plating {
+    background: radial-gradient(circle, #5d636b 2px, transparent 2.75px) 1.5px 1.5px / 25.5px 25.5px, #3f434a;
+    box-shadow: inset 0 0 0 3px #2c2f34;
+}
+
+.me-thumb--wall {
+    box-shadow: inset 0 0 0 4.5px rgba(0, 0, 0, 0.35), inset 0 9px rgba(255, 255, 255, 0.1);
+}
+
+.me-thumb--window {
+    background: linear-gradient(#41464d 0 30%, rgba(111, 182, 214, 0.85) 30% 70%, #41464d 70%);
+}
+
+.me-thumb--girder {
+    background: linear-gradient(45deg, transparent 46%, #6b7079 46% 54%, transparent 54%),
+        linear-gradient(-45deg, transparent 46%, #6b7079 46% 54%, transparent 54%);
+    border: 3px solid #6b7079;
+}
+
+.me-thumb--door {
+    background: linear-gradient(90deg, transparent calc(50% - 1.5px), #3a3e44 calc(50% - 1.5px) calc(50% + 1.5px), transparent calc(50% + 1.5px)),
+        linear-gradient(var(--c) 0 9px, #8e949b 9px);
+}
+
+.me-thumb--door.me-thumb--glass {
+    background: linear-gradient(90deg, transparent calc(50% - 1.5px), #3a3e44 calc(50% - 1.5px) calc(50% + 1.5px), transparent calc(50% + 1.5px)),
+        linear-gradient(var(--c) 0 9px, #8e949b 9px 16.5px, rgba(111, 182, 214, 0.85) 16.5px 40.5px, #8e949b 40.5px);
+}
+
+.me-thumb--catwalk {
+    background: repeating-linear-gradient(90deg, #6b7078 0 4.5px, transparent 4.5px 10.5px), #2a2d32;
+}
+
+.me-thumb--lattice {
+    background: linear-gradient(45deg, transparent 46%, #6b7078 46% 54%, transparent 54%) 0 0 / 50% 50%,
+        linear-gradient(-45deg, transparent 46%, #6b7078 46% 54%, transparent 54%) 0 0 / 50% 50%;
+}
+
+.me-thumb--cable {
+    background: linear-gradient(transparent calc(50% - 3px), #e8c547 calc(50% - 3px) calc(50% + 3px), transparent calc(50% + 3px)), #3f434a;
+}
+
+.me-thumb--pipe {
+    background: linear-gradient(transparent calc(50% - 7.5px), var(--c) calc(50% - 7.5px) calc(50% + 7.5px), transparent calc(50% + 7.5px)), #3f434a;
+}
+
+.me-thumb--area {
+    background: none;
+    border: 3px solid var(--c);
+}
+
+.me-thumb--area::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--c);
+    opacity: 0.3;
+}
+
+/* Floor paint's "unpainted": no colour, so a hatch. */
+.me-unpainted {
+    background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0 2px, transparent 2px 7px);
+}
+
+/* Tinted marker glyphs: the sprite as a mask over its colour. USS: -unity-background-image-tint-color. */
+.me-tint {
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+
+.state-pad {
+    padding: 6px;
+}

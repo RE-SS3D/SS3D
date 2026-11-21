@@ -1,0 +1,145 @@
+/*
+ * SS3D UI bible: design tokens.
+ *
+ * One custom property per decision. When this ports to UI Toolkit, this file becomes a USS token sheet
+ * (`:root { --ui-…: … }`) applied once at the UiShell root; component USS reads the same names through var().
+ *
+ * Units are reference px: PanelSettings scales from 1200 × 800, matching width, so 1 px here is 1.6 screen px at
+ * 1920 wide. Colours are measured off the reference screenshots (old SS3D build): each surface's alpha is the one
+ * that darkens the floor by as much as the reference does. The active state is a light hairline, not a hue.
+ */
+:root {
+    /* ── Surfaces over the world ─────────────────────────────────────────── */
+    --ui-well: rgba(20, 19, 18, 0.5);           /* filled slot (quick inventory, hands) */
+    --ui-well-hover: rgba(20, 19, 18, 0.66);
+    --ui-well-faint: rgba(20, 19, 18, 0.15);    /* equipment frames: the slot fill, subtle */
+    --ui-panel: rgba(24, 24, 24, 0.55);         /* container panel body; its cells have no fill of their own */
+    --ui-panel-edge: rgba(0, 0, 0, 0.42);       /* container panel border: darker than the fill (measured) */
+    --ui-cell-edge: rgba(255, 255, 255, 0.16);  /* container cell outline */
+    --ui-sheet: rgba(30, 30, 30, 0.53);         /* search sheet */
+    --ui-plate: rgba(16, 20, 16, 0.54);         /* pile picker */
+    --ui-sheet-line: rgba(255, 255, 255, 0.24); /* search sheet slot outline: as bright as the sheet's glyphs */
+    /* Floating surfaces (dropdown lists, popovers, tool hints) open over other UI. Two translucent panels stacked let
+       the lower one's text read through, so these are nearly opaque: the reference's dropdown list. */
+    --ui-float: rgba(14, 14, 14, 0.96);
+
+    /* ── Lines ───────────────────────────────────────────────────────────── */
+    /* Measured on the screenshots and corrected for their blur (a 2 px line keeps ~65 % of its alpha at the peak
+       there): compare against them with "low res" on, or these read brighter than the soft screenshot. */
+    --ui-line-active: rgba(242, 242, 240, 1);    /* active hand's outline: the same white as its L / R mark (--ui-text) */
+    --ui-line-frame: rgba(255, 255, 255, 0.38);  /* outlined (frame) slot at rest */
+    --ui-line-frame-hover: rgba(255, 255, 255, 0.48);
+    --ui-hairline: 2px;                          /* every slot outline: frames, hands, cells */
+
+    /* ── Text ────────────────────────────────────────────────────────────── */
+    --ui-text: #f2f2f0;
+    --ui-text-faint: rgba(255, 255, 255, 0.3);
+    --ui-text-on-light: #0d0d0d;
+    --ui-mark: rgba(255, 255, 255, 0.45);   /* idle L / R mark; the active hand's mark is --ui-text */
+
+    /* ── Glyph alpha (white sprites × alpha; USS: -unity-background-image-tint-color) ── */
+    --ui-glyph-item: 1;           /* an item that is there */
+    --ui-glyph-rest: 0.78;        /* line glyph standing in for an item render */
+    --ui-glyph-placeholder: 0.48; /* empty slot showing what it takes (equipment grid, empty hands) */
+    --ui-glyph-hover: 0.9;        /* a bare glyph lit under the pointer (the equipment pocket) */
+
+    /* ── Radial menu ─────────────────────────────────────────────────────── */
+    --ui-radial-disc-alpha: 0.86;  /* disc (black ring) alpha; measured on the screenshot */
+    --ui-radial-wedge-alpha: 0.41; /* wedge (white) alpha; measured */
+    --ui-radial-hub: rgba(156, 146, 130, 0.9); /* hub plate: warm grey, measured */
+    --ui-radial-size: 290px;       /* reference disc: 541 screenshot px at 1.87 */
+    --ui-radial-hub-size: 109px;   /* the ring's hole, filled by the hub: 37.7 % of the disc */
+    --ui-radial-ring: 90.5px;      /* hub inset from the disc's edge: (size - hub) / 2 */
+    --ui-radial-band: 91.5px;      /* the disc's dark band: 1 px past the hub's edge, so the two anti-aliased edges
+                                      don't meet and leave a light seam */
+    /* ── Map editor (B): new, no reference. The camera dial is the radial at 80 px, hub and band in the same way ── */
+    --ui-dial: 100px;
+    --ui-dial-hub: 47.5px;
+    --ui-dial-ring: 26.25px;          /* hub inset: (dial - hub) / 2 */
+    --ui-dial-band: 27.25px;          /* 1 px past the hub's edge, as on the radial */
+    --ui-tool: 40px;               /* map editor tool cell */
+    --ui-palette-slot: 78px;       /* map editor palette cell */
+    --ui-palette-slot-radius: 11.7px; /* 15 % of 78, the gear slot's share */
+    --ui-tool-radius: 6px;         /* 15 % of 40 */
+    --ui-danger: rgb(235, 98, 82); /* Map Check severity: the one place colour carries state. New, no reference */
+    --ui-warn: rgb(238, 186, 78);
+    --ui-ok: rgb(128, 204, 122);
+    /* Editor surfaces: denser than the HUD's, so the tools read over a busy station. On them, fields and secondary
+       buttons are light tints (a dark plate disappears on a dark panel); the search is near-black. */
+    --ui-editor-panel: rgba(18, 18, 18, 0.92);
+    --ui-editor-tab: rgba(0, 0, 0, 0.8);
+    --ui-editor-field: rgba(255, 255, 255, 0.07);
+    --ui-editor-search: rgba(0, 0, 0, 0.9);
+    --ui-editor-cell-edge: rgba(255, 255, 255, 0.3);
+    --ui-editor-cell-edge-hover: rgba(255, 255, 255, 0.5);
+    /* Colour coding: what a click does (tools), and which layer you build on (categories). */
+    --ui-tool-construct: rgb(112, 204, 120);
+    --ui-tool-select: rgb(96, 172, 240);
+    --ui-tool-delete: rgb(235, 98, 82);
+    --ui-tool-room: rgb(242, 182, 70);
+    --ui-cat-upper: rgb(120, 196, 236);
+    --ui-cat-lower: rgb(236, 142, 84);
+    --ui-cat-items: rgb(176, 214, 104);
+    --ui-cat-scripts: rgb(188, 140, 240);
+
+    /* ── Menus (character setup, lobby-style screens); measured on the screenshots, text corrected for blur ── */
+    --ui-menu-tab: rgba(0, 0, 0, 0.46);
+    --ui-menu-tab-text: rgba(255, 255, 255, 0.26);
+    --ui-menu-field: rgba(0, 0, 0, 0.48);
+    --ui-menu-field-text: rgba(255, 255, 255, 0.32); /* dropdown value, placeholder: dim in the reference */
+    --ui-menu-selected: #fdfdfb;
+    --ui-menu-rule: rgba(255, 255, 255, 0.5);
+    --ui-frame-outer: #e6e6e3;     /* preview frame: light outer line */
+    --ui-frame-mat: #6c6f6e;       /* preview frame: grey mat */
+    --ui-viewport: #000000;
+
+    /* ── Sizes ───────────────────────────────────────────────────────────── */
+    --ui-slot: 64px;               /* HUD slot (hands, gear strip, equipment) */
+    /* Corners are a fixed share of the box, so a slot keeps its shape at any size: 15 % on gear slots and cells, 6/64
+       (9.375 %) on the frame slot (hands and frames). USS has no calc(), so the values below are for the default
+       sizes; whatever sets a size sets its corner from the same share (the C# view, in game). */
+    --ui-slot-radius: 9.6px;       /* 15 % of the 64 px gear slot */
+    --ui-frame-radius: 6px;        /* 6/64 of 64: wide hands and frames */
+    --ui-slot-sm-radius: 4.22px;   /* 6/64 of the 45 px frames on the search sheet */
+    /* Measured on the references, which show a 64 px slot at about 1.85 screenshot px per reference px. */
+    --ui-slot-margin: 2.5px;       /* half the gap between strip slots (~5 px gap) */
+    --ui-equipment-margin: 1px;    /* half the gap between equipment frames (~2 px gap: they nearly touch) */
+    --ui-slot-hand-wide: 88px;     /* wide hand: 1.375 x the slot (equipment-open layout) */
+    --ui-slot-sm: 45px;            /* paperdoll slots on a search sheet */
+    --ui-cell: 37px;               /* container cell (measured ~37, 39 apart) */
+    --ui-cell-radius: 5.55px;      /* 15 % of the 37 px storage and pile cells */
+    --ui-cell-margin: 1px;         /* half the gap between cells (~2 px gap) */
+    --ui-panel-radius: 9.55px;     /* storage panel: its cells' corner plus the 4 px from cell to panel edge, so the
+                                      corners run parallel whatever the number of rows */
+    --ui-panel-pad: 1px;           /* the first cell sits ~4 px inside the panel's edge: border + pad + margin */
+    --ui-pile-cell: 37px;          /* pile picker cell (~39 apart) */
+
+    /* ── Spacing scale ───────────────────────────────────────────────────── */
+    --ui-space-1: 4px;
+    --ui-space-2: 8px;
+    --ui-space-3: 12px;
+    --ui-space-4: 16px;
+    --ui-space-6: 24px;
+
+    /* ── Type ────────────────────────────────────────────────────────────── */
+    --ui-font-mark: "Disket Mono Bold"; /* L / R hand marks, on trial (was OdeToIdleGaming); SquareDeal has no capitals */
+    --ui-font-label: "Disket Mono Bold"; /* labels: names of things and controls (map editor). On trial. Capitals only:
+                                           its a-z draw as A-Z, 0.7 em wide, so labels run smaller than SquareDeal's */
+    --ui-font-text: "Kode Mono";        /* text: sentences, values, code; radial labels, export code. On trial (was
+                                           LiberationSans) */
+    --ui-type-title: 49px;   /* screen title, SquareDeal (measured) */
+    --ui-type-heading: 19px; /* field label, tab, segmented, dropdown value, SquareDeal (measured) */
+    --ui-type-label: 11px;   /* labels, SquareDeal */
+    /* Hand marks: the reference's capitals stand 9 px (7 on the search sheet). Size and top follow the font so the
+       capitals keep that height and position: Disket's capitals are 0.69 em (OdeToIdleGaming's are the full em,
+       which was 9 px at top 5). Changing the font means recomputing these from its capital height. */
+    --ui-type-mark: 13px;
+    --ui-mark-top: 3px;
+    --ui-type-mark-sheet: 10px;
+    --ui-mark-top-sheet: 2.5px;
+    --ui-type-body: 12px;    /* body copy, text fields, LiberationSans */
+
+    /* ── Motion ──────────────────────────────────────────────────────────── */
+    --ui-fast: 90ms;
+    --ui-med: 160ms;
+}

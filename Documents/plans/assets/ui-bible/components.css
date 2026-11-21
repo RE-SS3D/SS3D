@@ -1,0 +1,2143 @@
+/*
+ * SS3D UI bible: components.
+ *
+ * Written in the subset of CSS that UI Toolkit's USS also speaks, so each block ports almost line for line:
+ *   - flexbox and absolute positioning only (no grid, no gap, no calc, no em/rem)
+ *   - state is a modifier class (--active, --selected) or :hover / :active / :focus / :checked / :disabled
+ *   - no ::before / ::after: every visible part is a real child element (a VisualElement in UXML)
+ *   - no box-shadow, no gradients, no filters on game UI
+ *   - icons are white sprites; their colour is an alpha (USS: -unity-background-image-tint-color)
+ * The few lines that can't port are marked `web-only` with the USS route next to them.
+ * Class names follow the existing USS (inventory-slot, hands-gear-strip, storage-panel, …) where one exists.
+ */
+
+/* @font-face is web-only: in Unity each font is a font asset, set with -unity-font-definition. */
+@font-face {
+    font-family: "SquareDeal"; /* web-only. USS: -unity-font-definition */
+    src: url("../../../../Assets/Art/Font/Fonts/SquareDeal.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "LiberationSans"; /* web-only. USS: -unity-font-definition */
+    src: url("../../../../Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf") format("truetype");
+}
+
+/* SquareDeal has no capitals (its A–Z are the lowercase glyphs, so "L" draws as a bare bar). OdeToIdleGaming was the
+   hand marks' font before the Disket Mono trial; it stays for the type tab's comparison and has a baked SDF asset. */
+@font-face {
+    font-family: "OdeToIdleGaming"; /* web-only. USS: -unity-font-definition */
+    src: url("../../../../Assets/Art/Font/Fonts/OdeToIdleGaming.otf") format("opentype");
+}
+
+/* On trial, so not in the project yet: Disket Mono (hand marks) sits in the bible's fonts/ folder, and Kode Mono
+   (small text, radial labels) loads from Google Fonts in index.html. The one that stays moves to Assets/Art/Font/Fonts/.
+   Each weight is its own family here, as each file is its own font asset in Unity. */
+@font-face {
+    font-family: "Disket Mono"; /* web-only. USS: -unity-font-definition */
+    src: url("fonts/Disket-Mono-Regular.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Disket Mono Bold"; /* web-only. USS: -unity-font-definition */
+    src: url("fonts/Disket-Mono-Bold.ttf") format("truetype");
+}
+
+/* ── UI Toolkit defaults ───────────────────────────────────────────────────
+ * Every VisualElement is a flex column, border-box, with solid borders. `.ui` recreates that on the web. */
+.ui,
+.ui * {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    border-style: solid; /* web-only: USS borders are always solid */
+    border-width: 0;
+    flex-shrink: 0;
+    min-width: 0;
+}
+
+.ui {
+    font-family: "LiberationSans", Arial, sans-serif; /* web-only. USS: -unity-font-definition */
+    font-size: var(--ui-type-body);
+    color: var(--ui-text);
+    line-height: 1.2; /* web-only: USS lays text out from the font's own metrics */
+    user-select: none; /* web-only */
+}
+
+/* Same class names as ss3d-typography.uss */
+.font-display {
+    font-family: "SquareDeal", "Courier New", monospace; /* web-only. USS: -unity-font-definition */
+    letter-spacing: 0.5px;
+}
+
+.font-body {
+    font-family: "LiberationSans", Arial, sans-serif; /* web-only. USS: -unity-font-definition */
+}
+
+/* A sprite element. USS: -unity-background-scale-mode: scale-to-fit. */
+.sprite {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * Inventory slot: one component for hands, gear strip, equipment grid and search sheet
+ * ══════════════════════════════════════════════════════════════════════════
+ * <inventory-slot>
+ *   <__well>             the tile: grey fill and a 2 px outline (the strip: gear and hands), or the outline alone
+ *                        (--frame: equipment grid, search sheet)
+ *     <__icon>           item sprite, or __icon--placeholder for what the slot takes
+ *     <__hand-mark>      L / R in the inner top corner
+ * Every outline is --ui-hairline thick, whatever the slot's size. The active hand's outline brightens.
+ */
+.inventory-slot {
+    position: relative;
+    width: var(--ui-slot);
+    height: var(--ui-slot);
+}
+
+.inventory-slot__well {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--ui-well);
+    border-radius: var(--ui-slot-radius);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-line-frame);
+    transition-property: background-color, border-color;
+    transition-duration: var(--ui-fast);
+}
+
+.inventory-slot:hover .inventory-slot__well {
+    background-color: var(--ui-well-hover);
+    border-color: var(--ui-line-frame-hover);
+}
+
+/* The active hand's outline brightens, and stays bright under the pointer (the hover rule would outrank it). */
+.inventory-slot--active .inventory-slot__well,
+.inventory-slot--active:hover .inventory-slot__well {
+    border-color: var(--ui-line-active);
+}
+
+/* Icon boxes measured on the references: item renders and the line glyphs both nearly fill the slot. */
+.inventory-slot__icon {
+    width: 96%;
+    height: 96%;
+    opacity: var(--ui-glyph-item);
+    transition-property: opacity;
+    transition-duration: var(--ui-fast);
+}
+
+.inventory-slot__icon--glyph {
+    width: 86%;
+    height: 86%;
+    opacity: var(--ui-glyph-rest);
+}
+
+.inventory-slot__icon--placeholder {
+    width: 80%;
+    height: 80%;
+    opacity: var(--ui-glyph-placeholder);
+}
+
+.inventory-slot__hand-mark {
+    position: absolute;
+    top: var(--ui-mark-top);
+    font-family: var(--ui-font-mark), monospace; /* USS: -unity-font-definition: url(<the picked font>SDF.asset) */
+    font-size: var(--ui-type-mark);
+    color: var(--ui-mark);
+}
+
+/* Markers sit in the inner corners: L on the left hand's right, R on the right hand's left. */
+.inventory-slot__hand-mark--left {
+    right: 6px;
+}
+
+.inventory-slot__hand-mark--right {
+    left: 6px;
+}
+
+.inventory-slot--active .inventory-slot__hand-mark {
+    color: var(--ui-text);
+}
+
+/* ── Frame variant: the outline without the fill. Equipment grid, paperdoll on a search sheet. ── */
+.inventory-slot--frame .inventory-slot__well {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* The frame slot's corner, for frames and every hand: it doesn't follow the gear slots' percentage. */
+.inventory-slot--frame .inventory-slot__well,
+.inventory-slot--wide .inventory-slot__well {
+    border-radius: var(--ui-frame-radius);
+}
+
+.inventory-slot--frame:hover .inventory-slot__well {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* The pocket: no outline, ever (both references draw it bare). Its fill and hover follow the slots around it, and its
+   glyph is a quarter smaller than theirs, as in both references. */
+.inventory-slot--frameless .inventory-slot__well,
+.inventory-slot--frameless:hover .inventory-slot__well {
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.inventory-slot--frameless .inventory-slot__icon--placeholder {
+    width: 60%;
+    height: 60%;
+}
+
+.inventory-slot--wide {
+    width: var(--ui-slot-hand-wide);
+}
+
+/* In a wide hand the marks sit well in from the corner, beside the hand glyph: measured on the equipment-open and
+   box-container screenshots, the letter's centre is ~26 px from the inner edge and ~17.5 px from the top. Margins
+   shift them from the square slot's corner spot, so the font-fitted top still applies. */
+.inventory-slot--wide .inventory-slot__hand-mark {
+    margin-top: 5px;
+}
+
+.inventory-slot--wide .inventory-slot__hand-mark--left {
+    margin-right: 14px;
+}
+
+.inventory-slot--wide .inventory-slot__hand-mark--right {
+    margin-left: 14px;
+}
+
+/* An item in a wide hand draws at ~37 px, centred (measured on both screenshots with wide hands), so it sits clear of
+   the marks. 58 % of the height; the sprite scales to fit, so the height decides. Glyphs keep their square-slot sizes. */
+.inventory-slot--wide .inventory-slot__icon {
+    width: 58%;
+    height: 58%;
+}
+
+.inventory-slot--wide .inventory-slot__icon--glyph {
+    width: 86%;
+    height: 86%;
+}
+
+.inventory-slot--wide .inventory-slot__icon--placeholder {
+    width: 80%;
+    height: 80%;
+}
+
+/* Smaller, same outline: only the box and its corner radius shrink. */
+.inventory-slot--sm {
+    width: var(--ui-slot-sm);
+    height: var(--ui-slot-sm);
+}
+
+.inventory-slot--sm .inventory-slot__well {
+    border-radius: var(--ui-slot-sm-radius);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * Hands + gear strip (quick inventory), bottom centre
+ * ══════════════════════════════════════════════════════════════════════════ */
+.hands-gear-strip {
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.hands-gear-strip__group {
+    flex-direction: row;
+}
+
+/* One even gap all along the strip: the references draw no divider or wider gap before the hands. */
+.hands-gear-strip__group > .inventory-slot {
+    margin-left: var(--ui-slot-margin);
+    margin-right: var(--ui-slot-margin);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * Equipment grid: your own worn slots, 3 × 4 frames
+ * ══════════════════════════════════════════════════════════════════════════ */
+.equipment-grid__row {
+    flex-direction: row;
+}
+
+.equipment-grid__row > .inventory-slot {
+    margin: var(--ui-equipment-margin);
+}
+
+/* Equipment frames carry the slot's fill, fainter. */
+.equipment-grid .inventory-slot--frame .inventory-slot__well {
+    background-color: var(--ui-well-faint);
+}
+
+.equipment-grid .inventory-slot--frame:hover .inventory-slot__well {
+    background-color: var(--ui-well);
+}
+
+/* Except the pocket: a bare glyph, no fill at rest or on hover. Hovering lights the glyph instead. */
+.equipment-grid .inventory-slot--frameless .inventory-slot__well,
+.equipment-grid .inventory-slot--frameless:hover .inventory-slot__well {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.equipment-grid .inventory-slot--frameless:hover .inventory-slot__icon {
+    opacity: var(--ui-glyph-hover);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * Storage panel: one per open container; a caret points at the slot it came from
+ * ══════════════════════════════════════════════════════════════════════════
+ * Just the grid: no header. Cells are outlines on the panel's own fill; an item's render brings its own backdrop. */
+.storage-panel {
+    position: relative;
+    align-items: stretch;
+    padding: var(--ui-panel-pad);
+    background-color: var(--ui-panel);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
+}
+
+.storage-panel__row {
+    flex-direction: row;
+}
+
+.storage-slot {
+    position: relative;
+    width: var(--ui-cell);
+    height: var(--ui-cell);
+    margin: var(--ui-cell-margin);
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-cell-edge);
+    border-radius: var(--ui-cell-radius);
+    transition-property: border-color;
+    transition-duration: var(--ui-fast);
+}
+
+.storage-slot:hover {
+    border-color: rgba(255, 255, 255, 0.34);
+}
+
+.storage-slot__icon {
+    width: 94%;
+    height: 94%;
+}
+
+/* Caret under the panel. `left` is set per panel to the source slot's centre (C#: style.left). */
+.storage-panel__caret {
+    position: absolute;
+    top: 100%;
+    margin-top: 4px;
+    width: 22px;
+    height: 12px;
+    margin-left: -11px;
+    background-image: url("../../../../Assets/Art/Graphics/UI/Chrome/DropdownArrow.png");
+    background-size: 100% 100%;
+    filter: brightness(0.16); /* web-only. USS: -unity-background-image-tint-color: var(--ui-panel) */
+    opacity: 1;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * Pile picker: many items on one floor spot
+ * ══════════════════════════════════════════════════════════════════════════
+ * A plate and nine items; the cells draw no outline. */
+.pile-picker {
+    padding: 5px;
+    background-color: var(--ui-plate);
+    border-radius: 6px;
+}
+
+.pile-picker__row {
+    flex-direction: row;
+}
+
+.pile-picker__cell {
+    position: relative; /* the shadow is placed inside its cell */
+    width: var(--ui-pile-cell);
+    height: var(--ui-pile-cell);
+    margin: 1px;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--ui-cell-radius);
+    transition-property: background-color;
+    transition-duration: var(--ui-fast);
+}
+
+.pile-picker__cell:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* The reference cans are slim (~14 × 22): the CD stand-in is shrunk to about the same visual weight. */
+.pile-picker__icon {
+    width: 62%;
+    height: 62%;
+}
+
+/* A little shadow behind each item: the same sprite in black, dropped 1 px right and 2 px down (the reference's cans
+   sit on a dark smudge). It comes before the icon, so the icon draws over it. */
+.pile-picker__shadow {
+    position: absolute;
+    left: 19%;
+    top: 19%;
+    width: 62%;
+    height: 62%;
+    margin-left: 1px;
+    margin-top: 2px;
+    opacity: 0.5;
+    filter: brightness(0); /* web-only. USS: -unity-background-image-tint-color: rgba(0, 0, 0, 0.5), no opacity */
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * Search sheet: another character's worn gear laid over their silhouette
+ * ══════════════════════════════════════════════════════════════════════════ */
+/* Laid out like the body, as in the reference: each slot is placed by the part it holds. The head row hugs the face
+   and touches the eyes slot; the ID sits a little higher than the gloves and back beside it. Measured off the
+   reference at 1.87 screenshot px per reference px; the layout is symmetric about the centre column. */
+/* The storage panel's dark edge. Absolute children sit inside the 2 px border, so their insets are measured from there. */
+.character-paperdoll {
+    position: relative;
+    width: 169px;
+    height: 318px;
+    background-color: var(--ui-sheet);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: 8px;
+}
+
+/* Stand-in for the character render: HarmBase.png squeezed toward the reference's narrower figure. */
+.character-paperdoll__silhouette {
+    position: absolute;
+    left: 22px;
+    right: 22px;
+    top: 38px;
+    bottom: 0;
+    background-image: url("../../../../Assets/Art/Graphics/UI/Harm/HarmBase.png");
+    background-size: 100% 100%; /* web-only. USS: -unity-background-scale-mode: stretch-to-fill */
+    filter: brightness(0); /* web-only. USS: -unity-background-image-tint-color: black */
+    opacity: 0.82;
+}
+
+.character-paperdoll > .inventory-slot {
+    position: absolute;
+}
+
+/* Someone else's sheet is fainter than your own equipment grid: outline and empty-slot glyph at one alpha (measured
+   ~0.2-0.25 on the reference), and smaller hand marks. */
+.character-paperdoll .inventory-slot--frame .inventory-slot__well {
+    border-color: var(--ui-sheet-line);
+}
+
+.character-paperdoll .inventory-slot--frameless .inventory-slot__well {
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.character-paperdoll .inventory-slot__icon--placeholder {
+    opacity: 0.24; /* same alpha as --ui-sheet-line */
+}
+
+.character-paperdoll .inventory-slot__hand-mark {
+    top: var(--ui-mark-top-sheet);
+    font-size: var(--ui-type-mark-sheet);
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.character-paperdoll__slot--eyes { left: 60px; top: 8px; }
+.character-paperdoll__slot--head { left: 13px; top: 52px; }
+.character-paperdoll__slot--mask { left: 60px; top: 52px; }
+.character-paperdoll__slot--ears { left: 107px; top: 52px; }
+.character-paperdoll__slot--uniform { left: 6px; top: 105px; }
+.character-paperdoll__slot--suit { left: 60px; top: 105px; }
+.character-paperdoll__slot--pocket { left: 114px; top: 105px; }
+.character-paperdoll__slot--hand-right { left: 6px; top: 159px; }
+.character-paperdoll__slot--belt { left: 60px; top: 159px; }
+.character-paperdoll__slot--hand-left { left: 114px; top: 159px; }
+.character-paperdoll__slot--gloves { left: 6px; top: 212px; }
+.character-paperdoll__slot--id { left: 60px; top: 206px; }
+.character-paperdoll__slot--back { left: 114px; top: 212px; }
+.character-paperdoll__slot--shoes { left: 60px; top: 262px; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * Radial interaction menu, drawn without sprites. The disc is a ring (a thick round border), the hub a circle in its
+ * hole, the wedge a 60° band in code. Six directions, 60° apart; petals sit on a ring at 69 % radius.
+ * ══════════════════════════════════════════════════════════════════════════ */
+.radial-interaction-menu {
+    position: relative;
+    width: var(--ui-radial-size);
+    height: var(--ui-radial-size);
+}
+
+.radial-interaction-menu__disc,
+.radial-interaction-menu__wedge {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* The dark band is the border; the hole it leaves is the hub's. The band (and the wedge) run 1 px under the hub's
+   edge: two anti-aliased edges at the same radius let the world show through as a light seam. */
+.radial-interaction-menu__disc {
+    border-width: var(--ui-radial-band);
+    border-color: rgb(0, 0, 0);
+    border-radius: 145px; /* half of --ui-radial-size */
+    opacity: var(--ui-radial-disc-alpha);
+}
+
+/* A 60° band from the hub's edge to the rim, pointing up; `rotate` turns it to the hovered verb. Web: an SVG path from
+   bible.js (radialWedge). USS: a VisualElement whose generateVisualContent fills the same shape with Painter2D:
+   BeginPath, Arc(centre, R, -120°, -60°), Arc(centre, hubR, -60°, -120°, CounterClockwise), ClosePath, Fill. */
+.radial-interaction-menu__wedge {
+    width: 100%;  /* web-only: an <svg> needs a size of its own */
+    height: 100%;
+    fill: rgb(255, 255, 255); /* web-only (SVG). Painter2D: fillColor */
+    opacity: var(--ui-radial-wedge-alpha);
+    transition-property: rotate;
+    transition-duration: var(--ui-med);
+}
+
+.radial-interaction-menu__hub {
+    position: absolute;
+    left: var(--ui-radial-ring);
+    top: var(--ui-radial-ring);
+    width: var(--ui-radial-hub-size);
+    height: var(--ui-radial-hub-size);
+    align-items: center;
+    justify-content: center;
+}
+
+/* Flat warm grey, no rim (measured ~ (152, 142, 126) on the screenshot). */
+.radial-interaction-menu__hub-plate {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--ui-radial-hub);
+    border-radius: 55px; /* half of --ui-radial-hub-size, rounded up */
+}
+
+.radial-interaction-menu__hub-item {
+    position: relative; /* web-only: keeps it above the absolutely placed plate (UI Toolkit draws in element order) */
+    width: 92%;
+    height: 92%;
+}
+
+/* One verb: icon over label, the block centred on its direction at the middle of the band (34.5 % of the disc, set by
+   the builder). Every verb has the same 32 px icon slot and label spot, so icons and labels line up across the wheel. */
+.radial-interaction-petal {
+    position: absolute;
+    width: 86px;
+    height: 48px;
+    margin-left: -43px;
+    margin-top: -24px;
+    align-items: center;
+}
+
+/* Each sprite draws a different share of its box, so the builder sizes each one (28-30 px) to look about 24 px, and
+   margins keep the slot 32 px whatever the icon's own size. */
+.radial-interaction-petal__icon {
+    width: 28px;
+    height: 28px;
+    margin: 2px;
+    opacity: 0.94;
+}
+
+/* Enter is Heroicons' Logout turned around. */
+.radial-interaction-petal__icon--mirrored {
+    scale: -1 1;
+}
+
+/* Smaller than the reference's 13.5 px, a touch off-white. */
+.radial-interaction-petal__label {
+    margin-top: 5px;
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: var(--ui-type-label);
+    line-height: 1; /* web-only: UI Toolkit's line box is the font's own */
+    color: rgba(255, 255, 255, 0.9);
+    white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * Menu screens (character setup and its kin)
+ * ══════════════════════════════════════════════════════════════════════════ */
+/* SquareDeal's line box is exactly 1 em (ascent .75 + descent .25), which is also UI Toolkit's line height for it:
+   line-height: 1 on SquareDeal text keeps the web layout on the same metrics (web-only property). */
+.screen-title {
+    font-family: "SquareDeal", monospace; /* web-only. USS: -unity-font-definition */
+    font-size: var(--ui-type-title);
+    line-height: 1; /* web-only */
+    color: var(--ui-text);
+    letter-spacing: 0;
+}
+
+.screen-rule {
+    height: 2px;
+    background-color: var(--ui-menu-rule);
+}
+
+.screen-rule--short {
+    width: 166px;
+    align-self: center;
+}
+
+.menu-tabs {
+    width: 141px;
+}
+
+.menu-tab {
+    height: 40px;
+    margin-bottom: 8px;
+    padding-left: 16px;
+    line-height: 1; /* web-only */
+    justify-content: center;
+    background-color: var(--ui-menu-tab);
+    font-family: "SquareDeal", monospace; /* web-only. USS: -unity-font-definition */
+    font-size: var(--ui-type-heading);
+    color: var(--ui-menu-tab-text);
+    transition-property: background-color, color;
+    transition-duration: var(--ui-fast);
+}
+
+.menu-tab:hover {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.menu-tab--selected,
+.menu-tab--selected:hover {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+.menu-tab--disabled,
+.menu-tab--disabled:hover {
+    background-color: rgba(0, 0, 0, 0);
+    color: rgba(255, 255, 255, 0.13);
+}
+
+/* Rhythm measured on the reference: label to control 3 px, control to next label 26 px (sliders 64 apart). */
+.menu-field {
+    align-items: stretch;
+    margin-bottom: 26px;
+}
+
+.menu-field__label {
+    align-self: center;
+    margin-bottom: 3px;
+    line-height: 1; /* web-only */
+    font-family: "SquareDeal", monospace; /* web-only. USS: -unity-font-definition */
+    font-size: var(--ui-type-heading);
+    color: var(--ui-text);
+}
+
+.menu-text-field {
+    height: 26px;
+    margin-top: 5px;
+    padding: 0 10px;
+    justify-content: center;
+    background-color: var(--ui-menu-field);
+    font-size: var(--ui-type-body);
+    color: var(--ui-menu-field-text);
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.menu-text-field:focus {
+    border-color: var(--ui-line-frame);
+}
+
+/* web-only. USS: TextField placeholder text gets its own class (.unity-text-element--placeholder). */
+.menu-text-field::placeholder {
+    color: var(--ui-text-faint);
+}
+
+input.menu-text-field { /* web-only selector: in UXML this is a TextField */
+    outline: none; /* web-only */
+    font-family: "LiberationSans", Arial, sans-serif; /* web-only. USS: -unity-font-definition */
+    font-size: var(--ui-type-body);
+}
+
+.menu-segmented {
+    flex-direction: row;
+    justify-content: center;
+}
+
+.menu-segmented__option {
+    width: 98px;
+    height: 34px;
+    line-height: 1; /* web-only */
+    margin: 0 4px;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--ui-menu-tab);
+    font-family: "SquareDeal", monospace; /* web-only. USS: -unity-font-definition */
+    font-size: var(--ui-type-heading);
+    color: var(--ui-menu-tab-text);
+}
+
+.menu-segmented__option:hover {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.menu-segmented__option--selected,
+.menu-segmented__option--selected:hover {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+.menu-dropdown {
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 33px;
+    padding: 0 8px 0 14px;
+    background-color: var(--ui-menu-field);
+    font-family: "SquareDeal", monospace; /* web-only. USS: -unity-font-definition */
+    font-size: var(--ui-type-heading);
+    line-height: 1; /* web-only */
+    color: var(--ui-menu-field-text);
+}
+
+.menu-dropdown:hover {
+    color: var(--ui-text);
+}
+
+.menu-dropdown__arrow {
+    width: 12px;
+    height: 7px;
+    background-image: url("../../../../Assets/Art/Graphics/UI/Chrome/DropdownArrow.png");
+    background-size: 100% 100%;
+    opacity: 1;
+}
+
+.menu-dropdown__list {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background-color: var(--ui-float);
+    display: none;
+}
+
+.menu-dropdown--open .menu-dropdown__list {
+    display: flex;
+}
+
+.menu-dropdown__item {
+    height: 30px;
+    padding-left: 12px;
+    justify-content: center;
+    color: var(--ui-menu-field-text);
+}
+
+.menu-dropdown__item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--ui-text);
+}
+
+/* Same parts as a UITK Slider: tracker, fill, dragger. */
+.menu-slider {
+    position: relative;
+    height: 16px;
+    justify-content: center;
+}
+
+.menu-slider__tracker {
+    height: 8px;
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+.menu-slider__fill {
+    position: absolute;
+    left: 0;
+    top: 7px;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.36);
+}
+
+.menu-slider__dragger {
+    position: absolute;
+    top: 1px;
+    width: 27px;
+    height: 14px;
+    margin-left: -14px;
+    border-radius: 3px;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.24);
+    background-color: rgba(42, 38, 40, 0.96);
+}
+
+.menu-slider:hover .menu-slider__dragger,
+.menu-slider--dragging .menu-slider__dragger {
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.menu-code {
+    height: 23px;
+    padding: 0 8px;
+    justify-content: center;
+    overflow: hidden;
+    background-color: var(--ui-menu-field);
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 14px; /* the reference's letter height; its sans fits ~36 characters across, Kode Mono ~27 */
+    color: rgba(255, 255, 255, 0.6); /* the export code reads brighter than the dropdown values */
+    white-space: nowrap;
+}
+
+/* Primary button: white plate, right-aligned label, a notch on the right edge (a rotated square behind it). */
+.menu-button {
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    width: 140px;
+    height: 40px;
+    padding-right: 6px;
+    background-color: var(--ui-menu-selected);
+    font-family: "SquareDeal", monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 25px;
+    line-height: 1; /* web-only */
+    color: var(--ui-text-on-light);
+    transition-property: background-color;
+    transition-duration: var(--ui-fast);
+}
+
+.menu-button__tip {
+    position: absolute;
+    right: -6px;
+    top: 14px;
+    width: 12px;
+    height: 12px;
+    rotate: 45deg;
+    background-color: var(--ui-menu-selected);
+    transition-property: background-color, right;
+    transition-duration: var(--ui-fast);
+}
+
+.menu-button__text {
+    position: relative; /* paints above the tip */
+}
+
+.menu-button:hover,
+.menu-button:hover .menu-button__tip {
+    background-color: #ffffff;
+}
+
+.menu-button:hover .menu-button__tip {
+    right: -8px;
+}
+
+.menu-button:active,
+.menu-button:active .menu-button__tip {
+    background-color: #cfcfcc;
+}
+
+.menu-button--secondary,
+.menu-button--secondary .menu-button__tip {
+    background-color: var(--ui-menu-tab);
+    color: var(--ui-menu-tab-text);
+}
+
+.menu-button--secondary:hover,
+.menu-button--secondary:hover .menu-button__tip {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: var(--ui-text);
+}
+
+/* Pressed: darker still. Without this, the primary's pressed rule wins and turns the plate light grey. */
+.menu-button--secondary:active,
+.menu-button--secondary:active .menu-button__tip {
+    background-color: rgba(0, 0, 0, 0.75);
+    color: var(--ui-text);
+}
+
+.preview-frame {
+    border-width: 3px;
+    border-color: var(--ui-frame-outer);
+    background-color: var(--ui-frame-mat);
+    padding: 16px;
+}
+
+.preview-frame__viewport {
+    position: relative;
+    flex-grow: 1;
+    overflow: hidden;
+    background-color: var(--ui-viewport);
+}
+
+.style-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 270px;
+}
+
+.style-tile {
+    position: relative;
+    width: 83px;
+    height: 83px;
+    margin: 0 7px 7px 0;
+    align-items: center;
+    justify-content: flex-end;
+    overflow: hidden;
+    background-color: var(--ui-menu-tab);
+    border-width: 3px;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 3px;
+}
+
+.style-tile:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.style-tile--selected,
+.style-tile--selected:hover {
+    background-color: rgba(120, 120, 120, 0.42);
+    border-color: rgba(205, 205, 205, 0.75);
+}
+
+.menu-scroller {
+    width: 8px;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.menu-scroller__thumb {
+    height: 46%;
+    border-radius: 3px;
+    background-color: rgba(96, 96, 96, 0.95);
+}
+
+/* Colour wheel: hue ring + value/saturation triangle. Drawing is web-only; in UI Toolkit this is one element with
+   generateVisualContent (Painter2D), or a hue-ring texture plus a triangle mesh. Layout and marks port as-is. */
+.color-picker {
+    position: relative;
+    width: 165px;
+    height: 165px;
+    align-self: center;
+    cursor: crosshair; /* web-only */
+}
+
+.color-picker__ring {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    background-image: conic-gradient(#00ffff, #0000ff, #ff00ff, #ff0000, #ffff00, #00ff00, #00ffff); /* web-only */
+    -webkit-mask: radial-gradient(circle, transparent 0 60%, #000 61%); /* web-only; inner radius 85 % of the outer */
+    mask: radial-gradient(circle, transparent 0 60%, #000 61%); /* web-only */
+}
+
+.color-picker__tri {
+    position: absolute;
+    left: 19.7%;
+    top: 12.3%;
+    width: 62.5%;
+    height: 55.2%;
+    clip-path: polygon(50% 0, 100% 100%, 0 100%); /* web-only */
+    background-image: linear-gradient(180deg, var(--picker-hue, #ff8a00) 0%, rgba(0, 0, 0, 0) 100%),
+        linear-gradient(90deg, #000000 0%, #ffffff 100%); /* web-only */
+}
+
+.color-picker__mark {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    margin-left: -5px;
+    margin-top: -5px;
+    border-radius: 5px;
+    border-width: 2px;
+    border-color: #111111;
+    pointer-events: none; /* web-only: USS uses pickingMode = Ignore */
+}
+
+.color-picker__hue-mark {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    margin-left: -4px;
+    margin-top: -4px;
+    rotate: 45deg;
+    background-color: #111111;
+    pointer-events: none; /* web-only: USS uses pickingMode = Ignore */
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * Map editor (B): MapEditor.uss redrawn from the parts above
+ * ══════════════════════════════════════════════════════════════════════════
+ * The old build had no editor, so there is no reference screenshot. Class names are the shipped MapEditor.uss's, and
+ * every part is a bible component underneath, so the editor reads as the same game as the HUD:
+ *   tool bar, strips    .storage-panel of .storage-slot cells at 32 px: outline only, on the panel's fill; active = white
+ *                       outline. The tools run in a row at the top centre, the view tools (layers, settings, atmos,
+ *                       power) in a column at the top left; reset view sits under the camera dial
+ *   mode rail           .menu-tab at 32 px: a white plate when selected, as on character setup
+ *   sub-tabs            text tabs; the selected one gets a 2 px white line under its label
+ *   palette             52 px cells with the gear slot's 15 % corner, outline only like storage cells; picked = white
+ *                       outline
+ *   camera dial         the radial menu's disc, hub and wedge at 80 px
+ *   hints, popovers     .storage-panel plates; each carries a caret aimed at the button that opened it
+ *   Map Check           a popover from a warning cell under the view tools, with a .menu-segmented filter; severity is
+ *                       the one place colour means state (the cell's dot, the issue dots)
+ * No rust accent and no opaque panel: the world shows through every surface, as on the HUD.
+ * Type: labels (tabs, titles, tool and slot names, buttons, badges) in Disket Mono Bold, which draws only capitals, so they
+ * run 8-12 px; text (hints, toasts, issues, values, the search field) in Kode Mono. */
+.map-editor-region {
+    position: absolute;
+}
+
+/* The view tools: layers, settings and the systems views, a column at the top left. */
+.map-editor-region--top-left {
+    left: 16px;
+    top: 8px;
+    align-items: flex-start;
+}
+
+/* The tool bar: one row at the top centre. The hint bar sits under it. */
+.map-editor-region--top {
+    left: 50%;
+    top: 8px;
+    flex-direction: row;
+    align-items: flex-start;
+    translate: -50% 0;
+}
+
+/* The camera column: the dial, reset view under it. */
+.map-editor-region--top-right {
+    right: 16px;
+    top: 8px;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.map-editor-region--bottom {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.map-editor-right-column {
+    align-items: center;
+}
+
+/* Reset view: a half-size cell under the dial. */
+.map-editor-right-column .map-editor-toolbar-strip {
+    border-radius: 7px;
+}
+
+.map-editor-right-column .map-editor-icon-btn {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+}
+
+.map-editor-right-column .map-editor-icon-btn__icon {
+    width: 11px;
+    height: 11px;
+}
+
+.map-editor-right-column .map-editor-toolbar-hint {
+    top: -8px;
+}
+
+/* ── Tool strips: a storage panel of cells ── */
+.map-editor-toolbar-strip {
+    background-color: var(--ui-editor-panel);
+    align-items: center;
+    margin-bottom: 10px;
+    border-radius: 10px; /* the tool cell's corner plus the 4 px from cell to panel edge, as on the storage panel */
+}
+
+.map-editor-toolbar-strip--horizontal {
+    flex-direction: row;
+    margin: 0 5px;
+}
+
+.map-editor-toolbar-btn-wrap {
+    position: relative;
+}
+
+/* A storage cell at tool size. */
+.map-editor-icon-btn {
+    border-color: var(--ui-editor-cell-edge);
+    width: var(--ui-tool);
+    height: var(--ui-tool);
+    border-radius: var(--ui-tool-radius);
+}
+
+.map-editor-icon-btn:hover {
+    border-color: var(--ui-editor-cell-edge-hover);
+}
+
+.map-editor-icon-btn__icon {
+    width: 21.25px;
+    height: 21.25px;
+    opacity: var(--ui-glyph-placeholder);
+    transition-property: opacity;
+    transition-duration: var(--ui-fast);
+}
+
+.map-editor-icon-btn:hover .map-editor-icon-btn__icon {
+    opacity: var(--ui-glyph-hover);
+}
+
+/* Active is a line, as on the active hand: the outline and the glyph go full white. */
+.map-editor-icon-btn--active,
+.map-editor-icon-btn--active:hover {
+    border-color: var(--ui-line-active);
+}
+
+.map-editor-icon-btn--active .map-editor-icon-btn__icon {
+    opacity: var(--ui-glyph-item);
+}
+
+.map-editor-icon-btn--disabled,
+.map-editor-icon-btn--disabled:hover {
+    border-color: var(--ui-editor-cell-edge);
+}
+
+.map-editor-icon-btn--disabled .map-editor-icon-btn__icon,
+.map-editor-icon-btn--disabled:hover .map-editor-icon-btn__icon {
+    opacity: 0.16;
+}
+
+/* The tool's hotkey in the cell's corner: a hand mark, smaller. */
+.map-editor-icon-btn__key {
+    position: absolute;
+    left: 2.5px;
+    top: 2.5px;
+    font-family: var(--ui-font-mark), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 10px;
+    line-height: 1; /* web-only */
+    color: var(--ui-mark);
+}
+
+.map-editor-icon-btn--active .map-editor-icon-btn__key {
+    color: var(--ui-text);
+}
+
+/* ── Hint beside a tool: a plate with a caret pointing back at the cell. The C# view shows it on MouseEnter. ── */
+.map-editor-toolbar-hint {
+    position: absolute;
+    top: 1.25px;
+    height: 37.5px;
+    padding: 0 12.5px 0 15px;
+    flex-direction: row;
+    align-items: center;
+    display: none;
+    background-color: var(--ui-float);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-cell-radius);
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 13.75px;
+    line-height: 1; /* web-only */
+    color: var(--ui-text);
+    white-space: nowrap;
+}
+
+.map-editor-toolbar-hint--opens-right {
+    left: 100%;
+    margin-left: 22.5px;
+}
+
+.map-editor-toolbar-hint--opens-left {
+    right: 100%;
+    margin-right: 22.5px;
+}
+
+/* Under a top-bar button, centred on it. */
+.map-editor-toolbar-hint--opens-down {
+    top: 100%;
+    left: 50%;
+    margin-top: 22.5px;
+    translate: -50% 0;
+}
+
+.map-editor-toolbar-btn-wrap:hover .map-editor-toolbar-hint {
+    display: flex;
+}
+
+.map-editor-toolbar-hint__label {
+    margin-right: 7.5px;
+}
+
+/* A key name: Disket capitals on a dark chip. */
+.map-editor-key {
+    height: 18.75px;
+    min-width: 18.75px;
+    padding: 0 5px;
+    margin: 0 2.5px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2.75px;
+    background-color: rgba(0, 0, 0, 0.45);
+    font-family: var(--ui-font-mark), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 11.25px;
+    line-height: 1; /* web-only */
+    color: var(--ui-text);
+}
+
+/* The storage panel's caret turned on its side: --left sits on a plate's left edge pointing left, --right the other way.
+   Its top is the source's centre (C#: style.top). Tinted to the floating surface it hangs off. */
+.map-editor-caret {
+    position: absolute;
+    width: 27.5px;
+    height: 15px;
+    margin-top: -7.5px;
+    background-image: url("../../../../Assets/Art/Graphics/UI/Chrome/DropdownArrow.png");
+    background-size: 100% 100%;
+    filter: brightness(0.055); /* web-only. USS: -unity-background-image-tint-color: var(--ui-float) */
+}
+
+.map-editor-caret--left {
+    left: -23.75px;
+    rotate: 90deg;
+}
+
+.map-editor-caret--right {
+    right: -23.75px;
+    rotate: -90deg;
+}
+
+/* On a plate's top edge pointing up; its left is the source's centre (C#: style.left). */
+.map-editor-caret--up {
+    top: -17.5px;
+    left: 50%;
+    margin-top: 0;
+    margin-left: -13.75px;
+    rotate: 180deg;
+}
+
+.map-editor-toolbar-hint .map-editor-caret--left,
+.map-editor-toolbar-hint .map-editor-caret--right {
+    top: 50%;
+}
+
+/* ── Camera dial: the radial menu at 80 px. Four verbs on the band, camera options in the hub. ── */
+.map-editor-camera-dial {
+    position: relative;
+    width: var(--ui-dial);
+    height: var(--ui-dial);
+    margin-bottom: 10px;
+}
+
+.map-editor-camera-dial__ring,
+.map-editor-camera-dial__wedge {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.map-editor-camera-dial__ring {
+    border-width: var(--ui-dial-band);
+    border-color: rgb(0, 0, 0);
+    border-radius: 50px; /* half of --ui-dial */
+    opacity: var(--ui-radial-disc-alpha);
+}
+
+/* A 90° band, turned to the hovered verb: the radial menu's wedge, same shape and code. */
+.map-editor-camera-dial__wedge {
+    width: 100%; /* web-only: an <svg> needs a size of its own */
+    height: 100%;
+    fill: rgb(255, 255, 255); /* web-only (SVG). Painter2D: fillColor */
+    opacity: 0;
+    transition-property: rotate, opacity;
+    transition-duration: var(--ui-fast);
+}
+
+.map-editor-camera-dial--pointing .map-editor-camera-dial__wedge {
+    opacity: var(--ui-radial-wedge-alpha);
+}
+
+/* The hub: the radial's warm grey plate, the camera glyph dark on it. Opens Camera Options. */
+.map-editor-camera-dial__open {
+    position: absolute;
+    left: var(--ui-dial-ring);
+    top: var(--ui-dial-ring);
+    width: var(--ui-dial-hub);
+    height: var(--ui-dial-hub);
+    align-items: center;
+    justify-content: center;
+    border-radius: 23.75px; /* half of --ui-dial-hub */
+    background-color: rgba(0, 0, 0, 0);
+    transition-property: background-color;
+    transition-duration: var(--ui-fast);
+}
+
+.map-editor-camera-dial__open:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.map-editor-camera-dial__open--active,
+.map-editor-camera-dial__open--active:hover {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+.map-editor-camera-dial__open-icon {
+    width: 25px;
+    height: 25px;
+    opacity: 1;
+}
+
+/* One verb: a glyph centred on the middle of the band. The builder sets left/top from its direction. */
+.map-editor-camera-dial__btn {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    margin-left: -12.5px;
+    margin-top: -12.5px;
+    align-items: center;
+    justify-content: center;
+}
+
+.map-editor-camera-dial__btn-icon {
+    width: 17.5px;
+    height: 17.5px;
+    opacity: var(--ui-glyph-rest);
+}
+
+.map-editor-camera-dial__btn:hover .map-editor-camera-dial__btn-icon {
+    opacity: var(--ui-glyph-item);
+}
+
+/* ── Object library ── */
+.map-editor-mode-rail {
+    width: 76px;
+    margin-right: 4px;
+}
+
+/* The character setup tab at editor size. */
+.map-editor-mode-tab {
+    background-color: var(--ui-editor-tab);
+    border-width: 0 0 0 3px;
+    border-color: rgba(0, 0, 0, 0);
+    height: 19px;
+    margin-bottom: 2px;
+    padding-left: 6px;
+    font-size: 10px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+}
+
+.map-editor-library {
+    background-color: var(--ui-editor-panel);
+    flex-grow: 1;
+    flex-shrink: 1;
+    padding: 2px 6px 2px 6px;
+}
+
+.map-editor-library-header {
+    flex-direction: row;
+    align-items: center;
+    height: 22px;
+    margin-bottom: 3px;
+}
+
+.map-editor-subcat-row {
+    flex-direction: row;
+    flex-grow: 1;
+    flex-shrink: 1;
+    height: 22px;
+    overflow: hidden;
+}
+
+.map-editor-subcat-tab {
+    height: 22px;
+    padding: 1px 8px 0 8px;
+    justify-content: center;
+    border-bottom-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 10px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.45);
+    white-space: nowrap;
+    transition-property: color, border-color;
+    transition-duration: var(--ui-fast);
+}
+
+.map-editor-subcat-tab:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Selected is a line, like the active hand: the label goes white over a 2 px white rule. */
+.map-editor-subcat-tab--active,
+.map-editor-subcat-tab--active:hover {
+    color: var(--ui-text);
+    border-color: var(--ui-line-active);
+}
+
+/* The menu text field, with a search glyph. */
+.map-editor-search {
+    flex-direction: row;
+    align-items: center;
+    width: 188px;
+    height: 20px;
+    margin-left: 8px;
+    padding-left: 8px;
+    background-color: var(--ui-editor-search);
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.map-editor-search--focus {
+    border-color: var(--ui-line-frame);
+}
+
+.map-editor-search-icon {
+    width: 13px;
+    height: 13px;
+    margin-right: 6px;
+    opacity: var(--ui-glyph-placeholder);
+}
+
+.map-editor-search-field {
+    flex-grow: 1;
+    flex-shrink: 1;
+    height: 100%;
+    font-size: var(--ui-type-body);
+    color: var(--ui-text);
+}
+
+input.map-editor-search-field { /* web-only selector: in UXML this is a TextField */
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+    outline: none; /* web-only */
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: var(--ui-type-label);
+}
+
+/* The save popover's name field: text, like the search. */
+.map-editor-popover input.menu-text-field {
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: var(--ui-type-label);
+}
+
+input.map-editor-search-field::placeholder { /* web-only. USS: .unity-text-element--placeholder */
+    color: var(--ui-text-faint);
+}
+
+.map-editor-library-header__buttons {
+    flex-direction: row;
+    margin-left: 6px;
+}
+
+/* Collapse / expand: a bare glyph in a cell-shaped hit area; outlined on hover, white when that size is on. */
+.map-editor-header-icon-btn {
+    width: 20px;
+    height: 20px;
+    margin-left: 2px;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 3.6px; /* 15 % */
+}
+
+.map-editor-header-icon-btn:hover {
+    border-color: var(--ui-editor-cell-edge);
+}
+
+.map-editor-header-icon-btn--active,
+.map-editor-header-icon-btn--active:hover {
+    border-color: var(--ui-line-active);
+}
+
+.map-editor-header-icon-btn__icon {
+    width: 12px;
+    height: 12px;
+    opacity: var(--ui-glyph-placeholder);
+}
+
+.map-editor-header-icon-btn:hover .map-editor-header-icon-btn__icon,
+.map-editor-header-icon-btn--active .map-editor-header-icon-btn__icon {
+    opacity: var(--ui-glyph-item);
+}
+
+/* One row of slots (78 cell + 3 + 27 name + 3); the expanded library shows three. More scroll (a ScrollView in UXML). */
+.map-editor-grid-scroll {
+    height: 111px;
+    overflow: hidden;
+}
+
+.map-editor-bottom-row--max .map-editor-grid-scroll {
+    height: 333px;
+}
+
+.map-editor-bottom-row--min .map-editor-grid-scroll,
+.map-editor-bottom-row--min .map-editor-mode-rail {
+    display: none;
+}
+
+.map-editor-bottom-row--min .map-editor-library-header {
+    margin-bottom: 2px;
+}
+
+.map-editor-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.map-editor-stub-message {
+    height: 78px;
+    padding-left: 6px;
+    justify-content: center;
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: var(--ui-type-label);
+    color: var(--ui-text-faint);
+}
+
+/* A palette slot: a 52 px cell with the gear slot's 15 % corner, drawn like a storage cell (outline only, on the
+   panel's fill), with its name under it. */
+.map-editor-slot {
+    width: var(--ui-palette-slot);
+    margin: 0 3px 3px 3px;
+    align-items: center;
+}
+
+.map-editor-slot__icon-frame {
+    position: relative;
+    width: var(--ui-palette-slot);
+    height: var(--ui-palette-slot);
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-editor-cell-edge);
+    border-radius: var(--ui-palette-slot-radius);
+    transition-property: border-color;
+    transition-duration: var(--ui-fast);
+}
+
+.map-editor-slot:hover .map-editor-slot__icon-frame {
+    border-color: var(--ui-editor-cell-edge-hover);
+}
+
+.map-editor-slot--active .map-editor-slot__icon-frame,
+.map-editor-slot--active:hover .map-editor-slot__icon-frame {
+    border-color: var(--ui-line-active);
+}
+
+/* An object's render nearly fills the cell, like an item in a storage cell. */
+.map-editor-slot__icon {
+    width: 60px;
+    height: 60px;
+}
+
+/* No render yet (most tiles have no icon sprite): the sub-tab's glyph at the empty-slot alpha. */
+.map-editor-slot__icon--glyph {
+    width: 33px;
+    height: 33px;
+    opacity: var(--ui-glyph-placeholder);
+}
+
+.map-editor-slot:hover .map-editor-slot__icon--glyph {
+    opacity: var(--ui-glyph-hover);
+}
+
+.map-editor-slot--active .map-editor-slot__icon--glyph {
+    opacity: var(--ui-glyph-item);
+}
+
+/* Floor paint: the department's colour as the icon, in the cell's own shape. */
+.map-editor-slot__icon--paint {
+    width: 48px;
+    height: 48px;
+    border-radius: 7.25px;
+}
+
+/* Spawn and gas markers: their glyph in the marker's own colour. */
+.map-editor-slot__icon--marker {
+    width: 39px;
+    height: 39px;
+}
+
+.map-editor-slot__label {
+    width: 87px;
+    height: 27px;
+    margin-top: 3px;
+    overflow: hidden;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 12px; /* 11 capitals a line ("engineering"): the label runs the slot's full pitch, past the cell's edges */
+    letter-spacing: -0.75px;
+    line-height: 13.5px; /* web-only: two lines in the 27 px box */
+    color: rgba(255, 255, 255, 0.55);
+    text-align: center; /* web-only. USS: -unity-text-align: upper-center */
+    white-space: normal;
+}
+
+.map-editor-slot:hover .map-editor-slot__label {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.map-editor-slot--active .map-editor-slot__label {
+    color: var(--ui-text);
+}
+
+/* A variant family: the family's name takes the label's two lines, like any slot, and the variant names itself on a
+   strip along the cell's bottom edge; "n/N" in the corner, ‹ › on the cell's sides. */
+.map-editor-slot__variant {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 16.5px;
+    justify-content: center;
+    overflow: hidden;
+    border-bottom-left-radius: 8.75px;
+    border-bottom-right-radius: 8.75px;
+    background-color: rgba(0, 0, 0, 0.55);
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 10.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.85);
+    text-align: center; /* web-only. USS: -unity-text-align: middle-center */
+    white-space: nowrap;
+}
+
+/* Tucked into the corner, above the 44-48 px picture. */
+.map-editor-slot__badge {
+    position: absolute;
+    right: 4.5px;
+    top: 1.5px;
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 13.5px;
+    line-height: 1; /* web-only */
+    color: var(--ui-mark);
+}
+
+.map-editor-slot__cycle {
+    position: absolute;
+    top: 50%;
+    width: 18px;
+    height: 30px;
+    margin-top: -15px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.45);
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 18px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.map-editor-slot__cycle:hover {
+    color: var(--ui-text);
+}
+
+.map-editor-slot__cycle--previous {
+    left: 1.5px;
+    border-top-right-radius: 4.5px;
+    border-bottom-right-radius: 4.5px;
+}
+
+.map-editor-slot__cycle--next {
+    right: 1.5px;
+    border-top-left-radius: 4.5px;
+    border-bottom-left-radius: 4.5px;
+}
+
+.map-editor-slot--family:hover .map-editor-slot__cycle,
+.map-editor-slot--family.map-editor-slot--active .map-editor-slot__cycle {
+    display: flex;
+}
+
+/* ── Hint bar (top centre), toast and cursor badge: the same plate, text in Kode Mono ── */
+.map-editor-hint,
+.map-editor-toast,
+.map-editor-cursor-badge {
+    position: absolute;
+    flex-direction: row;
+    align-items: center;
+    background-color: var(--ui-editor-panel);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-cell-radius);
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: var(--ui-type-label);
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.85);
+    white-space: nowrap;
+}
+
+/* Capped short of the camera dial. No overflow: hidden on the plate: UITK draws a radius and overflow: hidden on one
+   element as a white block (tile.md Pitfalls), so a hint too long for the cap clips in its last text instead. */
+.map-editor-hint {
+    top: 64px; /* under the tool bar: 8 + its 48 + 8 */
+    left: 50%;
+    max-width: 880px;
+    height: 37.5px;
+    padding: 0 15px;
+    translate: -50% 0;
+}
+
+/* A toast is news, so it gets the frame slot's outline. */
+.map-editor-toast {
+    left: 50%;
+    height: 42.5px;
+    padding: 0 20px;
+    translate: -50% 0;
+    border-color: var(--ui-line-frame);
+    font-size: var(--ui-type-body);
+    color: var(--ui-text);
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: var(--ui-med);
+}
+
+.map-editor-toast--shown {
+    opacity: 1;
+}
+
+.map-editor-cursor-badge {
+    height: 25px;
+    padding: 0 7.5px;
+    font-size: 12.5px;
+}
+
+/* ── Popovers: a storage panel with a header, beside the button that opened it. Floating, so on --ui-float. ── */
+.map-editor-popover {
+    position: absolute;
+    width: 290px;
+}
+
+.map-editor-popover-window {
+    background-color: var(--ui-float);
+}
+
+.map-editor-popover--wide {
+    width: 350px;
+}
+
+.map-editor-popover-window__header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 35px;
+    padding: 0 5px 0 12.5px;
+}
+
+.map-editor-window__title {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 15px;
+    line-height: 1; /* web-only */
+    color: var(--ui-text);
+}
+
+.map-editor-popover-close {
+    width: 30px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 4.5px; /* 15 % */
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 18.75px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.48);
+}
+
+.map-editor-popover-close:hover {
+    border-color: var(--ui-editor-cell-edge);
+    color: var(--ui-text);
+}
+
+.map-editor-popover-window__body {
+    padding: 2.5px 12.5px 12.5px 12.5px;
+}
+
+/* A label and a switch. */
+.map-editor-switch-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 27.5px;
+}
+
+.map-editor-switch-row__label,
+.map-editor-slider-row__label {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 12.5px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* The switch: a track in the slot outline, a thumb that goes white when on. */
+.map-editor-switch {
+    width: 37.5px;
+    height: 20px;
+    padding: 1.25px;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-line-frame);
+    border-radius: 3.75px;
+    transition-property: border-color, background-color;
+    transition-duration: var(--ui-fast);
+}
+
+.map-editor-switch:hover {
+    border-color: var(--ui-line-frame-hover);
+}
+
+.map-editor-switch__thumb {
+    width: 12.5px;
+    height: 12.5px;
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.48);
+    transition-property: margin-left, background-color;
+    transition-duration: var(--ui-fast);
+}
+
+.map-editor-switch--on,
+.map-editor-switch--on:hover {
+    border-color: var(--ui-line-active);
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.map-editor-switch--on .map-editor-switch__thumb {
+    margin-left: 17.5px;
+    background-color: var(--ui-menu-selected);
+}
+
+/* A label and value over a menu slider. */
+.map-editor-slider-row {
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.map-editor-slider-row__header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 25px;
+    margin-bottom: 2.5px;
+}
+
+.map-editor-slider-row__value {
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: var(--ui-type-label);
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Map list (Map Selection, Save Map): rows that light on hover, like dropdown items. */
+.map-editor-map-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 35px;
+    padding: 0 10px;
+    margin: 0 -10px;
+    border-radius: 3.75px;
+}
+
+.map-editor-map-row:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.map-editor-map-name {
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: var(--ui-type-label);
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.map-editor-map-badge {
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 11.25px;
+    color: var(--ui-text-faint);
+}
+
+/* The menu button at popover size. */
+.map-editor-popover .menu-button {
+    width: auto;
+    height: 37.5px;
+    margin-top: 12.5px;
+    margin-right: 7.5px;
+    padding-left: 15px;
+    font-size: 15px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+}
+
+.map-editor-popover .menu-button__tip {
+    top: 11.25px;
+}
+
+/* ── Map Check: a popover from the view tools; a segmented filter; issue rows. Spacing, not lines, between parts. ── */
+/* Opened from the warning cell under the view tools, beside them: a popover whose window is the panel. */
+.map-editor-popover--check {
+    width: 310px;
+}
+
+/* The warning cell's dot, in the worst severity's colour (none when the map is clear). */
+.map-editor-icon-btn__alert {
+    position: absolute;
+    right: 3.75px;
+    top: 3.75px;
+    width: 7.5px;
+    height: 7.5px;
+    border-radius: 3.75px;
+}
+
+.map-check__header {
+    flex-direction: row;
+    align-items: center;
+    height: 32.5px;
+    padding: 0 5px 0 12.5px;
+}
+
+.map-check__title {
+    flex-grow: 1;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 15px;
+    line-height: 1; /* web-only */
+    color: var(--ui-text);
+}
+
+.map-check__badge {
+    flex-direction: row;
+    align-items: center;
+    height: 20px;
+    padding: 0 6.25px;
+    margin-right: 3.75px;
+    border-radius: 3.5px; /* 15 % */
+    background-color: rgba(0, 0, 0, 0.4);
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 11.25px;
+    line-height: 1; /* web-only */
+    color: var(--ui-text);
+}
+
+.map-check__dot {
+    width: 7.5px;
+    height: 7.5px;
+    margin-right: 6.25px;
+    border-radius: 3.75px;
+}
+
+.map-check__danger {
+    background-color: var(--ui-danger);
+}
+
+.map-check__warning {
+    background-color: var(--ui-warn);
+}
+
+.map-check__success {
+    background-color: var(--ui-ok);
+}
+
+/* The menu's segmented control, small enough for three options across the panel. */
+.map-check__filters {
+    margin: 0 10px 5px 10px;
+}
+
+.map-check__filters .menu-segmented__option {
+    width: auto;
+    height: 22.5px;
+    margin: 0 1.25px;
+    flex-grow: 1;
+    font-size: 10px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+}
+
+.map-check__issues {
+    max-height: 300px;
+    overflow: hidden; /* a ScrollView in UXML */
+}
+
+.map-check__issue {
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 5px 10px 5px 12.5px;
+}
+
+.map-check__issue:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.map-check__issue .map-check__dot {
+    margin-top: 3.75px;
+    margin-right: 7.5px;
+}
+
+.map-check__issue-body {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.map-check__issue-text {
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: var(--ui-type-label);
+    line-height: 15px;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: normal;
+}
+
+.map-check__issue-path {
+    margin-top: 1.25px;
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 12.5px;
+    color: var(--ui-text-faint);
+}
+
+.map-check__actions {
+    flex-direction: row;
+    margin-top: 5px;
+    display: none;
+}
+
+.map-check__issue--open .map-check__actions {
+    display: flex;
+}
+
+/* A small secondary plate. */
+.map-check__action {
+    height: 20px;
+    padding: 0 7.5px;
+    margin-right: 3.75px;
+    justify-content: center;
+    background-color: var(--ui-menu-tab);
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 11.25px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.map-check__action:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: var(--ui-text);
+}
+
+.map-check__footer {
+    padding: 5px 12.5px 7.5px 12.5px;
+    font-family: var(--ui-font-text), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.map-check__footer--danger {
+    color: var(--ui-danger);
+}
+
+/* ── Colour coding ────────────────────────────────────────────────────────
+ * Tools: what a click does. The active tool's outline, every tool's hotkey mark (dim until active) and the hint bar's
+ * edge take the tool's colour. Categories: which layer you build on. Each category tab's stripe, the open sub-tab's
+ * underline and the picked slot's outline take the category's colour. bible.js sets the classes, as MapEditorView does. */
+.map-editor-icon-btn__key {
+    opacity: 0.6;
+}
+
+.map-editor-icon-btn--active .map-editor-icon-btn__key {
+    opacity: 1;
+}
+.map-editor-mode-tab.menu-tab--selected {
+    background-color: var(--ui-menu-selected);
+}
+
+.map-editor-icon-btn--tool-construct .map-editor-icon-btn__key {
+    color: var(--ui-tool-construct);
+}
+
+.map-editor-icon-btn--tool-construct.map-editor-icon-btn--active,
+.map-editor-icon-btn--tool-construct.map-editor-icon-btn--active:hover {
+    border-color: var(--ui-tool-construct);
+}
+
+.map-editor-root--tool-construct .map-editor-hint {
+    border-color: var(--ui-tool-construct);
+}
+
+.map-editor-icon-btn--tool-select .map-editor-icon-btn__key,
+.map-editor-icon-btn--tool-dropper .map-editor-icon-btn__key {
+    color: var(--ui-tool-select);
+}
+
+.map-editor-icon-btn--tool-select.map-editor-icon-btn--active,
+.map-editor-icon-btn--tool-select.map-editor-icon-btn--active:hover,
+.map-editor-icon-btn--tool-dropper.map-editor-icon-btn--active,
+.map-editor-icon-btn--tool-dropper.map-editor-icon-btn--active:hover {
+    border-color: var(--ui-tool-select);
+}
+
+.map-editor-root--tool-select .map-editor-hint,
+.map-editor-root--tool-dropper .map-editor-hint {
+    border-color: var(--ui-tool-select);
+}
+
+.map-editor-icon-btn--tool-delete .map-editor-icon-btn__key {
+    color: var(--ui-tool-delete);
+}
+
+.map-editor-icon-btn--tool-delete.map-editor-icon-btn--active,
+.map-editor-icon-btn--tool-delete.map-editor-icon-btn--active:hover {
+    border-color: var(--ui-tool-delete);
+}
+
+.map-editor-root--tool-delete .map-editor-hint {
+    border-color: var(--ui-tool-delete);
+}
+
+.map-editor-icon-btn--tool-room .map-editor-icon-btn__key {
+    color: var(--ui-tool-room);
+}
+
+.map-editor-icon-btn--tool-room.map-editor-icon-btn--active,
+.map-editor-icon-btn--tool-room.map-editor-icon-btn--active:hover {
+    border-color: var(--ui-tool-room);
+}
+
+.map-editor-root--tool-room .map-editor-hint {
+    border-color: var(--ui-tool-room);
+}
+
+.map-editor-mode-tab--upper {
+    border-color: var(--ui-cat-upper);
+}
+
+.map-editor-bottom-row--upper .map-editor-subcat-tab--active,
+.map-editor-bottom-row--upper .map-editor-subcat-tab--active:hover,
+.map-editor-bottom-row--upper .map-editor-slot--active .map-editor-slot__icon-frame,
+.map-editor-bottom-row--upper .map-editor-slot--active:hover .map-editor-slot__icon-frame {
+    border-color: var(--ui-cat-upper);
+}
+
+.map-editor-mode-tab--lower {
+    border-color: var(--ui-cat-lower);
+}
+
+.map-editor-bottom-row--lower .map-editor-subcat-tab--active,
+.map-editor-bottom-row--lower .map-editor-subcat-tab--active:hover,
+.map-editor-bottom-row--lower .map-editor-slot--active .map-editor-slot__icon-frame,
+.map-editor-bottom-row--lower .map-editor-slot--active:hover .map-editor-slot__icon-frame {
+    border-color: var(--ui-cat-lower);
+}
+
+.map-editor-mode-tab--items {
+    border-color: var(--ui-cat-items);
+}
+
+.map-editor-bottom-row--items .map-editor-subcat-tab--active,
+.map-editor-bottom-row--items .map-editor-subcat-tab--active:hover,
+.map-editor-bottom-row--items .map-editor-slot--active .map-editor-slot__icon-frame,
+.map-editor-bottom-row--items .map-editor-slot--active:hover .map-editor-slot__icon-frame {
+    border-color: var(--ui-cat-items);
+}
+
+.map-editor-mode-tab--scripts {
+    border-color: var(--ui-cat-scripts);
+}
+
+.map-editor-bottom-row--scripts .map-editor-subcat-tab--active,
+.map-editor-bottom-row--scripts .map-editor-subcat-tab--active:hover,
+.map-editor-bottom-row--scripts .map-editor-slot--active .map-editor-slot__icon-frame,
+.map-editor-bottom-row--scripts .map-editor-slot--active:hover .map-editor-slot__icon-frame {
+    border-color: var(--ui-cat-scripts);
+}
