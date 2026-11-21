@@ -9,10 +9,10 @@ using UnityEngine.UIElements;
 namespace SS3D.UI.Lobby
 {
     /// <summary>
-    /// The character window's Jobs tab (lobby.md §2–§3, lobby effort Phase 5): the whole station roster by department
-    /// (<see cref="JobRoster"/>), total slots only (Decision 12), a High / Medium / Low / Never radio group per job under
-    /// the one-High rule, expandable descriptions, locked rows for jobs this server doesn't run, the notice line and the
-    /// pinned fallback choice. It edits
+    /// The character window's Jobs tab (lobby.md §2–§3, lobby effort Phase 5), wide over the viewport while open: the
+    /// whole station roster by department (<see cref="JobRoster"/>), total slots only (Decision 12), a High / Medium /
+    /// Low / Never segmented control per job under the one-High rule, expandable descriptions, locked rows for jobs this
+    /// server doesn't run, the notice line and the pinned fallback choice. It edits
     /// <see cref="CharacterWindowModel.Working"/>.
     /// </summary>
     public sealed class CharacterJobsTab
@@ -38,9 +38,8 @@ namespace SS3D.UI.Lobby
         private Func<string, string> _describe = _ => string.Empty;
         private Func<string, string> _lockedReason = _ => null;
         private string _fallbackJob = "Assistant";
-        private VisualElement _notice;
-        private Label _noticeText;
-        private bool _compact;
+        private readonly VisualElement _notice;
+        private readonly Label _noticeText;
 
         public event Action Changed;
 
@@ -48,10 +47,24 @@ namespace SS3D.UI.Lobby
         {
             _model = model;
             _catalog = catalog;
-            Root = LobbyUi.Box("charwin-tab");
+            Root = LobbyUi.Box("charwin-jobs", "charwin__pane");
             Root.name = "charwin-jobs";
+            Label intro = LobbyUi.Text("Rank the jobs you want. One job can be High; Medium and Low take as many as you like. "
+                + "Everyone's choices are settled together when the round starts, so there is no rush.", "charwin__note");
+            intro.AddToClassList("charwin-jobs__intro");
+            Root.Add(intro);
+
+            _notice = LobbyUi.Box("charwin__notice");
+            _notice.name = "charwin-jobs-notice";
+            _notice.Add(LobbyUi.Icon("info"));
+            _noticeText = LobbyUi.Text("", "charwin__notice-text");
+            _noticeText.enableRichText = true;
+            _notice.Add(_noticeText);
+            Root.Add(_notice);
+
             _scroll = new ScrollView(ScrollViewMode.Vertical);
-            _scroll.AddToClassList("charwin-tab__scroll");
+            _scroll.AddToClassList("charwin-jobs__scroll");
+            _scroll.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
             Root.Add(_scroll);
             _fallbackBar = LobbyUi.Box("charwin-jobs__fallback");
             _fallbackBar.name = "charwin-fallback";
@@ -80,42 +93,11 @@ namespace SS3D.UI.Lobby
             _fallbackJob = string.IsNullOrEmpty(fallbackJob) ? "Assistant" : fallbackJob;
         }
 
-        /// <summary>"Medium" shortens to "Med" in the 1366 layout.</summary>
-        public void SetCompact(bool compact)
-        {
-            if (_compact == compact) return;
-            _compact = compact;
-            Refresh();
-        }
-
         public void Rebuild()
         {
             _rows.Clear();
             _scroll.Clear();
             if (_model.Working == null) return;
-
-            VisualElement top = LobbyUi.Box("charwin-jobs__top");
-            top.Add(LobbyUi.Text("Rank the jobs you want. One job can be High; Medium and Low take as many as you like. "
-                + "Everyone's preferences are resolved together when the round starts, so there is no rush.", "charwin-tab__intro"));
-            VisualElement legend = LobbyUi.Box("charwin-jobs__legend");
-            foreach (JobPriority priority in Priorities)
-            {
-                VisualElement item = LobbyUi.Box("charwin-jobs__legend-item");
-                item.Add(LobbyUi.Box("charwin-jobs__legend-swatch", "charwin-jobs__legend-swatch--" + Key(priority)));
-                item.Add(LobbyUi.Text(priority.ToString(), "charwin-jobs__legend-label"));
-                legend.Add(item);
-            }
-
-            top.Add(legend);
-            _scroll.Add(top);
-
-            _notice = LobbyUi.Box("charwin__notice");
-            _notice.name = "charwin-jobs-notice";
-            _notice.Add(LobbyUi.Icon("info"));
-            _noticeText = LobbyUi.Text("", "charwin__notice-text");
-            _noticeText.enableRichText = true;
-            _notice.Add(_noticeText);
-            _scroll.Add(_notice);
 
             if (_jobs.Count == 0)
             {
@@ -180,13 +162,14 @@ namespace SS3D.UI.Lobby
             string dept = LobbyView.DepartmentClass(department);
             VisualElement box = LobbyUi.Box("charwin-jobs__dept");
             box.name = "charwin-dept-" + department.ToString().ToLowerInvariant();
+            // The department colour (--dept) reaches its edge, glyph, name and its jobs' High.
+            if (dept != null) box.AddToClassList(dept);
             VisualElement head = LobbyUi.Box("charwin-jobs__dept-head");
             VisualElement icon = DepartmentIcon(department);
             icon.AddToClassList("charwin-jobs__dept-icon");
             head.Add(icon);
-            Label name = LobbyUi.Titling(department == Department.None ? "Other" : department.ToString(), "charwin-jobs__dept-name");
-            if (dept != null) name.AddToClassList(dept);
-            head.Add(name);
+            head.Add(LobbyUi.Text(department == Department.None ? "other" : department.ToString().ToLowerInvariant(),
+                "charwin-jobs__dept-name"));
             box.Add(head);
             foreach (JobSlotInfo job in _jobs.Where(job => (Department)job.Department == department))
             {
@@ -210,11 +193,10 @@ namespace SS3D.UI.Lobby
             string name = job.Name;
             VisualElement row = LobbyUi.Box("charwin-jobs__row");
             row.name = "charwin-job-" + name;
+            row.tooltip = name;
             VisualElement main = LobbyUi.Box("charwin-jobs__row-main");
 
-            VisualElement frame = LobbyUi.Box("charwin-jobs__job-icon-frame");
-            frame.Add(JobIcon(_catalog, name, department));
-            main.Add(frame);
+            main.Add(JobIcon(_catalog, name, department));
             main.Add(LobbyUi.Text(name, "charwin-jobs__job-name"));
 
             string description = _describe(name);
@@ -233,7 +215,6 @@ namespace SS3D.UI.Lobby
                 row.AddToClassList("charwin-jobs__row--locked");
                 row.tooltip = name + ": " + locked;
                 VisualElement lockBox = LobbyUi.Box("charwin-jobs__locked");
-                lockBox.Add(LobbyUi.Icon("lock"));
                 lockBox.Add(LobbyUi.Text(locked, "charwin-jobs__locked-text"));
                 main.Add(lockBox);
             }
@@ -279,20 +260,24 @@ namespace SS3D.UI.Lobby
             return icon;
         }
 
-        /// <summary>A radio group: Tab reaches it, ←/→ change it, a click picks an option.</summary>
+        /// <summary>The reference's segmented control as a radio group: Tab reaches it, ←/→ change it, a click picks one.</summary>
         private VisualElement BuildPriorityGroup(string job)
         {
-            VisualElement group = LobbyUi.Box("charwin-jobs__prio");
+            VisualElement group = LobbyUi.Box("charwin__seg");
+            group.AddToClassList("charwin-jobs__prio");
             group.name = "charwin-job-priority";
             group.focusable = true;
             group.tooltip = "Priority for " + job + " (←/→)";
-            for (int i = 0; i < Priorities.Length; i++)
+            foreach (JobPriority priority in Priorities)
             {
-                JobPriority priority = Priorities[i];
-                Button option = new(() => Set(job, priority)) { name = "charwin-prio-" + Key(priority), focusable = false };
+                Button option = new(() => Set(job, priority))
+                {
+                    name = "charwin-prio-" + Key(priority),
+                    text = priority == JobPriority.Medium ? "med" : Key(priority),
+                    focusable = false,
+                };
+                option.AddToClassList("charwin__seg-option");
                 option.AddToClassList("charwin-jobs__prio-option");
-                option.AddToClassList("lb-titling");
-                option.EnableInClassList("charwin-jobs__prio-option--first", i == 0);
                 group.Add(option);
             }
 
@@ -324,9 +309,13 @@ namespace SS3D.UI.Lobby
         private void BuildFallback()
         {
             _fallbackBar.Clear();
-            _fallbackBar.Add(LobbyUi.Text("If none of my jobs is available:", "charwin-jobs__fallback-label"));
-            _fallbackBar.Add(Radio("charwin-fallback-assistant", JobFallback.Assistant, "Become " + _fallbackJob, "Default"));
-            _fallbackBar.Add(Radio("charwin-fallback-lobby", JobFallback.ReturnToLobby, "Return to lobby", "Then observe, or join late"));
+            _fallbackBar.Add(LobbyUi.Text("if none of my jobs is open", "charwin-jobs__fallback-label"));
+            VisualElement choice = LobbyUi.Box("charwin__seg");
+            choice.AddToClassList("charwin__seg--wide");
+            choice.Add(Radio("charwin-fallback-assistant", JobFallback.Assistant, "become " + _fallbackJob.ToLowerInvariant(),
+                "The default: spawn as " + _fallbackJob));
+            choice.Add(Radio("charwin-fallback-lobby", JobFallback.ReturnToLobby, "return to lobby", "Then observe, or join late"));
+            _fallbackBar.Add(choice);
         }
 
         private Button Radio(string name, JobFallback value, string label, string hint)
@@ -336,13 +325,9 @@ namespace SS3D.UI.Lobby
                 _model.SetFallback(value);
                 Refresh();
                 Changed?.Invoke();
-            }) { name = name, userData = value };
+            }) { name = name, userData = value, text = label, tooltip = hint };
+            radio.AddToClassList("charwin__seg-option");
             radio.AddToClassList("charwin-jobs__radio");
-            VisualElement ring = LobbyUi.Box("charwin-jobs__radio-ring");
-            ring.Add(LobbyUi.Box("charwin-jobs__radio-dot"));
-            radio.Add(ring);
-            radio.Add(LobbyUi.Text(label, "charwin-jobs__radio-label"));
-            radio.Add(LobbyUi.Text(hint, "charwin-jobs__radio-hint"));
             return radio;
         }
 
@@ -363,7 +348,7 @@ namespace SS3D.UI.Lobby
                 foreach (JobPriority priority in Priorities)
                 {
                     Button option = group.Q<Button>("charwin-prio-" + Key(priority));
-                    option.text = (priority == JobPriority.Medium && _compact ? "Med" : priority.ToString()).ToUpperInvariant();
+                    option.EnableInClassList("charwin__seg-option--on", priority == current);
                     foreach (JobPriority each in Priorities)
                     {
                         option.EnableInClassList($"charwin-jobs__prio-option--{Key(each)}-on", each == priority && priority == current);
@@ -371,7 +356,6 @@ namespace SS3D.UI.Lobby
                 }
             }
 
-            if (_notice != null)
             {
                 JobsNoticeKind kind = _model.Notice;
                 _noticeText.text = _model.NoticeText(_fallbackJob);
@@ -384,7 +368,9 @@ namespace SS3D.UI.Lobby
             JobFallback fallback = _model.Working.Preferences.Fallback;
             foreach (Button radio in _fallbackBar.Query<Button>().ToList())
             {
-                radio.EnableInClassList("charwin-jobs__radio--on", radio.userData is JobFallback value && value == fallback);
+                bool on = radio.userData is JobFallback value && value == fallback;
+                radio.EnableInClassList("charwin-jobs__radio--on", on);
+                radio.EnableInClassList("charwin__seg-option--on", on);
             }
         }
 

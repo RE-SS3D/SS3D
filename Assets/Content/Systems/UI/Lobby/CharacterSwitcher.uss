@@ -1,80 +1,413 @@
 /*
- * Character switcher popover (lobby effort Phase 5): opens beside "Switch character" in the lobby sidebar and beside the
- * character window's top-bar button. Imported by Lobby.uss, so both screens have it.
+ * Character switcher popover (lobby.md §6), drawn with the UI bible's parts (Documents/plans/assets/ui-bible, "lobby"
+ * tab; its components.css character-switcher section, and the switcher rule of its "Lobby: colour coding" block, are
+ * this sheet line for line, in USS). It opens beside "Switch character" in the lobby sidebar and beside Change in the
+ * Join picker, and under the character window's dropdown; Lobby.uss imports it after ui-tokens.uss.
+ *   plate      a floating plate (--ui-float), placed by CharacterSwitcher in C#
+ *   rows       tints with their High job's department edge and name; the character you play has the white outline and
+ *              an ok check. Duplicate and delete are glyph cells, faint until the row is hovered or selected
+ *   delete     asks inline, in a danger outline
+ * Sizes are the bible's reference px: the lobby root is laid out at 1200 × 675 and scaled to the screen in C#.
+ * Labels are Disket Mono Bold, which draws only capitals; text is Kode Mono. Labels that carry .lb-titling or .lb-mono
+ * set their font here, so the bible's font wins.
+ * --dept comes from the .lb-dept--<department> classes (Lobby.uss); a High job with no department reads the neutral
+ * default set on .switcher.
+ * Rules are prefixed with .lobby so they beat the runtime theme and the shell's resets. Buttons keep the theme's
+ * .unity-button class, so every Button class here sets its own background, border and colour for :hover and :active
+ * too, or the theme's light grey shows through.
  */
+
+/* ── Character switcher: a floating plate beside Switch character ── */
 .lobby .switcher {
-    position: absolute; width: 440px; display: none;
-    background-color: var(--lb-panel); border-width: 1px; border-color: var(--lb-border); border-radius: 2px;
+    position: absolute;
+    width: 380px;
+    background-color: var(--ui-float);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
+    display: none;
+    /* Neutral, for a High job the roster doesn't place in a department. */
+    --dept: rgba(255, 255, 255, 0.5);
 }
-.lobby .switcher--open { display: flex; }
+
+.lobby .switcher--open {
+    display: flex;
+}
+
+.lobby .switcher .unity-disabled {
+    opacity: 1;
+}
+
+/* ── Thin scroller: the map editor's ── */
+.lobby .switcher .unity-scroller--vertical {
+    width: 6px;
+    min-width: 6px;
+    margin-left: 2px;
+}
+
+.lobby .switcher .unity-scroller--vertical .unity-scroller__low-button,
+.lobby .switcher .unity-scroller--vertical .unity-scroller__high-button {
+    display: none;
+}
+
+.lobby .switcher .unity-scroller--vertical .unity-scroller__slider {
+    width: 6px;
+    min-width: 6px;
+    margin: 0;
+}
+
+.lobby .switcher .unity-scroller--vertical .unity-base-slider__tracker {
+    width: 6px;
+    left: 0;
+    border-width: 0;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.lobby .switcher .unity-scroller--vertical .unity-base-slider__dragger {
+    width: 6px;
+    left: 0;
+    margin-left: 0;
+    border-width: 0;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+.lobby .switcher .unity-scroller--vertical .unity-base-slider__dragger:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.lobby .switcher .unity-scroller--vertical .unity-base-slider__dragger-border {
+    display: none;
+}
+
+/* ── Head ── */
 .lobby .switcher__head {
-    flex-direction: row; align-items: center; height: 44px; padding: 0 14px; flex-shrink: 0;
-    background-color: var(--lb-chrome); border-bottom-width: 1px; border-bottom-color: var(--lb-border);
+    flex-direction: row;
+    align-items: center;
+    height: 44px;
+    flex-shrink: 0;
+    padding: 0 12px 0 14px;
 }
-.lobby .switcher__title { font-size: 22px; letter-spacing: 1.76px; margin-right: 10px; }
-.lobby .switcher__count { font-size: 12px; color: var(--lb-text-2); }
-.lobby .switcher__hint { font-size: 12px; color: var(--lb-text-2); }
-.lobby .switcher__list { max-height: 660px; flex-shrink: 1; }
-.lobby .switcher__list .unity-scroll-view__content-container { padding: 6px; }
+
+.lobby .switcher__title {
+    margin-right: 8px;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 14px;
+}
+
+.lobby .switcher__count,
+.lobby .switcher__hint {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* The ScrollView: the padding sits on its content, so the scroller keeps the plate's edge (a web scrollbar's place). */
+.lobby .switcher__list {
+    max-height: 420px;
+    flex-shrink: 1;
+}
+
+.lobby .switcher__list .unity-scroll-view__content-container {
+    padding: 0 8px;
+}
+
+/* ── Rows ── */
 .lobby .switcher__row {
-    flex-direction: row; align-items: center; height: 62px; padding: 0 8px; margin-bottom: 2px; flex-shrink: 0;
-    border-width: 1px; border-color: rgba(0, 0, 0, 0); border-radius: 2px;
+    flex-direction: row;
+    align-items: center;
+    height: 54px;
+    margin-bottom: 2px;
+    padding: 0 6px 0 8px;
+    flex-shrink: 0;
+    background-color: var(--ui-editor-button);
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
 }
-.lobby .switcher__row:hover { background-color: var(--lb-hover); }
-.lobby .switcher__row:focus { border-color: var(--lb-border-strong); }
-.lobby .switcher__row--selected { background-color: var(--lb-inset); border-color: var(--lb-border); }
+
+.lobby .switcher__row:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+/* Not in the bible: ↑/↓ move focus between rows, so a focused row shows the hover fill. */
+.lobby .switcher__row:focus {
+    background-color: var(--ui-editor-button-hover);
+}
+
+/* The character you play: the white outline, as a picked job. */
+.lobby .switcher__row--selected,
+.lobby .switcher__row--selected:hover {
+    border-color: var(--ui-line-active);
+}
+
 .lobby .switcher__portrait {
-    width: 36px; height: 48px; margin-right: 12px; flex-shrink: 0; align-items: center; justify-content: center;
-    border-width: 1px; border-color: var(--lb-border); background-color: var(--lb-inset); overflow: hidden;
+    width: 28px;
+    height: 38px;
+    margin-right: 10px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-editor-cell-edge);
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.6);
 }
-.switcher__portrait-image { position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-background-scale-mode: scale-and-crop; }
-.lobby .switcher__silhouette { width: 26px; height: 40px; -unity-background-image-tint-color: #5a5d60; }
-.switcher__text { flex-grow: 1; flex-shrink: 1; min-width: 0; }
-.lobby .switcher__name { font-size: 14px; -unity-font-style: bold; color: var(--lb-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lobby .switcher__high { flex-direction: row; margin-top: 3px; }
-.lobby .switcher__high-prefix { font-size: 12px; color: var(--lb-text-2); margin-right: 4px; }
-.lobby .switcher__high-job { font-size: 12px; color: var(--lb-text-2); }
-.lobby .switcher__selected { flex-direction: row; align-items: center; margin: 0 10px; }
-.lobby .switcher__selected .lobby__icon { width: 12px; height: 12px; margin-right: 4px; -unity-background-image-tint-color: var(--lb-green); }
-.lobby .switcher__selected-label { font-size: 12px; -unity-font-style: bold; color: var(--lb-text); }
+
+/* A rendered head crop fills the cell when there is one; otherwise the silhouette. */
+.lobby .switcher__portrait-image {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.lobby .switcher__portrait .switcher__silhouette {
+    width: 18px;
+    height: 28px;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.16);
+}
+
+.lobby .switcher__text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.lobby .switcher__name {
+    font-size: 12.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lobby .switcher__high {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+.lobby .switcher__high-prefix,
+.lobby .switcher__high-job {
+    margin-right: 4px;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+}
+
+.lobby .switcher__high-job {
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* The bible's .lb-dept-text, held here as well: the High job in its department's colour. */
+.lobby .switcher__high-job.lb-dept-text {
+    color: var(--dept);
+}
+
+.lobby .switcher__selected {
+    flex-direction: row;
+    align-items: center;
+    margin: 0 8px;
+}
+
+.lobby .switcher__selected .lobby__icon {
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    -unity-background-image-tint-color: var(--ui-ok);
+}
+
+.lobby .switcher__selected-label {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 9px;
+}
+
+/* Duplicate, delete: glyph cells, faint until the row is hovered or selected. */
+.lobby .switcher__action,
+.lobby .switcher__action:active,
+.lobby .switcher__action:hover:active {
+    background-color: rgba(0, 0, 0, 0);
+}
+
 .lobby .switcher__action {
-    width: 30px; height: 30px; align-items: center; justify-content: center; margin-left: 4px; flex-shrink: 0;
-    border-width: 1px; border-color: rgba(0, 0, 0, 0); border-radius: 2px; opacity: 0.45;
+    width: 26px;
+    height: 26px;
+    margin: 0 0 0 2px;
+    padding: 0;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 3.9px; /* 15 % */
+    opacity: 0.45;
 }
-/* Always laid out, so Tab reaches them; full strength on the hovered, focused or selected row. */
-.lobby .switcher__row:hover .switcher__action, .lobby .switcher__row--selected .switcher__action,
-.lobby .switcher__row:focus .switcher__action, .lobby .switcher__action:focus { opacity: 1; }
-.lobby .switcher__action:hover { background-color: var(--lb-inset); border-color: var(--lb-border); }
-.lobby .switcher__action:focus { border-color: var(--lb-border-strong); }
-.switcher__action .lobby__icon { width: 14px; height: 14px; }
-.lobby .switcher__action:disabled, .lobby .switcher__row--selected .switcher__action:disabled { opacity: 0.2; }
+
+.lobby .switcher__row:hover .switcher__action,
+.lobby .switcher__row--selected .switcher__action {
+    opacity: 1;
+}
+
+.lobby .switcher__action:hover {
+    border-color: var(--ui-editor-cell-edge);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.lobby .switcher__action .lobby__icon {
+    width: 13px;
+    height: 13px;
+}
+
+/* Off (the roster is full, or it's your only character). The bible's --disabled is the Button's :disabled here, and it
+   holds on a hovered row too. */
+.lobby .switcher__action:disabled,
+.lobby .switcher__row--selected .switcher__action:disabled,
+.lobby .switcher__row:hover .switcher__action:disabled {
+    opacity: 0.2;
+}
+
+/* ── Delete, asked inline ── */
 .lobby .switcher__confirm {
-    padding: 12px; margin: 0 0 6px; flex-shrink: 0;
-    border-width: 1px; border-radius: 2px; border-color: rgba(177, 61, 61, 0.4); background-color: var(--lb-red-bg);
+    margin-bottom: 4px;
+    padding: 10px 12px;
+    flex-shrink: 0;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-danger);
+    background-color: rgba(235, 98, 82, 0.1);
 }
-.lobby .switcher__confirm-text { font-size: 14px; color: var(--lb-text); white-space: normal; margin-bottom: 10px; }
-.lobby .switcher__confirm-buttons { flex-direction: row; }
+
+.lobby .switcher__confirm-text {
+    margin-bottom: 10px;
+    font-size: 11.5px;
+    white-space: normal;
+}
+
+.lobby .switcher__confirm-buttons {
+    flex-direction: row;
+}
+
 .lobby .switcher__confirm-button {
-    flex-direction: row; align-items: center; height: 32px; padding: 0 12px; margin-right: 8px; border-radius: 2px;
-    border-width: 1px; border-color: var(--lb-chrome); background-color: var(--lb-chrome);
+    flex-direction: row;
+    align-items: center;
+    height: 28px;
+    margin: 0 4px 0 0;
+    padding: 0 10px;
+    background-color: var(--ui-editor-button);
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 0;
+    color: var(--ui-text);
 }
-.lobby .switcher__confirm-button:hover { background-color: var(--lb-hover); }
-.lobby .switcher__confirm-button:focus { border-color: var(--lb-text); }
-.lobby .switcher__confirm-button--danger { background-color: var(--lb-red); border-color: var(--lb-red); }
-.lobby .switcher__confirm-button--danger:hover { background-color: #c54a4a; }
-.switcher__confirm-button .lobby__icon { width: 14px; height: 14px; margin-right: 8px; -unity-background-image-tint-color: var(--lb-text); }
-.lobby .switcher__confirm-label { font-size: 18px; letter-spacing: 1.44px; color: var(--lb-text); }
-.lobby .switcher__foot { padding: 10px 14px 12px; flex-shrink: 0; border-top-width: 1px; border-top-color: var(--lb-border); }
+
+.lobby .switcher__confirm-button:hover,
+.lobby .switcher__confirm-button:active,
+.lobby .switcher__confirm-button:hover:active {
+    background-color: var(--ui-editor-button-hover);
+    border-color: rgba(0, 0, 0, 0);
+    color: var(--ui-text);
+}
+
+.lobby .switcher__confirm-button--danger,
+.lobby .switcher__confirm-button--danger:hover,
+.lobby .switcher__confirm-button--danger:active,
+.lobby .switcher__confirm-button--danger:hover:active {
+    border-color: var(--ui-danger);
+}
+
+.lobby .switcher__confirm-button--danger:hover,
+.lobby .switcher__confirm-button--danger:active,
+.lobby .switcher__confirm-button--danger:hover:active {
+    background-color: rgba(235, 98, 82, 0.2);
+}
+
+.lobby .switcher__confirm-button .lobby__icon {
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    -unity-background-image-tint-color: var(--ui-text);
+}
+
+.lobby .switcher__confirm-label {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+    color: var(--ui-text);
+}
+
+/* ── Foot: New character ── */
+.lobby .switcher__foot {
+    padding: 6px 8px 10px 8px;
+    flex-shrink: 0;
+}
+
 .lobby .switcher__new {
-    flex-direction: row; align-items: center; justify-content: center; height: 36px; border-radius: 2px;
-    border-width: 1px; border-color: var(--lb-chrome); background-color: var(--lb-chrome);
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    margin: 0;
+    padding: 0;
+    border-width: 0;
+    border-radius: 0;
+    background-color: var(--ui-editor-button);
+    color: var(--ui-text);
 }
-.lobby .switcher__new:hover { background-color: var(--lb-hover); }
-.lobby .switcher__new:focus { border-color: var(--lb-border-strong); }
-.switcher__new .lobby__icon { width: 14px; height: 14px; margin-right: 8px; -unity-background-image-tint-color: var(--lb-text); }
-.lobby .switcher__new-label { font-size: 20px; letter-spacing: 1.6px; }
-.lobby .switcher__new:disabled { opacity: 1; background-color: var(--lb-inset); }
-.lobby .switcher__new:disabled .switcher__new-label { color: var(--lb-disabled); }
-.lobby .switcher__new:disabled .lobby__icon { -unity-background-image-tint-color: var(--lb-disabled); }
-.lobby .switcher__full { font-size: 12px; color: var(--lb-text-2); margin-top: 8px; white-space: normal; }
-.lobby .switcher__full--hidden { display: none; }
+
+.lobby .switcher__new:hover,
+.lobby .switcher__new:active,
+.lobby .switcher__new:hover:active {
+    background-color: var(--ui-editor-button-hover);
+    color: var(--ui-text);
+}
+
+.lobby .switcher__new .lobby__icon {
+    width: 12px;
+    height: 12px;
+    margin-right: 8px;
+    -unity-background-image-tint-color: var(--ui-text);
+}
+
+.lobby .switcher__new-label {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 11px;
+    color: var(--ui-text);
+}
+
+/* Off (ten characters): the bible's --disabled, the Button's :disabled here. */
+.lobby .switcher__new:disabled,
+.lobby .switcher__new:disabled:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+    color: var(--ui-menu-tab-text);
+    opacity: 1;
+}
+
+.lobby .switcher__new:disabled .switcher__new-label {
+    color: var(--ui-menu-tab-text);
+}
+
+.lobby .switcher__new:disabled .lobby__icon {
+    -unity-background-image-tint-color: var(--ui-menu-tab-text);
+}
+
+.lobby .switcher__full {
+    margin-top: 6px;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: normal;
+}
+
+.lobby .switcher__full--hidden {
+    display: none;
+}
+
+/* ── Colour coding: the character by its High job ── */
+.lobby .switcher__row--dept {
+    padding-left: 6px;
+    border-left-width: 3px;
+    border-left-color: var(--dept);
+}

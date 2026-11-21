@@ -34,7 +34,7 @@ namespace SS3D.UI.Lobby
             _card.Add(_text);
             _name = new TextField("New map name") { name = "map-stop-name", maxLength = 80 };
             _name.AddToClassList("lobby-admin__text");
-            LobbyUi.DarkInput(_name);
+            LobbyUi.EditorInput(_name);
             LobbyUi.HoldTextEntry(_name, textEntry);
             _card.Add(_name);
             _error = LobbyUi.Text("", "lobby-prompt__error");
@@ -51,6 +51,7 @@ namespace SS3D.UI.Lobby
                 button.AddToClassList("lobby-admin__button");
                 button.AddToClassList("lb-titling");
                 if (choice == MapStopChoice.SaveAndStop) button.AddToClassList("lobby-admin__button--start");
+                else if (choice == MapStopChoice.DiscardAndStop) button.AddToClassList("lobby-admin__button--danger");
                 buttons.Add(button);
             }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SS3D.Systems.IdAccess;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Roles;
@@ -10,20 +11,37 @@ using UnityEngine.UIElements;
 namespace SS3D.UI.Lobby
 {
     /// <summary>
-    /// The character window (lobby.md §6, lobby effort Phase 5), built from <c>CharacterWindow.uxml</c>: a top bar with
-    /// the switcher, Saved / Discard / Save and Return to lobby; the preview column with rotation and a show-clothing
-    /// toggle; and the Appearance, Jobs and Antags tabs. One Save covers all three (Decision 5). Esc returns to the
-    /// lobby and, with unsaved changes, asks Save / Discard / Keep editing; so does any switcher action that would
-    /// leave the edited character. <see cref="LobbyUiSubSystem"/> owns the roster, the booth and the network.
+    /// The character window (lobby.md §6, lobby effort Phase 5), built from <c>CharacterWindow.uxml</c> in the UI bible's
+    /// "character" tab look (the old character setup screen): the title with the switcher at its end; a tab column
+    /// (Profile, Body, Skin &amp; eyes, Hair, Facial hair, Jobs, Antags); the appearance panes in the centre column beside the
+    /// framed preview, which turns to Front / Side / Back or by dragging; Jobs and Antags wide over the preview; save
+    /// state with Discard and Save; Return to lobby. One Save covers every tab (Decision 5). Esc returns to the lobby
+    /// and, with unsaved changes, asks Save / Discard / Keep editing; so does any switcher action that would leave the
+    /// edited character. <see cref="LobbyUiSubSystem"/> owns the roster, the booth and the network.
     /// </summary>
     public sealed class CharacterWindowView : IUiSurface
     {
-        public const string TabAppearance = "appearance";
+        public const string TabProfile = "profile";
+        public const string TabBody = "body";
+        public const string TabSkin = "skin";
+        public const string TabHair = "hair";
+        public const string TabBeard = "beard";
         public const string TabJobs = "jobs";
         public const string TabAntags = "antags";
 
-        private static readonly string[] TabOrder = { TabAppearance, TabJobs, TabAntags };
+        private static readonly string[] TabOrder = { TabProfile, TabBody, TabSkin, TabHair, TabBeard, TabJobs, TabAntags };
+        private static readonly string[] WideTabs = { TabJobs, TabAntags };
         private static readonly string[] AngleLabels = { "Front", "Side", "Back" };
+
+        /// <summary>The job outfit preview's first two choices; the server's jobs follow.</summary>
+        private const int OutfitHighJob = 0;
+        private const int OutfitNaked = 1;
+
+        /// <summary>Screen px of travel before a press on the preview counts as a drag.</summary>
+        private const float DragThreshold = 4f;
+
+        /// <summary>Degrees the character turns per screen px dragged, as on the lobby's stage.</summary>
+        private const float DegreesPerPixel = 0.4f;
 
         private readonly LobbyAssetCatalog _catalog;
         private readonly CharacterRoster _roster;
@@ -32,9 +50,12 @@ namespace SS3D.UI.Lobby
         private readonly InputTextEntryScope _textEntry = new();
         private readonly CharacterWindowModel _model = new();
         private readonly Dictionary<string, Button> _tabs = new();
+        private readonly Dictionary<string, VisualElement> _panes = new();
+        private readonly List<string> _outfitJobs = new();
 
         private VisualElement _root;
-        private VisualElement _tabContent;
+        private VisualElement _window;
+        private Action _unfit;
         private CharacterAppearanceTab _appearance;
         private CharacterJobsTab _jobs;
         private CharacterAntagsTab _antags;
@@ -42,8 +63,6 @@ namespace SS3D.UI.Lobby
         private Button _switchButton;
         private VisualElement _switchPortrait;
         private Label _switchName;
-        private Label _switchHighPrefix;
-        private Label _switchHighJob;
         private Label _switchCount;
         private VisualElement _status;
         private Label _statusLabel;
@@ -51,18 +70,20 @@ namespace SS3D.UI.Lobby
         private Button _save;
         private VisualElement _previewImage;
         private VisualElement _preview;
-        private List<VisualElement> _angles;
-        private Button _showClothing;
+        private List<Button> _angles;
+        private UiSelect _outfit;
         private Label _caption;
         private VisualElement _prompt;
         private Label _promptError;
         private Button _promptSave;
         private Action _pending;
         private Texture _previewTexture;
-        private string _activeTab = TabAppearance;
+        private string _activeTab = TabProfile;
         private int _angleIndex;
-        private bool _clothingShown = true;
+        private int _outfitIndex;
         private string _fallbackJob = "Assistant";
+        private bool _previewPressed;
+        private float _previewDragged;
 
         /// <summary>Return to lobby, after any unsaved changes were saved or discarded.</summary>
         public event Action ReturnRequested;
@@ -75,6 +96,8 @@ namespace SS3D.UI.Lobby
         public event Action NewRequested;
         /// <summary>0 = Front, 1 = Side, 2 = Back.</summary>
         public event Action<int> AngleChanged;
+        /// <summary>The player dragged the preview: degrees to turn the character by, on top of the angle.</summary>
+        public event Action<float> CharacterTurned;
         /// <summary>The working copy's body sliders changed.</summary>
         public event Action<SavedCharacter> BodyChanged;
         /// <summary>The working copy's hair, facial hair, eyebrows, skin or eyes changed.</summary>
@@ -91,6 +114,9 @@ namespace SS3D.UI.Lobby
             _departmentOf = departmentOf ?? (_ => Department.None);
         }
 
+        /// <summary>The player's UI scale (the shell PanelSettings' scale); set it before <see cref="Attach"/>.</summary>
+        public Func<float> UserScale { get; set; }
+
         public VisualElement Root => _root;
 
         public bool IsVisible => _root != null && _root.style.display != DisplayStyle.None;
@@ -106,7 +132,8 @@ namespace SS3D.UI.Lobby
         /// <summary>The character the window edits (the roster's selected one).</summary>
         public string CharacterId => _model.Saved?.Id;
 
-        public bool ClothingShown => _clothingShown;
+        /// <summary>False while the job outfit preview is set to no clothes.</summary>
+        public bool ClothingShown => _outfitIndex != OutfitNaked;
 
         public void Attach(VisualElement layerRoot)
         {
@@ -120,6 +147,7 @@ namespace SS3D.UI.Lobby
             _root = template.CloneTree().Q("character-window-surface");
             _root.RemoveFromHierarchy();
             _root.pickingMode = PickingMode.Position;
+            _window = _root.Q("charwin-window");
             BindTopBar();
             BindPreview();
             BindTabs();
@@ -131,16 +159,13 @@ namespace SS3D.UI.Lobby
             _switcher.DuplicateRequested += id => Guard(true, () => DuplicateRequested?.Invoke(id));
             _switcher.DeleteRequested += id => Guard(id == _roster.SelectedId, () => DeleteRequested?.Invoke(id));
             _switcher.Closed += () => _switchButton.RemoveFromClassList("charwin__switch--open");
-            _switcher.Mount(_root.Q("charwin-window"), _switchButton);
+            _switcher.Mount(_window, _switchButton);
 
-            _root.RegisterCallback<GeometryChangedEvent>(e =>
-            {
-                bool compact = e.newRect.width > 0f && e.newRect.width < LobbyView.CompactWidth;
-                _root.EnableInClassList("lobby--compact", compact);
-                _jobs.SetCompact(compact);
-            });
             _root.RegisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
             layerRoot.Add(_root);
+            // The panes and the preview sit at the bible's fixed positions on the 1200 × 675 surface, so a UI scale above
+            // 1 would push them off it: the player's scale shrinks the window but never enlarges it.
+            _unfit = UiReferenceScale.Fit(_root, _window, () => Mathf.Min(1f, UserScale?.Invoke() ?? 1f));
             SetVisible(false);
         }
 
@@ -153,10 +178,13 @@ namespace SS3D.UI.Lobby
             DeleteRequested = null;
             NewRequested = null;
             AngleChanged = null;
+            CharacterTurned = null;
             BodyChanged = null;
             LookChanged = null;
             OutfitChanged = null;
             _textEntry.Exit();
+            _unfit?.Invoke();
+            _unfit = null;
             _root?.RemoveFromHierarchy();
             _root = null;
         }
@@ -168,6 +196,7 @@ namespace SS3D.UI.Lobby
             {
                 _textEntry.Exit();
                 _switcher?.Close();
+                _outfit?.Close();
                 ClosePrompt();
             }
 
@@ -175,13 +204,13 @@ namespace SS3D.UI.Lobby
             _root.pickingMode = visible ? PickingMode.Position : PickingMode.Ignore;
         }
 
-        /// <summary>Opens on <paramref name="tab"/> with the selected character; focus starts in the Name field.</summary>
-        public void Open(string tab = TabAppearance)
+        /// <summary>Opens on <paramref name="tab"/> with the selected character; on Profile, focus starts in the Name field.</summary>
+        public void Open(string tab = TabProfile)
         {
             if (_root == null) return;
             Load(_roster.Selected);
             _angleIndex = 0;
-            _clothingShown = true;
+            _outfitIndex = OutfitHighJob;
             RefreshPreviewControls();
             SelectTab(tab);
             SetVisible(true);
@@ -189,7 +218,7 @@ namespace SS3D.UI.Lobby
             RaisePreview();
             _root.schedule.Execute(() =>
             {
-                if (_activeTab == TabAppearance) _appearance.NameField?.Focus();
+                if (_activeTab == TabProfile) _appearance.NameField?.Focus();
                 else _tabs[_activeTab].Focus();
             }).ExecuteLater(1);
         }
@@ -203,10 +232,11 @@ namespace SS3D.UI.Lobby
             _jobs.Rebuild();
             _antags.Rebuild();
             RefreshTopBar();
+            RefreshPreviewControls();
             if (IsVisible) RaisePreview();
         }
 
-        /// <summary>Repaints the top bar, the outfit caption and the tabs' state from the working copy.</summary>
+        /// <summary>Repaints the top bar, the outfit preview and the tabs' state from the working copy.</summary>
         public void Refresh()
         {
             if (_root == null) return;
@@ -216,7 +246,7 @@ namespace SS3D.UI.Lobby
             _jobs.Refresh();
         }
 
-        /// <summary>The roster changed (count, names, portraits): repaint the top-bar button and an open switcher.</summary>
+        /// <summary>The roster changed (count, names, portraits): repaint the switcher's button and an open switcher.</summary>
         public void RefreshRoster()
         {
             if (_root == null) return;
@@ -232,6 +262,10 @@ namespace SS3D.UI.Lobby
             // No job has a playtime requirement yet (effort deviation): only jobs not in the game are locked.
             _jobs.SetJobs(jobs, describe, _ => null, _fallbackJob);
             _jobs.Rebuild();
+            string picked = _outfitIndex > OutfitNaked && _outfitIndex - 2 < _outfitJobs.Count ? _outfitJobs[_outfitIndex - 2] : null;
+            _outfitJobs.Clear();
+            if (jobs != null) _outfitJobs.AddRange(jobs.Select(job => job.Name).Where(name => !string.IsNullOrEmpty(name)));
+            if (picked != null) _outfitIndex = _outfitJobs.Contains(picked) ? _outfitJobs.IndexOf(picked) + 2 : OutfitHighJob;
             RefreshPreviewControls();
         }
 
@@ -256,13 +290,12 @@ namespace SS3D.UI.Lobby
             _switchButton = _root.Q<Button>("charwin-switch");
             _switchButton.clicked += () =>
             {
-                _switcher.Toggle(_switchButton, true);
+                _outfit?.Close();
+                _switcher.ToggleBelowEnd(_switchButton);
                 _switchButton.EnableInClassList("charwin__switch--open", _switcher.IsOpen);
             };
             _switchPortrait = _root.Q("charwin-switch-portrait");
             _switchName = _root.Q<Label>("charwin-switch-name");
-            _switchHighPrefix = _root.Q<Label>("charwin-switch-high-prefix");
-            _switchHighJob = _root.Q<Label>("charwin-switch-high-job");
             _switchCount = _root.Q<Label>("charwin-switch-count");
             _status = _root.Q("charwin-status");
             _statusLabel = _root.Q<Label>("charwin-status-label");
@@ -277,29 +310,41 @@ namespace SS3D.UI.Lobby
         {
             _preview = _root.Q("charwin-preview");
             _previewImage = _root.Q("charwin-preview-image");
-            _angles = _root.Q("charwin-angles").Query(className: "charwin__angle").ToList();
-            _root.Q<Button>("charwin-rotate-left").clicked += () => Rotate(-1);
-            _root.Q<Button>("charwin-rotate-right").clicked += () => Rotate(1);
+            _angles = _root.Q("charwin-angles").Query<Button>(className: "charwin__angle").ToList();
+            for (int i = 0; i < _angles.Count; i++)
+            {
+                int index = i;
+                _angles[i].clicked += () => SetAngle(index);
+            }
+
             _preview.RegisterCallback<KeyDownEvent>(e =>
             {
                 if (e.keyCode is not (KeyCode.LeftArrow or KeyCode.RightArrow)) return;
                 Rotate(e.keyCode == KeyCode.LeftArrow ? -1 : 1);
                 e.StopPropagation();
             });
-            _showClothing = _root.Q<Button>("charwin-show-clothing");
-            _showClothing.clicked += () =>
+            _preview.RegisterCallback<PointerDownEvent>(OnPreviewPointerDown);
+            _preview.RegisterCallback<PointerMoveEvent>(OnPreviewPointerMove);
+            _preview.RegisterCallback<PointerUpEvent>(OnPreviewPointerUp);
+            _preview.RegisterCallback<PointerCaptureOutEvent>(_ => _previewPressed = false);
+
+            // The job outfit preview (Decision 14): the High job's clothes, none, or any job's, on the Profile pane.
+            _outfit = new UiSelect { name = "charwin-outfit", tooltip = "The clothes the preview wears. Other players see your job's." };
+            _outfit.AddToClassList("charwin__select");
+            _outfit.RegisterValueChangedCallback(_ =>
             {
-                _clothingShown = !_clothingShown;
+                if (_outfit.Index < 0) return;
+                _outfitIndex = _outfit.Index;
                 RefreshPreviewControls();
                 RaiseOutfit();
-            };
-            _caption = _root.Q<Label>("charwin-outfit-caption");
+            });
+            _caption = LobbyUi.Text("", "charwin__note", "charwin__note--caption");
+            _caption.name = "charwin-outfit-caption";
             SetPreviewTexture(_previewTexture);
         }
 
         private void BindTabs()
         {
-            _tabContent = _root.Q("charwin-tab-content");
             foreach (string key in TabOrder)
             {
                 Button tab = _root.Q<Button>("charwin-tab-" + key);
@@ -308,9 +353,13 @@ namespace SS3D.UI.Lobby
                 _tabs[key] = tab;
             }
 
+            VisualElement outfit = LobbyUi.Box("charwin__outfit");
+            outfit.Add(_outfit);
+            outfit.Add(_caption);
             _appearance = new CharacterAppearanceTab(_model, _catalog, _textEntry,
                 () => RandomCharacter.RandomName(_catalog != null ? _catalog.CharacterNames : null, Random),
-                draft => RandomCharacter.RandomizeLook(draft, RandomCharacter.LookOptions.From(_catalog), Random));
+                draft => RandomCharacter.RandomizeLook(draft, RandomCharacter.LookOptions.From(_catalog), Random),
+                outfit);
             _appearance.Changed += change =>
             {
                 RefreshTopBar();
@@ -326,6 +375,24 @@ namespace SS3D.UI.Lobby
             };
             _antags = new CharacterAntagsTab(_model);
             _antags.Changed += RefreshTopBar;
+
+            VisualElement column = _root.Q("charwin-column");
+            VisualElement wide = _root.Q("charwin-wide");
+            AddPane(column, TabProfile, _appearance.Profile);
+            AddPane(column, TabBody, _appearance.Body);
+            AddPane(column, TabSkin, _appearance.Skin);
+            AddPane(column, TabHair, _appearance.Hair);
+            AddPane(column, TabBeard, _appearance.Beard);
+            AddPane(wide, TabJobs, _jobs.Root);
+            AddPane(wide, TabAntags, _antags.Root);
+        }
+
+        /// <summary>Every pane stays in the tree, hidden unless its tab is open, so its controls keep their state.</summary>
+        private void AddPane(VisualElement host, string key, VisualElement pane)
+        {
+            pane.AddToClassList("charwin__pane");
+            host.Add(pane);
+            _panes[key] = pane;
         }
 
         private static readonly System.Random Random = new();
@@ -356,18 +423,19 @@ namespace SS3D.UI.Lobby
 
         public void SelectTab(string key)
         {
-            if (!_tabs.ContainsKey(key)) key = TabAppearance;
+            if (!_tabs.ContainsKey(key)) key = TabProfile;
             _activeTab = key;
-            foreach ((string each, Button tab) in _tabs) tab.EnableInClassList("lobby__tab--active", each == key);
-            // A focused field removed from the panel gets no FocusOut.
+            foreach ((string each, Button tab) in _tabs) tab.EnableInClassList("charwin__tab--active", each == key);
+            foreach ((string each, VisualElement pane) in _panes) pane.EnableInClassList("charwin__pane--hidden", each != key);
+            _root.EnableInClassList("charwin--wide", Array.IndexOf(WideTabs, key) >= 0);
+            // A focused field that gets hidden gets no FocusOut: let go of text entry and of the focus.
             _textEntry.Exit();
-            _tabContent.Clear();
-            _tabContent.Add(key switch
+            _outfit?.Close();
+            if (_root.panel?.focusController?.focusedElement is VisualElement focused
+                && _panes.Values.Any(pane => pane.Contains(focused) && pane.ClassListContains("charwin__pane--hidden")))
             {
-                TabJobs => _jobs.Root,
-                TabAntags => _antags.Root,
-                _ => _appearance.Root,
-            });
+                focused.Blur();
+            }
         }
 
         // ---- Save, discard, return ----
@@ -412,6 +480,7 @@ namespace SS3D.UI.Lobby
 
             _pending = action;
             _switcher.Close();
+            _outfit?.Close();
             _prompt.AddToClassList("charwin__prompt--open");
             ShowPromptError();
             _prompt.schedule.Execute(() => (_model.NameValid ? _promptSave : _root.Q<Button>("charwin-prompt-keep")).Focus()).ExecuteLater(1);
@@ -442,6 +511,7 @@ namespace SS3D.UI.Lobby
                 case KeyCode.Escape:
                 {
                     if (PromptOpen) ClosePrompt();
+                    else if (_outfit.IsOpen) _outfit.Close();
                     // Inside the popover, Esc is the switcher's (it backs out of a delete confirm first).
                     else if (_switcher.IsOpen && focused != null && _switcher.Root.Contains(focused)) return;
                     else if (_switcher.IsOpen)
@@ -487,21 +557,66 @@ namespace SS3D.UI.Lobby
 
         // ---- Preview ----
 
-        private void Rotate(int step)
+        private void Rotate(int step) => SetAngle((_angleIndex + step + AngleLabels.Length) % AngleLabels.Length);
+
+        /// <summary>Front, Side or Back; the booth also drops any turn from dragging.</summary>
+        private void SetAngle(int index)
         {
-            _angleIndex = (_angleIndex + step + AngleLabels.Length) % AngleLabels.Length;
+            _angleIndex = index;
             RefreshPreviewControls();
             AngleChanged?.Invoke(_angleIndex);
+        }
+
+        private void OnPreviewPointerDown(PointerDownEvent evt)
+        {
+            if (evt.button != 0) return;
+            _previewPressed = true;
+            _previewDragged = 0f;
+            _preview.CapturePointer(evt.pointerId);
+            _preview.Focus();
+        }
+
+        private void OnPreviewPointerMove(PointerMoveEvent evt)
+        {
+            if (!_previewPressed) return;
+            float dx = evt.deltaPosition.x;
+            _previewDragged += Mathf.Abs(dx);
+            // Drag right turns the character to its left, as if spinning it by the shoulder.
+            if (_previewDragged >= DragThreshold && dx != 0f) CharacterTurned?.Invoke(-dx * DegreesPerPixel);
+        }
+
+        private void OnPreviewPointerUp(PointerUpEvent evt)
+        {
+            _previewPressed = false;
+            if (_preview.HasPointerCapture(evt.pointerId)) _preview.ReleasePointer(evt.pointerId);
         }
 
         private void RefreshPreviewControls()
         {
             if (_angles == null) return;
-            for (int i = 0; i < _angles.Count; i++) _angles[i].EnableInClassList("charwin__angle--active", i == _angleIndex);
-            _preview.tooltip = $"Character preview, {AngleLabels[_angleIndex]} view. Left and right arrows rotate it.";
-            _showClothing.EnableInClassList("lobby__switch-toggle--on", _clothingShown);
-            _showClothing.tooltip = _clothingShown ? "Hide clothing" : "Show clothing";
-            if (_model.Working != null) _caption.text = _model.OutfitCaption(_fallbackJob, _clothingShown);
+            for (int i = 0; i < _angles.Count; i++)
+            {
+                _angles[i].EnableInClassList("charwin__angle--active", i == _angleIndex);
+                _angles[i].EnableInClassList("charwin__seg-option--on", i == _angleIndex);
+            }
+
+            _preview.tooltip = $"Character preview, {AngleLabels[_angleIndex]} view. Drag to turn it; Q and E, or the arrow keys, turn it to a side.";
+            if (_model.Working == null) return;
+
+            string high = _model.Working.Preferences.HighJob;
+            List<string> choices = new()
+            {
+                // SquareDeal has no brackets or colon (Kode Mono fills them in, out of step): a comma reads cleaner.
+                "high job, " + (high != null ? high.ToLowerInvariant() : "none set"),
+                "naked",
+            };
+            choices.AddRange(_outfitJobs.Select(job => job.ToLowerInvariant()));
+            if (_outfitIndex >= choices.Count) _outfitIndex = OutfitHighJob;
+            _outfit.Choices = choices;
+            _outfit.SetValueWithoutNotify(choices[_outfitIndex]);
+            _caption.text = _outfitIndex > OutfitNaked
+                ? $"Wearing {_outfitJobs[_outfitIndex - 2]} clothes, to try them on. Other players see your job's."
+                : _model.OutfitCaption(_fallbackJob, _outfitIndex == OutfitHighJob);
         }
 
         private void RaisePreview()
@@ -511,9 +626,15 @@ namespace SS3D.UI.Lobby
             RaiseOutfit();
         }
 
-        private void RaiseOutfit() => OutfitChanged?.Invoke(_model.OutfitJob(_fallbackJob), _clothingShown);
+        private void RaiseOutfit()
+        {
+            string job = _outfitIndex > OutfitNaked && _outfitIndex - 2 < _outfitJobs.Count
+                ? _outfitJobs[_outfitIndex - 2]
+                : _model.OutfitJob(_fallbackJob);
+            OutfitChanged?.Invoke(job, ClothingShown);
+        }
 
-        // ---- Top bar ----
+        // ---- Switcher button and save state ----
 
         private void RefreshTopBar()
         {
@@ -521,17 +642,9 @@ namespace SS3D.UI.Lobby
             if (working == null) return;
             SavedCharacter saved = _model.Saved;
             _switchName.text = string.IsNullOrWhiteSpace(saved.Name) ? "Unnamed" : saved.Name;
-            string high = saved.Preferences?.HighJob;
-            _switchHighPrefix.text = high != null ? "High:" : "No High job";
-            _switchHighJob.text = high ?? "";
-            foreach (Department each in Enum.GetValues(typeof(Department)))
-            {
-                string cls = LobbyView.DepartmentClass(each);
-                if (cls != null) _switchHighJob.EnableInClassList(cls, high != null && _departmentOf(high) == each);
-            }
-
             _switchCount.text = $"{_roster.Count}/{CharacterRoster.MaxCharacters}";
-            _switchButton.tooltip = "Switch character, current " + _switchName.text;
+            string high = saved.Preferences?.HighJob;
+            _switchButton.tooltip = "Switch character, current " + _switchName.text + (high != null ? ", High: " + high : "");
             Texture portrait = _portraitOf(saved.Id);
             _switchPortrait.style.backgroundImage = portrait switch
             {
@@ -541,8 +654,8 @@ namespace SS3D.UI.Lobby
             };
 
             bool dirty = _model.IsDirty;
-            _status.EnableInClassList("charwin__status--dirty", dirty);
-            _statusLabel.text = dirty ? "Unsaved changes" : "Saved";
+            _status.EnableInClassList("charwin__save--dirty", dirty);
+            _statusLabel.text = dirty ? "unsaved changes" : "saved";
             _discard.SetEnabled(dirty);
             _save.SetEnabled(_model.CanSave);
             _save.tooltip = _model.SaveTooltip;

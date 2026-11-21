@@ -8,8 +8,8 @@ namespace SS3D.Systems.IdAccess
     /// The colour of each <see cref="Department"/>, for anything in the world that shows a department in colour: floor
     /// paint so far. Edit them in Project Settings › SS3D › Assets › Department Colors; painted floors redraw at once.
     /// <para>
-    /// Colours are sRGB, as the colour picker shows them. The lobby's UI Toolkit tokens (<c>LobbyTokens.uss</c>
-    /// <c>--dept-*</c>) started from the same values but are kept by hand, since USS can't read this asset.
+    /// Colours are sRGB, as the colour picker shows them. The UI Toolkit tokens (<c>ui-tokens.uss</c>
+    /// <c>--ui-dept-*</c>) started from the same values but are kept by hand, since USS can't read this asset.
     /// </para>
     /// </summary>
     [ProjectSettings("SS3D/Assets", "Department Colors")]

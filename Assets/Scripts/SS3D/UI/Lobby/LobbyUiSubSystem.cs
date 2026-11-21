@@ -136,8 +136,11 @@ namespace SS3D.UI.Lobby
             _draft = _roster.Selected;
 
             _shellView = new LobbyView(_catalog);
+            PanelSettings shellPanel = uiShell.Document.panelSettings;
+            _shellView.UserScale = () => shellPanel != null ? shellPanel.scale : 1f;
             _shellView.Attach(modalLayer);
             _shellView.CharacterCreatorRequested += HandleCharacterCreatorRequested;
+            _shellView.CharacterTurned += degrees => _preview?.Turn(degrees);
             _preview = new LobbyCharacterPreview(_catalog);
             _preview.PortraitCaptured += RepaintPortraits;
             _lobbySwitcher = new CharacterSwitcher(_roster, _preview.PortraitOf, DepartmentOf);
@@ -169,6 +172,7 @@ namespace SS3D.UI.Lobby
             RefreshCharacterCard();
 
             _window = new CharacterWindowView(_catalog, _roster, _preview.PortraitOf, DepartmentOf);
+            _window.UserScale = _shellView.UserScale;
             _window.Attach(modalLayer);
             _window.ReturnRequested += HandleReturnToLobbyRequested;
             _window.Saved += HandleCharacterSaved;
@@ -177,6 +181,7 @@ namespace SS3D.UI.Lobby
             _window.DuplicateRequested += HandleDuplicateCharacter;
             _window.DeleteRequested += HandleDeleteCharacter;
             _window.AngleChanged += _preview.SetAngle;
+            _window.CharacterTurned += degrees => _preview?.Turn(degrees);
             _window.BodyChanged += _preview.ApplyBody;
             _window.LookChanged += _preview.ApplyLook;
             _window.OutfitChanged += _preview.ApplyOutfit;

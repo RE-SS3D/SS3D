@@ -63,6 +63,8 @@ namespace SS3D.UI.Lobby
             Object.DontDestroyOnLoad(host);
             _booth = host.AddComponent<CharacterPreviewBooth>();
             _booth.Initialize(prefab);
+            // The lobby's stage, the character window and the switcher portraits show the character unlit: flat albedo.
+            _booth.SetUnlit(true);
             return _booth.PreviewTexture != null;
         }
 
@@ -101,6 +103,12 @@ namespace SS3D.UI.Lobby
             ApplyLook(character);
             string fallback = SubSystems.TryGet(out RoleSubSystem roles) ? roles.FallbackJob : "Assistant";
             ApplyOutfit(character.Preferences?.HighJob ?? fallback, true);
+        }
+
+        /// <summary>Turns the character by dragging it on the lobby's stage; the window's angles reset it.</summary>
+        public void Turn(float degrees)
+        {
+            if (_booth != null) _booth.AddYaw(degrees);
         }
 
         /// <summary>0 = Front, 1 = Side, 2 = Back.</summary>

@@ -20,6 +20,7 @@ namespace SS3D.UI.Lobby
         private readonly ScrollView _log;
         private readonly TextField _input;
         private readonly Button _adminChannel;
+        private readonly VisualElement _composer;
         private readonly Dictionary<OocChannel, Button> _channels = new();
         private OocChannel _channel = OocChannel.Ooc;
         private OocChatMessage[] _messages = Array.Empty<OocChatMessage>();
@@ -42,10 +43,19 @@ namespace SS3D.UI.Lobby
             _log.AddToClassList("lobby-chat__log");
             Root.Add(_log);
 
-            VisualElement composer = LobbyUi.Box("lobby-chat__composer");
-            AddChannel(composer, OocChannel.Ooc, "OOC");
-            AddChannel(composer, OocChannel.Looc, "LOOC");
-            _adminChannel = AddChannel(composer, OocChannel.Admin, "Admin");
+            // The channels over the field, so the field keeps the narrow panel's width; the field's edge and the
+            // chosen channel take the channel's colour (lobby-chat__composer--<channel>).
+            _composer = LobbyUi.Box("lobby-chat__composer");
+            _composer.AddToClassList("lobby-chat__composer--stacked");
+            VisualElement composer = _composer;
+            VisualElement channels = LobbyUi.Box("lobby-chat__composer-row");
+            composer.Add(channels);
+            AddChannel(channels, OocChannel.Ooc, "OOC");
+            AddChannel(channels, OocChannel.Looc, "LOOC");
+            _adminChannel = AddChannel(channels, OocChannel.Admin, "Admin");
+            VisualElement line = LobbyUi.Box("lobby-chat__composer-row");
+            line.AddToClassList("lobby-chat__composer-row--field");
+            composer.Add(line);
             _adminChannel.style.display = DisplayStyle.None;
 
             _input = new TextField { name = "chat-input", maxLength = OocChatRules.MaxLength, label = string.Empty };
@@ -58,15 +68,15 @@ namespace SS3D.UI.Lobby
                 Send();
                 evt.StopPropagation();
             }, TrickleDown.TrickleDown);
-            LobbyUi.DarkInput(_input);
+            LobbyUi.EditorInput(_input);
             LobbyUi.HoldTextEntry(_input, _textEntry);
-            composer.Add(_input);
+            line.Add(_input);
 
             Button send = new(Send) { name = "chat-send", tooltip = "Send (Enter)" };
             send.AddToClassList("lobby-chat__send");
             send.Add(LobbyUi.Icon("send"));
             send.Add(LobbyUi.Titling("Send", "lobby-chat__send-label"));
-            composer.Add(send);
+            line.Add(send);
             Root.Add(composer);
 
             Root.Add(LobbyUi.Text("Enter sends to the selected channel. LOOC reaches players near your character.",
@@ -83,6 +93,7 @@ namespace SS3D.UI.Lobby
                 text = label.ToUpperInvariant(),
             };
             button.AddToClassList("lobby-chat__channel-button");
+            button.AddToClassList("lobby-chat__channel-button--" + channel.ToString().ToLowerInvariant());
             button.AddToClassList("lb-titling");
             _channels[channel] = button;
             parent.Add(button);
@@ -94,6 +105,8 @@ namespace SS3D.UI.Lobby
             _channel = channel;
             foreach ((OocChannel key, Button button) in _channels)
                 button.EnableInClassList("lobby-chat__channel-button--active", key == channel);
+            foreach (OocChannel each in new OocChannel[] { OocChannel.Ooc, OocChannel.Looc, OocChannel.Admin })
+                _composer.EnableInClassList("lobby-chat__composer--" + each.ToString().ToLowerInvariant(), each == channel);
             if (_input.textEdition != null)
                 _input.textEdition.placeholder = channel switch
                 {

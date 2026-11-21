@@ -1,289 +1,1003 @@
-/*
- * Character window (lobby effort Phase 5), to the "SS3D Lobby & Character window" canvas. The root also carries
- * .lobby, so the shell's resets, icons, tabs, switches, keycaps and prompt card apply here too. Rules are prefixed with
- * .lobby where the shell's `.lobby Label` / `.lobby Button` resets (specificity 11) would beat a single class.
- * CharacterWindowView switches .lobby--compact on below 1600 px of panel width (the 1366 x 768 layout, Decision 19).
- */
 @import url("Lobby.uss");
 
-.charwin__veil { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(6, 7, 9, 0.55); }
-.charwin__window {
-    position: absolute; left: 24px; top: 24px; right: 24px; bottom: 24px;
-    background-color: var(--lb-panel); border-width: 1px; border-color: var(--lb-border); border-radius: 4px;
+/*
+ * Character window, drawn as the UI bible's "character" tab (Documents/plans/assets/ui-bible): the old character setup
+ * screen's composition holding the window's content. A title and rule; the tab column (profile, body, skin & eyes,
+ * hair, facial hair, jobs, antags); labels centred over their controls in one column; the framed viewport with
+ * Front / Side / Back under it; save state and Discard / Save at the bottom left; Return to lobby as the continue
+ * button. Jobs and Antags need the width, so .charwin--wide hides the viewport while one of them is open.
+ * Sizes are the bible's reference px: CharacterWindowView lays .charwin__window out at 1200 × 675 and scales it to the
+ * screen (UiReferenceScale), times the player's UI scale. Labels and controls are SquareDeal (the reference's font,
+ * with Kode Mono as its fallback for the punctuation it lacks); body text is Kode Mono.
+ * Lobby.uss brings the tokens, the shared controls (UiSelect), the switcher popover, icons, department colours
+ * (--dept), thin scrollers and the unsaved-changes prompt. Buttons keep the runtime theme's .unity-button class, so
+ * every Button class here sets its own background for :hover and :active too.
+ */
+
+.charwin {
+    /* The runtime theme's text field, in the menu's look. */
+    --unity-colors-input_field-background: rgba(0, 0, 0, 0.48);
+    --unity-colors-input_field-border-focus: rgba(255, 255, 255, 0.38);
 }
 
-/* ---- Top bar ---- */
-.lobby .charwin__header {
-    flex-direction: row; align-items: center; height: 64px; padding: 0 16px; flex-shrink: 0; background-color: var(--lb-chrome);
-    border-top-left-radius: 3px; border-top-right-radius: 3px;
+/* The old screen sat on the blurred station; here a warm grey over the hidden lobby, so the black plates read. */
+.charwin .charwin__veil {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(44, 37, 39, 0.95);
 }
-.lobby .charwin__title { font-size: 20px; letter-spacing: 1.6px; margin: 0 20px 0 4px; }
-.lobby .charwin__switch { flex-direction: row; align-items: center; height: 44px; padding: 0 10px 0 4px; border-radius: 4px; border-width: 1px; border-color: rgba(0, 0, 0, 0); }
-.lobby .charwin__switch:hover, .lobby .charwin__switch--open { background-color: var(--lb-inset); }
-.lobby .charwin__switch:focus { border-color: var(--lb-border-strong); }
-.lobby .charwin__switch-thumb { width: 28px; height: 36px; margin-right: 10px; border-width: 1px; border-color: var(--lb-border); background-color: var(--lb-panel); overflow: hidden; }
-.charwin__switch-text { margin-right: 12px; }
-.lobby .charwin__switch-name { font-size: 14px; -unity-font-style: bold; color: var(--lb-text); }
-.lobby .charwin__switch-high { font-size: 12px; color: var(--lb-text-2); margin-right: 4px; }
-.lobby .charwin__switch-count { font-size: 12px; color: var(--lb-text-2); margin-right: 6px; }
 
-.lobby .charwin__status { flex-direction: row; align-items: center; margin-right: 12px; }
-.lobby .charwin__status-icon {
-    width: 14px; height: 14px; margin-right: 6px; -unity-background-scale-mode: scale-to-fit;
-    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Check.png"); -unity-background-image-tint-color: var(--lb-green);
+.charwin .charwin__window {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1200px;
+    height: 675px;
 }
-.lobby .charwin__status--dirty .charwin__status-icon { width: 8px; height: 8px; margin: 0 8px 0 3px; border-radius: 4px; background-image: none; background-color: var(--lb-amber); }
-.lobby .charwin__status-label { font-size: 13px; color: var(--lb-text-2); }
 
-.lobby .charwin__button {
-    flex-direction: row; align-items: center; justify-content: center; height: 36px; padding: 0 12px; margin-left: 12px;
-    border-width: 1px; border-radius: 4px; font-size: 18px; letter-spacing: 1.44px; -unity-text-align: middle-center;
+/* ── SquareDeal: titles, labels and controls ── */
+.charwin .charwin__title,
+.charwin .charwin__who-label,
+.charwin .charwin__switch-name,
+.charwin .charwin__tab,
+.charwin .charwin__label,
+.charwin .charwin__small,
+.charwin .charwin__seg-option,
+.charwin .charwin__style-name,
+.charwin .charwin__hint,
+.charwin .charwin__save-state,
+.charwin .charwin__continue-text,
+.charwin .charwin-jobs__dept-name,
+.charwin .charwin-jobs__fallback-label,
+.charwin .charwin-antags__title,
+.charwin .charwin-antags__name,
+.charwin .charwin__select .ui-select__value,
+.charwin .ui-select__list .ui-select__item {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/SquareDealSDF.asset");
 }
-.lobby .charwin__button--ghost { border-color: var(--lb-border); color: var(--lb-text); }
-.lobby .charwin__button--ghost:hover { background-color: var(--lb-inset); }
-.lobby .charwin__button--primary { border-color: var(--lb-rust); background-color: var(--lb-rust); color: var(--lb-on-accent); }
-.lobby .charwin__button--primary:hover { border-color: var(--lb-rust-hover); background-color: var(--lb-rust-hover); }
-.lobby .charwin__button--chrome { border-color: var(--lb-chrome); background-color: var(--lb-chrome); color: var(--lb-text); }
-.lobby .charwin__button--chrome:hover { background-color: var(--lb-hover); }
-.lobby .charwin__button:focus { border-color: var(--lb-text); }
-.lobby .charwin__button:disabled { opacity: 1; background-color: var(--lb-inset); border-color: var(--lb-inset); color: var(--lb-disabled); }
-.lobby .charwin__button:disabled .charwin__button-label { color: var(--lb-disabled); }
-.lobby .charwin__button:disabled .charwin__button-icon { -unity-background-image-tint-color: var(--lb-disabled); }
-.lobby .charwin__save { width: 96px; }
-.lobby .charwin__button-icon { margin-right: 8px; -unity-background-image-tint-color: var(--lb-on-accent); }
-.lobby .charwin__button-label { font-size: 18px; letter-spacing: 1.44px; color: var(--lb-on-accent); }
-.lobby .charwin__sep { width: 1px; height: 24px; margin: 0 12px; background-color: var(--lb-border); }
-.lobby .charwin__return { flex-direction: row; align-items: center; height: 36px; padding: 0 12px; border-radius: 4px; border-width: 1px; border-color: rgba(0, 0, 0, 0); }
-.lobby .charwin__return:hover { background-color: var(--lb-inset); }
-.lobby .charwin__return:focus { border-color: var(--lb-border-strong); }
-.lobby .charwin__return-icon { margin-right: 8px; -unity-background-image-tint-color: var(--lb-text); }
-.lobby .charwin__return-label { font-size: 18px; letter-spacing: 1.44px; }
 
-/* ---- Body ---- */
-.charwin__body { flex-direction: row; flex-grow: 1; min-height: 0; }
-.lobby .charwin__preview-column {
-    width: 520px; flex-shrink: 0; align-items: center; padding: 24px 24px;
-    border-right-width: 1px; border-right-color: var(--lb-border-subtle);
+.charwin .charwin__title {
+    position: absolute;
+    left: 102px;
+    top: 24px;
+    font-size: 49px;
+    color: var(--ui-text);
 }
-.lobby .charwin__preview-frame {
-    width: 472px; height: 628px; flex-shrink: 1; min-height: 200px;
-    border-width: 1px; border-color: var(--lb-border); background-color: var(--lb-panel);
-}
-.lobby .charwin__preview-frame:focus { border-color: var(--lb-border-strong); }
-.charwin__preview-image { flex-grow: 1; -unity-background-scale-mode: scale-and-crop; }
-.lobby .charwin__rotate-row { flex-direction: row; align-items: center; justify-content: space-between; width: 472px; margin-top: 14px; flex-shrink: 0; }
-.lobby .charwin__icon-button {
-    width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 4px;
-    border-width: 1px; border-color: var(--lb-chrome); background-color: var(--lb-chrome);
-}
-.lobby .charwin__icon-button:hover { background-color: var(--lb-inset); }
-.lobby .charwin__icon-button:focus { border-color: var(--lb-border-strong); }
-.charwin__icon-button .lobby__icon { -unity-background-image-tint-color: var(--lb-text); }
-.charwin__rotate-left-icon { scale: -1 1; }
-.charwin__angles { flex-direction: row; }
-.lobby .charwin__angle { width: 48px; align-items: center; }
-.lobby .charwin__angle-label { font-size: 12px; color: var(--lb-text-2); -unity-text-align: middle-center; }
-.lobby .charwin__angle-bar { width: 28px; height: 2px; margin-top: 4px; background-color: var(--lb-border); }
-.lobby .charwin__angle--active .charwin__angle-label { color: var(--lb-text); -unity-font-style: bold; }
-.lobby .charwin__angle--active .charwin__angle-bar { background-color: var(--lb-rust); }
-.lobby .charwin__clothing-row { flex-direction: row; align-items: center; width: 472px; margin-top: 14px; flex-shrink: 0; }
-.lobby .charwin__clothing-label { font-size: 13px; color: var(--lb-text); margin-left: 10px; }
-.lobby .charwin__keyhint { margin-left: 6px; }
-.lobby .charwin__caption { width: 472px; margin-top: 14px; font-size: 12px; color: var(--lb-text-2); white-space: normal; flex-shrink: 0; }
 
-.charwin__main { flex-grow: 1; flex-shrink: 1; min-width: 0; }
-.charwin__tab-content { flex-grow: 1; min-height: 0; }
+.charwin .charwin__rule {
+    position: absolute;
+    left: 97px;
+    right: 97px;
+    top: 74px;
+    height: 2px;
+    background-color: var(--ui-menu-rule);
+}
 
-/* ---- Tab scaffolding ---- */
-.charwin-tab { flex-grow: 1; min-height: 0; }
-.charwin-tab__scroll { flex-grow: 1; min-height: 0; }
-.lobby .charwin-tab__scroll .unity-scroll-view__content-container { padding: 24px 28px; }
-.lobby .charwin-tab__intro { font-size: 13px; color: var(--lb-text-2); white-space: normal; max-width: 520px; }
-.lobby .charwin-tab__eyebrow { font-size: 11px; letter-spacing: 1.32px; color: var(--lb-text-2); -unity-font-style: bold; margin-bottom: 12px; }
-.lobby .charwin-tab__label { font-size: 13px; color: var(--lb-text); margin-bottom: 8px; }
-.lobby .charwin-tab__heading { font-size: 20px; letter-spacing: 1.6px; color: var(--lb-text); margin-bottom: 6px; }
-.lobby .charwin__action {
-    flex-direction: row; align-items: center; height: 40px; padding: 0 14px; border-radius: 2px; flex-shrink: 0;
-    border-width: 1px; border-color: var(--lb-chrome); background-color: var(--lb-chrome);
+/* ── Who you're editing: the switcher as the reference's dropdown ── */
+.charwin .charwin__who {
+    position: absolute;
+    right: 97px;
+    top: 30px;
+    flex-direction: row;
+    align-items: center;
 }
-.lobby .charwin__action:hover { background-color: var(--lb-hover); }
-.lobby .charwin__action:focus { border-color: var(--lb-border-strong); }
-.charwin__action .lobby__icon { margin-right: 8px; -unity-background-image-tint-color: var(--lb-text); }
-.lobby .charwin__action-label { font-size: 20px; letter-spacing: 1.6px; }
 
-/* Notice lines: info blue, success green. */
-.lobby .charwin__notice {
-    flex-direction: row; align-items: center; padding: 10px 12px; margin-top: 16px; flex-shrink: 0;
-    border-width: 1px; border-radius: 2px; border-color: rgba(61, 96, 137, 0.4); background-color: rgba(61, 96, 137, 0.15);
+.charwin .charwin__who-label {
+    margin-right: 12px;
+    font-size: 19px;
+    color: var(--ui-menu-tab-text-hover);
 }
-.lobby .charwin__notice .lobby__icon { margin-right: 10px; -unity-background-image-tint-color: #a9c4da; }
-.lobby .charwin__notice-text { flex-grow: 1; flex-shrink: 1; font-size: 13px; color: var(--lb-text); white-space: normal; }
-.lobby .charwin__notice--success { border-color: rgba(136, 179, 106, 0.4); background-color: rgba(136, 179, 106, 0.15); }
-.lobby .charwin__notice--success .lobby__icon { -unity-background-image-tint-color: var(--lb-green); }
-.lobby .charwin__notice--hidden { display: none; }
 
-/* ---- Appearance ---- */
-.lobby .charwin-look__top { flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 28px; }
-.charwin-look__columns { flex-direction: row; align-items: flex-start; }
-.lobby .charwin-look__left { width: 50%; flex-shrink: 1; padding-right: 20px; }
-.lobby .charwin-look__right { width: 50%; flex-shrink: 1; padding-left: 20px; }
-.lobby .charwin-look__section { margin-bottom: 32px; flex-shrink: 0; }
-.lobby .charwin-look__name-row { flex-direction: row; align-items: stretch; }
-.lobby .charwin-look__name { flex-grow: 1; margin: 0 8px 0 0; }
-.charwin-look__name > .unity-text-field__input, .charwin-look__name > .unity-base-text-field__input {
-    margin: 0; padding: 0 12px; height: 40px; border-width: 1px; border-color: var(--lb-border); border-radius: 0;
-    background-color: var(--lb-inset); color: var(--lb-text); font-size: 15px;
+.charwin .charwin__switch,
+.charwin .charwin__switch:hover,
+.charwin .charwin__switch:active,
+.charwin .charwin__switch:hover:active {
+    background-color: var(--ui-menu-field);
 }
-.charwin-look__name:focus > .unity-text-field__input, .charwin-look__name:focus > .unity-base-text-field__input { border-color: var(--lb-border-strong); }
-.charwin-look__name--error > .unity-text-field__input, .charwin-look__name--error > .unity-base-text-field__input { border-color: var(--lb-red); }
-.charwin-look__name .unity-base-text-field__input--placeholder { color: var(--lb-disabled); }
-.lobby .charwin-look__error { flex-direction: row; align-items: center; margin-top: 8px; }
-.lobby .charwin-look__error .lobby__icon { width: 14px; height: 14px; margin-right: 6px; -unity-background-image-tint-color: var(--lb-red-text); }
-.lobby .charwin-look__error-text { font-size: 13px; color: var(--lb-red-text); }
-.lobby .charwin-look__error--hidden { display: none; }
-.charwin-look__sliders { flex-direction: row; flex-wrap: wrap; }
-.lobby .charwin-look__slider-cell { width: 50%; padding-right: 12px; margin-bottom: 14px; }
-.lobby .charwin-look__slider-cell--right { padding-right: 0; padding-left: 12px; }
-.charwin-look__slider-head { flex-direction: row; justify-content: space-between; align-items: center; }
-.lobby .charwin-look__slider-label { font-size: 13px; color: var(--lb-text); }
-.lobby .charwin-look__slider-value { font-size: 12px; color: var(--lb-text-2); }
-.lobby .charwin-look__slider { width: auto; margin-top: 6px; }
-.charwin-look__swatches { flex-direction: row; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
-.lobby .charwin-look__swatch {
-    width: 28px; height: 28px; margin: 0 8px 8px 0; border-width: 2px; border-color: rgba(0, 0, 0, 0); border-radius: 2px;
-}
-.lobby .charwin-look__swatch:hover { border-color: var(--lb-border-strong); }
-.lobby .charwin-look__swatch:focus { border-color: var(--lb-border-strong); }
-.lobby .charwin-look__swatch--selected, .lobby .charwin-look__swatch--selected:hover { border-color: var(--lb-text); }
-.lobby .charwin-look__colour-row { flex-direction: row; align-items: center; margin: 4px 0 18px; }
-.lobby .charwin-look__colour-label { width: 60px; font-size: 13px; color: var(--lb-text-2); margin-bottom: 8px; }
-.charwin-look__tiles { flex-direction: row; flex-wrap: wrap; }
-.lobby .charwin-look__tile {
-    width: 80px; height: 84px; margin: 0 8px 8px 0; padding: 0; flex-direction: column; align-items: center; justify-content: flex-end;
-    background-color: var(--lb-inset); border-width: 1px; border-color: var(--lb-border-subtle); border-radius: 0;
-}
-.lobby .charwin-look__tile:hover { border-color: var(--lb-border); background-color: var(--lb-hover); }
-.lobby .charwin-look__tile:focus { border-color: var(--lb-border-strong); }
-.lobby .charwin-look__tile--selected, .lobby .charwin-look__tile--selected:hover { border-color: var(--lb-text); }
-.lobby .charwin-look__tile-icon { width: 36px; height: 36px; margin-bottom: 6px; -unity-background-image-tint-color: #5a5d60; }
-.lobby .charwin-look__tile--none .charwin-look__tile-icon { opacity: 0.6; }
-/* A baked head render (CharacterStyleThumbnailBaker) fills the tile above its label. */
-.charwin-look__tile-thumb { width: 100%; flex-grow: 1; -unity-background-scale-mode: scale-and-crop; }
-.lobby .charwin-look__tile-label {
-    width: 100%; height: 24px; font-size: 12px; color: var(--lb-text-2); -unity-text-align: middle-center;
-    background-color: var(--lb-panel); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.lobby .charwin-look__tile--selected .charwin-look__tile-label { color: var(--lb-text); -unity-font-style: bold; }
 
-/* ---- Jobs ---- */
-.lobby .charwin-jobs__top { flex-direction: row; align-items: flex-start; }
-.lobby .charwin-jobs__legend { flex-direction: row; align-items: center; margin-left: 24px; }
-.lobby .charwin-jobs__legend-item { flex-direction: row; align-items: center; margin-right: 14px; }
-.lobby .charwin-jobs__legend-swatch { width: 12px; height: 12px; margin-right: 6px; }
-.lobby .charwin-jobs__legend-label { font-size: 12px; color: var(--lb-text-2); }
-.charwin-jobs__legend-swatch--high { background-color: var(--prio-high); }
-.charwin-jobs__legend-swatch--medium { background-color: var(--prio-medium); }
-.charwin-jobs__legend-swatch--low { background-color: var(--prio-low); }
-.charwin-jobs__legend-swatch--never { background-color: var(--prio-never); }
-.lobby .charwin-jobs__columns { flex-direction: row; align-items: flex-start; margin-top: 16px; }
-.lobby .charwin-jobs__column { flex-grow: 1; flex-basis: 0; min-width: 0; }
-.lobby .charwin-jobs__column--left { margin-right: 16px; }
-.lobby .charwin-jobs__dept { margin-bottom: 12px; border-width: 1px; border-color: var(--lb-border-subtle); border-radius: 2px; flex-shrink: 0; }
-.lobby .charwin-jobs__dept-head { flex-direction: row; align-items: center; height: 36px; padding: 0 12px; background-color: var(--lb-chrome); }
-.lobby .charwin-jobs__dept-icon { width: 18px; height: 18px; margin-right: 8px; }
-.lobby .charwin-jobs__dept-name { font-size: 20px; letter-spacing: 1.6px; }
-.lobby .charwin-jobs__row { border-top-width: 1px; border-top-color: var(--lb-border-subtle); }
-.lobby .charwin-jobs__row-main { flex-direction: row; align-items: center; height: 44px; padding: 0 10px 0 12px; }
-.lobby .charwin-jobs__row--locked .charwin-jobs__job-icon-frame { opacity: 0.45; }
-.lobby .charwin-jobs__row--flash { background-color: rgba(61, 96, 137, 0.2); }
-.lobby .charwin-jobs__job-icon-frame {
-    width: 32px; height: 32px; margin-right: 10px; align-items: center; justify-content: center; flex-shrink: 0;
-    border-width: 1px; border-radius: 2px; border-color: var(--lb-border); background-color: var(--lb-inset);
+.charwin .charwin__switch {
+    flex-direction: row;
+    align-items: center;
+    width: 270px;
+    height: 33px;
+    padding: 0 8px 0 6px;
 }
-.lobby .charwin-jobs__job-icon { width: 24px; height: 24px; }
-.lobby .charwin-jobs__job-name { font-size: 14px; color: var(--lb-text-2); flex-shrink: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lobby .charwin-jobs__row--set .charwin-jobs__job-name { color: var(--lb-text); }
-.lobby .charwin-jobs__row--high .charwin-jobs__job-name { -unity-font-style: bold; }
-.lobby .charwin-jobs__about { width: 24px; height: 24px; margin-left: 6px; align-items: center; justify-content: center; border-width: 1px; border-color: rgba(0, 0, 0, 0); border-radius: 2px; flex-shrink: 0; }
-.lobby .charwin-jobs__about:hover { background-color: var(--lb-inset); }
-.lobby .charwin-jobs__about:focus { border-color: var(--lb-border-strong); }
-.charwin-jobs__about .lobby__icon { width: 14px; height: 14px; }
-.charwin-jobs__about--open .lobby__icon { rotate: 90deg; }
-.lobby .charwin-jobs__slots { width: 76px; margin-right: 10px; font-size: 13px; color: var(--lb-text-2); -unity-text-align: middle-right; flex-shrink: 0; }
-.lobby .charwin-jobs__prio {
-    flex-direction: row; flex-shrink: 0; border-width: 1px; border-color: var(--lb-border); border-radius: 2px;
-    background-color: var(--lb-void);
-}
-.lobby .charwin-jobs__prio:focus { border-color: var(--lb-text); }
-.lobby .charwin-jobs__prio-option {
-    width: 62px; height: 26px; font-size: 16px; letter-spacing: 1.28px; color: var(--lb-text-2); -unity-text-align: middle-center;
-    border-left-width: 1px; border-left-color: var(--lb-border-subtle);
-}
-.lobby .charwin-jobs__prio-option--first { border-left-width: 0; }
-.lobby .charwin-jobs__prio-option:hover { color: var(--lb-text); background-color: var(--lb-inset); }
-.lobby .charwin-jobs__prio-option--high-on, .lobby .charwin-jobs__prio-option--high-on:hover { background-color: var(--prio-high); color: var(--lb-on-light); }
-.lobby .charwin-jobs__prio-option--medium-on, .lobby .charwin-jobs__prio-option--medium-on:hover { background-color: rgba(232, 183, 166, 0.15); color: var(--prio-medium); }
-.lobby .charwin-jobs__prio-option--low-on, .lobby .charwin-jobs__prio-option--low-on:hover { background-color: rgba(196, 196, 204, 0.15); color: var(--prio-low); }
-.lobby .charwin-jobs__prio-option--never-on, .lobby .charwin-jobs__prio-option--never-on:hover { background-color: var(--lb-void); color: var(--lb-text-2); border-bottom-width: 2px; border-bottom-color: var(--lb-text-2); }
-.lobby .charwin-jobs__locked {
-    flex-direction: row; align-items: center; width: 253px; height: 28px; padding: 0 8px; flex-shrink: 0;
-    border-width: 1px; border-color: var(--lb-border); border-radius: 2px;
-}
-.lobby .charwin-jobs__locked .lobby__icon { width: 14px; height: 14px; margin-right: 6px; }
-.lobby .charwin-jobs__locked-text { font-size: 12px; color: var(--lb-text-2); }
-.lobby .charwin-jobs__description { padding: 0 16px 12px 66px; font-size: 13px; color: var(--lb-text-2); white-space: normal; max-width: 620px; }
-.lobby .charwin-jobs__empty { font-size: 13px; color: var(--lb-text-2); margin-top: 16px; white-space: normal; }
-.lobby .charwin-jobs__fallback {
-    flex-direction: row; align-items: center; flex-wrap: wrap; padding: 14px 28px; flex-shrink: 0;
-    background-color: var(--lb-chrome); border-top-width: 1px; border-top-color: var(--lb-border-subtle);
-}
-.lobby .charwin-jobs__fallback-label { font-size: 13px; color: var(--lb-text-2); margin-right: 24px; }
-.lobby .charwin-jobs__radio { flex-direction: row; align-items: center; margin-right: 24px; padding: 4px; border-width: 1px; border-color: rgba(0, 0, 0, 0); border-radius: 2px; }
-.lobby .charwin-jobs__radio:focus { border-color: var(--lb-border-strong); }
-.lobby .charwin-jobs__radio-ring { width: 16px; height: 16px; border-width: 1px; border-color: var(--lb-text-2); border-radius: 8px; margin-right: 8px; align-items: center; justify-content: center; }
-.lobby .charwin-jobs__radio-dot { width: 8px; height: 8px; border-radius: 4px; }
-.lobby .charwin-jobs__radio--on .charwin-jobs__radio-ring { border-color: var(--lb-text); }
-.lobby .charwin-jobs__radio--on .charwin-jobs__radio-dot { background-color: var(--lb-text); }
-.lobby .charwin-jobs__radio-label { font-size: 14px; color: var(--lb-text); margin-right: 8px; }
-.lobby .charwin-jobs__radio--on .charwin-jobs__radio-label { -unity-font-style: bold; }
-.lobby .charwin-jobs__radio-hint { font-size: 12px; color: var(--lb-text-2); }
 
-/* ---- Antags ---- */
-.lobby .charwin-antags { max-width: 880px; }
-.lobby .charwin-antags__row {
-    flex-direction: row; align-items: center; padding: 16px 20px; margin-top: 10px; flex-shrink: 0;
-    border-width: 1px; border-radius: 2px; border-color: var(--lb-border-subtle); background-color: var(--lb-panel);
+.charwin .charwin__switch-portrait {
+    width: 22px;
+    height: 22px;
+    margin-right: 8px;
+    flex-shrink: 0;
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.06);
+    -unity-background-scale-mode: scale-and-crop;
 }
-.lobby .charwin-antags__row--on { border-color: rgba(177, 61, 61, 0.4); background-color: rgba(177, 61, 61, 0.15); }
-.lobby .charwin-antags__icon-frame {
-    width: 44px; height: 44px; margin-right: 16px; align-items: center; justify-content: center; flex-shrink: 0;
-    border-width: 1px; border-color: var(--lb-border); background-color: var(--lb-void);
+
+.charwin .charwin__switch-name {
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-size: 19px;
+    color: var(--ui-menu-field-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
-.lobby .charwin-antags__icon { width: 24px; height: 24px; background-image: url("project://database/Assets/Art/Icons/External/lorc/radioactive.svg"); }
-.lobby .charwin-antags__row--on .charwin-antags__icon { -unity-background-image-tint-color: #e8a0a0; }
-.charwin-antags__text { flex-grow: 1; flex-shrink: 1; min-width: 0; }
-.lobby .charwin-antags__name { font-size: 20px; letter-spacing: 1.6px; margin-bottom: 4px; }
-.lobby .charwin-antags__description { font-size: 13px; color: var(--lb-text-2); white-space: normal; }
-.lobby .charwin-antags__state { font-size: 13px; color: var(--lb-text-2); margin: 0 10px 0 16px; }
-.lobby .charwin-antags__row--on .charwin-antags__state { color: var(--lb-text); -unity-font-style: bold; }
 
-/* ---- Unsaved prompt ---- */
-.lobby .charwin__prompt { display: none; }
-.lobby .charwin__prompt--open { display: flex; }
-.lobby .charwin__prompt-button { margin: 0 8px 0 0; }
+.charwin .charwin__switch-count {
+    margin: 0 8px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.3);
+}
 
-/* ---- 1366 x 768 (Decision 19): preview 292 (render 260 x 346), one department column, "Med", no legend or key hints. ---- */
-.lobby--compact .charwin__window { left: 12px; top: 12px; right: 12px; bottom: 12px; }
-.lobby--compact .charwin__header { height: 56px; }
-.lobby--compact .charwin__preview-column { width: 292px; padding: 12px 16px; }
-.lobby--compact .charwin__preview-frame { width: 260px; height: 346px; }
-.lobby--compact .charwin__rotate-row, .lobby--compact .charwin__clothing-row, .lobby--compact .charwin__caption { width: 260px; }
-.lobby--compact .charwin__keyhint, .lobby--compact .charwin-jobs__legend { display: none; }
-.lobby--compact .charwin-jobs__columns { flex-direction: column; }
-.lobby--compact .charwin-jobs__column { flex-basis: auto; width: 100%; }
-.lobby--compact .charwin-jobs__column--left { margin-right: 0; }
-.lobby--compact .charwin-jobs__prio-option { width: 52px; }
-.lobby--compact .charwin-tab__scroll .unity-scroll-view__content-container { padding: 16px 20px; }
-.lobby--compact .charwin-look__columns { flex-direction: column; }
-.lobby--compact .charwin-look__left, .lobby--compact .charwin-look__right { width: 100%; padding: 0; }
-.lobby--compact .charwin-jobs__fallback { padding: 10px 20px; }
+.charwin .charwin__switch:hover .charwin__switch-name,
+.charwin .charwin__switch--open .charwin__switch-name {
+    color: var(--ui-text);
+}
+
+.charwin .charwin__arrow {
+    width: 12px;
+    height: 7px;
+    flex-shrink: 0;
+    background-image: url("project://database/Assets/Art/Graphics/UI/Chrome/DropdownArrow.png");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+.charwin .charwin__switch--open .charwin__arrow {
+    rotate: 180deg;
+}
+
+/* ── The tab column ── */
+.charwin .charwin__tabs {
+    position: absolute;
+    left: 105px;
+    top: 116px;
+    width: 141px;
+}
+
+.charwin .charwin__tab,
+.charwin .charwin__tab:hover,
+.charwin .charwin__tab:active,
+.charwin .charwin__tab:hover:active {
+    background-color: var(--ui-menu-tab);
+}
+
+.charwin .charwin__tab {
+    height: 40px;
+    margin-bottom: 8px;
+    padding-left: 16px;
+    -unity-text-align: middle-left;
+    font-size: 19px;
+    color: var(--ui-menu-tab-text);
+}
+
+.charwin .charwin__tab:hover {
+    color: var(--ui-menu-tab-text-hover);
+}
+
+.charwin .charwin__tab--active,
+.charwin .charwin__tab--active:hover,
+.charwin .charwin__tab--active:active,
+.charwin .charwin__tab--active:hover:active {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+/* ── The centre column: labels over their controls ── */
+.charwin .charwin__column {
+    position: absolute;
+    left: 297px;
+    top: 125px;
+    width: 248px;
+    bottom: 66px;
+}
+
+.charwin .charwin__wide {
+    position: absolute;
+    left: 297px;
+    top: 116px;
+    width: 789px;
+    height: 452px;
+    display: none;
+}
+
+.charwin--wide .charwin__column,
+.charwin--wide .charwin__frame,
+.charwin--wide .charwin__under {
+    display: none;
+}
+
+.charwin--wide .charwin__wide {
+    display: flex;
+}
+
+.charwin .charwin__pane {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.charwin .charwin__pane--hidden {
+    display: none;
+}
+
+/* Rhythm measured on the reference: label to control 3 px, control to next label 26 px. */
+.charwin .charwin__field {
+    align-items: stretch;
+    margin-bottom: 26px;
+}
+
+.charwin .charwin__field--tight {
+    margin-bottom: 0;
+}
+
+.charwin .charwin__field--styles {
+    margin-bottom: 14px;
+}
+
+.charwin .charwin__label {
+    align-self: center;
+    margin-bottom: 3px;
+    font-size: 19px;
+    color: var(--ui-text);
+}
+
+.charwin .charwin__note {
+    align-self: center;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    white-space: normal;
+    -unity-text-align: upper-center;
+}
+
+.charwin .charwin__note--caption {
+    margin-top: 7px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.charwin .charwin__note--top {
+    margin-bottom: 18px;
+}
+
+.charwin .charwin__divider {
+    width: 166px;
+    height: 2px;
+    margin: 7px 0 30px 0;
+    align-self: center;
+    background-color: var(--ui-menu-rule);
+}
+
+/* The name: the reference's text field. The fill is also set inline (LobbyUi.MenuInput). */
+.charwin .charwin__text-field {
+    height: 26px;
+    margin: 5px 0 0 0;
+    padding: 0;
+}
+
+.charwin .charwin__text-field > .unity-base-text-field__input {
+    padding: 0 10px;
+    border-width: 1px;
+    border-radius: 0;
+    border-color: rgba(0, 0, 0, 0);
+    background-color: var(--ui-menu-field);
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    -unity-text-align: middle-left;
+}
+
+.charwin .charwin__text-field:focus > .unity-base-text-field__input,
+.charwin .charwin__text-field > .unity-base-text-field__input:focus {
+    border-color: var(--ui-line-frame);
+}
+
+.charwin .charwin-look__name--error > .unity-base-text-field__input,
+.charwin .charwin-look__name--error:focus > .unity-base-text-field__input,
+.charwin .charwin-look__name--error > .unity-base-text-field__input:focus {
+    border-color: var(--ui-warn);
+}
+
+.charwin .charwin-look__error {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 6px;
+}
+
+.charwin .charwin-look__error--hidden {
+    display: none;
+}
+
+.charwin .charwin-look__error .lobby__icon {
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    -unity-background-image-tint-color: var(--ui-warn);
+}
+
+.charwin .charwin-look__error-text {
+    flex-shrink: 1;
+    font-size: 11px;
+    color: var(--ui-warn);
+    white-space: normal;
+}
+
+/* A secondary button: the reference's idle tab plate, small. */
+.charwin .charwin__small,
+.charwin .charwin__small:active,
+.charwin .charwin__small:disabled,
+.charwin .charwin__small:disabled:hover {
+    background-color: var(--ui-menu-tab);
+}
+
+.charwin .charwin__small {
+    height: 30px;
+    padding: 0 14px;
+    align-self: center;
+    -unity-text-align: middle-center;
+    font-size: 16px;
+    color: var(--ui-menu-tab-text-hover);
+    white-space: nowrap;
+}
+
+.charwin .charwin__small:hover,
+.charwin .charwin__small:hover:active {
+    background-color: rgba(0, 0, 0, 0.62);
+    color: var(--ui-text);
+}
+
+.charwin .charwin__small:disabled {
+    opacity: 1;
+    color: var(--ui-menu-tab-text);
+}
+
+.charwin .charwin__small--under {
+    margin: 12px 0 26px 0;
+}
+
+/* The job outfit preview: a UiSelect in the reference's dropdown look. */
+.charwin .charwin__select .ui-select__field,
+.charwin .charwin__select .ui-select__field:hover,
+.charwin .charwin__select .ui-select__field:active,
+.charwin .charwin__select .ui-select__field:hover:active {
+    background-color: var(--ui-menu-field);
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.charwin .charwin__select .ui-select__field {
+    height: 33px;
+    padding: 0 8px 0 14px;
+}
+
+.charwin .charwin__select .ui-select__value {
+    font-size: 17px;
+    color: var(--ui-menu-field-text);
+}
+
+.charwin .charwin__select .ui-select__field:hover .ui-select__value,
+.charwin .charwin__select.ui-select--open .ui-select__value {
+    color: var(--ui-text);
+}
+
+.charwin .charwin__select .ui-select__arrow {
+    width: 12px;
+    height: 7px;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+
+.charwin .ui-select__list .ui-select__item {
+    height: 28px;
+    padding-left: 12px;
+    font-size: 16px;
+    color: var(--ui-menu-field-text);
+}
+
+/* Body: the menu slider (UITK Slider's tracker, fill and dragger). */
+.charwin .charwin__slider {
+    height: 16px;
+    min-height: 16px;
+    margin: 3px 0 0 0;
+    padding: 0;
+}
+
+.charwin .charwin__slider > .unity-base-slider__input {
+    height: 16px;
+    min-height: 16px;
+    margin: 0;
+    padding: 0;
+}
+
+.charwin .charwin__slider .unity-base-slider__drag-container {
+    height: 16px;
+    margin: 0;
+    padding: 0;
+}
+
+.charwin .charwin__slider .unity-base-slider__tracker {
+    top: 4px;
+    height: 8px;
+    margin: 0;
+    border-width: 0;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+.charwin .charwin__slider .unity-base-slider__fill {
+    margin: 3px 0;
+    border-radius: 0;
+    background-color: rgba(255, 255, 255, 0.36);
+}
+
+.charwin .charwin__slider .unity-base-slider__dragger {
+    position: absolute;
+    top: 1px;
+    width: 27px;
+    height: 14px;
+    margin: 0;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.24);
+    border-radius: 3px;
+    background-color: rgba(42, 38, 40, 0.96);
+}
+
+.charwin .charwin__slider:hover .unity-base-slider__dragger {
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.charwin .charwin__slider .unity-base-slider__dragger-border {
+    display: none;
+}
+
+/* Colours: swatches in a centred row, the picked one outlined white. */
+.charwin .charwin-look__swatches {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 6px;
+}
+
+.charwin .charwin-look__swatch {
+    width: 23px;
+    height: 23px;
+    margin: 2px;
+    border-width: 2px;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 3px;
+}
+
+.charwin .charwin-look__swatch:hover {
+    border-color: rgba(255, 255, 255, 0.45);
+}
+
+.charwin .charwin-look__swatch--selected,
+.charwin .charwin-look__swatch--selected:hover {
+    border-color: var(--ui-menu-selected);
+}
+
+/* Styles: the reference's style tiles, three across, the game's baked pictures in them. */
+.charwin .charwin__styles {
+    width: 276px;
+    height: 254px; /* three rows: 80 + 7 + 80 + 7 + 80 */
+    margin-top: 9px;
+    flex-shrink: 0;
+    align-self: center;
+}
+
+.charwin .charwin__styles--short {
+    height: 167px;
+}
+
+.charwin .charwin__styles-content {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.charwin .charwin-look__tile,
+.charwin .charwin-look__tile:hover,
+.charwin .charwin-look__tile:active,
+.charwin .charwin-look__tile:hover:active {
+    background-color: var(--ui-menu-tab);
+}
+
+.charwin .charwin-look__tile {
+    width: 80px;
+    height: 80px;
+    margin: 0 7px 7px 0;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: 3px;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 3px;
+}
+
+.charwin .charwin-look__tile:hover {
+    border-color: rgba(205, 205, 205, 0.35);
+}
+
+.charwin .charwin-look__tile--selected,
+.charwin .charwin-look__tile--selected:hover,
+.charwin .charwin-look__tile--selected:active,
+.charwin .charwin-look__tile--selected:hover:active {
+    background-color: rgba(120, 120, 120, 0.42);
+    border-color: rgba(205, 205, 205, 0.75);
+}
+
+.charwin .charwin-look__tile-thumb {
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    right: 2px;
+    bottom: 2px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.charwin .charwin-look__tile-icon {
+    width: 34px;
+    height: 34px;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.3);
+}
+
+.charwin .charwin__style-name {
+    margin-top: 6px;
+    align-self: center;
+    font-size: 16px;
+    color: var(--ui-menu-tab-text-hover);
+}
+
+/* ── The reference's segmented control, small: angles, job levels, the fallback, antags ── */
+.charwin .charwin__seg {
+    flex-direction: row;
+}
+
+.charwin .charwin__seg-option,
+.charwin .charwin__seg-option:hover,
+.charwin .charwin__seg-option:active,
+.charwin .charwin__seg-option:hover:active {
+    background-color: var(--ui-menu-tab);
+}
+
+.charwin .charwin__seg-option {
+    height: 24px;
+    margin: 0 0 0 2px;
+    padding: 0 9px;
+    -unity-text-align: middle-center;
+    font-size: 14px;
+    color: var(--ui-menu-tab-text);
+}
+
+.charwin .charwin__seg-option:hover {
+    color: var(--ui-menu-tab-text-hover);
+}
+
+.charwin .charwin__seg-option--on,
+.charwin .charwin__seg-option--on:hover,
+.charwin .charwin__seg-option--on:active,
+.charwin .charwin__seg-option--on:hover:active {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+.charwin .charwin__seg--wide .charwin__seg-option {
+    height: 30px;
+    padding: 0 16px;
+    font-size: 16px;
+}
+
+/* ── The viewport ── */
+.charwin .charwin__frame {
+    position: absolute;
+    left: 604px;
+    top: 124px;
+    width: 482px;
+    height: 444px;
+    padding: 16px;
+    border-width: 3px;
+    border-color: var(--ui-frame-outer);
+    background-color: var(--ui-frame-mat);
+}
+
+.charwin .charwin__viewport {
+    flex-grow: 1;
+    overflow: hidden;
+    background-color: var(--ui-viewport);
+}
+
+.charwin .charwin__preview-image {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.charwin .charwin__under {
+    position: absolute;
+    left: 604px;
+    top: 580px;
+    width: 482px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.charwin .charwin__under > .charwin__seg {
+    margin-left: -2px;
+}
+
+.charwin .charwin__hint {
+    font-size: 15px;
+    color: var(--ui-menu-tab-text);
+}
+
+/* ── Save state, then the continue button ── */
+.charwin .charwin__save {
+    position: absolute;
+    left: 105px;
+    bottom: 32px;
+    flex-direction: row;
+    align-items: center;
+}
+
+.charwin .charwin__save-state {
+    margin-right: 12px;
+    font-size: 17px;
+    color: var(--ui-ok);
+}
+
+.charwin .charwin__save--dirty .charwin__save-state {
+    color: var(--ui-warn);
+}
+
+.charwin .charwin__save > .charwin__small {
+    margin-left: 6px;
+}
+
+/* Primary button: white plate, right-aligned label, a notch on the right edge (a rotated square behind it). */
+.charwin .charwin__continue,
+.charwin .charwin__continue .charwin__continue-tip {
+    background-color: var(--ui-menu-selected);
+}
+
+.charwin .charwin__continue {
+    position: absolute;
+    right: 114px;
+    bottom: 28px;
+    width: 214px;
+    height: 40px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 6px;
+}
+
+.charwin .charwin__continue-tip {
+    position: absolute;
+    right: -6px;
+    top: 14px;
+    width: 12px;
+    height: 12px;
+    rotate: 45deg;
+}
+
+.charwin .charwin__continue-text {
+    font-size: 25px;
+    color: var(--ui-text-on-light);
+}
+
+.charwin .charwin__continue:hover,
+.charwin .charwin__continue:hover .charwin__continue-tip {
+    background-color: rgb(255, 255, 255);
+}
+
+.charwin .charwin__continue:hover .charwin__continue-tip {
+    right: -8px;
+}
+
+.charwin .charwin__continue:active,
+.charwin .charwin__continue:hover:active,
+.charwin .charwin__continue:active .charwin__continue-tip {
+    background-color: rgb(207, 207, 204);
+}
+
+/* ── Notices: the lobby's info banner ── */
+.charwin .charwin__notice {
+    flex-direction: row;
+    align-items: flex-start;
+    max-width: 640px;
+    margin: 0 0 12px 0;
+    padding: 10px 12px;
+    border-left-width: 3px;
+    border-color: var(--ui-info);
+    /* The bible's 10 % tints, at what UI Toolkit's linear blending needs to look the same over the veil. */
+    background-color: rgba(120, 196, 236, 0.035);
+}
+
+.charwin .charwin__notice--hidden {
+    display: none;
+}
+
+.charwin .charwin__notice--success {
+    border-color: var(--ui-ok);
+    background-color: rgba(128, 204, 122, 0.035);
+}
+
+.charwin .charwin__notice .lobby__icon {
+    margin: 1px 8px 0 0;
+    -unity-background-image-tint-color: var(--ui-info);
+}
+
+.charwin .charwin__notice--success .lobby__icon {
+    -unity-background-image-tint-color: var(--ui-ok);
+}
+
+.charwin .charwin__notice-text {
+    flex-shrink: 1;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    white-space: normal;
+}
+
+/* ── Jobs: wide while open ── */
+.charwin .charwin-jobs {
+    flex-grow: 1;
+    --dept: rgba(255, 255, 255, 0.5);
+}
+
+.charwin .charwin-jobs__intro {
+    max-width: 620px;
+    margin-bottom: 12px;
+    align-self: flex-start;
+    -unity-text-align: upper-left;
+}
+
+.charwin .charwin-jobs__scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.charwin .charwin-jobs__columns {
+    flex-direction: row;
+    justify-content: space-between;
+    padding-right: 8px;
+}
+
+.charwin .charwin-jobs__column {
+    width: 386px;
+}
+
+.charwin .charwin-jobs__empty {
+    margin-top: 12px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.charwin .charwin-jobs__dept {
+    margin-bottom: 10px;
+}
+
+.charwin .charwin-jobs__dept-head {
+    flex-direction: row;
+    align-items: center;
+    height: 30px;
+    padding: 0 10px;
+    border-left-width: 3px;
+    border-color: var(--dept);
+    background-color: var(--ui-menu-tab);
+}
+
+.charwin .charwin-jobs__dept-icon {
+    width: 14px;
+    height: 14px;
+}
+
+.charwin .charwin-jobs__dept-name {
+    margin-left: 8px;
+    font-size: 17px;
+    color: var(--dept);
+}
+
+.charwin .charwin-jobs__row-main {
+    flex-direction: row;
+    align-items: center;
+    height: 36px;
+    margin-top: 2px;
+    padding: 0 6px 0 10px;
+    background-color: rgba(0, 0, 0, 0.28);
+}
+
+.charwin .charwin-jobs__row--flash .charwin-jobs__row-main {
+    background-color: rgba(238, 186, 78, 0.06);
+}
+
+.charwin .charwin-jobs__job-icon {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+}
+
+.charwin .charwin-jobs__job-name {
+    flex-shrink: 1;
+    margin-left: 8px;
+    font-size: 11.5px;
+    color: var(--ui-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.charwin .charwin-jobs__row--locked .charwin-jobs__job-name {
+    color: var(--ui-menu-tab-text-hover);
+}
+
+.charwin .charwin-jobs__row--locked .charwin-jobs__job-icon {
+    opacity: 0.45;
+}
+
+.charwin .charwin-jobs__about,
+.charwin .charwin-jobs__about:hover,
+.charwin .charwin-jobs__about:active,
+.charwin .charwin-jobs__about:hover:active {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.charwin .charwin-jobs__about {
+    width: 18px;
+    height: 18px;
+    margin-left: 2px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.charwin .charwin-jobs__about .lobby__icon {
+    width: 11px;
+    height: 11px;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.35);
+}
+
+.charwin .charwin-jobs__about:hover .lobby__icon {
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.8);
+}
+
+.charwin .charwin-jobs__about--open .lobby__icon {
+    rotate: 90deg;
+}
+
+.charwin .charwin-jobs__slots {
+    margin: 0 8px 0 4px;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.4);
+    white-space: nowrap;
+}
+
+.charwin .charwin-jobs__locked {
+    width: 150px;
+    height: 24px;
+    flex-shrink: 0;
+    justify-content: center;
+    background-color: var(--ui-menu-field);
+}
+
+.charwin .charwin-jobs__locked-text {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.32);
+    -unity-text-align: middle-center;
+}
+
+.charwin .charwin-jobs__prio {
+    flex-shrink: 0;
+}
+
+.charwin .charwin-jobs__prio .charwin__seg-option {
+    width: 46px;
+    padding: 0;
+    font-size: 13px;
+}
+
+/* High is the one choice that matters most: the department's colour fills it. */
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--high-on,
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--high-on:hover,
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--high-on:active,
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--high-on:hover:active {
+    background-color: var(--dept);
+}
+
+.charwin .charwin-jobs__description {
+    padding: 2px 10px 8px 44px;
+    background-color: rgba(0, 0, 0, 0.28);
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    white-space: normal;
+}
+
+.charwin .charwin-jobs__fallback {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+    flex-shrink: 0;
+}
+
+.charwin .charwin-jobs__fallback-label {
+    font-size: 17px;
+    color: var(--ui-menu-tab-text-hover);
+}
+
+/* ── Antags ── */
+.charwin .charwin-antags__title {
+    margin-bottom: 10px;
+    font-size: 19px;
+    color: var(--ui-text);
+}
+
+.charwin .charwin-antags__intro {
+    max-width: 560px;
+    align-self: flex-start;
+    -unity-text-align: upper-left;
+}
+
+.charwin .charwin-antags .charwin__notice {
+    margin: 14px 0;
+}
+
+.charwin .charwin-antags__row {
+    flex-direction: row;
+    align-items: center;
+    max-width: 640px;
+    margin-bottom: 6px;
+    padding: 12px 14px;
+    background-color: var(--ui-menu-tab);
+}
+
+.charwin .charwin-antags__icon-frame {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    margin-right: 14px;
+    align-items: center;
+    justify-content: center;
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.24);
+    border-radius: 3px;
+}
+
+.charwin .charwin-antags__icon {
+    width: 24px;
+    height: 24px;
+    background-image: url("project://database/Assets/Art/Icons/External/lorc/radioactive.svg");
+}
+
+.charwin .charwin-antags__row--on .charwin-antags__icon {
+    -unity-background-image-tint-color: rgb(232, 160, 160);
+}
+
+.charwin .charwin-antags__text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-right: 14px;
+}
+
+.charwin .charwin-antags__name {
+    font-size: 18px;
+    color: var(--ui-text);
+}
+
+.charwin .charwin-antags__description {
+    margin-top: 6px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    white-space: normal;
+}
+
+/* ── The unsaved-changes prompt: the lobby's dialog, shown on demand ── */
+.charwin .charwin__prompt {
+    display: none;
+}
+
+.charwin .charwin__prompt--open {
+    display: flex;
+}

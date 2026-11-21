@@ -51,12 +51,14 @@ namespace SS3D.UI.Lobby
         }
 
         /// <summary>
-        /// The default theme paints text inputs white and its class names vary across Unity 6 builds, so the inset
-        /// fill is also set inline on the inner input.
+        /// The lobby shell's text inputs, in the UI bible's look: the map editor's near-black search field. The default
+        /// theme paints text inputs white and its class names vary across Unity 6 builds, so the fill is set inline on
+        /// the inner input; Lobby.uss draws the edge and the focus line.
         /// </summary>
-        public static void DarkInput(VisualElement field)
+        public static void EditorInput(VisualElement field)
         {
-            Color fill = new(0.1647059f, 0.1647059f, 0.1803922f, 1f); // --lb-inset #2a2a2e
+            Color fill = new(0f, 0f, 0f, 0.9f);
+            Color text = new(0.949f, 0.949f, 0.941f, 1f); // --ui-text
 
             void Apply()
             {
@@ -65,7 +67,30 @@ namespace SS3D.UI.Lobby
                     ?? field.Q(className: "unity-base-field__input");
                 if (input == null) return;
                 input.style.backgroundColor = fill;
-                input.style.color = Color.white;
+                input.style.color = text;
+            }
+
+            Apply();
+            field.RegisterCallback<AttachToPanelEvent>(_ => Apply());
+        }
+
+        /// <summary>
+        /// The character window's text inputs, in the UI bible's menu look: the character setup's translucent black
+        /// field. Inline for the same reason as <see cref="EditorInput"/>; CharacterWindow.uss draws the edge.
+        /// </summary>
+        public static void MenuInput(VisualElement field)
+        {
+            Color fill = new(0f, 0f, 0f, 0.48f); // --ui-menu-field
+            Color text = new(1f, 1f, 1f, 0.7f);
+
+            void Apply()
+            {
+                VisualElement input = field.Q(className: "unity-base-text-field__input")
+                    ?? field.Q(className: "unity-text-field__input")
+                    ?? field.Q(className: "unity-base-field__input");
+                if (input == null) return;
+                input.style.backgroundColor = fill;
+                input.style.color = text;
             }
 
             Apply();

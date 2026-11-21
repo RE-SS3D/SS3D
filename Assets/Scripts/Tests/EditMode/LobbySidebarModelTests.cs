@@ -29,6 +29,7 @@ namespace SS3D.Tests.EditMode
             Assert.AreEqual("Round starts in", round.Caption);
             Assert.AreEqual("02:41", round.Timer);
             Assert.IsFalse(round.Held);
+            Assert.AreEqual(LobbyTone.Info, round.Tone, "a running countdown is news, in the info colour");
 
             LobbyEntryButton entry = LobbySidebarModel.Entry(info);
             Assert.AreEqual("Ready up", entry.Title);
@@ -67,6 +68,7 @@ namespace SS3D.Tests.EditMode
             Assert.AreEqual("02:41", round.Timer);
             Assert.AreEqual("Countdown held by an admin", round.Note);
             Assert.AreEqual(LobbyTone.Warning, round.NoteTone);
+            Assert.AreEqual(LobbyTone.Warning, round.Tone, "a held countdown warns, as loading and starting do");
         }
 
         [Test]

@@ -22,6 +22,7 @@ namespace SS3D.Editor.Automation
         private static readonly List<string> Errors = new();
         private static readonly List<string> Checks = new();
         private static int _step;
+        private static string _outfitBefore;
         private static int _shellCheckStep;
         private static double _next;
         private static double _layoutDeadline;
@@ -261,17 +262,19 @@ namespace SS3D.Editor.Automation
 
         private const double LayoutSettleSeconds = 15;
 
-        /// <summary>LobbyView.CompactWidth: below it the shell takes the 1366 × 768 layout.</summary>
-        private const float CompactWidth = 1600f;
+        /// <summary>The sidebar's width in the UI bible's reference px (layout B); the root scales it to the screen.</summary>
+        private const float SidebarReferenceWidth = 264f;
+
+        /// <summary>The sidebar's expected on-screen width: the reference width times the shell root's scale.</summary>
+        private static float ExpectedSidebar(VisualElement shell) => SidebarReferenceWidth * shell.worldTransform.lossyScale.x;
 
         private static bool ShellLayoutResolved(VisualElement shell)
         {
             Rect panel = shell.panel.visualTree.layout;
             Rect window = shell.Q("lobby-shell-window").worldBound;
             Rect sidebar = shell.Q("lobby-sidebar").worldBound;
-            float expected = panel.width < CompactWidth ? 320f : 400f;
             return Mathf.Approximately(panel.width, Screen.width) && Mathf.Approximately(panel.height, Screen.height)
-                && Mathf.Abs(sidebar.width - expected) < 1f && window.xMin > sidebar.xMax;
+                && Mathf.Abs(sidebar.width - ExpectedSidebar(shell)) < 1f && window.xMin > sidebar.xMax;
         }
 
         private static bool CheckShell(VisualElement shell)
@@ -281,11 +284,11 @@ namespace SS3D.Editor.Automation
                 case 0:
                     Rect panelRect = shell.panel.visualTree.layout;
                     float sidebarWidth = shell.Q("lobby-sidebar").worldBound.width;
-                    float expectedSidebar = panelRect.width < CompactWidth ? 320f : 400f;
+                    float expectedSidebar = ExpectedSidebar(shell);
                     Require(Mathf.Abs(sidebarWidth - expectedSidebar) < 1f,
                         $"Sidebar is {expectedSidebar}px at {panelRect.width}px wide (got {sidebarWidth})");
-                    Require(shell.ClassListContains("lobby--compact") == panelRect.width < CompactWidth,
-                        "The 1366 layout class follows the panel width");
+                    Require(shell.layout.width >= 1199f && shell.layout.height >= 674f,
+                        "The shell is laid out at the UI bible's 1200 × 675 reference or larger");
                     Require(shell.Q("lobby-preview-image").resolvedStyle.backgroundImage.renderTexture != null,
                         "Lobby starts with a live character preview");
                     Light[] previewLights = UnityEngine.Object.FindObjectsByType<Light>(FindObjectsInactive.Include, FindObjectsSortMode.None)
@@ -297,8 +300,10 @@ namespace SS3D.Editor.Automation
                     VisualElement info = shell.Q("server-info");
                     Require(info.worldBound.yMax <= shell.Q("lobby-tab-content").worldBound.yMax + 1f,
                         "Server Info content fits the panel");
-                    Require(shell.Q("lobby-ready").worldBound.yMin >= shell.Q("lobby-character").worldBound.yMax + 8f,
-                        "Ready sits below the character card");
+                    Rect stage = shell.Q("lobby-character-stage").worldBound;
+                    Require(stage.xMin >= shell.Q("lobby-sidebar").worldBound.xMax - 1f
+                        && stage.xMax <= shell.Q("lobby-shell-window").worldBound.xMin + 1f,
+                        "The character stage sits between the sidebar and the panel");
                     Require(shell.Q("lobby-quit").worldBound.yMax <= panelRect.height + 1f,
                         "The sidebar footer fits on screen");
                     Require(shell.Q("tab-jobs") == null && shell.Q("tab-players") == null,
@@ -315,7 +320,8 @@ namespace SS3D.Editor.Automation
                 case 3: Submit(shell, "SETTINGS"); break;
                 case 4:
                     Require(shell.Query(className: "settings-panel__tab").ToList().Count == 3, "Settings has Display, Audio and Controls tabs");
-                    Require(shell.Q<DropdownField>("settings-resolution") != null, "Display has a resolution dropdown");
+                    // A UiSelect (SS3D.UI.Shell, not referenced here): a DropdownField's popup breaks under the scaled root.
+                    Require(shell.Q("settings-resolution") is INotifyValueChanged<string>, "Display has a resolution dropdown");
                     foreach (string row in new[] { "windowMode", "vsync", "frameCap", "quality", "renderScale", "upscaler", "antiAliasing", "showFps" })
                         Require(shell.Q<Button>($"settings-{row}-0") != null, $"Display has a {row} row");
                     Require(shell.Q("settings-row-brightness") == null, "Brightness is gone (darkness keeps its gameplay meaning)");
@@ -392,7 +398,7 @@ namespace SS3D.Editor.Automation
                     break;
                 case 15:
                     Require(shell.Q<Button>("settings-quality-0").ClassListContains("settings-panel__segment--on"), "Display choices persist across tabs");
-                    Submit(shell, "SERVER INFO");
+                    Submit(shell, "INFO");
                     break;
                 default: return true;
             }
@@ -450,7 +456,7 @@ namespace SS3D.Editor.Automation
                         Require(shell.resolvedStyle.display == DisplayStyle.None, "Lobby hidden while the window is open");
                         Require(window.Q("charwin-preview-image").resolvedStyle.backgroundImage.renderTexture != null,
                             "Live character RenderTexture attached");
-                        Require(window.Q<Label>("charwin-status-label").text == "Saved", "Opens Saved");
+                        Require(window.Q<Label>("charwin-status-label").text == "saved", "Opens Saved");
                         Require(!window.Q<Button>("charwin-save").enabledInHierarchy, "Save waits for a change");
                         Require(window.Q("charwin-randomize-look") != null && window.Q("charwin-randomize-name") != null, "Randomize buttons exist");
                         Require(window.Query<Slider>().ToList().Count(slider => slider.name.StartsWith("body-")) == 6, "Six body sliders");
@@ -463,30 +469,37 @@ namespace SS3D.Editor.Automation
                         Require(!window.Q<Button>("charwin-save").enabledInHierarchy, "Save stays disabled while the name is invalid");
                         Capture("02-appearance-name-error");
                         break;
+                    // Each pane shows only while its tab is open: a tab press, then the next step clicks in it.
                     case 4:
                         window.Q<TextField>("charwin-name").value = "automation pilot";
                         window.Q<Slider>("body-height").value = 0.6f;
                         window.Q<Slider>("body-female").value = 0.4f;
-                        Click(window.Q("charwin-hair-colour").Children().ElementAt(2));
-                        Click(window.Q("charwin-beard-colour").Children().ElementAt(3));
-                        Click(window.Q("charwin-eyebrow-colour").Children().ElementAt(4));
+                        Press(window, "charwin-tab-hair");
                         break;
                     case 5:
+                        Click(window.Q("charwin-hair-colour").Children().ElementAt(2));
+                        Press(window, "charwin-tab-beard");
+                        break;
+                    case 6:
+                        Click(window.Q("charwin-beard-colour").Children().ElementAt(3));
+                        Press(window, "charwin-tab-skin");
+                        break;
+                    case 7:
+                        Click(window.Q("charwin-eyebrow-colour").Children().ElementAt(4));
+                        Press(window, "charwin-angle-side");
+                        break;
+                    case 8:
                         Require(window.Q("charwin-name-error").ClassListContains("charwin-look__error--hidden"), "A first and last name clears the error");
-                        Require(window.Q<Label>("charwin-status-label").text == "Unsaved changes", "Edits show Unsaved changes");
+                        Require(window.Q<Label>("charwin-status-label").text == "unsaved changes", "Edits show Unsaved changes");
                         Require(window.Q<Button>("charwin-save").enabledInHierarchy, "Save enabled with a valid change");
                         Require(window.Q("charwin-hair-colour").Children().ElementAt(2).ClassListContains("charwin-look__swatch--selected")
                             && window.Q("charwin-beard-colour").Children().ElementAt(3).ClassListContains("charwin-look__swatch--selected")
                             && window.Q("charwin-eyebrow-colour").Children().ElementAt(4).ClassListContains("charwin-look__swatch--selected"),
                             "Hair, facial hair and eyebrow colours are independent");
-                        Capture("03-appearance");
+                        Require(window.Q("charwin-angles").Children().ElementAt(1).ClassListContains("charwin__angle--active"), "Preview turned to Side");
+                        Capture("03-appearance-side");
+                        Press(window, "charwin-angle-front");
                         break;
-                    case 6: Press(window, "charwin-rotate-right"); break;
-                    case 7:
-                        Require(window.Q("charwin-angles").Children().ElementAt(1).ClassListContains("charwin__angle--active"), "Preview rotated to Side");
-                        Capture("04-appearance-side");
-                        break;
-                    case 8: Press(window, "charwin-rotate-left"); break;
                     case 9: Press(window, "charwin-tab-jobs"); break;
                     case 10:
                         Require(window.Q("charwin-jobs") != null && window.Q("charwin-job-Security") != null, "Jobs tab lists the server's jobs");
@@ -503,12 +516,21 @@ namespace SS3D.Editor.Automation
                         Require(window.Q<Label>("charwin-outfit-caption").text.Contains("Security"), "The preview wears the High job's clothes");
                         Capture("05-jobs");
                         break;
-                    case 13: Press(window, "charwin-show-clothing"); break;
-                    case 14:
-                        Require(!GameObject.Find("CharacterPreviewDummy").GetComponentsInChildren<SkinnedMeshRenderer>(true)
-                            .Single(r => r.name == "Jumpsuit").gameObject.activeInHierarchy, "Show clothing off strips the preview");
-                        Press(window, "charwin-show-clothing");
+                    case 13:
+                    {
+                        // The job outfit preview (a UiSelect): its second choice wears nothing.
+                        INotifyValueChanged<string> outfit = (INotifyValueChanged<string>)window.Q("charwin-outfit");
+                        _outfitBefore = outfit.value;
+                        outfit.value = "naked";
                         break;
+                    }
+                    case 14:
+                    {
+                        Require(!GameObject.Find("CharacterPreviewDummy").GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                            .Single(r => r.name == "Jumpsuit").gameObject.activeInHierarchy, "The naked outfit preview strips the preview");
+                        ((INotifyValueChanged<string>)window.Q("charwin-outfit")).value = _outfitBefore;
+                        break;
+                    }
                     case 15:
                         PreviewOutfitMeshes();
                         Press(window, "charwin-tab-antags");
@@ -519,7 +541,7 @@ namespace SS3D.Editor.Automation
                         break;
                     case 17: Press(window, "charwin-save"); break;
                     case 18:
-                        Require(window.Q<Label>("charwin-status-label").text == "Saved", "Save shows Saved");
+                        Require(window.Q<Label>("charwin-status-label").text == "saved", "Save shows Saved");
                         Require(window.Q<Label>("charwin-switch-name").text == "Automation Pilot", "Save normalises the name");
                         Press(window, "charwin-return");
                         break;
