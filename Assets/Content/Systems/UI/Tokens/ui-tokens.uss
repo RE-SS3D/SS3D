@@ -1,0 +1,100 @@
+/*
+ * The UI bible's tokens (Documents/plans/assets/ui-bible/tokens.css), same names. One custom property per decision;
+ * component USS reads them through var(). Values come from the old-build reference screenshots; the map editor's own
+ * entries (dial, tool, palette, severity) are new and have no reference.
+ *
+ * Units are reference px (PanelSettings scales from 1200 x 800, matching width). The world shows through every HUD
+ * surface; the active state is a light line, not a hue. Edit values in the bible first, then copy them here.
+ */
+:root {
+    /* Surfaces over the world */
+    --ui-well: rgba(20, 19, 18, 0.5);
+    --ui-well-hover: rgba(20, 19, 18, 0.66);
+    --ui-well-faint: rgba(20, 19, 18, 0.15);
+    --ui-panel: rgba(24, 24, 24, 0.55);
+    --ui-panel-edge: rgba(0, 0, 0, 0.42);
+    --ui-cell-edge: rgba(255, 255, 255, 0.16);
+    --ui-cell-edge-hover: rgba(255, 255, 255, 0.34);
+    --ui-sheet: rgba(30, 30, 30, 0.53);
+    --ui-plate: rgba(16, 20, 16, 0.54);
+    --ui-sheet-line: rgba(255, 255, 255, 0.24);
+    /* Floating surfaces (dropdown lists, popovers, tool hints) open over other UI, so they are nearly opaque. */
+    --ui-float: rgba(14, 14, 14, 0.96);
+
+    /* Lines */
+    --ui-line-active: rgb(242, 242, 240);
+    --ui-line-frame: rgba(255, 255, 255, 0.38);
+    --ui-line-frame-hover: rgba(255, 255, 255, 0.48);
+    --ui-hairline: 2px;
+
+    /* Text */
+    --ui-text: rgb(242, 242, 240);
+    --ui-text-dim: rgba(255, 255, 255, 0.55);
+    --ui-text-faint: rgba(255, 255, 255, 0.3);
+    --ui-text-on-light: rgb(13, 13, 13);
+    --ui-mark: rgba(255, 255, 255, 0.45);
+
+    /* Glyphs: white sprites, alpha for state (USS: a tint colour's alpha) */
+    --ui-glyph-item: rgb(255, 255, 255);
+    --ui-glyph-rest: rgba(255, 255, 255, 0.78);
+    --ui-glyph-placeholder: rgba(255, 255, 255, 0.48);
+    --ui-glyph-hover: rgba(255, 255, 255, 0.9);
+    --ui-glyph-disabled: rgba(255, 255, 255, 0.16);
+
+    /* Radial menu */
+    --ui-radial-disc: rgba(0, 0, 0, 0.86);
+    --ui-radial-wedge: rgba(255, 255, 255, 0.41);
+    --ui-radial-hub: rgba(156, 146, 130, 0.9);
+    --ui-radial-hub-hover: rgba(178, 168, 152, 0.95);
+
+    /* Menus (character setup and kin) */
+    --ui-menu-tab: rgba(0, 0, 0, 0.46);
+    --ui-menu-tab-text: rgba(255, 255, 255, 0.26);
+    --ui-menu-tab-text-hover: rgba(255, 255, 255, 0.7);
+    --ui-menu-field: rgba(0, 0, 0, 0.48);
+    --ui-menu-field-text: rgba(255, 255, 255, 0.32);
+    --ui-menu-selected: rgb(253, 253, 251);
+
+    /* Sizes */
+    --ui-slot: 64px;
+    --ui-slot-radius: 9.6px;
+    --ui-cell: 37px;
+    --ui-cell-radius: 5.55px;
+    --ui-panel-radius: 9.55px;
+
+    /* Map editor (new, no reference) */
+    --ui-tool: 40px;
+    --ui-tool-radius: 6px;
+    --ui-tool-strip-radius: 10px;
+    --ui-palette-slot: 78px;
+    --ui-palette-slot-radius: 11.7px;
+    --ui-dial: 100px;
+    --ui-dial-hub: 47.5px;
+    /* Editor surfaces: denser than the HUD's, so the tools read over a busy station. On them, fields and secondary
+       buttons are light tints: a dark plate disappears on a dark panel. */
+    --ui-editor-panel: rgba(18, 18, 18, 0.92);
+    --ui-editor-tab: rgba(0, 0, 0, 0.8);
+    --ui-editor-field: rgba(255, 255, 255, 0.07);
+    --ui-editor-search: rgba(0, 0, 0, 0.9);
+    --ui-editor-cell-edge: rgba(255, 255, 255, 0.3);
+    --ui-editor-cell-edge-hover: rgba(255, 255, 255, 0.5);
+    --ui-editor-button: rgba(255, 255, 255, 0.07);
+    --ui-editor-button-hover: rgba(255, 255, 255, 0.14);
+    --ui-editor-button-pressed: rgba(255, 255, 255, 0.2);
+    /* Colour coding: what a click does (tools), and which layer you build on (categories). */
+    --ui-tool-construct: rgb(112, 204, 120);
+    --ui-tool-select: rgb(96, 172, 240);
+    --ui-tool-delete: rgb(235, 98, 82);
+    --ui-tool-room: rgb(242, 182, 70);
+    --ui-cat-upper: rgb(120, 196, 236);
+    --ui-cat-lower: rgb(236, 142, 84);
+    --ui-cat-items: rgb(176, 214, 104);
+    --ui-cat-scripts: rgb(188, 140, 240);
+    --ui-danger: rgb(235, 98, 82);
+    --ui-warn: rgb(238, 186, 78);
+    --ui-ok: rgb(128, 204, 122);
+
+    /* Type sizes; fonts are set per rule with -unity-font-definition (Disket Mono Bold labels, Kode Mono text) */
+    --ui-type-label: 11px;
+    --ui-type-body: 12px;
+}

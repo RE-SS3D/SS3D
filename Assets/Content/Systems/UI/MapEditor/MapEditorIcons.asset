@@ -34,6 +34,7 @@ MonoBehaviour:
   _camera: {fileID: 7388822144124034973, guid: bd761adbd9bf0aed68fe127e29c609d7, type: 3}
   _settings: {fileID: 7388822144124034973, guid: 1aeda4b24f664d348af21d625225f576, type: 3}
   _search: {fileID: 7388822144124034973, guid: 1fe2738261f78b8428f0b8a63c8877d1, type: 3}
+  _warning: {fileID: 7388822144124034973, guid: ec197d57e296a4345ac99a5011530c34, type: 3}
   _modeUpper: {fileID: 7388822144124034973, guid: fe467050f280546fb89a6f17d2468585, type: 3}
   _modeLower: {fileID: 7388822144124034973, guid: 44349bbcdb53c1217a3bfaafc54a5a40, type: 3}
   _modeItems: {fileID: 7388822144124034973, guid: 3345fc0f1528d1ca1b704f083e78148f, type: 3}

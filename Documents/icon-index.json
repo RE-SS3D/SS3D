@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-18T21:55:47.058109+00:00",
+  "generated_at": "2026-11-20T23:45:30.557793+00:00",
   "purpose": "Agent reference for locating icon assets under Assets/Art/Icons/ (plus Phase 2 InteractionIcons scatter; see asset-file-structure-taxonomy).",
   "sources": [
     {
@@ -9,7 +9,7 @@
     },
     {
       "source": "map-editor",
-      "count": 40,
+      "count": 41,
       "root": "Assets/Art/Icons/map-editor"
     },
     {
@@ -44,10 +44,10 @@
     }
   ],
   "summary": {
-    "total_icons": 4857,
+    "total_icons": 4858,
     "source_count": 8,
     "pack_count": 36,
-    "svg_count": 4220
+    "svg_count": 4221
   },
   "packs": [
     {
@@ -49761,6 +49761,17 @@
       "path": "Assets/Art/Icons/map-editor/undo.svg",
       "tags": [
         "undo"
+      ]
+    },
+    {
+      "name": "warning.svg",
+      "stem": "warning",
+      "extension": "svg",
+      "source": "map-editor",
+      "pack": "map-editor",
+      "path": "Assets/Art/Icons/map-editor/warning.svg",
+      "tags": [
+        "warning"
       ]
     },
     {

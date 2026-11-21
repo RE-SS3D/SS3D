@@ -1,10 +1,19 @@
-@import url("../Tokens/ss3d-tokens.uss");
-@import url("../Tokens/ss3d-typography.uss");
+@import url("../Tokens/ui-tokens.uss");
 
-:root {
-    --map-editor-toolbar-bg: var(--ss3d-surface-panel);
-    --map-editor-accent: var(--ss3d-accent-rust);
-}
+/*
+ * Map editor (B), drawn with the UI bible's parts (Documents/plans/assets/ui-bible, "map editor" tab):
+ *   tool bar, view tools  storage panels of 32 px cells: outline only on the panel's fill; active = white outline
+ *   mode rail             character setup's tabs, small: a white plate when selected
+ *   sub-tabs              text tabs; the selected one gets a 2 px white line under its label
+ *   palette               52 px cells with the gear slot's 15 % corner; picked = white outline
+ *   camera dial           the radial menu's disc, hub and wedge at 80 px (MapEditorCameraDial)
+ *   hints, popovers       floating plates (--ui-float) with a caret aimed at their button
+ *   Map Check             a popover from the warning cell under the view tools; severity is the one place colour
+ *                         carries state
+ * Labels (tabs, titles, names, buttons) are Disket Mono Bold, which draws only capitals; text is Kode Mono.
+ * Buttons keep the runtime theme's .unity-button class, so every Button class here sets its own background, border and
+ * colour for :hover and :active too, or the theme's light grey shows through.
+ */
 
 .map-editor-root {
     flex-grow: 1;
@@ -13,39 +22,145 @@
     top: 0;
     right: 0;
     bottom: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
+    font-size: 11px;
+    color: var(--ui-text);
 }
 
 .map-editor-hidden {
     display: none;
 }
 
-.map-editor-toolbar-strip {
-    flex-direction: row;
-    align-items: center;
-    background-color: var(--map-editor-toolbar-bg);
-    border-width: 1px;
-    border-color: var(--ss3d-border-default);
-    border-radius: var(--ss3d-radius-md);
-    padding: 6px;
+/* ScrollView scrollbars (legend, trace, Map Check, palette): a thin light thumb, no arrow buttons. */
+.map-editor-root .unity-scroller--vertical {
+    width: 6px;
+    min-width: 6px;
+    margin-left: 2px;
 }
 
-.map-editor-toolbar-strip > * {
-    margin-left: 3px;
-    margin-right: 3px;
+.map-editor-root .unity-scroller--vertical .unity-scroller__low-button,
+.map-editor-root .unity-scroller--vertical .unity-scroller__high-button {
+    display: none;
 }
 
-.map-editor-toolbar-strip--vertical > * {
+.map-editor-root .unity-scroller--vertical .unity-scroller__slider {
+    width: 6px;
+    min-width: 6px;
+    margin: 0;
+}
+
+.map-editor-root .unity-scroller--vertical .unity-base-slider__tracker {
+    width: 6px;
+    left: 0;
+    border-width: 0;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.map-editor-root .unity-scroller--vertical .unity-base-slider__dragger {
+    width: 6px;
+    left: 0;
     margin-left: 0;
-    margin-right: 0;
-    margin-top: 3px;
-    margin-bottom: 3px;
+    border-width: 0;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.22);
 }
 
-.map-editor-toolbar-strip--vertical {
-    flex-direction: column;
-    padding-left: 6px;
-    padding-right: 6px;
+.map-editor-root .unity-scroller--vertical .unity-base-slider__dragger:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.map-editor-root .unity-scroller--vertical .unity-base-slider__dragger-border {
+    display: none;
+}
+
+/* ── Regions ─────────────────────────────────────────────────────────────── */
+.map-editor-region {
+    position: absolute;
     overflow: visible;
+}
+
+/* The view tools: layers, settings, the systems views and Map Check, a column at the top left. */
+.map-editor-region--top-left {
+    left: 16px;
+    top: 8px;
+    align-items: flex-start;
+}
+
+/* The tool bar: one row at the top centre. The hint bar sits under it. */
+.map-editor-region--top {
+    left: 50%;
+    top: 8px;
+    flex-direction: row;
+    align-items: flex-start;
+    translate: -50% 0;
+}
+
+/* The camera column (dial, reset view), then the systems sim bar and legend under it. */
+.map-editor-region--top-right {
+    right: 16px;
+    top: 8px;
+    align-items: flex-end;
+}
+
+.map-editor-right-column > * {
+    flex-shrink: 0;
+    margin-bottom: 8px;
+}
+
+.map-editor-right-column > .map-editor-systems-legend {
+    flex-shrink: 1;
+}
+
+.map-editor-camera-column {
+    width: var(--ui-dial);
+    align-items: center;
+}
+
+/* Reset view: a half-size cell under the dial. */
+.map-editor-camera-column .map-editor-toolbar-strip {
+    border-radius: 7px;
+}
+
+.map-editor-camera-column .map-editor-icon-btn {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+}
+
+.map-editor-camera-column .map-editor-icon-btn__icon {
+    width: 11px;
+    height: 11px;
+}
+
+.map-editor-camera-column .map-editor-toolbar-hint {
+    top: -8px;
+}
+
+.map-editor-region--bottom {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    height: 144px;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+/* ── Tool strips: a storage panel of cells ───────────────────────────────── */
+.map-editor-toolbar-strip {
+    align-items: center;
+    padding: 1.25px;
+    margin-bottom: 10px;
+    background-color: var(--ui-editor-panel);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-tool-strip-radius);
+    overflow: visible;
+}
+
+.map-editor-toolbar-strip--horizontal {
+    flex-direction: row;
+    margin: 0 5px;
 }
 
 .map-editor-toolbar-btn-wrap {
@@ -53,354 +168,193 @@
     overflow: visible;
 }
 
-.map-editor-toolbar-hint {
-    position: absolute;
-    top: 0;
-    height: 38px;
-    padding-left: 12px;
-    padding-right: 12px;
-    background-color: var(--ss3d-surface-panel);
-    border-width: 1px;
-    border-color: var(--ss3d-border-default);
-    border-radius: var(--ss3d-radius-sm);
-    color: var(--ss3d-text-primary);
-    font-size: 16px;
-    -unity-text-align: middle-left;
-    white-space: nowrap;
-    align-items: center;
-    justify-content: center;
-    z-index: 50;
-}
-
-.map-editor-toolbar-hint--opens-right {
-    left: 100%;
-    margin-left: 8px;
-}
-
-.map-editor-toolbar-hint--opens-left {
-    right: 100%;
-    margin-right: 8px;
+.map-editor-icon-btn,
+.map-editor-icon-btn:hover,
+.map-editor-icon-btn:active,
+.map-editor-icon-btn:hover:active,
+.map-editor-icon-btn:focus {
+    background-color: rgba(0, 0, 0, 0);
 }
 
 .map-editor-icon-btn {
-    width: 38px;
-    height: 38px;
+    width: var(--ui-tool);
+    height: var(--ui-tool);
+    min-height: 0;
+    margin: 1.25px;
+    padding: 0;
     align-items: center;
     justify-content: center;
-    background-color: var(--ss3d-surface-elevated);
-    border-width: 1px;
-    border-color: var(--ss3d-border-default);
-    border-radius: var(--ss3d-radius-sm);
-    color: var(--ss3d-text-primary);
-    -unity-text-align: middle-center;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-editor-cell-edge);
+    border-radius: var(--ui-tool-radius);
     font-size: 0;
 }
 
-.map-editor-icon-btn__icon {
-    width: 19px;
-    height: 19px;
+.map-editor-icon-btn:hover,
+.map-editor-icon-btn:hover:active {
+    border-color: var(--ui-editor-cell-edge-hover);
+}
+
+/* Active is a line, as on the active hand: the outline and the glyph go full white. */
+.map-editor-icon-btn--active,
+.map-editor-icon-btn--active:hover,
+.map-editor-icon-btn--active:hover:active {
+    border-color: var(--ui-line-active);
+}
+
+.map-editor-icon-btn--disabled,
+.map-editor-icon-btn--disabled:hover,
+.map-editor-icon-btn--disabled:hover:active {
+    border-color: var(--ui-editor-cell-edge);
 }
 
 .map-editor-vector-icon {
     -unity-background-scale-mode: scale-to-fit;
-    -unity-background-image-tint-color: var(--ss3d-text-primary);
+    -unity-background-image-tint-color: var(--ui-glyph-item);
 }
 
-.map-editor-icon-btn--active .map-editor-vector-icon {
-    -unity-background-image-tint-color: var(--ss3d-text-on-accent);
+.map-editor-icon-btn__icon {
+    width: 21.25px;
+    height: 21.25px;
+    -unity-background-image-tint-color: var(--ui-glyph-placeholder);
 }
 
-.map-editor-icon-btn--disabled .map-editor-vector-icon {
-    -unity-background-image-tint-color: var(--ss3d-text-tertiary);
+.map-editor-icon-btn:hover .map-editor-icon-btn__icon {
+    -unity-background-image-tint-color: var(--ui-glyph-hover);
 }
 
-.map-editor-mode-tab__icon {
-    width: 16px;
-    height: 16px;
-    margin-bottom: 3px;
-    flex-shrink: 0;
+.map-editor-icon-btn--active .map-editor-icon-btn__icon {
+    -unity-background-image-tint-color: var(--ui-glyph-item);
 }
 
-.map-editor-mode-tab .map-editor-vector-icon {
-    -unity-background-image-tint-color: var(--ss3d-text-secondary);
+.map-editor-icon-btn--disabled .map-editor-icon-btn__icon,
+.map-editor-icon-btn--disabled:hover .map-editor-icon-btn__icon {
+    -unity-background-image-tint-color: var(--ui-glyph-disabled);
 }
 
-.map-editor-mode-tab--active .map-editor-vector-icon {
-    -unity-background-image-tint-color: var(--ss3d-text-on-accent);
-}
-
-.map-editor-mode-tab__label {
-    font-size: 11px;
-    letter-spacing: 1px;
-    white-space: nowrap;
-    -unity-text-align: middle-center;
-    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
-    color: var(--ss3d-text-secondary);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-    margin: 0;
-    padding: 0;
-    flex-shrink: 0;
-}
-
-.map-editor-subcat-tab__icon {
-    width: 14px;
-    height: 14px;
-    margin-right: 4px;
-    flex-shrink: 0;
-}
-
-.map-editor-subcat-tab .map-editor-vector-icon {
-    -unity-background-image-tint-color: var(--ss3d-text-secondary);
-}
-
-.map-editor-subcat-tab--active .map-editor-vector-icon {
-    -unity-background-image-tint-color: var(--ss3d-text-on-accent);
-}
-
-.map-editor-subcat-tab__label {
-    font-size: 11px;
-    letter-spacing: 1px;
-    white-space: nowrap;
-    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
-    color: var(--ss3d-text-secondary);
-    margin: 0;
-    padding: 0;
-}
-
-.map-editor-search-icon {
-    width: 14px;
-    height: 14px;
-    flex-shrink: 0;
-    opacity: 0.55;
-}
-
-.map-editor-search .map-editor-vector-icon {
-    -unity-background-image-tint-color: var(--ss3d-text-secondary);
-}
-
-.map-editor-icon-btn:hover {
-    background-color: var(--ss3d-surface-panel-raised);
-}
-
-.map-editor-icon-btn--active {
-    background-color: var(--ss3d-accent-rust-dim);
-    border-color: var(--map-editor-accent);
-    color: var(--ss3d-text-on-accent);
-}
-
-.map-editor-icon-btn--disabled {
-    color: var(--ss3d-text-tertiary);
-}
-
-.map-editor-separator {
-    height: 1px;
-    align-self: stretch;
-    background-color: var(--ss3d-border-default);
-    margin-left: 2px;
-    margin-right: 2px;
-}
-
-.map-editor-separator--vertical {
-    height: 1px;
-    margin-top: 2px;
-    margin-bottom: 2px;
-    margin-left: 0;
-    margin-right: 0;
-}
-
-.map-editor-region {
+/* The tool's hotkey in the cell's corner: a hand mark, smaller. */
+.map-editor-icon-btn__key {
     position: absolute;
-}
-
-.map-editor-region--top-left { left: 24px; top: 24px; overflow: visible; }
-.map-editor-region--top-right { right: 24px; top: 24px; overflow: visible; }
-.map-editor-region--bottom { left: 24px; right: 24px; bottom: 24px; height: 210px; }
-
-.map-editor-right-column {
-    flex-direction: column;
-    align-items: flex-end;
-}
-
-.map-editor-right-column > * {
-    margin-bottom: 12px;
-}
-
-.map-editor-window {
-    background-color: var(--ss3d-surface-panel);
-    border-width: 1px;
-    border-color: var(--ss3d-border-default);
-    border-radius: var(--ss3d-radius-md);
-    padding: 12px;
-}
-
-.map-editor-popover-window {
+    left: 1.25px;
+    top: 0;
+    margin: 0;
     padding: 0;
-    background-color: var(--ss3d-surface-panel);
-    border-radius: 4px;
-    border-width: 1px;
-    border-color: var(--ss3d-border-default);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+    color: var(--ui-mark);
 }
 
-.map-editor-popover-window__clip {
-    flex-direction: column;
-    overflow: hidden;
+.map-editor-icon-btn--active .map-editor-icon-btn__key {
+    color: var(--ui-text);
 }
 
-.map-editor-popover-window__header {
+/* Map Check's cell: a dot in the worst severity's colour (none when the map is clear). */
+.map-editor-icon-btn__alert {
+    position: absolute;
+    right: 2.5px;
+    top: 2.5px;
+    width: 7.5px;
+    height: 7.5px;
+    border-radius: 3.75px;
+}
+
+/* ── Hint beside or under a tool: a floating plate whose caret points back at the cell ── */
+.map-editor-toolbar-hint {
+    position: absolute;
+    top: 1.25px;
+    height: 37.5px;
+    padding: 0 12.5px 0 15px;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    background-color: var(--ss3d-surface-panel-raised);
-    padding: 5px 6px 5px 10px;
-    min-height: 0;
-    border-bottom-width: 1px;
-    border-bottom-color: var(--ss3d-border-default);
+    background-color: var(--ui-float);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-cell-radius);
+    overflow: visible;
 }
 
-.map-editor-popover-window__header .map-editor-window__title {
-    margin-bottom: 0;
-    flex-grow: 1;
-    flex-shrink: 1;
-    font-size: 14px;
-    letter-spacing: 0.5px;
-    padding-top: 0;
-    padding-bottom: 0;
+.map-editor-toolbar-hint--opens-right {
+    left: 100%;
+    margin-left: 22.5px;
 }
 
-.map-editor-popover-close {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
+.map-editor-toolbar-hint--opens-left {
+    right: 100%;
+    margin-right: 22.5px;
+}
+
+/* Under a top-bar button, centred on it. */
+.map-editor-toolbar-hint--opens-down {
+    top: 100%;
+    left: 50%;
+    margin-top: 22.5px;
+    translate: -50% 0;
+}
+
+.map-editor-toolbar-hint__label {
+    margin: 0 7.5px 0 0;
     padding: 0;
-    margin: 0;
-    border-width: 1px;
-    border-color: rgba(0, 0, 0, 0);
-    background-color: rgba(0, 0, 0, 0);
-    border-radius: var(--ss3d-radius-sm);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 13.75px;
+    color: var(--ui-text);
+    white-space: nowrap;
 }
 
-.map-editor-popover-close:hover {
-    background-color: var(--ss3d-surface-elevated);
-    border-color: var(--ss3d-border-default);
-}
-
-.map-editor-popover-close:hover .map-editor-popover-close__glyph {
-    color: var(--ss3d-text-primary);
-}
-
-.map-editor-popover-close:active {
-    background-color: var(--ss3d-accent-rust-dim);
-    border-color: var(--map-editor-accent);
-}
-
-.map-editor-popover-close:active .map-editor-popover-close__glyph {
-    color: var(--ss3d-text-on-accent);
-}
-
-.map-editor-popover-close__glyph {
-    font-size: 15px;
-    color: var(--ss3d-text-tertiary);
+/* A key name: Disket capitals on a dark chip. */
+.map-editor-key {
+    flex-shrink: 0;
+    height: 18.75px;
+    min-width: 18.75px;
+    padding: 0 5px;
+    margin: 0 2.5px;
     -unity-text-align: middle-center;
-    padding: 0;
-    margin: 0;
+    border-radius: 2.75px;
+    background-color: rgba(0, 0, 0, 0.45);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 11.25px;
+    color: var(--ui-text);
+    white-space: nowrap;
 }
 
-.map-editor-popover-window__body {
-    background-color: var(--ss3d-surface-panel);
-    padding: 8px 12px 12px;
-}
-
-.map-editor-switch-row {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 6px;
-    padding-bottom: 6px;
-}
-
-.map-editor-switch-row__label {
-    color: var(--ss3d-text-secondary);
-    font-size: 12px;
-}
-
-.map-editor-switch {
-    position: relative;
-    width: 32px;
-    height: 18px;
-    flex-shrink: 0;
-    border-radius: 9px;
-    border-width: 1px;
-    border-color: var(--ss3d-border-default);
-    background-color: var(--ss3d-surface-inset);
-}
-
-.map-editor-switch--on {
-    background-color: var(--ss3d-accent-rust);
-    border-color: var(--ss3d-accent-rust);
-}
-
-.map-editor-switch__thumb {
+/* The storage panel's caret turned on its side, tinted to the floating surface it hangs off. --left sits on a plate's
+   left edge pointing left, --right on its right edge, --up on its top edge. MapEditorPopoverPlacement sets the offset
+   along the edge to the source's centre. */
+.map-editor-caret {
     position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 14px;
-    height: 14px;
-    border-radius: 7px;
-    background-color: var(--ss3d-text-primary);
+    width: 27.5px;
+    height: 15px;
+    background-image: url("project://database/Assets/Art/Graphics/UI/Chrome/DropdownArrow.png");
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: rgb(14, 14, 14);
 }
 
-.map-editor-switch--on .map-editor-switch__thumb {
-    left: 16px;
+.map-editor-caret--left {
+    left: -23.75px;
+    top: 50%;
+    margin-top: -7.5px;
+    rotate: 90deg;
 }
 
-.map-editor-window__title {
-    color: var(--ss3d-text-secondary);
-    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
-    font-size: 12px;
-    margin-bottom: 8px;
-    letter-spacing: 1px;
-    -unity-text-align: upper-left;
+.map-editor-caret--right {
+    right: -23.75px;
+    top: 50%;
+    margin-top: -7.5px;
+    rotate: -90deg;
 }
 
-.map-editor-popover-label {
-    color: var(--ss3d-text-secondary);
-    font-size: 12px;
-    margin-bottom: 4px;
+.map-editor-caret--up {
+    top: -17.5px;
+    left: 50%;
+    margin-left: -13.75px;
+    rotate: 180deg;
 }
 
-.map-editor-popover-hint {
-    color: var(--ss3d-text-secondary);
-    font-size: 11px;
-    white-space: normal;
-    margin-top: 6px;
-}
-
-/* -- Camera dial ---------------------------------------------------- */
-/* Matches Construction Map Editor mockup: 76px panel, 56px dial, gap 8. */
-
-.map-editor-camera-dial-wrap {
-    flex-direction: column;
-    align-items: center;
-    width: 76px;
-    background-color: var(--map-editor-toolbar-bg);
-    border-width: 1px;
-    border-color: var(--ss3d-border-default);
-    border-radius: var(--ss3d-radius-md);
-    padding: 10px;
-}
-
+/* ── Camera dial: the radial menu at 80 px (MapEditorCameraDial) ─────────── */
 .map-editor-camera-dial {
     position: relative;
-    width: 56px;
-    height: 56px;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    overflow: visible;
+    width: var(--ui-dial);
+    height: var(--ui-dial);
+    margin-bottom: 10px;
 }
 
 .map-editor-camera-dial__ring {
@@ -409,310 +363,298 @@
     top: 0;
     right: 0;
     bottom: 0;
-    border-radius: 999px;
-    background-color: var(--ss3d-surface-inset);
-    border-width: 1.5px;
-    border-color: var(--ss3d-border-strong);
+    border-width: 27.5px;
+    border-color: var(--ui-radial-disc);
+    border-radius: 50px;
+}
+
+/* Painted by MapEditorCameraDial (Painter2D); it reads its colour from here. */
+.map-editor-camera-dial__wedge {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    --wedge-color: var(--ui-radial-wedge);
+}
+
+.map-editor-camera-dial__open,
+.map-editor-camera-dial__open:hover,
+.map-editor-camera-dial__open:active,
+.map-editor-camera-dial__open:hover:active,
+.map-editor-camera-dial__open:focus {
+    background-color: rgba(0, 0, 0, 0);
 }
 
 .map-editor-camera-dial__open {
     position: absolute;
-    left: 14px;
-    top: 14px;
-    width: 28px;
-    height: 28px;
-    min-width: 28px;
-    min-height: 28px;
-    max-width: 28px;
-    max-height: 28px;
-    border-radius: 999px;
-    background-color: rgba(0, 0, 0, 0);
-    border-width: 0;
+    left: 26.25px;
+    top: 26.25px;
+    width: var(--ui-dial-hub);
+    height: var(--ui-dial-hub);
+    min-height: 0;
+    margin: 0;
+    padding: 0;
     align-items: center;
     justify-content: center;
-    padding: 0;
-    margin: 0;
+    border-width: 0;
+    border-radius: 23.75px;
 }
 
-.map-editor-camera-dial__open .map-editor-vector-icon,
-.map-editor-camera-dial__open .map-editor-icon-btn__icon {
-    width: 18px;
-    height: 18px;
-    margin: 0;
+.map-editor-camera-dial__open:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-.map-editor-camera-dial__open.map-editor-camera-dial__open--active {
-    background-color: var(--ss3d-accent-rust-dim);
+.map-editor-camera-dial__open--active,
+.map-editor-camera-dial__open--active:hover,
+.map-editor-camera-dial__open--active:hover:active {
+    background-color: rgba(255, 255, 255, 0.18);
 }
 
-.map-editor-camera-dial__open.map-editor-camera-dial__open--active .map-editor-vector-icon {
-    -unity-background-image-tint-color: var(--ss3d-text-on-accent);
+.map-editor-camera-dial__open-icon {
+    width: 25px;
+    height: 25px;
+    -unity-background-image-tint-color: var(--ui-glyph-item);
 }
 
+/* A verb's glyph, centred on the middle of the band; the whole quadrant is its button. */
 .map-editor-camera-dial__btn {
     position: absolute;
-    width: 22px;
-    height: 22px;
-    min-width: 22px;
-    min-height: 22px;
-    max-width: 22px;
-    max-height: 22px;
-    border-radius: 999px;
-    background-color: var(--ss3d-surface-elevated);
-    border-width: 1px;
-    border-color: var(--ss3d-border-default);
+    width: 25px;
+    height: 25px;
+    margin-left: -12.5px;
+    margin-top: -12.5px;
     align-items: center;
     justify-content: center;
-    padding: 0;
-    margin: 0;
 }
 
 .map-editor-camera-dial__btn-icon {
-    width: 13px;
-    height: 13px;
-    margin: 0;
+    width: 17.5px;
+    height: 17.5px;
+    -unity-background-image-tint-color: var(--ui-glyph-rest);
 }
 
-.map-editor-camera-dial__rotate-left {
-    left: -4px;
-    top: 17px;
+.map-editor-camera-dial__btn--pointed .map-editor-camera-dial__btn-icon {
+    -unity-background-image-tint-color: var(--ui-glyph-item);
 }
 
-.map-editor-camera-dial__rotate-right {
-    right: -4px;
-    top: 17px;
-}
-
-.map-editor-camera-dial__zoom-row {
+/* ── Object library ──────────────────────────────────────────────────────── */
+.map-editor-bottom-row {
     flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    margin-top: 8px;
-    flex-shrink: 0;
 }
-
-.map-editor-camera-dial__zoom-row > .map-editor-camera-dial__btn {
-    position: relative;
-    margin-left: 3px;
-    margin-right: 3px;
-}
-
-/* -- Object library panel -------------------------------------------- */
 
 .map-editor-mode-rail {
-    width: 108px;
+    width: 76px;
+    margin-right: 4px;
     flex-shrink: 0;
-    flex-grow: 0;
-    background-color: var(--ss3d-surface-panel);
-    border-width: 1px;
-    border-color: var(--ss3d-border-default);
-    border-radius: var(--ss3d-radius-md);
-    padding-top: 6px;
-    padding-bottom: 6px;
-    padding-left: 6px;
-    padding-right: 6px;
-    justify-content: flex-start;
-    align-items: stretch;
-    align-self: stretch;
+}
+
+/* Character setup's tab, small: a dark plate, a white one when selected. */
+.map-editor-mode-tab,
+.map-editor-mode-tab:hover,
+.map-editor-mode-tab:active,
+.map-editor-mode-tab:hover:active,
+.map-editor-mode-tab:focus {
+    background-color: var(--ui-editor-tab);
 }
 
 .map-editor-mode-tab {
-    padding: 0;
-    margin-bottom: 2px;
-    border-width: 0;
-    background-color: rgba(0, 0, 0, 0);
+    height: 19px;
+    min-height: 0;
+    margin: 0 0 2px 0;
+    padding: 0 0 0 6px;
+    border-width: 0 0 0 3px;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 0;
+    -unity-text-align: middle-left;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+    color: var(--ui-menu-tab-text);
+}
+
+.map-editor-mode-tab:hover {
+    color: var(--ui-menu-tab-text-hover);
+}
+
+.map-editor-mode-tab--active,
+.map-editor-mode-tab--active:hover,
+.map-editor-mode-tab--active:active,
+.map-editor-mode-tab--active:hover:active,
+.map-editor-mode-tab--active:focus {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+.map-editor-library {
     flex-grow: 1;
     flex-shrink: 1;
-    flex-basis: 0;
-    /* Do not use width: 100% — in UITK that ignores parent padding and flush-hits the rail edge. */
-    min-height: 0;
-    height: auto;
-    max-height: none;
-}
-
-.map-editor-mode-tab:last-child {
-    margin-bottom: 0;
-}
-
-.map-editor-mode-tab__surface {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    padding-left: 2px;
-    padding-right: 2px;
-    border-width: 1px;
-    border-color: rgba(0, 0, 0, 0);
-    border-radius: var(--ss3d-radius-sm);
-    background-color: rgba(0, 0, 0, 0);
-    color: var(--ss3d-text-secondary);
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-}
-
-.map-editor-mode-tab--active .map-editor-mode-tab__surface {
-    background-color: var(--ss3d-accent-rust-dim);
-    border-color: var(--map-editor-accent);
-    color: var(--ss3d-text-on-accent);
-}
-
-.map-editor-mode-tab--active .map-editor-mode-tab__label {
-    color: var(--ss3d-text-on-accent);
-}
-
-.map-editor-subcat-tab {
-    padding: 0;
-    margin-right: 4px;
-    margin-bottom: 0;
-    border-width: 0;
-    background-color: rgba(0, 0, 0, 0);
-    min-height: 0;
-    height: 28px;
-}
-
-.map-editor-subcat-tab__surface {
-    flex-direction: row;
-    align-items: center;
-    padding-top: 2px;
-    padding-bottom: 2px;
-    padding-left: 8px;
-    padding-right: 8px;
-    border-width: 1px;
-    border-color: rgba(0, 0, 0, 0);
-    border-radius: var(--ss3d-radius-sm);
-    background-color: rgba(0, 0, 0, 0);
-    color: var(--ss3d-text-secondary);
-    height: 100%;
-    min-height: 0;
-}
-
-.map-editor-subcat-tab--active .map-editor-subcat-tab__surface {
-    background-color: var(--ss3d-accent-rust-dim);
-    border-color: var(--map-editor-accent);
-    color: var(--ss3d-text-on-accent);
-}
-
-.map-editor-subcat-tab--active .map-editor-subcat-tab__label {
-    color: var(--ss3d-text-on-accent);
-}
-
-.map-editor-search {
-    flex-direction: row;
-    align-items: center;
-    background-color: var(--ss3d-surface-inset);
-    border-width: 1px;
-    border-color: var(--ss3d-border-default);
-    border-radius: var(--ss3d-radius-sm);
-    padding-top: 2px;
-    padding-bottom: 2px;
-    padding-left: 8px;
-    padding-right: 8px;
-    min-width: 220px;
-    min-height: 0;
-    height: 28px;
-}
-
-.map-editor-search-field {
-    flex-grow: 1;
-    background-color: rgba(0, 0, 0, 0);
-    border-width: 0;
-    color: var(--ss3d-text-primary);
-    margin-left: 6px;
-    margin-top: 0;
-    margin-bottom: 0;
-    margin-right: 0;
-    padding: 0;
-    min-height: 0;
-    height: 100%;
-    font-size: 12px;
-}
-
-.map-editor-search-field > .unity-base-field__input,
-.map-editor-search-field > .unity-text-field__input {
-    background-color: rgba(0, 0, 0, 0);
-    border-width: 0;
-    margin: 0;
-    padding: 0;
-    min-height: 0;
-    height: 100%;
-}
-
-.map-editor-search-field .unity-base-text-field__input--placeholder {
-    color: var(--ss3d-text-tertiary);
+    padding: 2px 6px 2px 6px;
+    background-color: var(--ui-editor-panel);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
 }
 
 .map-editor-library-header {
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    background-color: var(--ss3d-surface-panel-raised);
-    padding: 4px 10px;
-    min-height: 0;
-    border-top-left-radius: var(--ss3d-radius-md);
-    border-top-right-radius: var(--ss3d-radius-md);
+    height: 22px;
+    margin-bottom: 3px;
+    flex-shrink: 0;
 }
 
-.map-editor-library-header__title {
-    color: var(--ss3d-text-primary);
-    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
-    font-size: 15px;
-    letter-spacing: 0.5px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
+.map-editor-subcat-row {
+    flex-direction: row;
     flex-grow: 1;
     flex-shrink: 1;
-    margin-top: 0;
-    margin-bottom: 0;
-    margin-right: 8px;
-    padding-top: 0;
-    padding-bottom: 0;
+    height: 22px;
+    overflow: hidden;
+}
+
+.map-editor-subcat-tab,
+.map-editor-subcat-tab:hover,
+.map-editor-subcat-tab:active,
+.map-editor-subcat-tab:hover:active,
+.map-editor-subcat-tab:focus {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.map-editor-subcat-tab {
+    height: 22px;
+    min-height: 0;
+    margin: 0;
+    padding: 1px 8px 0 8px;
+    border-width: 0 0 2px 0;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.45);
+    white-space: nowrap;
+}
+
+.map-editor-subcat-tab:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Selected is a line, like the active hand: the label goes white over a 2 px white rule. */
+.map-editor-subcat-tab--active,
+.map-editor-subcat-tab--active:hover,
+.map-editor-subcat-tab--active:hover:active {
+    color: var(--ui-text);
+    border-color: var(--ui-line-active);
+}
+
+/* The menu text field, with a search glyph. */
+.map-editor-search {
+    flex-direction: row;
+    align-items: center;
+    width: 188px;
+    height: 20px;
+    margin-left: 8px;
+    padding-left: 8px;
+    flex-shrink: 0;
+    background-color: var(--ui-editor-search);
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0);
+}
+
+/* Set while its field has focus (MapEditorView.WireTextEntryField): USS has no :focus-within. */
+.map-editor-search--focus {
+    border-color: var(--ui-line-frame);
+}
+
+.map-editor-search-icon {
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    flex-shrink: 0;
+    -unity-background-image-tint-color: var(--ui-glyph-placeholder);
+}
+
+.map-editor-search-field {
+    flex-grow: 1;
+    flex-shrink: 1;
+    height: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 11px;
+    color: var(--ui-text);
+}
+
+.map-editor-search-field > .unity-base-field__input,
+.map-editor-search-field > .unity-text-field__input {
+    height: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
+    font-size: 11px;
+    color: var(--ui-text);
+}
+
+.map-editor-search-field .unity-base-text-field__input--placeholder {
+    color: var(--ui-text-faint);
 }
 
 .map-editor-library-header__buttons {
     flex-direction: row;
     flex-shrink: 0;
+    margin-left: 6px;
+}
+
+/* Collapse / expand and Map Check's close: a bare glyph in a cell-shaped hit area. */
+.map-editor-header-icon-btn,
+.map-editor-header-icon-btn:hover,
+.map-editor-header-icon-btn:active,
+.map-editor-header-icon-btn:hover:active,
+.map-editor-header-icon-btn:focus {
+    background-color: rgba(0, 0, 0, 0);
 }
 
 .map-editor-header-icon-btn {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
+    min-height: 0;
+    margin: 0 0 0 2px;
+    padding: 0;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0);
-    border-width: 0;
-    border-radius: var(--ss3d-radius-sm);
-    padding: 0;
-    margin-left: 2px;
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 3px;
+}
+
+.map-editor-header-icon-btn:hover {
+    border-color: var(--ui-editor-cell-edge);
+}
+
+.map-editor-header-icon-btn--active,
+.map-editor-header-icon-btn--active:hover {
+    border-color: var(--ui-line-active);
 }
 
 .map-editor-header-icon-btn__icon {
     width: 12px;
     height: 12px;
+    -unity-background-image-tint-color: var(--ui-glyph-placeholder);
 }
 
-.map-editor-header-icon-btn .map-editor-vector-icon {
-    -unity-background-image-tint-color: var(--ss3d-text-tertiary);
-}
-
-.map-editor-header-icon-btn:hover {
-    background-color: var(--ss3d-surface-elevated);
-}
-
-.map-editor-header-icon-btn--active {
-    background-color: var(--ss3d-accent-rust-dim);
-}
-
-.map-editor-header-icon-btn--active .map-editor-vector-icon {
-    -unity-background-image-tint-color: var(--ss3d-text-on-accent);
+.map-editor-header-icon-btn:hover .map-editor-header-icon-btn__icon,
+.map-editor-header-icon-btn--active .map-editor-header-icon-btn__icon {
+    -unity-background-image-tint-color: var(--ui-glyph-item);
 }
 
 .map-editor-library-body {
     flex-grow: 1;
     flex-shrink: 1;
-    padding: 10px;
+}
+
+.map-editor-grid-scroll {
+    flex-grow: 1;
 }
 
 .map-editor-grid {
@@ -720,359 +662,657 @@
     flex-shrink: 0;
 }
 
-.map-editor-grid-scroll {
-    flex-grow: 1;
-    margin-top: 6px;
-}
-
 .map-editor-grid-row {
     flex-direction: row;
     flex-shrink: 0;
 }
 
-/* Search groups ("UPPER › MACHINES") and folder headings ("POWER") in a sub-tab grid. */
+/* Search groups ("UPPER › MACHINES") and folder headings ("POWER") over a group in the expanded library. */
 .map-editor-grid-heading {
     flex-shrink: 0;
-    color: var(--ss3d-text-secondary);
-    font-size: 11px;
-    letter-spacing: 1px;
-    -unity-font-style: bold;
-    padding: 6px 4px 2px 4px;
+    padding: 6px 3px 3px 3px;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 12px;
+    color: var(--ui-text-faint);
 }
 
-/* Compact view: the heading runs bottom-to-top beside its group's first row, so the row keeps the slot height. */
+/* One row: the heading runs bottom-to-top beside its group's first row, so the row keeps the slot height. */
 .map-editor-grid-side-heading {
     width: 24px;
-    height: 104px;
-    margin: 4px 4px 4px 0;
+    height: 111px;
+    margin: 0 3px 3px 0;
     flex-shrink: 0;
-    border-right-width: 1px;
-    border-color: var(--ss3d-border-default);
 }
 
-/* Laid out 104 × 24, then turned a quarter about its centre to fill the 24 × 104 column. */
+/* Laid out 74 × 16, then turned a quarter about its centre to fill the 16 × 74 column. */
 .map-editor-grid-side-heading__label {
     position: absolute;
-    width: 104px;
+    width: 111px;
     height: 24px;
-    left: -40px;
-    top: 40px;
-    rotate: -90deg;
-    transform-origin: center;
-    color: var(--ss3d-text-secondary);
-    font-size: 9px;
-    letter-spacing: 1px;
-    -unity-font-style: bold;
-    -unity-text-align: middle-center;
-    white-space: normal;
-    overflow: hidden;
+    left: -43.5px;
+    top: 43.5px;
     margin: 0;
     padding: 0;
+    rotate: -90deg;
+    transform-origin: center;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 12px;
+    color: var(--ui-text-faint);
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.map-editor-stub-message {
+    height: 78px;
+    padding-left: 6px;
+    -unity-text-align: middle-left;
+    font-size: 16.5px;
+    color: var(--ui-text-faint);
+    white-space: normal;
+}
+
+/* A palette slot: a 52 px cell with the gear slot's 15 % corner, outline only like a storage cell, its name under it. */
+.map-editor-slot,
+.map-editor-slot:hover,
+.map-editor-slot:active,
+.map-editor-slot:hover:active,
+.map-editor-slot:focus {
+    background-color: rgba(0, 0, 0, 0);
 }
 
 .map-editor-slot {
-    width: 108px;
-    height: 104px;
+    width: var(--ui-palette-slot);
     min-height: 0;
-    flex-shrink: 0;
+    margin: 0 3px 3px 3px;
+    padding: 0;
     align-items: center;
     justify-content: flex-start;
-    margin: 4px;
-    padding: 7px 6px 6px;
-    background-color: rgba(0, 0, 0, 0);
-    border-width: 1.5px;
-    border-color: var(--ss3d-border-default);
-    border-radius: 8px;
-}
-
-.map-editor-slot--active {
-    border-color: var(--map-editor-accent);
+    border-width: 0;
+    border-radius: 0;
+    overflow: visible;
 }
 
 .map-editor-slot__icon-frame {
-    width: 60px;
-    height: 60px;
+    position: relative;
+    width: var(--ui-palette-slot);
+    height: var(--ui-palette-slot);
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    margin-bottom: 3px;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-editor-cell-edge);
+    border-radius: var(--ui-palette-slot-radius);
 }
 
+.map-editor-slot:hover .map-editor-slot__icon-frame {
+    border-color: var(--ui-editor-cell-edge-hover);
+}
+
+.map-editor-slot--active .map-editor-slot__icon-frame,
+.map-editor-slot--active:hover .map-editor-slot__icon-frame {
+    border-color: var(--ui-line-active);
+}
+
+/* An object's render nearly fills the cell, like an item in a storage cell. */
 .map-editor-slot__icon {
-    width: 56px;
-    height: 56px;
-    background-color: rgba(0, 0, 0, 0);
-    border-radius: 6px;
+    width: 60px;
+    height: 60px;
     -unity-background-scale-mode: scale-to-fit;
 }
 
-/* Spawn marker glyphs: tinted like the in-world spawn pins (blue job, red antagonist). */
+/* No render (most tiles have no icon sprite): the sub-tab's glyph at the empty-slot alpha. */
+.map-editor-slot__icon--glyph {
+    width: 33px;
+    height: 33px;
+    -unity-background-image-tint-color: var(--ui-glyph-placeholder);
+}
+
+.map-editor-slot:hover .map-editor-slot__icon--glyph {
+    -unity-background-image-tint-color: var(--ui-glyph-hover);
+}
+
+.map-editor-slot--active .map-editor-slot__icon--glyph {
+    -unity-background-image-tint-color: var(--ui-glyph-item);
+}
+
+/* Floor paint: the department's colour as the icon, in the cell's own shape. */
+.map-editor-slot__icon--paint {
+    width: 48px;
+    height: 48px;
+    border-radius: 7.25px;
+}
+
+/* Spawn and gas marker glyphs: tinted like their in-world pins (blue job, red antagonist; gas by kind, from C#). */
+.map-editor-slot__icon--marker,
 .map-editor-slot__icon--spawn-job,
 .map-editor-slot__icon--spawn-antag {
-    width: 44px;
-    height: 44px;
+    width: 39px;
+    height: 39px;
 }
-.map-editor-slot__icon--spawn-job { -unity-background-image-tint-color: rgb(64, 191, 255); }
-.map-editor-slot__icon--spawn-antag { -unity-background-image-tint-color: rgb(255, 89, 64); }
 
+.map-editor-slot__icon--spawn-job {
+    -unity-background-image-tint-color: rgb(64, 191, 255);
+}
+
+.map-editor-slot__icon--spawn-antag {
+    -unity-background-image-tint-color: rgb(255, 89, 64);
+}
+
+/* Two lines of capitals under the cell (Disket at 8 px sets them 9 px apart), running the slot's full pitch past the
+   cell's edges. A third line is clipped clean. */
 .map-editor-slot__label {
-    font-size: 10.5px;
-    color: var(--ss3d-text-secondary);
-    /* Two lines of words (MapEditorCatalog.PaletteLabel); longer names still end in an ellipsis. */
+    width: 87px;
+    height: 27px;
+    margin: 3px 0 0 0;
+    padding: 0;
+    flex-shrink: 0;
+    overflow: hidden;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 12px;
+    letter-spacing: -0.75px;
     -unity-text-align: upper-center;
     white-space: normal;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-    height: 25px;
-    min-height: 0;
-    flex-shrink: 0;
-    flex-grow: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding-top: 0;
-    padding-bottom: 0;
+    color: var(--ui-text-dim);
 }
 
-/* Variant families (palette S6): family on line 1, variant on line 2, "n/N" badge, ‹ › on hover or while held. */
-.map-editor-slot__label--family {
-    flex-direction: column;
-    align-items: stretch;
+.map-editor-slot:hover .map-editor-slot__label {
+    color: rgba(255, 255, 255, 0.8);
 }
-.map-editor-slot__family,
+
+.map-editor-slot--active .map-editor-slot__label {
+    color: var(--ui-text);
+}
+
+/* A variant family: the family's name takes the label's two lines; the variant names itself on a strip along the
+   cell's bottom edge; "n/N" in the corner; ‹ › on the cell's sides on hover or while held. */
 .map-editor-slot__variant {
-    font-size: 10.5px;
-    -unity-text-align: upper-center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    height: 12.5px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 16.5px;
     margin: 0;
     padding: 0;
+    border-bottom-left-radius: 8.75px;
+    border-bottom-right-radius: 8.75px;
+    background-color: rgba(0, 0, 0, 0.55);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10.5px;
+    -unity-text-align: middle-center;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: nowrap;
 }
-.map-editor-slot__family { color: var(--ss3d-text-secondary); }
-.map-editor-slot__variant { color: var(--ss3d-text-primary); }
+
 .map-editor-slot__badge {
     position: absolute;
-    top: 3px;
-    right: 4px;
-    font-size: 9px;
-    padding: 0 3px;
+    top: 1.5px;
+    right: 4.5px;
     margin: 0;
-    border-radius: 4px;
-    color: var(--ss3d-text-secondary);
-    background-color: var(--ss3d-surface-inset);
+    padding: 0;
+    font-size: 13.5px;
+    color: var(--ui-mark);
 }
+
+.map-editor-slot__cycle,
+.map-editor-slot__cycle:hover,
+.map-editor-slot__cycle:active,
+.map-editor-slot__cycle:hover:active,
+.map-editor-slot__cycle:focus {
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
 .map-editor-slot__cycle {
     display: none;
     position: absolute;
-    top: 18px;
+    top: 21px;
     width: 18px;
-    height: 24px;
+    height: 30px;
+    min-height: 0;
     margin: 0;
     padding: 0;
-    font-size: 16px;
-    -unity-font-style: bold;
-    -unity-text-align: middle-center;
     border-width: 0;
-    border-radius: 4px;
-    color: var(--ss3d-text-primary);
-    background-color: var(--ss3d-surface-inset);
+    border-radius: 4.5px;
+    font-size: 18px;
+    -unity-text-align: middle-center;
+    color: rgba(255, 255, 255, 0.7);
 }
-.map-editor-slot__cycle--previous { left: -14px; }
-.map-editor-slot__cycle--next { right: -14px; }
-.map-editor-slot__cycle:hover { color: var(--map-editor-accent); }
+
+.map-editor-slot__cycle:hover {
+    color: var(--ui-text);
+}
+
+.map-editor-slot__cycle--previous {
+    left: 1.5px;
+}
+
+.map-editor-slot__cycle--next {
+    right: 1.5px;
+}
+
 .map-editor-slot--family:hover .map-editor-slot__cycle,
 .map-editor-slot--family.map-editor-slot--active .map-editor-slot__cycle {
     display: flex;
 }
 
-/* Lives in the view's popover layer; MapEditorView.PlacePopover sets top/left/right beside its anchor. */
-.map-editor-popover {
-    position: absolute;
-    width: 260px;
-}
-
-.map-editor-popover--wide {
-    width: 320px;
-}
-
-.map-editor-slider-row {
-    margin-top: 6px;
-    margin-bottom: 6px;
-}
-
-.map-editor-slider-row__label {
-    color: var(--ss3d-text-secondary);
-    font-size: 13px;
-}
-
-.map-editor-slider-row__value {
-    color: var(--ss3d-text-primary);
-    font-size: 12px;
-}
-
-.map-editor-slider-row__slider {
-    margin-top: 2px;
-}
-
-.map-editor-map-row {
-    width: 100%;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    border-bottom-width: 1px;
-    border-bottom-color: var(--ss3d-border-subtle);
-    background-color: rgba(0, 0, 0, 0);
-    border-left-width: 0;
-    border-right-width: 0;
-    border-top-width: 0;
-    border-radius: 0;
-    margin: 0;
-}
-
-.map-editor-map-row:hover {
-    background-color: var(--ss3d-surface-panel-raised);
-}
-
-.map-editor-map-name {
-    color: var(--ss3d-text-primary);
-    font-size: 13px;
-}
-
-.map-editor-map-name--overwrite-target {
-    color: var(--map-editor-accent);
-}
-
-.map-editor-map-badge {
-    font-size: 11px;
-    color: var(--ss3d-text-primary);
-    background-color: var(--ss3d-feedback-info-bg);
-    border-width: 1px;
-    border-color: var(--ss3d-feedback-info-border);
-    border-radius: var(--ss3d-radius-sm);
-    padding: 2px 8px;
-    margin-left: 8px;
-}
-
-.map-editor-map-badge--warning {
-    color: var(--ss3d-text-primary);
-    background-color: var(--ss3d-feedback-warning-bg);
-    border-color: var(--ss3d-feedback-warning-border);
-}
-
-.map-editor-action-btn {
-    padding: 4px 10px;
-    background-color: var(--ss3d-feedback-info-bg);
-    border-width: 1px;
-    border-color: var(--ss3d-feedback-info-border);
-    border-radius: var(--ss3d-radius-sm);
-    color: var(--ss3d-text-primary);
-    font-size: 12px;
-    margin-left: 8px;
-}
-
-.map-editor-action-btn--primary {
-    width: 100%;
-    padding: 8px 10px;
-    background-color: var(--map-editor-accent);
-    border-color: var(--map-editor-accent);
-    color: var(--ss3d-text-on-accent);
-    margin-left: 0;
+/* Rooms: the "new room" slot. */
+.map-editor-room-create-glyph {
+    flex-grow: 1;
+    font-size: 39px;
     -unity-text-align: middle-center;
+    color: var(--ui-glyph-placeholder);
 }
 
-.map-editor-stub-message {
-    color: var(--ss3d-text-tertiary);
-    font-size: 13px;
-    padding: 20px 8px;
-    -unity-text-align: middle-center;
-    white-space: normal;
+.map-editor-slot--create:hover .map-editor-room-create-glyph {
+    color: var(--ui-glyph-hover);
 }
 
-.map-editor-toast {
-    position: absolute;
-    bottom: 296px;
-    left: 50%;
-    translate: -50% 0;
-    background-color: var(--ss3d-surface-panel-raised);
-    border-width: 1px;
-    border-color: var(--map-editor-accent);
-    border-radius: var(--ss3d-radius-sm);
-    padding: 12px 20px;
-    color: var(--ss3d-text-primary);
-    font-size: 17px;
-    max-width: 720px;
-    white-space: normal;
-    -unity-text-align: middle-center;
-}
-
+/* ── Hint bar (under the tool bar), toast: the panel plate, text in Kode Mono ── */
+/* Capped short of the camera dial. No overflow: hidden on the plate: UITK draws a radius and overflow: hidden on one
+   element as a white block (tile.md Pitfalls), so a hint too long for the cap clips in its last text instead. */
 .map-editor-hint {
     position: absolute;
-    top: 12px;
+    top: 64px; /* under the tool bar: 8 + its 49 + 7 */
     left: 50%;
+    max-width: 880px;
+    height: 37.5px;
+    padding: 0 15px;
+    flex-direction: row;
+    align-items: center;
     translate: -50% 0;
-    background-color: var(--ss3d-surface-panel-raised);
-    border-width: 1px;
-    border-color: var(--map-editor-accent);
-    border-radius: var(--ss3d-radius-sm);
-    padding: 8px 18px;
-    color: var(--ss3d-text-primary);
-    font-size: 18px;
-    opacity: 0.92;
+    background-color: var(--ui-editor-panel);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-cell-radius);
+}
+
+.map-editor-hint__text {
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+    padding: 0;
+    font-size: 13.75px;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: nowrap;
+}
+
+/* A toast is news, so it gets the frame slot's outline. Its bottom follows the library's height. */
+.map-editor-toast {
+    position: absolute;
+    left: 50%;
+    bottom: 171.25px;
+    max-width: 800px;
+    padding: 11.25px 20px;
+    translate: -50% 0;
+    background-color: var(--ui-editor-panel);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-line-frame);
+    border-radius: var(--ui-cell-radius);
+    font-size: 15px;
+    color: var(--ui-text);
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+.map-editor-reveal-btn,
+.map-editor-reveal-btn:hover,
+.map-editor-reveal-btn:active,
+.map-editor-reveal-btn:hover:active,
+.map-editor-reveal-btn:focus {
+    background-color: var(--ui-editor-panel);
 }
 
 .map-editor-reveal-btn {
     position: absolute;
-    top: 16px;
+    top: 8px;
     right: 16px;
-    width: 34px;
-    height: 34px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
     align-items: center;
     justify-content: center;
-    background-color: rgba(23, 26, 30, 0.7);
-    border-width: 1px;
-    border-color: var(--ss3d-border-default);
-    border-radius: var(--ss3d-radius-sm);
-    color: var(--ss3d-text-secondary);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-tool-radius);
 }
 
 .map-editor-reveal-btn .map-editor-vector-icon {
-    -unity-background-image-tint-color: var(--ss3d-text-secondary);
+    width: 21.25px;
+    height: 21.25px;
+    -unity-background-image-tint-color: var(--ui-glyph-placeholder);
 }
 
-.map-editor-bottom-row {
+/* ── Popovers: a floating plate with a header, beside the button that opened it ── */
+.map-editor-popover {
+    position: absolute;
+    width: 290px;
+    overflow: visible;
+}
+
+.map-editor-popover--wide {
+    width: 350px;
+}
+
+.map-editor-popover--check {
+    width: 325px;
+}
+
+.map-editor-popover-window {
+    padding: 1.25px;
+    background-color: var(--ui-float);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
+}
+
+.map-editor-popover-window__clip {
+    flex-direction: column;
+}
+
+.map-editor-popover-window__header {
     flex-direction: row;
-    flex-grow: 1;
+    align-items: center;
+    justify-content: space-between;
+    height: 35px;
+    padding: 0 5px 0 12.5px;
 }
 
-.map-editor-library {
+.map-editor-window__title {
     flex-grow: 1;
     flex-shrink: 1;
-    margin-left: 12px;
+    margin: 0;
+    padding: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 15px;
+    color: var(--ui-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* Room properties need an explicit runtime font; the editor theme is not in player panels. */
-.map-editor-area-form {
-    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
-    font-size: 13px;
-    color: var(--ss3d-text-primary);
+.map-editor-popover-close,
+.map-editor-popover-close:hover,
+.map-editor-popover-close:active,
+.map-editor-popover-close:hover:active,
+.map-editor-popover-close:focus {
+    background-color: rgba(0, 0, 0, 0);
 }
 
-.map-editor-area-form Label {
-    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
-    color: var(--ss3d-text-secondary);
-    font-size: 12px;
+.map-editor-popover-close {
+    width: 25px;
+    height: 25px;
+    min-height: 0;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 3.75px;
+}
+
+.map-editor-popover-close:hover {
+    border-color: var(--ui-editor-cell-edge);
+}
+
+.map-editor-popover-close__glyph {
+    margin: 0;
+    padding: 0;
+    font-size: 17.5px;
+    -unity-text-align: middle-center;
+    color: rgba(255, 255, 255, 0.48);
+}
+
+.map-editor-popover-close:hover .map-editor-popover-close__glyph {
+    color: var(--ui-text);
+}
+
+.map-editor-popover-window__body {
+    padding: 2.5px 12.5px 12.5px 12.5px;
+}
+
+.map-editor-popover-label {
+    margin: 5px 0 3.75px 0;
+    padding: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 11.25px;
+    color: var(--ui-text-faint);
+}
+
+.map-editor-popover-hint {
+    margin-top: 7.5px;
+    font-size: 12.5px;
+    color: var(--ui-text-faint);
     white-space: normal;
-    margin-top: 4px;
-    margin-bottom: 4px;
+}
+
+/* A label and a switch. */
+.map-editor-switch-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 27.5px;
     flex-shrink: 0;
 }
 
+.map-editor-switch-row__label,
+.map-editor-slider-row__label {
+    margin: 0;
+    padding: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* The switch: a track in the slot outline, a thumb that goes white when on. */
+.map-editor-switch {
+    width: 37.5px;
+    height: 20px;
+    flex-shrink: 0;
+    padding: 1.25px;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-line-frame);
+    border-radius: 3.75px;
+}
+
+.map-editor-switch:hover {
+    border-color: var(--ui-line-frame-hover);
+}
+
+.map-editor-switch__thumb {
+    width: 12.5px;
+    height: 12.5px;
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.48);
+}
+
+.map-editor-switch--on,
+.map-editor-switch--on:hover {
+    border-color: var(--ui-line-active);
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.map-editor-switch--on .map-editor-switch__thumb {
+    margin-left: 17.5px;
+    background-color: var(--ui-menu-selected);
+}
+
+/* A label and value over the menu slider (UITK Slider's tracker and dragger). */
+.map-editor-slider-row {
+    margin-top: 5px;
+    margin-bottom: 7.5px;
+}
+
+.map-editor-slider-row__value {
+    margin: 0;
+    padding: 0;
+    font-size: 13.75px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.map-editor-slider-row__slider {
+    margin: 5px 0 0 0;
+    min-height: 20px;
+}
+
+.map-editor-slider-row__slider .unity-base-slider__tracker {
+    height: 10px;
+    margin-top: -5px;
+    border-width: 0;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+.map-editor-slider-row__slider .unity-base-slider__dragger {
+    width: 33.75px;
+    height: 17.5px;
+    margin-top: -8.75px;
+    border-width: 1.25px;
+    border-color: rgba(255, 255, 255, 0.24);
+    border-radius: 3.75px;
+    background-color: rgba(42, 38, 40, 0.96);
+}
+
+.map-editor-slider-row__slider:hover .unity-base-slider__dragger {
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.map-editor-slider-row__slider .unity-base-slider__dragger-border {
+    display: none;
+}
+
+/* Map lists (Map Selection, Save Map): rows that light on hover, like dropdown items. */
+.map-editor-map-row,
+.map-editor-map-row:hover:active,
+.map-editor-map-row:active,
+.map-editor-map-row:focus {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.map-editor-map-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 32.5px;
+    margin: 0;
+    padding: 2.5px 7.5px;
+    border-width: 0;
+    border-radius: 3.75px;
+}
+
+.map-editor-map-row:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.map-editor-map-name {
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0;
+    padding: 0;
+    font-size: 13.75px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.map-editor-map-name--overwrite-target {
+    color: var(--ui-text);
+}
+
+.map-editor-map-badge {
+    margin: 0 0 0 10px;
+    padding: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+    color: var(--ui-text-faint);
+}
+
+.map-editor-map-badge--warning {
+    color: var(--ui-warn);
+}
+
+/* Action buttons: the menu's secondary plate; --primary is the white plate. */
+.map-editor-action-btn,
+.map-editor-action-btn:hover,
+.map-editor-action-btn:active,
+.map-editor-action-btn:hover:active,
+.map-editor-action-btn:focus {
+    background-color: var(--ui-editor-button);
+}
+
+.map-editor-action-btn {
+    min-height: 25px;
+    margin: 0 0 0 5px;
+    padding: 2.5px 10px;
+    border-width: 0;
+    border-radius: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 11.25px;
+    -unity-text-align: middle-center;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.map-editor-action-btn:hover {
+    background-color: var(--ui-editor-button-hover);
+    color: var(--ui-text);
+}
+
+.map-editor-action-btn:hover:active {
+    background-color: var(--ui-editor-button-pressed);
+}
+
+.map-editor-action-btn--primary,
+.map-editor-action-btn--primary:active,
+.map-editor-action-btn--primary:focus {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+.map-editor-action-btn--primary {
+    min-height: 32.5px;
+    margin: 0;
+    font-size: 13.75px;
+}
+
+.map-editor-action-btn--primary:hover {
+    background-color: rgb(255, 255, 255);
+    color: var(--ui-text-on-light);
+}
+
+.map-editor-action-btn--primary:hover:active {
+    background-color: rgb(207, 207, 204);
+}
+
+/* ── Room properties and gas markers: the menu's fields, Kode Mono text ── */
+.map-editor-area-form {
+    font-size: 13.75px;
+    color: var(--ui-text);
+}
+
+.map-editor-area-form Label {
+    margin-top: 5px;
+    margin-bottom: 3.75px;
+    flex-shrink: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 11.25px;
+    color: var(--ui-text-faint);
+    white-space: normal;
+}
+
+.map-editor-area-form .map-editor-switch-row__label {
+    margin: 0;
+    min-width: 0;
+    flex-shrink: 1;
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
 .map-editor-area-field {
-    margin: 0 0 8px;
+    margin: 0 0 7.5px 0;
     min-width: 0;
     min-height: 30px;
     flex-shrink: 0;
@@ -1082,313 +1322,709 @@
     min-width: 0;
     min-height: 30px;
     flex-grow: 1;
-    background-color: var(--ss3d-surface-inset);
-    border-width: 1px;
-    border-color: var(--ss3d-border-default);
+    padding: 3.75px 10px;
+    background-color: var(--ui-editor-field);
+    border-width: 1.25px;
+    border-color: rgba(0, 0, 0, 0);
     border-radius: 0;
-    color: var(--ss3d-text-primary);
-    padding: 5px 8px;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
+    font-size: 13.75px;
+    color: var(--ui-text);
 }
 
-.map-editor-area-field .unity-base-popup-field__text {
-    color: var(--ss3d-text-primary);
+.map-editor-area-field .unity-base-popup-field__text,
+.map-editor-area-field .unity-text-element {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
+    font-size: 13.75px;
+    color: var(--ui-text);
 }
 
 .map-editor-area-access {
-    height: 200px;
+    height: 225px;
     flex-shrink: 0;
-    margin-top: 4px;
-    margin-bottom: 12px;
-    padding: 4px 14px 4px 8px;
-    background-color: var(--ss3d-surface-inset);
+    margin-top: 2.5px;
+    margin-bottom: 12.5px;
+    padding: 2.5px 12.5px 2.5px 10px;
+    background-color: var(--ui-editor-field);
 }
-
 
 .map-editor-area-access .unity-scroll-view__content-container {
-    padding-right: 12px;
+    padding-right: 12.5px;
 }
 
-
+/* A room's name over it in the world. */
 .map-editor-area-name {
     position: absolute;
+    max-width: 300px;
+    padding: 3.75px 10px;
     translate: -50% -100%;
-    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
-    font-size: 13px;
-    color: var(--ss3d-text-primary);
-    background-color: rgba(18, 21, 25, 0.9);
-    border-bottom-width: 3px;
-    padding: 4px 8px;
-    max-width: 240px;
+    background-color: var(--ui-float);
+    border-bottom-width: 3.75px;
+    font-size: 13.75px;
+    color: var(--ui-text);
     white-space: normal;
     -unity-text-align: middle-center;
 }
 
-
-
-/* Room fields use the exact layer switch component and its existing styles. */
-.map-editor-area-form .map-editor-switch-row__label {
-    margin: 0;
-    min-width: 0;
-    flex-shrink: 1;
-}
-
-
-.map-editor-room-create-glyph {
-    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
-    font-size: 40px;
-    color: var(--ss3d-text-primary);
-    -unity-text-align: middle-center;
-    flex-grow: 1;
-}
-
-.map-editor-slot--create .map-editor-slot__icon-frame {
-    background-color: var(--ss3d-surface-inset);
-}
-
-/* Map Check: persistent server validation, aligned above the library dock. */
-.map-editor-right-column > .map-check { margin-bottom: 0; }
-.map-editor-right-column > * { flex-shrink: 0; }
-.map-editor-right-column > .map-editor-systems-legend { flex-shrink: 1; }
+/* ── Map Check: a popover from the view tools; a segmented filter; issue rows. Spacing, not lines, between parts. ── */
 .map-check {
-    width: 340px;
     min-height: 0;
     flex-shrink: 1;
-    background-color: var(--ss3d-surface-panel);
-    border-radius: var(--ss3d-radius-md);
-    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
 }
-.map-check--collapsed { width: auto; }
+
 .map-check__header {
     flex-direction: row;
     align-items: center;
+    height: 32.5px;
     flex-shrink: 0;
-    padding: 10px;
-    background-color: var(--ss3d-surface-panel-raised);
+    padding: 0 5px 0 12.5px;
 }
-.map-check__title { flex-grow: 1; color: var(--ss3d-text-primary); font-size: 14px; }
-.map-check__badge { background-color: var(--ss3d-surface-inset); color: var(--ss3d-text-primary); border-radius: 3px; padding: 3px 6px; margin-right: 6px; font-size: 11px; }
-.map-check__danger { color: var(--ss3d-feedback-danger); }
-.map-check__warning { color: var(--ss3d-feedback-warning); }
-.map-check__filters { flex-direction: row; padding: 8px; flex-shrink: 0; border-bottom-width: 1px; border-bottom-color: var(--ss3d-border-subtle); }
-.map-check__button {
-    background-color: var(--ss3d-surface-panel);
-    color: var(--ss3d-text-primary);
-    border-width: 1px;
-    border-color: var(--ss3d-border-default);
-    border-radius: var(--ss3d-radius-sm);
-    padding: 5px 8px;
-    margin: 0 2px;
-    font-size: 12px;
+
+.map-check__title {
+    flex-grow: 1;
+    margin: 0;
+    padding: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 15px;
+    color: var(--ui-text);
 }
-.map-check__button:hover { background-color: var(--ss3d-surface-panel-raised); }
-.map-check__filter { flex-grow: 1; font-size: 16px; }
-.map-check__filter--active { background-color: var(--ss3d-accent-rust-dim); border-color: var(--ss3d-accent-rust); }
-.map-check__issues { min-height: 0; flex-shrink: 1; }
-.map-check__issue { border-bottom-width: 1px; border-bottom-color: var(--ss3d-border-subtle); flex-shrink: 0; }
-.map-check__issue--open, .map-check__issue:hover { background-color: var(--ss3d-surface-panel-raised); }
-.map-check__issue-toggle {
+
+/* A count on a dark chip, in its severity's colour. */
+.map-check__badge {
+    height: 20px;
+    margin: 0 3.75px 0 0;
+    padding: 0 6.25px;
+    -unity-text-align: middle-center;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.4);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 11.25px;
+    color: var(--ui-text);
+}
+
+.map-check__danger {
+    color: var(--ui-danger);
+}
+
+.map-check__warning {
+    color: var(--ui-warn);
+}
+
+.map-check__success {
+    color: var(--ui-ok);
+}
+
+/* A severity dot before each issue. */
+.map-check__dot {
+    width: 7.5px;
+    height: 7.5px;
+    margin: 5px 7.5px 0 0;
+    flex-shrink: 0;
+    border-radius: 3.75px;
+}
+
+.map-check__dot--danger {
+    background-color: var(--ui-danger);
+}
+
+.map-check__dot--warning {
+    background-color: var(--ui-warn);
+}
+
+/* The menu's segmented control, small enough for three options across the panel. */
+.map-check__filters {
     flex-direction: row;
-    align-items: flex-start;
-    background-color: transparent;
+    flex-shrink: 0;
+    margin: 0 10px 5px 10px;
+}
+
+.map-check__button,
+.map-check__button:hover,
+.map-check__button:active,
+.map-check__button:hover:active,
+.map-check__button:focus {
+    background-color: var(--ui-editor-button);
+}
+
+.map-check__button {
+    min-height: 20px;
+    margin: 0 3.75px 0 0;
+    padding: 0 7.5px;
     border-width: 0;
     border-radius: 0;
-    padding: 5px 10px;
-    margin: 0;
-}
-/* One line per closed issue: title, then its category on the right. */
-.map-check__heading { flex-direction: row; align-items: flex-start; flex-grow: 1; flex-shrink: 1; margin-left: 8px; margin-right: 6px; }
-.map-check__issue-title { flex-grow: 1; flex-shrink: 1; white-space: normal; color: var(--ss3d-text-primary); font-size: 12px; }
-.map-check__category { flex-shrink: 0; color: var(--ss3d-text-tertiary); font-size: 10px; margin-left: 6px; margin-top: 1px; }
-.map-check__detail { padding: 0 10px 8px 30px; }
-.map-check__body { white-space: normal; color: var(--ss3d-text-secondary); font-size: 12px; }
-.map-check__actions { flex-direction: row; margin-top: 10px; }
-.map-check__footer { flex-direction: row; align-items: center; flex-wrap: wrap; flex-shrink: 0; padding: 8px; border-top-width: 1px; border-top-color: var(--ss3d-border-subtle); }
-.map-check__status { flex-grow: 1; font-size: 11px; color: var(--ss3d-text-secondary); }
-.map-check__status.map-check__danger { color: var(--ss3d-feedback-danger); }
-.map-check__empty { padding: 20px 14px; color: var(--ss3d-text-tertiary); font-size: 12px; white-space: normal; }
-
-.map-check__checks { margin-top: 10px; padding: 8px 10px; background-color: var(--ss3d-surface-inset); border-radius: var(--ss3d-radius-sm); }
-.map-check__check { flex-direction: row; align-items: center; margin-bottom: 4px; }
-.map-check__check-label { flex-grow: 1; flex-shrink: 1; white-space: normal; color: var(--ss3d-text-secondary); font-size: 12px; }
-.map-check__success { color: var(--ss3d-feedback-success); }
-.map-check__badge.map-check__danger { background-color: var(--ss3d-feedback-danger-bg); }
-.map-check__badge.map-check__warning { background-color: var(--ss3d-feedback-warning-bg); }
-.map-check__badge.map-check__success { background-color: var(--ss3d-feedback-success-bg); border-width: 1px; border-color: var(--ss3d-feedback-success-border); }
-
-.map-check__title, .map-check__filter {
-    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
-}
-.map-check__category, .map-check__badge, .map-check__status {
-    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/SpessmanFontSDF.asset");
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 11.25px;
+    -unity-text-align: middle-center;
+    color: rgba(255, 255, 255, 0.6);
 }
 
-.map-check__issue-toggle > .map-editor-vector-icon { width: 14px; height: 14px; flex-shrink: 0; }
+.map-check__button:hover {
+    background-color: var(--ui-editor-button-hover);
+    color: var(--ui-text);
+}
 
-/* Systems views legend (creative-mode §4): in the right column under the view toggles, open the first time a view is used. */
-.map-editor-systems-legend {
-    width: 340px;
-    flex-shrink: 1;
+.map-check__filter {
+    flex-grow: 1;
+    height: 22.5px;
+    margin: 0 1.25px;
+    font-size: 10px;
+    color: var(--ui-menu-tab-text);
+}
+
+.map-check__filter--active,
+.map-check__filter--active:hover,
+.map-check__filter--active:active,
+.map-check__filter--active:hover:active,
+.map-check__filter--active:focus {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+.map-check__issues {
+    max-height: 300px;
     min-height: 0;
-    background-color: var(--ss3d-surface-panel);
-    border-width: 1px;
-    border-color: var(--ss3d-border-default);
-    border-radius: var(--ss3d-radius-md);
-    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
+    flex-shrink: 1;
 }
-.map-editor-systems-legend--collapsed { width: auto; }
+
+.map-check__issue {
+    flex-shrink: 0;
+}
+
+.map-check__issue-toggle,
+.map-check__issue-toggle:active,
+.map-check__issue-toggle:hover:active,
+.map-check__issue-toggle:focus {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* A Button centres its text; the issue's title and category read from the left. */
+.map-check__issue-toggle {
+    -unity-text-align: upper-left;
+    flex-direction: row;
+    align-items: flex-start;
+    margin: 0;
+    padding: 5px 10px 5px 12.5px;
+    border-width: 0;
+    border-radius: 0;
+}
+
+.map-check__issue-toggle:hover,
+.map-check__issue--open .map-check__issue-toggle {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Title, then its category under it. */
+.map-check__heading {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.map-check__issue-title {
+    margin: 0;
+    padding: 0;
+    font-size: 13.75px;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: normal;
+}
+
+.map-check__category {
+    margin: 1.25px 0 0 0;
+    padding: 0;
+    font-size: 12.5px;
+    color: var(--ui-text-faint);
+}
+
+.map-check__detail {
+    padding: 0 10px 7.5px 27.5px;
+}
+
+.map-check__body {
+    margin: 0;
+    padding: 0;
+    font-size: 12.5px;
+    color: var(--ui-text-dim);
+    white-space: normal;
+}
+
+.map-check__checks {
+    margin-top: 7.5px;
+    padding: 5px 7.5px;
+    background-color: var(--ui-editor-field);
+}
+
+.map-check__check {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 2.5px;
+}
+
+.map-check__check-label {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--ui-text-dim);
+    white-space: normal;
+}
+
+.map-check__check .map-check__success,
+.map-check__check .map-check__danger {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+}
+
+.map-check__actions {
+    flex-direction: row;
+    margin-top: 5px;
+}
+
+.map-check__footer {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    padding: 5px 12.5px 7.5px 12.5px;
+}
+
+.map-check__status {
+    flex-grow: 1;
+    margin: 0;
+    padding: 0;
+    font-size: 12.5px;
+    color: var(--ui-text-dim);
+}
+
+.map-check__status.map-check__danger {
+    color: var(--ui-danger);
+}
+
+.map-check__empty {
+    padding: 10px 12.5px;
+    font-size: 12.5px;
+    color: var(--ui-text-faint);
+    white-space: normal;
+}
+
+/* ── Systems views (creative-mode §4): legend and sim bar under the camera column, trace beside the view tools ── */
+.map-editor-systems-legend {
+    width: 310px;
+    min-height: 0;
+    flex-shrink: 1;
+    padding: 1.25px;
+    background-color: var(--ui-editor-panel);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
+}
+
+.map-editor-systems-legend--collapsed {
+    width: auto;
+}
+
 .map-editor-systems-legend__header {
     flex-direction: row;
     align-items: center;
-    padding: 8px 10px;
-    background-color: var(--ss3d-surface-panel-raised);
+    height: 32.5px;
+    padding: 0 5px 0 12.5px;
 }
+
 .map-editor-systems-legend__title {
     flex-grow: 1;
-    margin-right: 8px;
-    color: var(--ss3d-text-primary);
-    font-size: 13px;
-    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
+    margin: 0 10px 0 0;
+    padding: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 15px;
+    color: var(--ui-text);
 }
-.map-editor-systems-legend__body { padding: 8px 10px; max-height: 360px; flex-shrink: 1; }
-.map-editor-systems-legend__row { flex-direction: row; align-items: flex-start; margin-bottom: 6px; }
-.map-editor-systems-legend__swatches { flex-direction: row; flex-shrink: 0; width: 56px; margin-top: 2px; }
-.map-editor-systems-legend__swatch { width: 10px; height: 10px; margin-right: 3px; border-radius: 2px; }
-.map-editor-systems-legend__text { flex-grow: 1; flex-shrink: 1; white-space: normal; color: var(--ss3d-text-secondary); font-size: 12px; }
 
-/* Systems views bar (map-editor-systems-views, Pause and step): Room air, and an admin's Pause / Step, above the legend. */
+.map-editor-systems-legend__body {
+    max-height: 400px;
+    flex-shrink: 1;
+    padding: 0 12.5px 7.5px 12.5px;
+}
+
+.map-editor-systems-legend__row {
+    flex-direction: row;
+    align-items: flex-start;
+    margin-bottom: 5px;
+}
+
+.map-editor-systems-legend__swatches {
+    flex-direction: row;
+    flex-shrink: 0;
+    width: 62.5px;
+    margin-top: 2.5px;
+}
+
+.map-editor-systems-legend__swatch {
+    width: 11.25px;
+    height: 11.25px;
+    margin-right: 3.75px;
+    border-radius: 2px;
+}
+
+.map-editor-systems-legend__text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--ui-text-dim);
+    white-space: normal;
+}
+
 .map-editor-systems-sim {
     flex-direction: row;
     align-items: center;
-    width: 340px;
-    padding: 5px 8px;
-    background-color: var(--ss3d-surface-panel);
-    border-width: 1px;
-    border-color: var(--ss3d-border-default);
-    border-radius: var(--ss3d-radius-md);
-    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
-}
-.map-editor-systems-sim__spacer { flex-grow: 1; }
-.map-editor-systems-sim__button {
-    background-color: var(--ss3d-surface-panel);
-    color: var(--ss3d-text-primary);
-    border-width: 1px;
-    border-color: var(--ss3d-border-default);
-    border-radius: var(--ss3d-radius-sm);
-    padding: 3px 8px;
-    margin: 0 0 0 4px;
-    font-size: 12px;
-}
-.map-editor-systems-sim__button:hover { background-color: var(--ss3d-surface-panel-raised); }
-.map-editor-systems-sim__button--on { background-color: var(--ss3d-accent-rust-dim); border-color: var(--ss3d-accent-rust-dim); }
-.map-editor-systems-sim__button:disabled { opacity: 0.45; }
-.map-editor-systems-sim__paused {
-    margin-left: 6px;
-    padding: 2px 6px;
-    font-size: 11px;
-    color: var(--ss3d-text-primary);
-    background-color: var(--ss3d-accent-rust-dim);
-    border-radius: var(--ss3d-radius-sm);
+    width: 310px;
+    padding: 5px 7.5px;
+    background-color: var(--ui-editor-panel);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-cell-radius);
 }
 
-/* Systems view trace (map-editor-systems-views, Tracing): a panel floating beside the left toolbar's top, where the
-   toolbar leaves no room under it above the library; a label anchored at the traced tile. */
+.map-editor-systems-sim__spacer {
+    flex-grow: 1;
+}
+
+.map-editor-systems-sim__button,
+.map-editor-systems-sim__button:hover,
+.map-editor-systems-sim__button:active,
+.map-editor-systems-sim__button:hover:active,
+.map-editor-systems-sim__button:focus {
+    background-color: var(--ui-editor-button);
+}
+
+.map-editor-systems-sim__button {
+    min-height: 22.5px;
+    margin: 0 0 0 5px;
+    padding: 0 7.5px;
+    border-width: 0;
+    border-radius: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 11.25px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.map-editor-systems-sim__button:hover {
+    background-color: var(--ui-editor-button-hover);
+    color: var(--ui-text);
+}
+
+.map-editor-systems-sim__button--on,
+.map-editor-systems-sim__button--on:hover,
+.map-editor-systems-sim__button--on:hover:active {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+.map-editor-systems-sim__button:disabled {
+    opacity: 0.45;
+}
+
+.map-editor-systems-sim__paused,
+.map-editor-systems-trace__paused {
+    margin: 0 0 0 7.5px;
+    padding: 1.25px 6.25px;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.4);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+    color: var(--ui-warn);
+}
+
+.map-editor-systems-trace__paused {
+    margin: 0 7.5px 0 0;
+}
+
+/* The trace panel floats beside the view tools; its label rides the traced tile in the world. */
 .map-editor-systems-trace {
     position: absolute;
     left: 100%;
     top: 0;
-    margin-left: 12px;
-    width: 340px;
-    background-color: var(--ss3d-surface-panel);
-    border-width: 1px;
-    border-color: var(--ss3d-border-default);
-    border-radius: var(--ss3d-radius-md);
-    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
+    width: 375px;
+    margin-left: 15px;
+    padding: 1.25px;
+    background-color: var(--ui-float);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
 }
+
 .map-editor-systems-trace__header {
     flex-direction: row;
     align-items: center;
-    padding: 6px 10px;
-    background-color: var(--ss3d-surface-panel-raised);
+    height: 32.5px;
+    padding: 0 5px 0 12.5px;
 }
+
 .map-editor-systems-trace__title {
     flex-grow: 1;
-    color: var(--ss3d-text-primary);
-    font-size: 13px;
-    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/GurajadaRegularSDF.asset");
-}
-.map-editor-systems-trace__paused {
-    margin-right: 6px;
-    padding: 2px 6px;
-    font-size: 11px;
-    color: var(--ss3d-text-primary);
-    background-color: var(--ss3d-accent-rust-dim);
-    border-radius: var(--ss3d-radius-sm);
-}
-.map-editor-systems-trace__button {
-    background-color: var(--ss3d-surface-panel);
-    color: var(--ss3d-text-primary);
-    border-width: 1px;
-    border-color: var(--ss3d-border-default);
-    border-radius: var(--ss3d-radius-sm);
-    padding: 3px 7px;
     margin: 0;
-    font-size: 11px;
+    padding: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 15px;
+    color: var(--ui-text);
 }
-.map-editor-systems-trace__button:hover { background-color: var(--ss3d-surface-panel-raised); }
-.map-editor-systems-trace__body { padding: 6px 10px; max-height: 560px; }
-.map-editor-systems-trace__section { margin-bottom: 8px; flex-shrink: 0; }
-.map-editor-systems-trace__heading { flex-direction: row; align-items: center; margin-bottom: 4px; }
-.map-editor-systems-trace__network { color: var(--ss3d-text-primary); font-size: 13px; -unity-font-style: bold; }
-.map-editor-systems-trace__row { flex-direction: row; justify-content: space-between; margin-bottom: 1px; }
-.map-editor-systems-trace__label { color: var(--ss3d-text-secondary); font-size: 12px; }
-.map-editor-systems-trace__value { color: var(--ss3d-text-primary); font-size: 12px; }
-.map-editor-systems-trace__subtitle { color: var(--ss3d-text-secondary); font-size: 11px; margin-top: 4px; margin-bottom: 2px; }
-.map-editor-systems-trace__empty { color: var(--ss3d-text-secondary); font-size: 12px; }
+
+.map-editor-systems-trace__button,
+.map-editor-systems-trace__button:hover,
+.map-editor-systems-trace__button:active,
+.map-editor-systems-trace__button:hover:active,
+.map-editor-systems-trace__button:focus {
+    background-color: var(--ui-editor-button);
+}
+
+.map-editor-systems-trace__button {
+    min-height: 22.5px;
+    margin: 0;
+    padding: 0 7.5px;
+    border-width: 0;
+    border-radius: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 11.25px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.map-editor-systems-trace__button:hover {
+    background-color: var(--ui-editor-button-hover);
+    color: var(--ui-text);
+}
+
+.map-editor-systems-trace__body {
+    max-height: 650px;
+    padding: 2.5px 12.5px 10px 12.5px;
+}
+
+.map-editor-systems-trace__section {
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.map-editor-systems-trace__heading {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 3.75px;
+}
+
+.map-editor-systems-trace__network {
+    margin: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 12.5px;
+    color: var(--ui-text);
+}
+
+.map-editor-systems-trace__row {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 1.25px;
+}
+
+.map-editor-systems-trace__label {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--ui-text-dim);
+}
+
+.map-editor-systems-trace__value {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--ui-text);
+}
+
+.map-editor-systems-trace__subtitle {
+    margin: 5px 0 2.5px 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+    color: var(--ui-text-faint);
+}
+
+.map-editor-systems-trace__empty {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--ui-text-dim);
+}
+
+.map-editor-systems-trace__device,
+.map-editor-systems-trace__device:active,
+.map-editor-systems-trace__device:hover:active,
+.map-editor-systems-trace__device:focus {
+    background-color: rgba(0, 0, 0, 0);
+}
+
 .map-editor-systems-trace__device {
     flex-direction: row;
     align-items: center;
     margin: 0;
-    padding: 3px 4px;
+    padding: 2.5px 5px;
     border-width: 0;
-    border-radius: 0;
-    border-top-width: 1px;
-    border-top-color: var(--ss3d-border-subtle);
-    background-color: rgba(0, 0, 0, 0);
+    border-radius: 3.75px;
 }
-.map-editor-systems-trace__device:hover { background-color: var(--ss3d-surface-panel-raised); }
+
+.map-editor-systems-trace__device:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
 .map-editor-systems-trace__device-name {
     flex-shrink: 1;
     min-width: 0;
-    margin-right: 8px;
+    margin: 0 10px 0 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    color: var(--ss3d-text-primary);
-    font-size: 12px;
+    font-size: 12.5px;
+    color: var(--ui-text);
 }
+
 .map-editor-systems-trace__device-detail {
     flex-grow: 1;
     flex-shrink: 1;
     min-width: 0;
+    margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     -unity-text-align: middle-right;
-    color: var(--ss3d-text-secondary);
-    font-size: 11px;
+    font-size: 12.5px;
+    color: var(--ui-text-dim);
 }
+
 .map-editor-systems-trace-label {
     position: absolute;
     translate: -50% -100%;
     align-items: center;
 }
+
 .map-editor-systems-trace-label__line {
-    -unity-font-definition: url("project://database/Assets/Art/Font/TextMesh%20Pro/Fonts/LiberationSans.ttf");
-    font-size: 13px;
-    color: var(--ss3d-text-primary);
-    background-color: rgba(18, 21, 25, 0.9);
-    border-bottom-width: 3px;
-    padding: 3px 8px;
-    margin-top: 2px;
+    margin-top: 2.5px;
+    padding: 2.5px 10px;
+    background-color: var(--ui-float);
+    border-bottom-width: 3.75px;
+    font-size: 13.75px;
+    color: var(--ui-text);
     -unity-text-align: middle-center;
+}
+
+/* ── Colour coding ────────────────────────────────────────────────────────
+ * Tools: what a click does. The active tool's outline, every tool's hotkey mark (dim until active) and the hint bar's
+ * edge take the tool's colour: construct green, select and dropper blue, delete red, room amber.
+ * Categories: which layer you build on. Each category tab's stripe, the open sub-tab's underline and the picked slot's
+ * outline take the category's colour: upper sky, lower orange, items lime, scripts violet.
+ * MapEditorView sets the classes: --tool-* on each tool cell, map-editor-root--tool-* on the root, and
+ * map-editor-bottom-row--<category> on the library's row. */
+.map-editor-icon-btn__key {
+    opacity: 0.6;
+}
+
+.map-editor-icon-btn--active .map-editor-icon-btn__key {
+    opacity: 1;
+}
+
+.map-editor-icon-btn--tool-construct .map-editor-icon-btn__key {
+    color: var(--ui-tool-construct);
+}
+
+.map-editor-icon-btn--tool-construct.map-editor-icon-btn--active,
+.map-editor-icon-btn--tool-construct.map-editor-icon-btn--active:hover,
+.map-editor-icon-btn--tool-construct.map-editor-icon-btn--active:hover:active {
+    border-color: var(--ui-tool-construct);
+}
+
+.map-editor-root--tool-construct .map-editor-hint {
+    border-color: var(--ui-tool-construct);
+}
+
+.map-editor-icon-btn--tool-select .map-editor-icon-btn__key,
+.map-editor-icon-btn--tool-dropper .map-editor-icon-btn__key {
+    color: var(--ui-tool-select);
+}
+
+.map-editor-icon-btn--tool-select.map-editor-icon-btn--active,
+.map-editor-icon-btn--tool-select.map-editor-icon-btn--active:hover,
+.map-editor-icon-btn--tool-select.map-editor-icon-btn--active:hover:active,
+.map-editor-icon-btn--tool-dropper.map-editor-icon-btn--active,
+.map-editor-icon-btn--tool-dropper.map-editor-icon-btn--active:hover,
+.map-editor-icon-btn--tool-dropper.map-editor-icon-btn--active:hover:active {
+    border-color: var(--ui-tool-select);
+}
+
+.map-editor-root--tool-select .map-editor-hint,
+.map-editor-root--tool-dropper .map-editor-hint {
+    border-color: var(--ui-tool-select);
+}
+
+.map-editor-icon-btn--tool-delete .map-editor-icon-btn__key {
+    color: var(--ui-tool-delete);
+}
+
+.map-editor-icon-btn--tool-delete.map-editor-icon-btn--active,
+.map-editor-icon-btn--tool-delete.map-editor-icon-btn--active:hover,
+.map-editor-icon-btn--tool-delete.map-editor-icon-btn--active:hover:active {
+    border-color: var(--ui-tool-delete);
+}
+
+.map-editor-root--tool-delete .map-editor-hint {
+    border-color: var(--ui-tool-delete);
+}
+
+.map-editor-icon-btn--tool-room .map-editor-icon-btn__key {
+    color: var(--ui-tool-room);
+}
+
+.map-editor-icon-btn--tool-room.map-editor-icon-btn--active,
+.map-editor-icon-btn--tool-room.map-editor-icon-btn--active:hover,
+.map-editor-icon-btn--tool-room.map-editor-icon-btn--active:hover:active {
+    border-color: var(--ui-tool-room);
+}
+
+.map-editor-root--tool-room .map-editor-hint {
+    border-color: var(--ui-tool-room);
+}
+
+.map-editor-mode-tab--upper {
+    border-color: var(--ui-cat-upper);
+}
+
+.map-editor-bottom-row--upper .map-editor-subcat-tab--active,
+.map-editor-bottom-row--upper .map-editor-subcat-tab--active:hover,
+.map-editor-bottom-row--upper .map-editor-subcat-tab--active:hover:active,
+.map-editor-bottom-row--upper .map-editor-slot--active .map-editor-slot__icon-frame,
+.map-editor-bottom-row--upper .map-editor-slot--active:hover .map-editor-slot__icon-frame {
+    border-color: var(--ui-cat-upper);
+}
+
+.map-editor-mode-tab--lower {
+    border-color: var(--ui-cat-lower);
+}
+
+.map-editor-bottom-row--lower .map-editor-subcat-tab--active,
+.map-editor-bottom-row--lower .map-editor-subcat-tab--active:hover,
+.map-editor-bottom-row--lower .map-editor-subcat-tab--active:hover:active,
+.map-editor-bottom-row--lower .map-editor-slot--active .map-editor-slot__icon-frame,
+.map-editor-bottom-row--lower .map-editor-slot--active:hover .map-editor-slot__icon-frame {
+    border-color: var(--ui-cat-lower);
+}
+
+.map-editor-mode-tab--items {
+    border-color: var(--ui-cat-items);
+}
+
+.map-editor-bottom-row--items .map-editor-subcat-tab--active,
+.map-editor-bottom-row--items .map-editor-subcat-tab--active:hover,
+.map-editor-bottom-row--items .map-editor-subcat-tab--active:hover:active,
+.map-editor-bottom-row--items .map-editor-slot--active .map-editor-slot__icon-frame,
+.map-editor-bottom-row--items .map-editor-slot--active:hover .map-editor-slot__icon-frame {
+    border-color: var(--ui-cat-items);
+}
+
+.map-editor-mode-tab--scripts {
+    border-color: var(--ui-cat-scripts);
+}
+
+.map-editor-bottom-row--scripts .map-editor-subcat-tab--active,
+.map-editor-bottom-row--scripts .map-editor-subcat-tab--active:hover,
+.map-editor-bottom-row--scripts .map-editor-subcat-tab--active:hover:active,
+.map-editor-bottom-row--scripts .map-editor-slot--active .map-editor-slot__icon-frame,
+.map-editor-bottom-row--scripts .map-editor-slot--active:hover .map-editor-slot__icon-frame {
+    border-color: var(--ui-cat-scripts);
 }

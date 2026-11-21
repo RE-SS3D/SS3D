@@ -8,7 +8,7 @@ Phase 1 consolidation moved Heroicons, Inventory, Rendered, and Alerts here;
 `interaction-icons` still lives under Graphics until Phase 2 (see
 [2026-07_asset-file-structure-taxonomy.md](architecture/2026-07_asset-file-structure-taxonomy.md)).
 
-**Generated:** 2026-11-18T21:55:47.058109+00:00
+**Generated:** 2026-11-20T23:45:30.557793+00:00
 
 ## When to use
 
@@ -51,17 +51,17 @@ grep -i "wrench" Documents/icon-index.json
 
 | Metric | Count |
 |--------|------:|
-| Total icons | 4857 |
+| Total icons | 4858 |
 | Sources | 8 |
 | Contributor packs (`external` source) | 36 |
-| SVG icons | 4220 |
+| SVG icons | 4221 |
 
 ## By source
 
 | Source | Count | Root |
 |--------|------:|------|
 | external | 4180 | `Assets/Art/Icons/External` |
-| map-editor | 40 | `Assets/Art/Icons/map-editor` |
+| map-editor | 41 | `Assets/Art/Icons/map-editor` |
 | heroicons | 460 | `Assets/Art/Icons/Heroicons` |
 | interaction-icons | 53 | `Assets/Art/Graphics/UI/Interactions/InteractionIcons` |
 | inventory-icons | 19 | `Assets/Art/Icons/Inventory` |

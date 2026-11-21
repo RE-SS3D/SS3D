@@ -402,13 +402,19 @@ namespace SS3D.Systems.Tile.MapEditor
             if (RenamedLabels.TryGetValue(assetName, out string renamed))
                 return renamed;
 
-            return PaletteLabel(assetName);
+            // Floors drop their asset names' "Tile" prefix: TileGreyDark reads "Grey Dark".
+            string label = PaletteLabel(assetName);
+            return entry.Subcategory == MapEditorSubcategory.Floors && label.StartsWith(FloorPrefix, StringComparison.Ordinal)
+                ? label.Substring(FloorPrefix.Length)
+                : label;
         }
 
         /// <summary>
         /// Palette names that differ from the asset name, which saved maps hold and so cannot change. "Scrubber
         /// Intake" read as a room scrubber, so map makers placed it in rooms and it drained their air.
         /// </summary>
+        private const string FloorPrefix = "Tile ";
+
         private static readonly Dictionary<string, string> RenamedLabels = new(StringComparer.Ordinal)
         {
             ["ScrubberIntake"] = "Chamber Intake",
