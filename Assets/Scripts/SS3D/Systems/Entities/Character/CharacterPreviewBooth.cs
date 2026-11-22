@@ -12,7 +12,6 @@ using UnityEngine;
 using Cloth = SS3D.Systems.Inventory.Containers.Cloth;
 #if UNITY_RENDER_PIPELINE_UNIVERSAL
 using SS3D.Rendering.URP;
-using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 #endif
 
@@ -60,10 +59,7 @@ namespace SS3D.Systems.Entities.Character
         private float _dragYaw;
         private float[] _morphs;
         private bool _hasMorphs;
-#if UNITY_RENDER_PIPELINE_UNIVERSAL
-        private Volume _unlitVolume;
-        private VolumeProfile _unlitProfile;
-#endif
+        private bool _unlit;
         private IReadOnlyList<Cloth> _worn;
 
         public RenderTexture PreviewTexture => _renderTexture;
@@ -253,50 +249,14 @@ namespace SS3D.Systems.Entities.Character
 
         /// <summary>
         /// Flat, unlit shading for the dummy (the lobby's stage and the character window): the station shader's albedo,
-        /// with no light or shade. A volume on the preview layer, which only the booth camera reads, sets
-        /// <see cref="StationShading"/>'s ambient to 1 and its fixture light to 0. Off, the key and fill light it.
+        /// with no light or shade, for this booth's camera only (<see cref="StationShadingFeature.SetUnlit"/>). Off, the
+        /// key and fill light it.
         /// </summary>
         public void SetUnlit(bool unlit)
         {
-            EnsureUnlitVolume();
-            ApplyUnlit(unlit);
-        }
-
-        private void ApplyUnlit(bool unlit)
-        {
+            _unlit = unlit;
 #if UNITY_RENDER_PIPELINE_UNIVERSAL
-            if (_unlitVolume != null)
-            {
-                _unlitVolume.enabled = unlit;
-            }
-#endif
-        }
-
-        private void EnsureUnlitVolume()
-        {
-#if UNITY_RENDER_PIPELINE_UNIVERSAL
-            if (_unlitVolume != null)
-            {
-                return;
-            }
-
-            _unlitProfile = ScriptableObject.CreateInstance<VolumeProfile>();
-            _unlitProfile.name = "CharacterPreviewUnlit";
-            StationShading shading = _unlitProfile.Add<StationShading>();
-            // albedo × (ambient × AO + lights): ambient 1 without occlusion, no fixture light.
-            shading.Ambient.Override(1f);
-            shading.AmbientOcclusion.Override(0f);
-            shading.LightStrength.Override(0f);
-            shading.LightOcclusion.Override(0f);
-
-            GameObject volumeObject = new("CharacterPreviewUnlitVolume");
-            volumeObject.transform.SetParent(transform, false);
-            volumeObject.layer = PreviewLayer;
-            _unlitVolume = volumeObject.AddComponent<Volume>();
-            _unlitVolume.isGlobal = true;
-            _unlitVolume.priority = 100f;
-            _unlitVolume.sharedProfile = _unlitProfile;
-            _unlitVolume.enabled = false;
+            StationShadingFeature.SetUnlit(_previewCamera, unlit);
 #endif
         }
 
@@ -418,19 +378,19 @@ namespace SS3D.Systems.Entities.Character
                 _renderTexture = null;
             }
 
-#if UNITY_RENDER_PIPELINE_UNIVERSAL
-            if (_unlitProfile != null)
+            if (_unlit)
             {
-                Destroy(_unlitProfile);
-                _unlitProfile = null;
+                SetUnlit(false);
             }
-#endif
 
             gameObject.Dispose(true);
         }
 
         private void OnDestroy()
         {
+#if UNITY_RENDER_PIPELINE_UNIVERSAL
+            StationShadingFeature.SetUnlit(_previewCamera, false);
+#endif
             if (_dummy != null)
             {
                 _dummy.Dispose(true);
@@ -536,9 +496,6 @@ namespace SS3D.Systems.Entities.Character
             cameraData.requiresDepthOption = CameraOverrideOption.Off;
             cameraData.renderShadows = false;
             cameraData.dithering = false;
-            // The preview layer holds the unlit volume (SetUnlit); updated every frame so switching it shows at once.
-            cameraData.volumeLayerMask |= 1 << PreviewLayer;
-            camera.SetVolumeFrameworkUpdateMode(VolumeFrameworkUpdateMode.EveryFrame);
             // SMAA stacks with RT MSAA and is visible in UITK even when pipeline MSAA is modest.
             cameraData.antialiasing = AntialiasingMode.SubpixelMorphologicalAntiAliasing;
             cameraData.antialiasingQuality = AntialiasingQuality.High;
