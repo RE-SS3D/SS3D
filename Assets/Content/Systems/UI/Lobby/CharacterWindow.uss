@@ -1044,7 +1044,7 @@
     scale: 1.05 1.12;
 }
 
-/* Primary button: white plate, right-aligned label, a notch on the right edge (a rotated square behind it). Hovered,
+/* Primary button: white plate, label on the left, a notch on the right edge (a rotated square behind it). Hovered,
    the notch pushes out and the label follows it. */
 .charwin .charwin__continue,
 .charwin .charwin__continue .charwin__continue-tip {
@@ -1059,8 +1059,8 @@
     height: 40px;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-end;
-    padding-right: 6px;
+    justify-content: flex-start;
+    padding: 0 6px 0 16px;
 }
 
 .charwin .charwin__continue,
@@ -1173,14 +1173,9 @@
     min-height: 0;
 }
 
-.charwin .charwin-jobs__columns {
-    flex-direction: row;
-    justify-content: space-between;
+/* One column (owner, 2026-11-21): departments one under another, each job a full-width row. */
+.charwin .charwin-jobs__list {
     padding-right: 8px;
-}
-
-.charwin .charwin-jobs__column {
-    width: 386px;
 }
 
 .charwin .charwin-jobs__empty {
@@ -1232,17 +1227,22 @@
     background-color: rgba(255, 255, 255, 0.03);
 }
 
-.charwin .charwin-jobs__row--set .charwin-jobs__row-main {
-    border-color: rgba(255, 255, 255, 0.4);
-}
-
+/* A row wears its rank's colour (the levels' colours, below): on its edge, and High as an area too. */
 .charwin .charwin-jobs__row--high .charwin-jobs__row-main,
 .charwin .charwin-jobs__row--high .charwin-jobs__description {
-    background-color: var(--dept-soft);
+    background-color: var(--ui-ok-soft);
 }
 
 .charwin .charwin-jobs__row--high .charwin-jobs__row-main {
-    border-color: var(--dept);
+    border-color: var(--ui-ok);
+}
+
+.charwin .charwin-jobs__row--medium .charwin-jobs__row-main {
+    border-color: var(--ui-info);
+}
+
+.charwin .charwin-jobs__row--low .charwin-jobs__row-main {
+    border-color: var(--ui-warn);
 }
 
 /* The job a new High moved down, for a moment (CharacterJobsTab.Set). */
@@ -1274,7 +1274,7 @@
 }
 
 .charwin .charwin-jobs__row--high .charwin-jobs__job-name {
-    color: var(--dept);
+    color: var(--ui-ok);
 }
 
 .charwin .charwin-jobs__row--locked .charwin-jobs__job-name {
@@ -1343,24 +1343,61 @@
     flex-shrink: 0;
 }
 
-/* 43 px a level: room for an eight-letter job beside "unlimited" (the row is 386 px). */
+/* The rows are full width now: each level has room for its whole word. */
 .charwin .charwin-jobs__prio .charwin__seg-option {
-    width: 43px;
+    width: 66px;
     padding: 0;
     font-size: 13px;
 }
 
-/* The levels, from loud to quiet: High in the department's colour, Medium white, Low grey, Never a muted plate, so the
-   few picks stand out from the many Nevers. Hovering High previews its colour. */
+/* The levels, colour coded (owner, 2026-11-21): High ok green, Medium info blue, Low warn amber, Never danger red.
+   At rest a level's word is its colour, faint; hovered, its colour in full; picked, a plate of its colour. Never is
+   most rows' pick, so its plate stays dark, its word red. */
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--high {
+    color: rgba(92, 214, 122, 0.5);
+}
+
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--medium {
+    color: rgba(86, 178, 255, 0.5);
+}
+
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--low {
+    color: rgba(255, 188, 64, 0.5);
+}
+
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--never {
+    color: rgba(242, 88, 74, 0.45);
+}
+
 .charwin .charwin-jobs__prio .charwin-jobs__prio-option--high:hover {
-    color: var(--dept);
+    color: var(--ui-ok);
+}
+
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--medium:hover {
+    color: var(--ui-info);
+}
+
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--low:hover {
+    color: var(--ui-warn);
+}
+
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--never:hover {
+    color: var(--ui-danger);
 }
 
 .charwin .charwin-jobs__prio .charwin-jobs__prio-option--high-on,
 .charwin .charwin-jobs__prio .charwin-jobs__prio-option--high-on:hover,
 .charwin .charwin-jobs__prio .charwin-jobs__prio-option--high-on:active,
 .charwin .charwin-jobs__prio .charwin-jobs__prio-option--high-on:hover:active {
-    background-color: var(--dept);
+    background-color: var(--ui-ok);
+    color: var(--ui-text-on-light);
+}
+
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--medium-on,
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--medium-on:hover,
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--medium-on:active,
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--medium-on:hover:active {
+    background-color: var(--ui-info);
     color: var(--ui-text-on-light);
 }
 
@@ -1368,7 +1405,7 @@
 .charwin .charwin-jobs__prio .charwin-jobs__prio-option--low-on:hover,
 .charwin .charwin-jobs__prio .charwin-jobs__prio-option--low-on:active,
 .charwin .charwin-jobs__prio .charwin-jobs__prio-option--low-on:hover:active {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: var(--ui-warn);
     color: var(--ui-text-on-light);
 }
 
@@ -1376,8 +1413,8 @@
 .charwin .charwin-jobs__prio .charwin-jobs__prio-option--never-on:hover,
 .charwin .charwin-jobs__prio .charwin-jobs__prio-option--never-on:active,
 .charwin .charwin-jobs__prio .charwin-jobs__prio-option--never-on:hover:active {
-    background-color: rgba(255, 255, 255, 0.13);
-    color: rgba(255, 255, 255, 0.75);
+    background-color: rgba(242, 88, 74, 0.1);
+    color: var(--ui-danger);
 }
 
 .charwin .charwin-jobs__description {

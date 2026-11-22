@@ -105,18 +105,15 @@ namespace SS3D.UI.Lobby
             }
             else
             {
-                _scroll.Add(BuildColumns());
+                _scroll.Add(BuildList());
             }
 
             BuildFallback();
             Refresh();
         }
 
-        /// <summary>
-        /// Departments in order, split in two columns of about equal rows: the first column takes departments until it
-        /// holds half the jobs (the canvas's Jobs boards).
-        /// </summary>
-        public static List<List<Department>> SplitColumns(IReadOnlyList<JobSlotInfo> jobs)
+        /// <summary>The departments the jobs belong to, in the department order (one column, top to bottom).</summary>
+        public static List<Department> DepartmentOrder(IReadOnlyList<JobSlotInfo> jobs)
         {
             List<Department> order = new();
             foreach (JobSlotInfo job in jobs)
@@ -126,35 +123,19 @@ namespace SS3D.UI.Lobby
             }
 
             order.Sort();
-            List<List<Department>> columns = new() { new List<Department>(), new List<Department>() };
-            int leftRows = 0;
-            foreach (Department department in order)
-            {
-                bool left = leftRows * 2 < jobs.Count;
-                columns[left ? 0 : 1].Add(department);
-                if (left) leftRows += jobs.Count(job => (Department)job.Department == department);
-            }
-
-            return columns;
+            return order;
         }
 
-        private VisualElement BuildColumns()
+        /// <summary>One column (owner, 2026-11-21): every department under the last, each job a full-width row.</summary>
+        private VisualElement BuildList()
         {
-            VisualElement columns = LobbyUi.Box("charwin-jobs__columns");
-            List<List<Department>> split = SplitColumns(_jobs);
-            for (int c = 0; c < split.Count; c++)
+            VisualElement list = LobbyUi.Box("charwin-jobs__list");
+            foreach (Department department in DepartmentOrder(_jobs))
             {
-                VisualElement column = LobbyUi.Box("charwin-jobs__column");
-                column.EnableInClassList("charwin-jobs__column--left", c == 0);
-                foreach (Department department in split[c])
-                {
-                    column.Add(BuildDepartment(department));
-                }
-
-                columns.Add(column);
+                list.Add(BuildDepartment(department));
             }
 
-            return columns;
+            return list;
         }
 
         private VisualElement BuildDepartment(Department department)
@@ -273,7 +254,7 @@ namespace SS3D.UI.Lobby
                 Button option = new(() => Set(job, priority))
                 {
                     name = "charwin-prio-" + Key(priority),
-                    text = priority == JobPriority.Medium ? "med" : Key(priority),
+                    text = Key(priority),
                     focusable = false,
                 };
                 option.AddToClassList("charwin__seg-option");
@@ -342,6 +323,8 @@ namespace SS3D.UI.Lobby
                 JobPriority current = _model.PriorityOf(job);
                 row.EnableInClassList("charwin-jobs__row--set", current != JobPriority.Never);
                 row.EnableInClassList("charwin-jobs__row--high", current == JobPriority.High);
+                row.EnableInClassList("charwin-jobs__row--medium", current == JobPriority.Medium);
+                row.EnableInClassList("charwin-jobs__row--low", current == JobPriority.Low);
                 row.Q<Button>("charwin-job-about")?.EnableInClassList("charwin-jobs__about--open", _expanded.Contains(job));
                 Label description = row.Q<Label>("charwin-job-description");
                 description.style.display = _expanded.Contains(job) && description.text.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
