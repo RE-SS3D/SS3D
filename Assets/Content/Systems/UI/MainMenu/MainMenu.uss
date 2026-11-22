@@ -375,7 +375,8 @@
     margin-bottom: 0;
 }
 
-/* The port, tucked away: a square at the end of the row. */
+/* The port, tucked away: a square at the end of the row, "Port" over the number. Lit, with Play locally's ok edge,
+   while its field is open. */
 .main-menu .main-menu__advanced {
     width: 52px;
     height: 52px;
@@ -383,16 +384,23 @@
     padding: 0;
     align-items: center;
     justify-content: center;
-    border-width: 0;
+    border-width: 0 0 2px 0;
     border-radius: 0;
+    border-color: rgba(0, 0, 0, 0);
     background-color: var(--ui-editor-button);
-    transition-property: background-color, scale;
+    transition-property: background-color, border-color, scale;
     transition-duration: 0.12s;
     transition-timing-function: ease-out-cubic;
 }
 
 .main-menu .main-menu__advanced:hover {
     background-color: var(--ui-editor-button-hover);
+}
+
+.main-menu .main-menu__advanced--open,
+.main-menu .main-menu__advanced--open:hover {
+    background-color: var(--ui-editor-button-hover);
+    border-color: var(--ui-ok);
 }
 
 .main-menu .main-menu__advanced:active,
@@ -413,25 +421,18 @@
     color: rgba(255, 255, 255, 0.9);
 }
 
-/* The caret flips as the port opens, with a small overshoot. */
-.main-menu__caret {
-    width: 12px;
-    height: 7px;
-    margin-top: 5px;
-    background-image: url("project://database/Assets/Art/Graphics/UI/Chrome/DropdownArrow.png");
-    -unity-background-scale-mode: stretch-to-fill;
-    opacity: 0.6;
-    transition-property: rotate, opacity;
-    transition-duration: 0.3s, 0.12s;
-    transition-timing-function: ease-out-back, linear;
+.main-menu .main-menu__advanced-port {
+    margin-top: 4px;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.8);
+    transition-property: color;
+    transition-duration: 0.12s;
 }
 
-.main-menu .main-menu__advanced:hover .main-menu__caret {
-    opacity: 1;
-}
-
-.main-menu__caret--up {
-    rotate: 180deg;
+.main-menu .main-menu__advanced:hover .main-menu__advanced-port,
+.main-menu .main-menu__advanced--open .main-menu__advanced-port {
+    color: var(--ui-text);
 }
 
 /* The port: inset under Play locally, with its ok edge, so it reads as that row's setting. */

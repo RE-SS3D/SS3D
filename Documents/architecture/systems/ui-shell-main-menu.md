@@ -14,7 +14,7 @@ toggle. Launches with args, and editor Play with the toggle off, still go throug
 menu** returns here from any session (`NetworkSessionSubSystem.LeaveToMainMenu`).
 
 What is live: name (defaults to the OS user name), join a recent server or a pasted
-`host[:port]` / `[ipv6]:port`, play locally on the Advanced port (default 1151), per-server label
+`host[:port]` / `[ipv6]:port`, play locally on the port the Port button shows under its name (default 1151; the button opens the port field), per-server label
 and admin token, Remove, a status query per recent server (version, players/cap, ping), the
 Connecting / Starting local session / Update dialogs with real progress steps, one dialog for joining,
 refusals and lost connections (Retry, Back to servers, a token field on an admin-token refusal), refusal rows and

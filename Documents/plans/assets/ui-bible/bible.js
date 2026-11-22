@@ -2223,12 +2223,13 @@
         };
         const join = row(nav, 'join', 'Join a server', joinSub, selected ? '' : 'main-menu__button--accent');
         const localRow = mmEl(nav, 'main-menu__local-row');
-        const local = row(localRow, 'local', 'Play locally', hasName ? `Host on this computer, port ${mm.port}` : 'Needs a name');
+        const local = row(localRow, 'local', 'Play locally', hasName ? 'Host on this computer' : 'Needs a name');
         if (!hasName) [join, local].forEach(r => r.classList.add('main-menu__nav--disabled'));
         const adv = mmEl(localRow, 'main-menu__advanced');
         adv.dataset.mm = 'advanced';
+        if (mm.advanced) adv.classList.add('main-menu__advanced--open');
         mmText(adv, 'Port', 'main-menu__advanced-label');
-        mmEl(adv, 'main-menu__caret' + (mm.advanced ? ' main-menu__caret--up' : ''));
+        mmText(adv, mm.port || '—', 'main-menu__advanced-port');
         if (mm.advanced) {
             const port = mmEl(nav, 'main-menu__port');
             mmText(port, 'Port', 'main-menu__eyebrow');

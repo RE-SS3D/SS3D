@@ -2418,18 +2418,26 @@ input.main-menu__input { /* web-only selector: in UXML this is a TextField */
     margin-bottom: 0;
 }
 
-/* The port, tucked away: a square at the end of the row. */
+/* The port, tucked away: a square at the end of the row, "Port" over the number. Lit, with Play locally's ok edge,
+   while its field is open. */
 .main-menu__advanced {
     width: 52px;
     height: 52px;
     margin-left: 2px;
     align-items: center;
     justify-content: center;
+    border-bottom: 2px solid transparent;
     background-color: var(--ui-editor-button);
 }
 
 .main-menu__advanced:hover {
     background-color: var(--ui-editor-button-hover);
+}
+
+.main-menu__advanced--open,
+.main-menu__advanced--open:hover {
+    background-color: var(--ui-editor-button-hover);
+    border-bottom-color: var(--ui-ok);
 }
 
 .main-menu__advanced-label {
@@ -2439,17 +2447,17 @@ input.main-menu__input { /* web-only selector: in UXML this is a TextField */
     color: rgba(255, 255, 255, 0.55);
 }
 
-.main-menu__caret {
-    width: 12px;
-    height: 7px;
-    margin-top: 5px;
-    background-image: url("../../../../Assets/Art/Graphics/UI/Chrome/DropdownArrow.png");
-    background-size: 100% 100%;
-    opacity: 0.6;
+.main-menu__advanced-port {
+    margin-top: 4px;
+    font-family: var(--ui-font-label), monospace; /* web-only. USS: -unity-font-definition */
+    font-size: 11px;
+    line-height: 1; /* web-only */
+    color: rgba(255, 255, 255, 0.8);
 }
 
-.main-menu__caret--up {
-    rotate: 180deg;
+.main-menu__advanced:hover .main-menu__advanced-port,
+.main-menu__advanced--open .main-menu__advanced-port {
+    color: var(--ui-text);
 }
 
 .main-menu__port {

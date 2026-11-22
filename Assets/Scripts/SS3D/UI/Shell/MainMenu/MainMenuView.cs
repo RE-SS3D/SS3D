@@ -253,7 +253,7 @@ namespace SS3D.UI.Shell.MainMenu
             else if (model.Recent.Count > 0) joinSubtitle = $"Last played: {model.Recent[0].Name}";
             Root.Q<Label>("join-subtitle").text = joinSubtitle;
             Label localSubtitle = Root.Q<Label>("local-subtitle");
-            localSubtitle.text = hasName ? $"Host on this computer, port {model.Port}" : "Needs a name";
+            localSubtitle.text = hasName ? "Host on this computer" : "Needs a name";
             bool localError = hasName && !string.IsNullOrEmpty(model.LocalError);
             if (localError) localSubtitle.text = model.LocalError;
             localSubtitle.EnableInClassList("main-menu__nav-subtitle--error", localError);
@@ -262,7 +262,9 @@ namespace SS3D.UI.Shell.MainMenu
             nameHint.text = !hasName ? "Enter a name to join or play." : "Taken from this computer's user name. Change it any time.";
             nameHint.EnableInClassList("main-menu__hint--warning", !hasName);
             Reveal(Root.Q("port-panel"), model.Advanced, EnterLeft);
-            Root.Q("advanced-caret").EnableInClassList("main-menu__caret--up", model.Advanced);
+            // The port lives on its button at the end of the row, under "Port"; the button stays lit while its field is open.
+            Root.Q<Label>("advanced-port").text = string.IsNullOrWhiteSpace(model.Port) ? "—" : model.Port.Trim();
+            Root.Q("advanced").EnableInClassList("main-menu__advanced--open", model.Advanced);
             bool servers = model.Screen == MainMenuScreen.Servers;
             bool settings = model.Screen == MainMenuScreen.Settings;
             // Where you are: the open screen's row is the white plate with the notch; on the home screen Join holds the
