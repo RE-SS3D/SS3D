@@ -96,6 +96,16 @@
 .lobby__icon--warning { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Exclamation.png"); }
 .lobby__icon--user { background-image: url("project://database/Assets/Art/Icons/Heroicons/Solid/User.png"); }
 .lobby__icon--sparkles { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Sparkles.png"); }
+/* Section heads (LobbyUi.SectionHead, the sidebar's round, the Join picker's lists). */
+.lobby__icon--clock { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Clock.png"); }
+.lobby__icon--server { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Server.png"); }
+.lobby__icon--speakerphone { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Speakerphone.png"); }
+.lobby__icon--document { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/DocumentText.png"); }
+.lobby__icon--play { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Play.png"); }
+.lobby__icon--map { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Map.png"); }
+.lobby__icon--adjustments { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Adjustments.png"); }
+.lobby__icon--briefcase { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Briefcase.png"); }
+.lobby__icon--user-group { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/UserGroup.png"); }
 /* Department symbols (game-icons.net, CC BY 3.0; see Art/Icons/External/license.txt), tinted per department. */
 .lobby__icon--dept-command { background-image: url("project://database/Assets/Art/Icons/External/delapouite/captain-hat-profile.svg"); }
 .lobby__icon--dept-security { background-image: url("project://database/Assets/Art/Icons/External/delapouite/police-target.svg"); }
@@ -214,6 +224,46 @@
     white-space: nowrap;
 }
 
+/* An eyebrow led by a glyph (the sidebar's Round). */
+.lobby .lobby__eyebrow-icon {
+    width: 11px;
+    height: 11px;
+    margin-right: 6px;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.55);
+}
+
+/* A section's head (LobbyUi.SectionHead; the Join picker's lists in UXML): a glyph, the Disket title and a hairline to
+   the end of the line, so a section reads as one before its first row. */
+.lobby .lobby__section-head {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    height: 16px;
+    margin-bottom: 8px;
+}
+
+.lobby .lobby__section-head-icon {
+    width: 12px;
+    height: 12px;
+    margin-right: 7px;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.8);
+}
+
+.lobby .lobby__section-head-title {
+    flex-shrink: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.72);
+    white-space: nowrap;
+}
+
+.lobby .lobby__section-head-rule {
+    flex-grow: 1;
+    height: 1px;
+    margin-left: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
 /* Glyphs: white sprites tinted per use. Web-only: a mask filled with the element's colour, so one rule tints it.
    USS: background-image plus -unity-background-image-tint-color. */
 
@@ -257,6 +307,19 @@
 .lb-dept--civilian {
     --dept: var(--ui-dept-civilian);
 }
+
+/* A department as an area (--dept-soft): the picked job, the character's stage, the switcher's selected row. USS
+   can't take an alpha from var(--dept), so each is spelled out at the soft tokens' strength (a little over, since
+   here the department is the subject); keep the colours in step with ui-tokens' --ui-dept-*. The character window's
+   High job row uses it too. */
+.lb-dept--command { --dept-soft: rgba(112, 160, 255, 0.065); }
+.lb-dept--security { --dept-soft: rgba(255, 104, 136, 0.065); }
+.lb-dept--engineering { --dept-soft: rgba(255, 204, 60, 0.058); }
+.lb-dept--medical { --dept-soft: rgba(56, 214, 222, 0.058); }
+.lb-dept--science { --dept-soft: rgba(190, 124, 255, 0.065); }
+.lb-dept--cargo { --dept-soft: rgba(222, 156, 96, 0.065); }
+.lb-dept--service { --dept-soft: rgba(104, 224, 136, 0.058); }
+.lb-dept--civilian { --dept-soft: rgba(226, 218, 198, 0.052); }
 
 .lobby .lobby__text.lb-dept-text {
     color: var(--dept);
@@ -369,11 +432,20 @@
     margin-top: 12px;
 }
 
-/* The round: a tint with its state, the big readout and a note. */
+/* The round: its state as an area (--tone-soft, the tone's soft fill; a plain tint while nothing runs), the big
+   readout and a note. A change of state flashes it (UiMotion.Flash, .ui-flash below) and the new colour settles in. */
 
 .lobby .lobby__round {
     padding: 12px 14px;
-    background-color: var(--ui-editor-button);
+    background-color: var(--tone-soft);
+    transition-property: background-color, border-color;
+    transition-duration: 0.5s, 0.5s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic;
+}
+
+.lobby .lobby__round.ui-flash {
+    background-color: var(--tone-flash);
+    transition-duration: 0.06s, 0.06s;
 }
 
 .lobby .lobby__round-caption {
@@ -438,6 +510,14 @@
     color: rgba(255, 255, 255, 0.55);
 }
 
+/* A warning note is a notice: the warn soft fill with its edge, so the held countdown reads as an area, not a line. */
+.lobby .lobby__note--warning {
+    padding: 6px 8px 6px 6px;
+    border-left-width: 2px;
+    border-color: var(--ui-warn);
+    background-color: var(--ui-warn-soft);
+}
+
 .lobby .lobby__note--warning .lobby__note-text {
     color: var(--ui-warn);
 }
@@ -446,6 +526,7 @@
     -unity-background-image-tint-color: var(--ui-warn);
 }
 
+/* Square on purpose: overflow: hidden with rounded corners renders white on Linux. */
 .lobby .lobby__map-load {
     margin-top: 8px;
     font-size: 10.5px;
@@ -456,10 +537,18 @@
 }
 
 .lobby .lobby__map-load--loading {
+    padding: 5px 8px 5px 6px;
+    border-left-width: 2px;
+    border-color: var(--ui-warn);
+    background-color: var(--ui-warn-soft);
     color: var(--ui-warn);
 }
 
 .lobby .lobby__map-load--failed {
+    padding: 5px 8px 5px 6px;
+    border-left-width: 2px;
+    border-color: var(--ui-danger);
+    background-color: var(--ui-danger-soft);
     color: var(--ui-danger);
 }
 
@@ -565,13 +654,20 @@
     margin-top: 4px;
     padding: 0 10px 0 12px;
     background-color: var(--ui-editor-button);
-    transition-property: background-color;
-    transition-duration: 0.09s;
+    transition-property: background-color, color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
 
 .lobby .lobby__switch:hover,
 .lobby .lobby__switch:hover:active {
     background-color: var(--ui-editor-button-hover);
+}
+
+.lobby .lobby__switch:active,
+.lobby .lobby__switch:hover:active {
+    background-color: var(--ui-editor-button-pressed);
+    scale: 0.97 0.97;
 }
 
 .lobby .lobby__switch .lobby__icon {
@@ -641,18 +737,35 @@
     border-width: var(--ui-hairline);
     border-color: rgba(0, 0, 0, 0);
     color: var(--ui-text-on-light);
-    transition-property: background-color, border-color;
-    transition-duration: 0.09s;
+    /* Ready to ok plate is a change of meaning: it eases (0.2 s) where a hover snaps (0.12 s). */
+    transition-property: background-color, border-color, color, scale, translate;
+    transition-duration: 0.2s, 0.12s, 0.2s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
 
-.lobby .lobby__ready:hover,
-.lobby .lobby__ready:hover:active {
-    background-color: rgb(255, 255, 255);
+/* Hover: the white plate can't get whiter, so it previews where it leads (ready is the ok plate): the ok colour on
+   its edge and a faint green wash; it lifts a pixel and its text nudges along. */
+.lobby .lobby__ready:hover {
+    background-color: rgb(236, 251, 241);
+    border-color: var(--ui-ok);
+    translate: 0 -1px;
 }
 
 .lobby .lobby__ready:active,
 .lobby .lobby__ready:hover:active {
     background-color: rgb(207, 207, 204);
+    scale: 0.97 0.97;
+    translate: 0 0;
+}
+
+.lobby .lobby__ready-text {
+    transition-property: translate;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out-cubic;
+}
+
+.lobby .lobby__ready:hover .lobby__ready-text {
+    translate: 3px 0;
 }
 
 .lobby .lobby__ready-text {
@@ -711,6 +824,11 @@
     background-color: rgba(255, 255, 255, 0.03);
     border-color: rgba(0, 0, 0, 0);
     color: var(--ui-menu-tab-text);
+    translate: 0 0;
+}
+
+.lobby .lobby__ready--disabled:hover .lobby__ready-text {
+    translate: 0 0;
 }
 
 .lobby .lobby__ready--disabled .lobby__ready-subtitle {
@@ -732,19 +850,25 @@
     height: 48px;
     margin-top: 4px;
     padding: 0 14px;
+    /* A secondary action: a raised tint with a faint edge (the primary is the white plate, quiet buttons have neither). */
     background-color: var(--ui-editor-button);
-    transition-property: background-color;
-    transition-duration: 0.09s;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.1);
+    transition-property: background-color, border-color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
 
 .lobby .lobby__observe:hover,
 .lobby .lobby__observe:hover:active {
     background-color: var(--ui-editor-button-hover);
+    border-color: var(--ui-editor-cell-edge-hover);
 }
 
 .lobby .lobby__observe:active,
 .lobby .lobby__observe:hover:active {
     background-color: var(--ui-editor-button-pressed);
+    scale: 0.97 0.97;
 }
 
 .lobby .lobby__observe-icon {
@@ -752,6 +876,14 @@
     height: 18px;
     margin-right: 12px;
     -unity-background-image-tint-color: var(--ui-text);
+    transition-property: translate;
+    transition-duration: 0.24s;
+    transition-timing-function: ease-out-back;
+}
+
+/* The ghost lifts off as the pointer arrives. */
+.lobby .lobby__observe:hover .lobby__observe-icon {
+    translate: 0 -2px;
 }
 
 .lobby .lobby__observe-text {
@@ -778,6 +910,7 @@
 .lobby .lobby__observe--disabled:hover,
 .lobby .lobby__observe--disabled:hover:active {
     background-color: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.04);
 }
 
 .lobby .lobby__observe--disabled .lobby__observe-title,
@@ -812,8 +945,9 @@
     border-width: var(--ui-hairline);
     border-color: var(--ui-editor-cell-edge);
     border-radius: 4.2px;
-    transition-property: border-color;
-    transition-duration: 0.09s;
+    transition-property: border-color, background-color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
 
 .lobby .lobby__music-toggle:hover,
@@ -821,6 +955,25 @@
 .lobby .lobby__music-toggle:hover:active,
 .lobby .lobby__music-next:hover:active {
     border-color: var(--ui-editor-cell-edge-hover);
+    background-color: var(--ui-editor-button);
+}
+
+.lobby .lobby__music-toggle:active,
+.lobby .lobby__music-next:active,
+.lobby .lobby__music-toggle:hover:active,
+.lobby .lobby__music-next:hover:active {
+    scale: 0.92 0.92;
+}
+
+/* Next track: the glyph steps forward as the pointer arrives. */
+.lobby .lobby__music-next .lobby__icon {
+    transition-property: translate;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out-back;
+}
+
+.lobby .lobby__music-next:hover .lobby__icon {
+    translate: 2px 0;
 }
 
 .lobby .lobby__music-toggle--on,
@@ -884,8 +1037,9 @@
     border-width: var(--ui-hairline);
     border-color: rgba(0, 0, 0, 0);
     color: rgba(255, 255, 255, 0.6);
-    transition-property: background-color, border-color, color;
-    transition-duration: 0.09s;
+    transition-property: background-color, border-color, color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
 
 .lobby .lobby__quiet-button:hover,
@@ -894,9 +1048,28 @@
     color: var(--ui-text);
 }
 
+.lobby .lobby__quiet-button:active,
+.lobby .lobby__quiet-button:hover:active {
+    background-color: var(--ui-editor-button-pressed);
+    scale: 0.97 0.97;
+}
+
 .lobby .lobby__footer-button .lobby__icon {
     margin-right: 8px;
     -unity-background-image-tint-color: rgba(255, 255, 255, 0.6);
+    transition-property: translate, -unity-background-image-tint-color;
+    transition-duration: 0.2s, 0.12s;
+    transition-timing-function: ease-out-back, ease-out-cubic;
+}
+
+.lobby .lobby__footer-button:hover .lobby__icon {
+    translate: 2px 0;
+    -unity-background-image-tint-color: var(--ui-text);
+}
+
+/* Quit says where it leads before it's armed: the danger colour on its glyph. */
+.lobby .lobby__quit:hover .lobby__icon {
+    -unity-background-image-tint-color: var(--ui-danger);
 }
 
 .lobby .lobby__footer-label {
@@ -910,8 +1083,12 @@
 .lobby .lobby__quit--armed:hover,
 .lobby .lobby__quit--armed:hover:active {
     border-color: var(--ui-danger);
-    background-color: rgba(235, 98, 82, 0.12);
-    color: rgb(244, 156, 146);
+    background-color: var(--ui-danger-soft);
+    color: rgb(250, 160, 150);
+}
+
+.lobby .lobby__quit--armed .lobby__icon {
+    -unity-background-image-tint-color: var(--ui-danger);
 }
 
 /* ── The panel: header, tabs, content ── */
@@ -929,6 +1106,26 @@
     -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
     font-size: 17px;
     white-space: nowrap;
+}
+
+/* The server's glyph leads its name, in a small cell (the map editor's storage cell). */
+.lobby .lobby__server-cell {
+    width: 22px;
+    height: 22px;
+    margin-right: 9px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: 1px;
+    border-color: var(--ui-editor-cell-edge);
+    border-radius: 3.3px;
+    background-color: rgba(0, 0, 0, 0.35);
+}
+
+.lobby .lobby__server-cell .lobby__icon {
+    width: 12px;
+    height: 12px;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.85);
 }
 
 .lobby .lobby__header-meta {
@@ -977,13 +1174,16 @@
     font-size: 11px;
 }
 
-/* Tabs: the menu's tab plates in a row. Light tints on the plate; the open one is the white plate. */
+/* Tabs: the menu's tab plates in a row over a hairline. The open one is the white plate; the others stay off the
+   plate (faint text, no fill) until hovered, so the open tab is the only plate in the row. */
 
 .lobby .lobby__tabs {
     flex-direction: row;
     align-items: center;
     flex-shrink: 0;
-    padding: 0 12px 0 20px;
+    padding: 0 12px 6px 20px;
+    border-bottom-width: 1px;
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
 .lobby .lobby__tab {
@@ -992,19 +1192,25 @@
     height: 30px;
     margin-right: 4px;
     padding: 0 12px;
-    background-color: var(--ui-editor-button);
+    background-color: rgba(255, 255, 255, 0);
     -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.55);
     white-space: nowrap;
-    transition-property: background-color, color;
-    transition-duration: 0.09s;
+    transition-property: background-color, color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
 
 .lobby .lobby__tab:hover,
 .lobby .lobby__tab:hover:active {
-    background-color: var(--ui-editor-button-hover);
+    background-color: var(--ui-editor-button);
     color: var(--ui-text);
+}
+
+.lobby .lobby__tab:active,
+.lobby .lobby__tab:hover:active {
+    scale: 0.96 0.96;
 }
 
 .lobby .lobby__tab--active,
@@ -1057,6 +1263,9 @@
     background-color: rgba(0, 0, 0, 0.5);
     border-width: var(--ui-hairline);
     border-color: var(--ui-editor-cell-edge);
+    transition-property: background-color, border-color;
+    transition-duration: 0.16s, 0.16s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic;
 }
 
 .lobby .lobby__switch-toggle:hover,
@@ -1064,6 +1273,7 @@
     border-color: var(--ui-editor-cell-edge-hover);
 }
 
+/* The knob slides across (with a small overshoot) rather than jumping. */
 .lobby .lobby__switch-knob {
     position: absolute;
     top: 2px;
@@ -1072,6 +1282,9 @@
     height: 8px;
     border-radius: 1.2px;
     background-color: rgba(255, 255, 255, 0.55);
+    transition-property: left, background-color;
+    transition-duration: 0.2s, 0.16s;
+    transition-timing-function: ease-out-back, ease-out-cubic;
 }
 
 .lobby .lobby__switch-toggle--on,
@@ -1134,6 +1347,12 @@
     margin-bottom: 8px;
 }
 
+/* The message of the day under its head; the head's rule stands in for the eyebrow's gap. */
+.lobby .lobby-info__left > .lobby__section-head {
+    margin-bottom: 0;
+}
+
+/* Facts, not actions: inset wells (darker than the plate) where buttons are raised tints. */
 .lobby .lobby-info__kv {
     flex-direction: row;
     justify-content: space-between;
@@ -1142,7 +1361,9 @@
     margin-bottom: 2px;
     padding: 0 10px;
     flex-shrink: 0;
-    background-color: var(--ui-editor-button);
+    background-color: rgba(0, 0, 0, 0.45);
+    border-left-width: 2px;
+    border-color: rgba(255, 255, 255, 0.12);
 }
 
 .lobby .lobby-info__key {
@@ -1167,6 +1388,12 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 4px;
+}
+
+/* "All releases" ends the change log's head, after its rule. */
+.lobby .lobby-info__links > .lobby-info__link {
+    margin-left: 10px;
+    flex-shrink: 0;
 }
 
 .lobby .lobby-info__log {
@@ -1198,16 +1425,19 @@
     color: rgba(255, 255, 255, 0.5);
 }
 
+/* Links read as links: the info colour on hover (news, and where it leads), the arrow stepping out. */
 .lobby .lobby-info__link {
     flex-direction: row;
     align-items: center;
     font-size: 10.5px;
     color: rgba(255, 255, 255, 0.6);
+    transition-property: color;
+    transition-duration: 0.12s;
 }
 
 .lobby .lobby-info__link:hover,
 .lobby .lobby-info__link:hover:active {
-    color: var(--ui-text);
+    color: var(--ui-info);
 }
 
 .lobby .lobby-info__link .lobby__icon {
@@ -1215,6 +1445,14 @@
     height: 10px;
     margin-left: 5px;
     -unity-background-image-tint-color: rgba(255, 255, 255, 0.6);
+    transition-property: translate, -unity-background-image-tint-color;
+    transition-duration: 0.2s, 0.12s;
+    transition-timing-function: ease-out-back, ease-out-cubic;
+}
+
+.lobby .lobby-info__link:hover .lobby__icon {
+    translate: 1px -1px;
+    -unity-background-image-tint-color: var(--ui-info);
 }
 
 .lobby .lobby-info__entry {
@@ -1230,6 +1468,9 @@
     flex-shrink: 0;
     border-radius: 2px;
     background-color: rgba(255, 255, 255, 0.35);
+    transition-property: background-color, scale;
+    transition-duration: 0.12s, 0.2s;
+    transition-timing-function: ease-out-cubic, ease-out-back;
 }
 
 .lobby .lobby-info__entry-text {
@@ -1237,10 +1478,21 @@
     flex-shrink: 1;
     font-size: 11px;
     color: rgba(255, 255, 255, 0.78);
+    transition-property: color;
+    transition-duration: 0.12s;
 }
 
 .lobby .lobby-info__entry--link:hover .lobby-info__entry-text {
     color: var(--ui-text);
+}
+
+.lobby .lobby-info__entry--link:hover .lobby-info__bullet {
+    background-color: var(--ui-info);
+    scale: 1.5 1.5;
+}
+
+.lobby .lobby-info__entry--link:hover .lobby-info__entry-ref {
+    color: var(--ui-info);
 }
 
 .lobby .lobby-info__entry-ref {
@@ -1271,6 +1523,15 @@
     flex-direction: row;
     align-items: flex-start;
     padding: 3px 0;
+}
+
+/* Admin lines are an area in the admin colour (warn's soft fill), so they stand out of the scroll. */
+.lobby .lobby-chat__line--admin {
+    margin: 1px -6px;
+    padding: 3px 6px 3px 4px;
+    border-left-width: 2px;
+    border-color: var(--ui-warn);
+    background-color: var(--ui-warn-soft);
 }
 
 .lobby .lobby-chat__time {
@@ -1337,11 +1598,20 @@
     -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
     font-size: 11px;
     color: rgba(255, 255, 255, 0.45);
+    transition-property: background-color, color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
 
+/* Hover shows where a line would go: the channel's own colour (--chan). */
 .lobby .lobby-chat__channel-button:hover,
 .lobby .lobby-chat__channel-button:hover:active {
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--chan);
+}
+
+.lobby .lobby-chat__channel-button:active,
+.lobby .lobby-chat__channel-button:hover:active {
+    scale: 0.95 0.95;
 }
 
 .lobby .lobby-chat__channel-button--active,
@@ -1356,11 +1626,23 @@
     align-items: center;
     padding: 0 12px;
     background-color: var(--ui-editor-button);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.1);
+    transition-property: background-color, border-color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
 
 .lobby .lobby-chat__send:hover,
 .lobby .lobby-chat__send:hover:active {
     background-color: var(--ui-editor-button-hover);
+    border-color: var(--ui-editor-cell-edge-hover);
+}
+
+.lobby .lobby-chat__send:active,
+.lobby .lobby-chat__send:hover:active {
+    background-color: var(--ui-editor-button-pressed);
+    scale: 0.95 0.95;
 }
 
 .lobby .lobby-chat__send .lobby__icon {
@@ -1368,6 +1650,15 @@
     height: 13px;
     margin-right: 8px;
     -unity-background-image-tint-color: var(--ui-text);
+    transition-property: translate, rotate;
+    transition-duration: 0.24s, 0.24s;
+    transition-timing-function: ease-out-back, ease-out-back;
+}
+
+/* The paper plane leans into the send. */
+.lobby .lobby-chat__send:hover .lobby__icon {
+    translate: 2px -1px;
+    rotate: 12deg;
 }
 
 .lobby .lobby-chat__send-label {
@@ -1404,10 +1695,25 @@
     flex-shrink: 0;
 }
 
+/* The round's card, coded like the sidebar's round (LobbyServerSettingsView sets its lb-tone--*): the tone's soft
+   fill and edge, a flash when the state changes. */
 .lobby .lobby-admin__card {
     padding: 12px 14px;
     flex-shrink: 0;
-    background-color: var(--ui-editor-button);
+    background-color: var(--tone-soft);
+    transition-property: background-color, border-color;
+    transition-duration: 0.5s, 0.5s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic;
+}
+
+.lobby .lobby-admin__card.ui-flash {
+    background-color: var(--tone-flash);
+    transition-duration: 0.06s, 0.06s;
+}
+
+.lobby .lobby-admin__card-heading {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.6);
 }
 
 .lobby .lobby-admin__card-body {
@@ -1441,13 +1747,17 @@
     font-size: 20px;
 }
 
-/* Section titles: the settings' group titles. */
+/* Section titles: the settings' group titles. Now section heads (LobbyUi.SectionHead) with a glyph and a rule. */
 
 .lobby .lobby-admin__section-title {
     margin: 18px 0 8px 0;
     -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
     font-size: 10px;
     color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby .lobby-admin__section-head {
+    margin: 20px 0 9px 0;
 }
 
 .lobby .lobby-admin__controls {
@@ -1490,9 +1800,10 @@
     color: var(--ui-text-on-light);
 }
 
+/* The white plate can't get whiter: its hover is a faint wash of where it leads (start: ok). */
 .lobby .lobby-admin__button--start:hover,
 .lobby .lobby-admin__button--start:hover:active {
-    background-color: rgb(255, 255, 255);
+    background-color: rgb(236, 251, 241);
 }
 
 .lobby .lobby-admin__button--danger {
@@ -1526,7 +1837,12 @@
     color: rgba(255, 255, 255, 0.5);
 }
 
+/* Loading and failed are notices (the soft fill with its edge); ready is a plain ok line. */
 .lobby .lobby-admin__map-load--loading {
+    padding: 6px 8px 6px 7px;
+    border-left-width: 2px;
+    border-color: var(--ui-warn);
+    background-color: var(--ui-warn-soft);
     color: var(--ui-warn);
 }
 
@@ -1535,6 +1851,10 @@
 }
 
 .lobby .lobby-admin__map-load--failed {
+    padding: 6px 8px 6px 7px;
+    border-left-width: 2px;
+    border-color: var(--ui-danger);
+    background-color: var(--ui-danger-soft);
     color: var(--ui-danger);
 }
 
@@ -1628,20 +1948,31 @@
  *   admin        warn: the Admin badge, the switch when on, admin names and lines
  * Ready, once ready, is the ok plate. The call to action (Ready up, Join, Start Round) stays the white plate. */
 
+/* --tone is the state's colour (an edge, a dot, a word); --tone-soft the state as an area (the round card), a plain
+   tint while nothing runs; --tone-flash the card's brief flash when the state changes (UiMotion.Flash): about twice
+   the soft fill, a pulse rather than a solid block (UI Toolkit's linear blending makes a fifth of a hue read as paint). */
 .lb-tone--neutral {
     --tone: rgba(255, 255, 255, 0.3);
+    --tone-soft: var(--ui-editor-button);
+    --tone-flash: rgba(255, 255, 255, 0.09);
 }
 
 .lb-tone--info {
     --tone: var(--ui-info);
+    --tone-soft: var(--ui-info-soft);
+    --tone-flash: rgba(86, 178, 255, 0.12);
 }
 
 .lb-tone--warning {
     --tone: var(--ui-warn);
+    --tone-soft: var(--ui-warn-soft);
+    --tone-flash: rgba(255, 188, 64, 0.11);
 }
 
 .lb-tone--live {
     --tone: var(--ui-ok);
+    --tone-soft: var(--ui-ok-soft);
+    --tone-flash: rgba(92, 214, 122, 0.11);
 }
 
 .lobby .lobby__dot--info {
@@ -1673,8 +2004,8 @@
 
 .lobby .lobby__ready--confirmed:hover,
 .lobby .lobby__ready--confirmed:hover:active {
-    background-color: rgb(150, 222, 144);
-    border-color: rgb(150, 222, 144);
+    background-color: rgb(132, 230, 156);
+    border-color: rgb(132, 230, 156);
 }
 
 .lobby .lobby__ready--confirmed .lobby__ready-check {
@@ -1833,13 +2164,16 @@
 
 .lobby .lobby__stage--neutral {
     --dept: rgba(255, 255, 255, 0.5);
+    --dept-soft: rgba(255, 255, 255, 0);
 }
 
 .lobby .lobby__stage--covered {
     visibility: hidden;
 }
 
-/* Who you play: a plate over the model, the High job's department on its glyph, word and the bar under it. */
+/* Who you play: a plate over the model, the High job's department on its glyph, word, the bar under it and a soft
+   wash over the plate (the department as an area: the character is the subject here). LobbyView eases the plate in
+   when the character or its High job changes. */
 
 .lobby .lobby__stage-plate {
     position: relative;
@@ -1849,6 +2183,20 @@
     border-width: var(--ui-hairline);
     border-color: var(--ui-panel-edge);
     border-radius: var(--ui-panel-radius);
+}
+
+/* Inside the plate's 2 px edge, so its corners follow the plate's (no overflow: hidden with a radius). */
+.lobby .lobby__stage-wash {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 7.55px;
+    background-color: var(--dept-soft);
+    transition-property: background-color;
+    transition-duration: 0.4s;
+    transition-timing-function: ease-out-cubic;
 }
 
 .lobby .lobby__stage-plate > .lobby__eyebrow {
@@ -1867,19 +2215,22 @@
 }
 
 .lobby .lobby__stage-dept-icon {
-    width: 12px;
-    height: 12px;
-    margin-right: 5px;
+    width: 13px;
+    height: 13px;
+    margin-right: 6px;
 }
 
 .lobby .lobby__stage-accent {
     position: absolute;
     left: 50%;
     bottom: -2px;
-    width: 44px;
+    width: 72px;
     height: 3px;
-    margin-left: -22px;
+    margin-left: -36px;
     background-color: var(--dept);
+    transition-property: background-color;
+    transition-duration: 0.4s;
+    transition-timing-function: ease-out-cubic;
 }
 
 /* The model: the booth's render texture, fitted and standing on the bottom edge; clicking it opens the character
@@ -1903,6 +2254,8 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 
+/* The floor glow breathes in the department's colour: LobbyView toggles .ui-pulse--on every 1.8 s (UiMotion.Pulse) and
+   the transition eases between the two looks. A department change fades the colour across. */
 .lobby .lobby__stage-floor {
     position: absolute;
     left: 50%;
@@ -1912,13 +2265,45 @@
     margin-left: -150px;
     border-radius: 50%;
     background-color: var(--dept);
-    opacity: 0.16;
-    transition-property: opacity;
-    transition-duration: 0.09s;
+    opacity: 0.2;
+    scale: 0.94 1;
+    transition-property: opacity, scale, background-color;
+    transition-duration: 1.8s, 1.8s, 0.4s;
+    transition-timing-function: ease-in-out-sine, ease-in-out-sine, ease-out-cubic;
 }
 
+.lobby .lobby__stage-floor.ui-pulse--on {
+    opacity: 0.32;
+    scale: 1.04 1;
+}
+
+/* A ring on the floor: the pad the character stands on, its edge in the department's colour. */
+.lobby .lobby__stage-ring {
+    position: absolute;
+    left: 50%;
+    bottom: 7px;
+    width: 216px;
+    height: 30px;
+    margin-left: -108px;
+    border-radius: 50%;
+    border-width: var(--ui-hairline);
+    border-color: var(--dept);
+    opacity: 0.4;
+    transition-property: opacity, border-color, scale;
+    transition-duration: 0.24s, 0.4s, 0.3s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-back;
+}
+
+/* Hovered, the stage answers at once: the glow up, the ring brighter and a touch wider. */
 .lobby .lobby__stage-figure:hover .lobby__stage-floor {
-    opacity: 0.28;
+    opacity: 0.44;
+    scale: 1.04 1;
+    transition-duration: 0.24s, 0.24s, 0.4s;
+}
+
+.lobby .lobby__stage-figure:hover .lobby__stage-ring {
+    opacity: 0.85;
+    scale: 1.05 1.05;
 }
 
 .lobby .lobby__stage-shadow {
@@ -1985,8 +2370,9 @@
     margin-left: 3px;
     padding: 0 8px 0 10px;
     background-color: var(--ui-editor-button);
-    transition-property: background-color;
-    transition-duration: 0.09s;
+    transition-property: background-color, scale;
+    transition-duration: 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic;
 }
 
 .lobby .lobby__stage-edit:hover,
@@ -1997,12 +2383,21 @@
 .lobby .lobby__stage-edit:active,
 .lobby .lobby__stage-edit:hover:active {
     background-color: var(--ui-editor-button-pressed);
+    scale: 0.97 0.97;
 }
 
 .lobby .lobby__stage-edit .lobby__icon {
     width: 10px;
     height: 10px;
     margin-left: 4px;
+    transition-property: translate;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out-back;
+}
+
+/* The chevron steps toward the window it opens. */
+.lobby .lobby__stage-edit:hover .lobby__icon {
+    translate: 2px 0;
 }
 
 .lobby .lobby__stage-edit:hover .lobby__card-edit-label {
@@ -2107,6 +2502,8 @@
 .lobby .lobby__ready:disabled,
 .lobby .lobby__ready:disabled:hover {
     background-color: rgba(255, 255, 255, 0.03);
+    border-color: rgba(0, 0, 0, 0);
+    translate: 0 0;
 }
 
 .lobby .lobby__ready:disabled .lobby__ready-title,
@@ -2313,6 +2710,8 @@
     margin: 0 0 2px 0;
     padding: 0 10px;
     background-color: var(--ui-editor-button);
+    transition-property: background-color;
+    transition-duration: 0.12s;
 }
 
 .lobby .lobby-admin__toggle:hover {
@@ -2334,11 +2733,22 @@
     border-radius: 2.4px;
     background-color: rgba(0, 0, 0, 0.45);
     -unity-background-image-tint-color: var(--ui-text-on-light);
+    transition-property: background-color, border-color, scale;
+    transition-duration: 0.14s, 0.14s, 0.2s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-back;
+}
+
+.lobby .lobby-admin__toggle:hover .unity-toggle__checkmark {
+    border-color: var(--ui-editor-cell-edge-hover);
 }
 
 .lobby .lobby-admin__toggle:checked .unity-toggle__checkmark {
     border-color: var(--ui-menu-selected);
     background-color: var(--ui-menu-selected);
+}
+
+.lobby .lobby-admin__toggle:active .unity-toggle__checkmark {
+    scale: 0.85 0.85;
 }
 
 .lobby .lobby-admin__toggle .unity-toggle__text {
@@ -2395,4 +2805,105 @@
 /* The booth's frame keeps room under the feet: drop the model so they stand on the contact shadow. */
 .lobby .lobby__stage-model {
     bottom: -8px;
+}
+
+/* ══ Motion and feedback (UiMotion; the vocabulary is ui-controls.uss's "Motion") ══
+ * Entrances play on a real change only, never on the 200 ms repaint: a tab switched (the content slides in from the
+ * side of the tab it came from), the character or its High job changed (the plate pops, the model rises), Ready
+ * confirmed (the check pops), the Join picker or the switcher opened, a new chat line. The round card flashes when the
+ * round's state changes. Two loops: the stage's floor glow breathes, and Ready breathes while a countdown runs and you
+ * aren't ready. .ui-enter's transition list and an element's own replace each other (whichever rule is more specific
+ * wins), so entrances go on containers and rows without transitions of their own, never on a Button with hover
+ * transitions; where a row has both, its sheet combines the two (CharacterSwitcher.uss). */
+
+/* Ready, breathing (LobbyView: lobby__ready--pulsing while it runs, ui-pulse--on toggled every 0.7 s): the round's
+   colour (--tone, from the lb-tone--* class LobbyView puts on the button) on its edge and as a pale wash, easing
+   over the half period; hover and press keep their quick look. */
+.lb-tone--info {
+    --tone-wash: rgb(222, 238, 255);
+}
+
+.lb-tone--warning {
+    --tone-wash: rgb(255, 241, 214);
+}
+
+.lb-tone--live,
+.lb-tone--neutral {
+    --tone-wash: rgb(255, 255, 255);
+}
+
+.lobby .lobby__ready--pulsing {
+    transition-duration: 0.7s, 0.7s, 0.2s, 0.12s, 0.12s;
+    transition-timing-function: ease-in-out-sine, ease-in-out-sine, ease-out-cubic, ease-out-cubic, ease-out-cubic;
+}
+
+.lobby .lobby__ready--pulsing.ui-pulse--on {
+    background-color: var(--tone-wash);
+    border-color: var(--tone);
+}
+
+.lobby .lobby__ready--pulsing:hover:active {
+    background-color: rgb(207, 207, 204);
+}
+
+/* Hovered, it stops breathing and shows its hover: a pointer on it wins over the pulse. */
+.lobby .lobby__ready--pulsing:hover,
+.lobby .lobby__ready--pulsing.ui-pulse--on:hover {
+    background-color: rgb(236, 251, 241);
+    border-color: var(--ui-ok);
+}
+
+/* Ready confirmed: the check pops in (LobbyView enters it when you ready up). */
+.lobby .lobby__ready-check.ui-enter {
+    translate: 0 0;
+    scale: 0.3 0.3;
+}
+
+.lobby .lobby__ready-check.ui-enter.ui-enter--in {
+    scale: 1 1;
+}
+
+/* A dimmed backdrop only fades: its card does the moving (the Join picker's card scales in, as the Stop prompt's). */
+.lobby .lobby-join.ui-enter,
+.lobby #map-stop-prompt.ui-enter {
+    translate: 0 0;
+    scale: 1 1;
+}
+
+/* Server Settings' and the Stop prompt's buttons. Scoped: the character window shares .lobby-admin__button and keeps
+   its own look. Eased, pressed, and Force / Cancel / Hold (warn) and Stop / Discard (danger) say their consequence on
+   hover in their colour. */
+.lobby .lobby-admin .lobby-admin__button,
+.lobby #map-stop-prompt .lobby-admin__button {
+    transition-property: background-color, border-color, color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic, ease-out-cubic;
+}
+
+.lobby .lobby-admin .lobby-admin__button:active,
+.lobby .lobby-admin .lobby-admin__button:hover:active,
+.lobby #map-stop-prompt .lobby-admin__button:active,
+.lobby #map-stop-prompt .lobby-admin__button:hover:active {
+    scale: 0.96 0.96;
+}
+
+.lobby .lobby-admin .lobby-admin__button--warn:hover,
+.lobby .lobby-admin .lobby-admin__button--warn:hover:active {
+    background-color: rgba(255, 188, 64, 0.16);
+    color: var(--ui-warn);
+}
+
+.lobby .lobby-admin .lobby-admin__button--danger:hover,
+.lobby .lobby-admin .lobby-admin__button--danger:hover:active,
+.lobby #map-stop-prompt .lobby-admin__button--danger:hover,
+.lobby #map-stop-prompt .lobby-admin__button--danger:hover:active {
+    background-color: rgba(242, 88, 74, 0.18);
+    color: rgb(250, 160, 150);
+}
+
+/* Off stays off: no colour on a disabled control. */
+.lobby .lobby-admin .lobby-admin__button:disabled {
+    background-color: rgba(255, 255, 255, 0.03);
+    color: var(--ui-menu-tab-text);
+    scale: 1 1;
 }

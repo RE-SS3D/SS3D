@@ -12,6 +12,10 @@
  * set their font here, so the bible's font wins.
  * --dept comes from the .lb-dept--<department> classes (Lobby.uss) that LobbyJoinPicker puts on a job item, its glyph
  * cell, Join and a manifest group. A job or group with no department reads the neutral default set on .lobby-join.
+ * --dept-soft (Lobby.uss) is the department as an area: the picked job's fill, a hovered job's glyph cell.
+ * Motion (LobbyJoinPicker, UiMotion): opening fades the backdrop, scales the card in and staggers the jobs and the
+ * crew groups; a picked job's description eases in, a notice slides in when it appears. Actions are raised tints,
+ * the crew manifest's groups are inset wells (facts, not actions).
  * Rules are prefixed with .lobby so they beat the runtime theme and the shell's resets. Buttons keep the theme's
  * .unity-button class, so every Button class here sets its own background, border and colour for :hover and :active
  * too, or the theme's light grey shows through.
@@ -30,6 +34,7 @@
     display: none;
     /* Neutral, for a job the server and the roster don't place in a department ("Other"). */
     --dept: rgba(255, 255, 255, 0.5);
+    --dept-soft: var(--ui-editor-button-hover);
 }
 
 .lobby .lobby-join--open {
@@ -139,6 +144,9 @@
     border-width: var(--ui-hairline);
     border-color: rgba(0, 0, 0, 0);
     border-radius: 4.2px; /* 15 % */
+    transition-property: border-color, scale;
+    transition-duration: 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic;
 }
 
 .lobby .lobby-join__close:hover {
@@ -146,11 +154,21 @@
     background-color: rgba(0, 0, 0, 0);
 }
 
-.lobby .lobby-join__close .lobby__icon {
-    -unity-background-image-tint-color: rgba(255, 255, 255, 0.55);
+.lobby .lobby-join__close:active,
+.lobby .lobby-join__close:hover:active {
+    scale: 0.9 0.9;
 }
 
+.lobby .lobby-join__close .lobby__icon {
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.55);
+    transition-property: rotate, -unity-background-image-tint-color;
+    transition-duration: 0.24s, 0.12s;
+    transition-timing-function: ease-out-back, ease-out-cubic;
+}
+
+/* The cross turns a quarter as the pointer arrives. */
 .lobby .lobby-join__close:hover .lobby__icon {
+    rotate: 90deg;
     -unity-background-image-tint-color: var(--ui-text);
 }
 
@@ -175,10 +193,18 @@
     margin-bottom: 8px;
 }
 
+/* A list's head leads with its glyph (the lobby's section heads). */
+.lobby .lobby-join__section-icon {
+    width: 12px;
+    height: 12px;
+    margin-right: 7px;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.8);
+}
+
 .lobby .lobby-join__section-title {
     -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
     font-size: 10px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.72);
 }
 
 .lobby .lobby-join__section-count {
@@ -199,7 +225,8 @@
     white-space: normal;
 }
 
-/* A notice: news in the info colour (only Assistant is open), the job you picked filling in warn. */
+/* A notice: news in the info colour (only Assistant is open), the job you picked filling in warn. Its state as an
+   area: the soft fill, with the colour on its edge. */
 .lobby .lobby-join__notice {
     flex-direction: row;
     align-items: center;
@@ -207,8 +234,9 @@
     padding: 8px 10px;
     flex-shrink: 0;
     border-width: var(--ui-hairline);
+    border-left-width: 3px;
     border-color: var(--ui-info);
-    background-color: rgba(120, 196, 236, 0.08);
+    background-color: var(--ui-info-soft);
 }
 
 .lobby .lobby-join__notice .lobby__icon {
@@ -226,7 +254,7 @@
 
 .lobby .lobby-join__notice--warning {
     border-color: var(--ui-warn);
-    background-color: rgba(238, 186, 78, 0.08);
+    background-color: var(--ui-warn-soft);
 }
 
 .lobby .lobby-join__notice--warning .lobby__icon {
@@ -261,8 +289,9 @@
     border-color: rgba(0, 0, 0, 0);
     border-radius: 0;
     color: var(--ui-text);
-    transition-property: background-color, border-color;
-    transition-duration: 0.09s;
+    transition-property: background-color, border-color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
 
 .lobby .lobby-join__job:hover,
@@ -271,6 +300,12 @@
     background-color: var(--ui-editor-button-hover);
     border-color: rgba(0, 0, 0, 0);
     color: var(--ui-text);
+}
+
+/* A wide row: a small press, so it doesn't jump. */
+.lobby .lobby-join__job:active,
+.lobby .lobby-join__job:hover:active {
+    scale: 0.985 0.985;
 }
 
 .lobby .lobby-join__job-item--on .lobby-join__job,
@@ -290,12 +325,28 @@
     border-width: var(--ui-hairline);
     border-color: rgba(255, 255, 255, 0.35);
     border-radius: 7px;
+    transition-property: border-color;
+    transition-duration: 0.12s;
 }
 
+/* The dot pops in when the job is picked. */
 .lobby .lobby-join__ring-dot {
     width: 6px;
     height: 6px;
     border-radius: 3px;
+    scale: 0 0;
+    transition-property: scale, background-color;
+    transition-duration: 0.22s, 0.12s;
+    transition-timing-function: ease-out-back, ease-out-cubic;
+}
+
+.lobby .lobby-join__job-item--on .lobby-join__ring-dot {
+    scale: 1 1;
+}
+
+/* Hover shows the job's department before you pick it: the ring and the glyph cell take its colour. */
+.lobby .lobby-join__job:hover .lobby-join__ring {
+    border-color: var(--dept);
 }
 
 .lobby .lobby-join__job-item--on .lobby-join__ring {
@@ -318,11 +369,25 @@
     border-color: var(--dept);
     border-radius: 4.5px; /* 15 % */
     background-color: rgba(0, 0, 0, 0.35);
+    transition-property: background-color;
+    transition-duration: 0.12s;
+}
+
+.lobby .lobby-join__job:hover .lobby-join__job-frame,
+.lobby .lobby-join__job-item--on .lobby-join__job-frame {
+    background-color: var(--dept-soft);
 }
 
 .lobby .lobby-join__job-frame .lobby__icon {
     width: 18px;
     height: 18px;
+    transition-property: scale;
+    transition-duration: 0.24s;
+    transition-timing-function: ease-out-back;
+}
+
+.lobby .lobby-join__job:hover .lobby-join__job-frame .lobby__icon {
+    scale: 1.12 1.12;
 }
 
 .lobby .lobby-join__job-text {
@@ -413,6 +478,7 @@
     font-size: 12.5px;
 }
 
+/* Change: a secondary action, a raised tint with a faint edge. */
 .lobby .lobby-join__change {
     flex-direction: row;
     align-items: center;
@@ -420,17 +486,28 @@
     margin: 0;
     padding: 0 10px;
     flex-shrink: 0;
-    border-width: 0;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.1);
     border-radius: 0;
     background-color: var(--ui-editor-button);
     color: var(--ui-text);
+    transition-property: background-color, border-color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
 
 .lobby .lobby-join__change:hover,
 .lobby .lobby-join__change:active,
 .lobby .lobby-join__change:hover:active {
     background-color: var(--ui-editor-button-hover);
+    border-color: var(--ui-editor-cell-edge-hover);
     color: var(--ui-text);
+}
+
+.lobby .lobby-join__change:active,
+.lobby .lobby-join__change:hover:active {
+    background-color: var(--ui-editor-button-pressed);
+    scale: 0.95 0.95;
 }
 
 .lobby .lobby-join__change .lobby__icon {
@@ -458,12 +535,15 @@
     border-radius: 0;
     background-color: var(--ui-menu-selected);
     color: var(--ui-text-on-light);
-    transition-property: background-color;
-    transition-duration: 0.09s;
+    /* A new pick fades Join into the job's department colour (0.25 s); hover and press stay quick. */
+    transition-property: background-color, opacity, scale, translate;
+    transition-duration: 0.25s, 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
 
+/* The white plate can't get whiter: its hover is a faint ok wash (joining the round). */
 .lobby .lobby-join__confirm:hover {
-    background-color: rgb(255, 255, 255);
+    background-color: rgb(236, 251, 241);
     color: var(--ui-text-on-light);
 }
 
@@ -471,10 +551,35 @@
 .lobby .lobby-join__confirm:hover:active {
     background-color: rgb(207, 207, 204);
     color: var(--ui-text-on-light);
+    scale: 0.98 0.98;
 }
 
 .lobby .lobby-join__confirm-text {
     flex-grow: 1;
+    transition-property: translate;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out-cubic;
+}
+
+/* Hover, white or in a department's colour: it lifts a pixel and its text nudges along, as Ready does (a coloured
+   plate can't change its hue on hover without losing what the colour says). */
+.lobby .lobby-join__confirm:hover {
+    translate: 0 -1px;
+}
+
+.lobby .lobby-join__confirm:hover .lobby-join__confirm-text {
+    translate: 3px 0;
+}
+
+.lobby .lobby-join__confirm:active,
+.lobby .lobby-join__confirm:hover:active,
+.lobby .lobby-join__confirm:disabled,
+.lobby .lobby-join__confirm:disabled:hover {
+    translate: 0 0;
+}
+
+.lobby .lobby-join__confirm:disabled:hover .lobby-join__confirm-text {
+    translate: 0 0;
 }
 
 .lobby .lobby-join__confirm-title {
@@ -523,10 +628,14 @@
     margin-right: 8px;
 }
 
+/* Facts, not actions: inset wells (darker than the card, a faint engraved edge) where the jobs on the left are
+   raised tints. */
 .lobby .lobby-join__group {
     margin-bottom: 6px;
     flex-shrink: 0;
-    background-color: var(--ui-editor-button);
+    background-color: rgba(0, 0, 0, 0.55);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.07);
 }
 
 .lobby .lobby-join__group-head {
@@ -576,11 +685,12 @@
     color: rgba(255, 255, 255, 0.5);
 }
 
-/* A gap a latejoiner could fill ("No Doctor aboard"): news, so the info colour. */
+/* A gap a latejoiner could fill ("No Doctor aboard"): news, so the info colour, as an area (its soft fill). */
 .lobby .lobby-join__crew-missing {
     padding: 6px 10px;
     border-top-width: 1px;
     border-color: rgba(255, 255, 255, 0.06);
+    background-color: var(--ui-info-soft);
     font-size: 11px;
     color: var(--ui-info);
 }
@@ -595,11 +705,13 @@
     border-left-color: var(--dept);
 }
 
+/* Picked: the department as an area too (its soft fill), the row and its description one card. */
 .lobby .lobby-join__job-item--on .lobby-join__job,
 .lobby .lobby-join__job-item--on .lobby-join__job:hover,
 .lobby .lobby-join__job-item--on .lobby-join__job:active,
 .lobby .lobby-join__job-item--on .lobby-join__job:hover:active {
     border-color: var(--dept);
+    background-color: var(--dept-soft);
 }
 
 .lobby .lobby-join__job-item--on .lobby-join__ring {
@@ -613,6 +725,7 @@
 .lobby .lobby-join__description {
     border-left-width: 3px;
     border-color: var(--dept);
+    background-color: var(--dept-soft);
 }
 
 .lobby .lobby-join__confirm.lobby-join__confirm--dept,
@@ -631,7 +744,7 @@
 /* The manifest: each department's group carries its edge, glyph and name. */
 .lobby .lobby-join__group {
     border-left-width: 3px;
-    border-color: var(--dept);
+    border-left-color: var(--dept);
 }
 
 .lobby .lobby-join__group-name {
@@ -657,4 +770,15 @@
 
 .lobby .lobby-join__confirm:disabled .lobby__keycap {
     background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* ── Motion ──
+ * The card scales in (ui-enter--scale) over the fading backdrop (Lobby.uss); the jobs and crew groups stagger in. A
+ * picked job's description unfolds down from its row rather than rising into it. */
+.lobby .lobby-join__description.ui-enter {
+    translate: 0 -6px;
+}
+
+.lobby .lobby-join__description.ui-enter.ui-enter--in {
+    translate: 0 0;
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SS3D.Systems.Entities.Character;
 using SS3D.Systems.Inputs;
+using SS3D.UI.Shell;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -25,6 +26,10 @@ namespace SS3D.UI.Lobby
     public sealed class CharacterAppearanceTab
     {
         private static readonly System.Text.RegularExpressions.Regex WordBoundary = new("([a-z])([A-Z0-9])");
+
+        /// <summary>A style grid's tiles pop in this far apart the first time it shows, after the pane has started to.</summary>
+        private const long TileStepMs = 25;
+        private const long TileFirstMs = 70;
 
         private readonly CharacterWindowModel _model;
         private readonly LobbyAssetCatalog _catalog;
@@ -97,12 +102,17 @@ namespace SS3D.UI.Lobby
             return pane;
         }
 
-        /// <summary>A label centred over its control, as the reference.</summary>
+        /// <summary>A label centred over its control, as the reference, between two hairlines that mark the section.</summary>
         private static VisualElement Field(string label, string extraClass = null)
         {
             VisualElement field = LobbyUi.Box("charwin__field");
             if (extraClass != null) field.AddToClassList(extraClass);
-            field.Add(LobbyUi.Text(label, "charwin__label"));
+            VisualElement head = LobbyUi.Box("charwin__label-row");
+            head.pickingMode = PickingMode.Ignore;
+            head.Add(LobbyUi.Box("charwin__label-line"));
+            head.Add(LobbyUi.Text(label, "charwin__label"));
+            head.Add(LobbyUi.Box("charwin__label-line"));
+            field.Add(head);
             return field;
         }
 
@@ -163,9 +173,11 @@ namespace SS3D.UI.Lobby
         {
             if (_error == null) return;
             string text = CharacterNameRules.Describe(_model.NameError);
+            bool appearing = text.Length > 0 && _error.ClassListContains("charwin-look__error--hidden");
             _errorText.text = text;
             _error.EnableInClassList("charwin-look__error--hidden", text.Length == 0);
             _name.EnableInClassList("charwin-look__name--error", text.Length > 0);
+            if (appearing) CharacterWindowView.Enter(_error);
         }
 
         // ---- Body ----
@@ -280,7 +292,24 @@ namespace SS3D.UI.Lobby
             grid.EnableInClassList("charwin__styles--short", shortGrid);
             grid.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
             grid.contentContainer.AddToClassList("charwin__styles-content");
+            StaggerOnShow(grid);
             return grid;
+        }
+
+        /// <summary>
+        /// The tiles are built in UiMotion's hidden look (<see cref="Tile"/>): the first time the grid is laid out (its
+        /// tab opened, or rebuilt while open), they pop in one after another.
+        /// </summary>
+        private static void StaggerOnShow(ScrollView grid)
+        {
+            void OnShown(GeometryChangedEvent evt)
+            {
+                if (evt.newRect.height <= 0f) return;
+                grid.UnregisterCallback<GeometryChangedEvent>(OnShown);
+                CharacterWindowView.Stagger(grid, TileStepMs, TileFirstMs, CharacterWindowView.EnterScaled);
+            }
+
+            grid.RegisterCallback<GeometryChangedEvent>(OnShown);
         }
 
         /// <summary>Hair or facial hair: index 0 is None.</summary>
@@ -344,6 +373,10 @@ namespace SS3D.UI.Lobby
             Button tile = new() { name = name, tooltip = label };
             tile.AddToClassList("charwin-look__tile");
             tile.EnableInClassList("charwin-look__tile--selected", selected);
+            // Hidden until its grid first shows (StaggerOnShow), so it never flashes in before it pops in.
+            tile.AddToClassList(CharacterWindowView.MotionClass);
+            tile.AddToClassList(CharacterWindowView.EnterScaled);
+            tile.AddToClassList(UiMotion.EnterClass);
             if (thumbnail != null)
             {
                 VisualElement image = LobbyUi.Box("charwin-look__tile-thumb");
@@ -357,6 +390,11 @@ namespace SS3D.UI.Lobby
                 icon.AddToClassList("charwin-look__tile-icon");
                 tile.Add(icon);
             }
+
+            // The picked tile's corner badge; CharacterWindow.uss pops it in with charwin-look__tile--selected.
+            VisualElement check = LobbyUi.Icon("check");
+            check.AddToClassList("charwin-look__tile-check");
+            tile.Add(check);
 
             tile.clicked += () =>
             {

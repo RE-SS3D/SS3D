@@ -31,6 +31,15 @@ namespace SS3D.UI.Lobby
 
         private const long QuitArmMilliseconds = 3000;
 
+        /// <summary>Half a breath of the stage's floor glow (Lobby.uss eases over the same 1.8 s).</summary>
+        private const long FloorBreathMilliseconds = 1800;
+
+        /// <summary>Half a pulse of Ready while a countdown runs (Lobby.uss: lobby__ready--pulsing, 0.7 s).</summary>
+        private const long ReadyPulseMilliseconds = 700;
+
+        /// <summary>How long the round card holds its flash before easing back (Lobby.uss: .lobby__round.ui-flash).</summary>
+        private const long RoundFlashMilliseconds = 220;
+
         private static readonly string[] TabOrder = { TabServerInfo, TabChat, TabSettings, TabLastRound, TabServerSettings };
 
         /// <summary>Tabs that need the room: the panel widens over the character stage while one is open.</summary>
@@ -52,6 +61,9 @@ namespace SS3D.UI.Lobby
 
         private VisualElement _main;
         private VisualElement _stage;
+        private VisualElement _stagePlate;
+        private VisualElement _stageFloor;
+        private IVisualElementScheduledItem _floorBreath;
         private VisualElement _switchChevron;
         private bool _figurePressed;
         private float _figureDragged;
@@ -75,6 +87,8 @@ namespace SS3D.UI.Lobby
         private CharacterSwitcher _switcher;
         private VisualElement _previewImage;
         private Button _ready;
+        private VisualElement _readyCheck;
+        private IVisualElementScheduledItem _readyPulse;
         private Label _readyTitle;
         private Label _readySubtitle;
         private VisualElement _readyNote;
@@ -98,6 +112,14 @@ namespace SS3D.UI.Lobby
         private Button _adminSwitch;
 
         private string _activeTab = TabServerInfo;
+        /// <summary>The tab whose content is mounted; its content eases in only when this changes, not on a repaint.</summary>
+        private string _shownTab;
+        /// <summary>The round as last painted (state and tone); null before the first snapshot. A change flashes the card.</summary>
+        private (RoundState State, LobbyTone Tone)? _roundShown;
+        /// <summary>Ready's look as last painted; null before the first snapshot. Readying up pops the check in.</summary>
+        private bool? _readyConfirmed;
+        /// <summary>The character as last painted (name, High job, department); a change eases the plate and model in.</summary>
+        private string _characterShown;
         private bool _isAdmin;
         private bool _adminActive;
         private bool _quitArmed;
@@ -226,6 +248,8 @@ namespace SS3D.UI.Lobby
             RefreshTabs();
             ShowTab(_activeTab);
             ApplyPreviewTexture();
+            // The stage's one ambient loop: the floor glow breathes in the department's colour (Lobby.uss eases it).
+            _floorBreath = UiMotion.Pulse(_stageFloor, FloorBreathMilliseconds);
             SetVisible(true);
         }
 
@@ -250,6 +274,14 @@ namespace SS3D.UI.Lobby
             _mapStop?.Reset();
             _settingsHost?.RemoveFromHierarchy();
             _textEntry.Exit();
+            UiMotion.StopPulse(_stageFloor, _floorBreath);
+            _floorBreath = null;
+            UiMotion.StopPulse(_ready, _readyPulse);
+            _readyPulse = null;
+            _shownTab = null;
+            _roundShown = null;
+            _readyConfirmed = null;
+            _characterShown = null;
             _unfit?.Invoke();
             _unfit = null;
             _root?.RemoveFromHierarchy();
@@ -271,6 +303,9 @@ namespace SS3D.UI.Lobby
 
             _root.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             _root.pickingMode = visible ? PickingMode.Position : PickingMode.Ignore;
+            // The floor glow rests while nobody can see it (the round's Escape menu is the shell too).
+            if (visible) _floorBreath?.Resume();
+            else _floorBreath?.Pause();
             // Focus starts on Ready (or Observe when Ready can't be pressed), per the canvas annotations.
             if (visible && !wasVisible) _root.schedule.Execute(FocusEntry).ExecuteLater(1);
         }
@@ -297,6 +332,8 @@ namespace SS3D.UI.Lobby
             _mapLoad = _root.Q<Label>("lobby-map-load-status");
 
             _stage = _root.Q("lobby-character-stage");
+            _stagePlate = _root.Q("lobby-stage-plate");
+            _stageFloor = _root.Q("lobby-stage-floor");
             Button figure = _root.Q<Button>("lobby-character");
             // A click opens the character window; a drag turns the character instead.
             figure.clicked += () =>
@@ -326,6 +363,7 @@ namespace SS3D.UI.Lobby
 
             _ready = _root.Q<Button>("lobby-ready");
             _ready.clicked += OnReadyClicked;
+            _readyCheck = _root.Q("lobby-ready-check");
             _readyTitle = _root.Q<Label>("lobby-ready-title");
             _readySubtitle = _root.Q<Label>("lobby-ready-subtitle");
             _readyNote = _root.Q("lobby-ready-note");
@@ -503,14 +541,26 @@ namespace SS3D.UI.Lobby
             // A focused field removed from the panel gets no FocusOut.
             _textEntry.Exit();
             _tabContent.Clear();
-            _tabContent.Add(key switch
+            VisualElement content = key switch
             {
                 TabChat => _chat.Root,
                 TabSettings => SettingsHost,
                 TabLastRound => _lastRound.Root,
                 TabServerSettings => _serverSettings.Root,
                 _ => _serverInfo.Root,
-            });
+            };
+            _tabContent.Add(content);
+            // A real switch eases the content in from the side of the tab it came from (a later tab from the right);
+            // re-showing the same tab (an admin or Last Round repaint) doesn't replay it.
+            if (_shownTab != null && _shownTab != key)
+            {
+                bool forward = Array.IndexOf(TabOrder, key) > Array.IndexOf(TabOrder, _shownTab);
+                content.EnableInClassList("ui-enter--right", forward);
+                content.EnableInClassList("ui-enter--left", !forward);
+                UiMotion.Enter(content);
+            }
+
+            _shownTab = key;
         }
 
         private void ToggleAdmin()
@@ -540,9 +590,13 @@ namespace SS3D.UI.Lobby
             }
 
             LobbyRoundStatus round = LobbySidebarModel.Round(info, _lastCountdownSeconds);
-            // The round's state colours the section's left edge, its dot and its word (the UI bible's colour coding).
+            // The round's state colours the section (its soft fill and left edge), its dot and its word (the UI bible's
+            // colour coding); a change of state flashes the card once.
             Tone(_roundSection, "lb-tone", round.Tone);
             _roundSection.EnableInClassList("lb-tone--neutral", round.Tone == LobbyTone.Neutral);
+            (RoundState State, LobbyTone Tone) roundShown = (info.State, round.Tone);
+            if (_roundShown.HasValue && !_roundShown.Value.Equals(roundShown)) UiMotion.Flash(_roundSection, RoundFlashMilliseconds);
+            _roundShown = roundShown;
             Tone(_roundDot, "lobby__dot", round.Tone);
             _roundStatus.text = round.Status;
             Tone(_roundStatus, "lobby__status", round.Tone);
@@ -564,7 +618,14 @@ namespace SS3D.UI.Lobby
             _readySubtitle.text = entry.Subtitle;
             _ready.SetEnabled(entry.Enabled);
             _ready.EnableInClassList("lobby__ready--disabled", !entry.Enabled);
-            _ready.EnableInClassList("lobby__ready--confirmed", entry.Look == LobbyButtonLook.Confirmed);
+            bool confirmed = entry.Look == LobbyButtonLook.Confirmed;
+            _ready.EnableInClassList("lobby__ready--confirmed", confirmed);
+            // Readying up pops the check in; the plate itself eases to the ok colour (Lobby.uss).
+            if (confirmed && _readyConfirmed == false) UiMotion.Enter(_readyCheck);
+            _readyConfirmed = confirmed;
+            // A countdown runs (the lobby's, or the round warming up) and you can still ready up: Ready breathes.
+            bool countdown = round.Tone == LobbyTone.Info || info.State == RoundState.WarmingUp;
+            SetReadyPulse(countdown && entry.Enabled && entry.Look == LobbyButtonLook.Accent, round.Tone);
             _readyNoteText.text = entry.Note;
             _readyNote.EnableInClassList("lobby__entry-note--shown", entry.Note.Length > 0);
 
@@ -587,6 +648,25 @@ namespace SS3D.UI.Lobby
             element.EnableInClassList(block + "--live", tone == LobbyTone.Live);
             element.EnableInClassList(block + "--warning", tone == LobbyTone.Warning);
             element.EnableInClassList(block + "--info", tone == LobbyTone.Info);
+        }
+
+        /// <summary>
+        /// Starts or stops Ready's breathing (Lobby.uss: lobby__ready--pulsing). It breathes in the round's colour, so
+        /// the button carries the round's lb-tone class too.
+        /// </summary>
+        private void SetReadyPulse(bool on, LobbyTone tone)
+        {
+            Tone(_ready, "lb-tone", tone);
+            _ready.EnableInClassList("lobby__ready--pulsing", on);
+            if (on == (_readyPulse != null)) return;
+            if (on)
+            {
+                _readyPulse = UiMotion.Pulse(_ready, ReadyPulseMilliseconds);
+                return;
+            }
+
+            UiMotion.StopPulse(_ready, _readyPulse);
+            _readyPulse = null;
         }
 
         /// <summary>Online and ready players, and the server's player cap.</summary>
@@ -654,6 +734,18 @@ namespace SS3D.UI.Lobby
 
             _stage?.EnableInClassList("lobby__stage--neutral", !hasHigh || department == Department.None);
 
+            // Another character (or its High job) takes the stage: the plate pops and the model rises, masking the
+            // booth's swap. The 200 ms repaint sends the same character, which doesn't replay it.
+            string shown = $"{_characterName.text}|{highJob}|{department}";
+            if (_characterShown != null && _characterShown != shown)
+            {
+                _stagePlate?.AddToClassList("ui-enter--scale");
+                UiMotion.Enter(_stagePlate);
+                UiMotion.Enter(_previewImage, 60);
+            }
+
+            _characterShown = shown;
+
             _characterCount.text = $"{count}/{cap}";
             _root.Q<Button>("lobby-character").tooltip = $"Drag to turn {_characterName.text}; click to edit";
         }
@@ -689,6 +781,8 @@ namespace SS3D.UI.Lobby
             if (_root == null) return;
             _music.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             _music.EnableInClassList("lobby__music--off", !on);
+            // On, the toggle's cell takes the active line (Lobby.uss: lobby__music-toggle--on).
+            _musicToggle.EnableInClassList("lobby__music-toggle--on", on);
             _musicToggle.tooltip = on ? "Turn music off" : "Turn music on";
             string shown = string.IsNullOrEmpty(title) ? "—" : title;
             _musicTitle.text = on ? shown : "Off";

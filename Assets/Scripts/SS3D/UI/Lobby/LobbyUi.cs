@@ -1,4 +1,5 @@
 using SS3D.Systems.Inputs;
+using SS3D.UI.Shell;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -41,6 +42,24 @@ namespace SS3D.UI.Lobby
             VisualElement icon = Box("lobby__icon", "lobby__icon--" + modifier);
             icon.pickingMode = PickingMode.Ignore;
             return icon;
+        }
+
+        /// <summary>
+        /// A section's head (Lobby.uss, lobby__section-head): <paramref name="icon"/>'s glyph, the title in Disket and
+        /// a hairline to the end of the line. <paramref name="classes"/> go on the row (a view's own margins).
+        /// </summary>
+        public static VisualElement SectionHead(string title, string icon, params string[] classes)
+        {
+            VisualElement head = Box("lobby__section-head");
+            foreach (string cls in classes) head.AddToClassList(cls);
+            VisualElement glyph = Icon(icon);
+            glyph.AddToClassList("lobby__section-head-icon");
+            head.Add(glyph);
+            head.Add(Titling(title, "lobby__section-head-title"));
+            VisualElement rule = Box("lobby__section-head-rule");
+            rule.pickingMode = PickingMode.Ignore;
+            head.Add(rule);
+            return head;
         }
 
         /// <summary>A focused field masks keybinds (B = map editor, Escape = menu) while the player types.</summary>

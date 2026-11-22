@@ -44,7 +44,7 @@ namespace SS3D.UI.Lobby
                 if (Mathf.Abs(_banner.resolvedStyle.height - height) > 0.5f) _banner.style.height = height;
             });
             left.Add(_banner);
-            left.Add(LobbyUi.Text("MESSAGE OF THE DAY", "lobby__eyebrow"));
+            left.Add(LobbyUi.SectionHead("Message of the day", "speakerphone"));
             ScrollView motdScroll = new(ScrollViewMode.Vertical) { horizontalScrollerVisibility = ScrollerVisibility.Hidden };
             motdScroll.AddToClassList("lobby-info__motd-scroll");
             _motd = LobbyUi.Text("", "lobby-info__motd");
@@ -54,7 +54,7 @@ namespace SS3D.UI.Lobby
             Root.Add(left);
 
             VisualElement right = LobbyUi.Box("lobby-info__right");
-            right.Add(LobbyUi.Text("SERVER", "lobby__eyebrow"));
+            right.Add(LobbyUi.SectionHead("Server", "server"));
             _map = AddRow(right, "Map", "server-info-map", false);
             _mode = AddRow(right, "Mode", "server-info-mode", false);
             _build = AddRow(right, "Build", "server-info-build", true);
@@ -119,8 +119,8 @@ namespace SS3D.UI.Lobby
             column.style.flexShrink = 1;
             column.style.minHeight = 0;
 
-            VisualElement header = LobbyUi.Box("lobby-info__links");
-            header.Add(LobbyUi.Text("CHANGE LOG", "lobby__eyebrow"));
+            // The head's rule runs up to the "All releases" link at its end.
+            VisualElement header = LobbyUi.SectionHead("Change log", "document", "lobby-info__links");
             if (info.ReleasesUrl is { } releases) header.Add(Link("All releases", releases, "changelog-releases-link"));
             column.Add(header);
 

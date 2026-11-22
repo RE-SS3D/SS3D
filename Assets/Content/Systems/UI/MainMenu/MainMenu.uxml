@@ -39,10 +39,12 @@
         </ui:VisualElement>
         <ui:VisualElement name="side-panel" class="main-menu__panel main-menu__hidden">
             <ui:VisualElement class="main-menu__header">
+                <ui:VisualElement name="panel-icon" class="main-menu__panel-icon" picking-mode="Ignore" />
                 <ui:Label name="panel-title" text="Join a server" class="main-menu__text main-menu__title" />
                 <ui:VisualElement class="main-menu__header-spacer" />
                 <ui:Label name="checked" text="Checked just now" class="main-menu__text main-menu__fine" />
-                <ui:Button name="refresh" tooltip="Ask every server again" class="main-menu__icon-btn"><ui:VisualElement class="main-menu__icon-btn__icon main-menu__icon-btn__icon--refresh" picking-mode="Ignore" /></ui:Button>
+                <!-- The glyph spins while a server is being asked (MainMenuView). -->
+                <ui:Button name="refresh" tooltip="Ask every server again" class="main-menu__icon-btn"><ui:VisualElement name="refresh-icon" class="main-menu__icon-btn__icon main-menu__icon-btn__icon--refresh" picking-mode="Ignore" /></ui:Button>
                 <ui:Label text="Esc" class="main-menu__text main-menu__key" />
                 <ui:Button name="back" tooltip="Back" class="main-menu__icon-btn"><ui:VisualElement class="main-menu__icon-btn__icon main-menu__icon-btn__icon--close" picking-mode="Ignore" /></ui:Button>
             </ui:VisualElement>

@@ -26,6 +26,10 @@ namespace SS3D.UI.SettingsPanel
         private const int ResetArmMilliseconds = 4000;
         private const int TickMilliseconds = 300;
 
+        /// <summary>A switched-to tab's groups rise in this far apart, the first after this lead.</summary>
+        private const int TabStaggerMilliseconds = 40;
+        private const int TabLeadMilliseconds = 20;
+
         private static readonly (string Key, string Label)[] Tabs =
         {
             (TabDisplay, "Display"),
@@ -54,6 +58,7 @@ namespace SS3D.UI.SettingsPanel
         private readonly VisualElement _notice;
         private readonly Label _noticeText;
         private readonly IVisualElementScheduledItem _ticker;
+        private VisualElement _promptCard;
         private Label _promptWhat;
         private Label _promptPrevious;
         private Label _promptSeconds;
@@ -97,6 +102,7 @@ namespace SS3D.UI.SettingsPanel
             if (showHeader)
             {
                 VisualElement header = Element(_root, "settings-panel__header");
+                Element(header, "settings-panel__title-icon").pickingMode = PickingMode.Ignore;
                 Text(header, "SETTINGS", "settings-panel__title");
                 _contextLabel = Text(header, contextLabel ?? "", "settings-panel__context");
                 Element(header, "settings-panel__spacer");
@@ -108,8 +114,14 @@ namespace SS3D.UI.SettingsPanel
             foreach ((string key, string label) in Tabs)
             {
                 string tab = key;
-                Button button = new(() => SelectTab(tab)) { name = "settings-tab-" + key, text = label.ToUpperInvariant() };
+                string title = label.ToUpperInvariant();
+                // The button keeps its text, which pilots find a tab by, and draws it clear (USS); a Label child draws
+                // the label beside the tab's icon (settings-panel__tab--<key> picks the icon and the colour).
+                Button button = new(() => SelectTab(tab)) { name = "settings-tab-" + key, text = title };
                 button.AddToClassList("settings-panel__tab");
+                button.AddToClassList("settings-panel__tab--" + key);
+                Element(button, "settings-panel__tab-icon").pickingMode = PickingMode.Ignore;
+                Text(button, title, "settings-panel__tab-text").pickingMode = PickingMode.Ignore;
                 tabBar.Add(button);
                 _tabButtons.Add(button);
             }
@@ -125,6 +137,7 @@ namespace SS3D.UI.SettingsPanel
             _reset = ActionButton(introRow, "settings-reset", "", HandleReset);
 
             _mutedBanner = Element(content, "settings-panel__banner");
+            Element(_mutedBanner, "settings-panel__banner-icon").pickingMode = PickingMode.Ignore;
             Text(_mutedBanner, "All sound is muted. The levels below are kept and can still be changed.", "settings-panel__banner-text");
 
             _body = Element(content, "settings-panel__body");
@@ -134,6 +147,8 @@ namespace SS3D.UI.SettingsPanel
             Element(_notice, "settings-panel__notice-dot");
             _noticeText = Text(_notice, "", "settings-panel__notice-text");
             _notice.style.display = DisplayStyle.None;
+            // Hidden, it waits in its entrance's look, so Say eases it in from there (UiMotion).
+            _notice.AddToClassList(UiMotion.EnterClass);
 
             _root.RegisterCallback<PointerDownEvent>(evt => _controls?.HandlePointerDown(evt), TrickleDown.TrickleDown);
             _root.RegisterCallback<DetachFromPanelEvent>(_ => CancelTransient());
@@ -203,12 +218,20 @@ namespace SS3D.UI.SettingsPanel
             _tab = tab;
             ShowTab();
             _scroll.scrollOffset = Vector2.zero;
+            // The new tab's groups, built fresh, rise in one after another.
+            UiMotion.Stagger(_body, TabStaggerMilliseconds, TabLeadMilliseconds);
         }
 
         private void ShowTab()
         {
             for (int i = 0; i < Tabs.Length; i++)
-                _tabButtons[i].EnableInClassList("settings-panel__tab--active", Tabs[i].Key == _tab);
+            {
+                bool open = Tabs[i].Key == _tab;
+                _tabButtons[i].EnableInClassList("settings-panel__tab--active", open);
+                // The open tab's colour (--tab) reaches its content: the header's cog, group ticks, slider levels.
+                _root.EnableInClassList("settings-panel--" + Tabs[i].Key, open);
+            }
+
             _intro.text = Intros[_tab];
             _body.Clear();
             _refreshers.Clear();
@@ -305,8 +328,16 @@ namespace SS3D.UI.SettingsPanel
             _notice.EnableInClassList("settings-panel__notice--swap", kind == NoticeKind.Swap);
             _notice.EnableInClassList("settings-panel__notice--refused", kind == NoticeKind.Refused);
             _notice.style.display = DisplayStyle.Flex;
+            UiMotion.Enter(_notice);
             _noticeHide?.Pause();
-            _noticeHide = _root.schedule.Execute(() => _notice.style.display = DisplayStyle.None).StartingIn(NoticeMilliseconds);
+            _noticeHide = _root.schedule.Execute(HideNotice).StartingIn(NoticeMilliseconds);
+        }
+
+        private void HideNotice()
+        {
+            _notice.style.display = DisplayStyle.None;
+            // Out of sight it returns to its entrance's look, so the next notice eases in from there.
+            _notice.RemoveFromClassList(UiMotion.InClass);
         }
 
         // ---- "Keep these settings?" (Decision 3) ----
@@ -320,6 +351,10 @@ namespace SS3D.UI.SettingsPanel
             scrim.style.display = DisplayStyle.None;
 
             VisualElement card = Element(scrim, "settings-prompt__card");
+            // Pops in each time the prompt shows (RefreshPrompt); hidden, it waits in its entrance's look.
+            card.AddToClassList(UiMotion.EnterClass);
+            card.AddToClassList("ui-enter--scale");
+            _promptCard = card;
             VisualElement header = Element(card, "settings-panel__header settings-prompt__header");
             Text(header, "KEEP THESE SETTINGS?", "settings-panel__title");
             VisualElement body = Element(card, "settings-prompt__body");
@@ -353,6 +388,7 @@ namespace SS3D.UI.SettingsPanel
                 {
                     _promptShown = false;
                     _prompt.style.display = DisplayStyle.None;
+                    _promptCard.RemoveFromClassList(UiMotion.InClass);
                     if (!_keptHere && _revertText != null) Say(NoticeKind.Info, "Display reverted to " + _revertText + ".");
                 }
                 _keptHere = false;
@@ -383,6 +419,7 @@ namespace SS3D.UI.SettingsPanel
                 _keptHere = false;
                 _prompt.style.display = DisplayStyle.Flex;
                 _prompt.BringToFront();
+                UiMotion.Enter(_promptCard);
                 CancelTransient();
             }
         }

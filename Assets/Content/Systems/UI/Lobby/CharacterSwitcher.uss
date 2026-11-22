@@ -11,7 +11,9 @@
  * Labels are Disket Mono Bold, which draws only capitals; text is Kode Mono. Labels that carry .lb-titling or .lb-mono
  * set their font here, so the bible's font wins.
  * --dept comes from the .lb-dept--<department> classes (Lobby.uss); a High job with no department reads the neutral
- * default set on .switcher.
+ * default set on .switcher. --dept-soft (Lobby.uss) fills the selected row: the character you play, as an area.
+ * Motion (CharacterSwitcher, UiMotion): opening pops the plate (ui-enter--scale, its origin at the anchor's side) and
+ * staggers the rows; the delete question slides in under its row.
  * Rules are prefixed with .lobby so they beat the runtime theme and the shell's resets. Buttons keep the theme's
  * .unity-button class, so every Button class here sets its own background, border and colour for :hover and :active
  * too, or the theme's light grey shows through.
@@ -28,6 +30,7 @@
     display: none;
     /* Neutral, for a High job the roster doesn't place in a department. */
     --dept: rgba(255, 255, 255, 0.5);
+    --dept-soft: var(--ui-editor-button-hover);
 }
 
 .lobby .switcher--open {
@@ -90,6 +93,14 @@
     padding: 0 12px 0 14px;
 }
 
+/* The head leads with its glyph, as the lobby's section heads. */
+.lobby .switcher__head-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.8);
+}
+
 .lobby .switcher__title {
     margin-right: 8px;
     -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
@@ -124,6 +135,9 @@
     background-color: var(--ui-editor-button);
     border-width: var(--ui-hairline);
     border-color: rgba(0, 0, 0, 0);
+    transition-property: background-color, border-color;
+    transition-duration: 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic;
 }
 
 .lobby .switcher__row:hover {
@@ -135,10 +149,13 @@
     background-color: var(--ui-editor-button-hover);
 }
 
-/* The character you play: the white outline, as a picked job. */
+/* The character you play: the white outline, as a picked job, over its department's soft fill. The fill holds when
+   the row is focused (the switcher opens with focus on it) or hovered. */
 .lobby .switcher__row--selected,
-.lobby .switcher__row--selected:hover {
+.lobby .switcher__row--selected:hover,
+.lobby .switcher__row--selected:focus {
     border-color: var(--ui-line-active);
+    background-color: var(--dept-soft);
 }
 
 .lobby .switcher__portrait {
@@ -152,6 +169,14 @@
     border-color: var(--ui-editor-cell-edge);
     border-radius: 3px;
     background-color: rgba(0, 0, 0, 0.6);
+    transition-property: border-color;
+    transition-duration: 0.12s;
+}
+
+/* Hover shows whose department a character plays: the portrait's frame takes its colour. */
+.lobby .switcher__row:hover .switcher__portrait,
+.lobby .switcher__row:focus .switcher__portrait {
+    border-color: var(--dept);
 }
 
 /* A rendered head crop fills the cell when there is one; otherwise the silhouette. */
@@ -247,6 +272,9 @@
     border-color: rgba(0, 0, 0, 0);
     border-radius: 3.9px; /* 15 % */
     opacity: 0.45;
+    transition-property: opacity, border-color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
 
 .lobby .switcher__row:hover .switcher__action,
@@ -259,9 +287,25 @@
     background-color: rgba(0, 0, 0, 0);
 }
 
+.lobby .switcher__action:active,
+.lobby .switcher__action:hover:active {
+    scale: 0.88 0.88;
+}
+
 .lobby .switcher__action .lobby__icon {
     width: 13px;
     height: 13px;
+    transition-property: -unity-background-image-tint-color;
+    transition-duration: 0.12s;
+}
+
+/* Delete says what it does before you press it: the danger colour on its edge and glyph. */
+.lobby #character-switcher-trash:hover {
+    border-color: var(--ui-danger);
+}
+
+.lobby #character-switcher-trash:hover .lobby__icon {
+    -unity-background-image-tint-color: var(--ui-danger);
 }
 
 /* Off (the roster is full, or it's your only character). The bible's --disabled is the Button's :disabled here, and it
@@ -279,7 +323,7 @@
     flex-shrink: 0;
     border-width: var(--ui-hairline);
     border-color: var(--ui-danger);
-    background-color: rgba(235, 98, 82, 0.1);
+    background-color: var(--ui-danger-soft);
 }
 
 .lobby .switcher__confirm-text {
@@ -303,6 +347,9 @@
     border-color: rgba(0, 0, 0, 0);
     border-radius: 0;
     color: var(--ui-text);
+    transition-property: background-color, scale;
+    transition-duration: 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic;
 }
 
 .lobby .switcher__confirm-button:hover,
@@ -311,6 +358,11 @@
     background-color: var(--ui-editor-button-hover);
     border-color: rgba(0, 0, 0, 0);
     color: var(--ui-text);
+}
+
+.lobby .switcher__confirm-button:active,
+.lobby .switcher__confirm-button:hover:active {
+    scale: 0.96 0.96;
 }
 
 .lobby .switcher__confirm-button--danger,
@@ -323,7 +375,7 @@
 .lobby .switcher__confirm-button--danger:hover,
 .lobby .switcher__confirm-button--danger:active,
 .lobby .switcher__confirm-button--danger:hover:active {
-    background-color: rgba(235, 98, 82, 0.2);
+    background-color: rgba(242, 88, 74, 0.2);
 }
 
 .lobby .switcher__confirm-button .lobby__icon {
@@ -352,17 +404,29 @@
     height: 32px;
     margin: 0;
     padding: 0;
-    border-width: 0;
+    /* A secondary action: a raised tint with a faint edge. */
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.1);
     border-radius: 0;
     background-color: var(--ui-editor-button);
     color: var(--ui-text);
+    transition-property: background-color, border-color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
 
 .lobby .switcher__new:hover,
 .lobby .switcher__new:active,
 .lobby .switcher__new:hover:active {
     background-color: var(--ui-editor-button-hover);
+    border-color: var(--ui-editor-cell-edge-hover);
     color: var(--ui-text);
+}
+
+.lobby .switcher__new:active,
+.lobby .switcher__new:hover:active {
+    background-color: var(--ui-editor-button-pressed);
+    scale: 0.97 0.97;
 }
 
 .lobby .switcher__new .lobby__icon {
@@ -370,6 +434,14 @@
     height: 12px;
     margin-right: 8px;
     -unity-background-image-tint-color: var(--ui-text);
+    transition-property: rotate;
+    transition-duration: 0.28s;
+    transition-timing-function: ease-out-back;
+}
+
+/* The plus turns a quarter as the pointer arrives. */
+.lobby .switcher__new:hover .lobby__icon {
+    rotate: 90deg;
 }
 
 .lobby .switcher__new-label {
@@ -382,6 +454,7 @@
 .lobby .switcher__new:disabled,
 .lobby .switcher__new:disabled:hover {
     background-color: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.04);
     color: var(--ui-menu-tab-text);
     opacity: 1;
 }
@@ -410,4 +483,19 @@
     padding-left: 6px;
     border-left-width: 3px;
     border-left-color: var(--dept);
+}
+
+/* The selected row's white outline keeps the department's edge, hovered or focused too. */
+.lobby .switcher__row--dept.switcher__row--selected:hover,
+.lobby .switcher__row--dept.switcher__row--selected:focus {
+    border-left-color: var(--dept);
+}
+
+/* ── Motion ──
+ * Rows ease in when the switcher opens (UiMotion's .ui-enter, staggered). Its transition list would replace the row's
+ * own, so the two are combined here. The rows are built fresh on each open, so their hidden look never eases out. */
+.lobby .switcher__row.ui-enter {
+    transition-property: opacity, translate, scale, background-color, border-color;
+    transition-duration: 0.24s, 0.3s, 0.3s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-back, ease-out-cubic, ease-out-cubic;
 }

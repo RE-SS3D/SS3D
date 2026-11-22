@@ -26,6 +26,9 @@ todos:
   - id: captures
     content: "LobbyUiPilot captures of every state at 1920 × 1080 for review. Ad hoc captures done 2026-11-21 (pre-round, chat, settings, switcher, server settings, in progress, Join picker); the pilot's layout checks are updated for layout B but not yet run"
     status: in_progress
+  - id: polish
+    content: "Owner, 2026-11-21: clearer colours, more movement, less samey, across the lobby and the character window (and the main menu, Settings). Soft fills for state areas, brighter department colours, three button weights, UiMotion entrances and staggers, the stage glow and Ready breathing; the preview booth unlit for its own camera only (it had reached the round through a global volume). Done 2026-11-21"
+    status: completed
   - id: docs-sync
     content: "update-system-docs: rounds-lobby.md (look, fonts, colour coding, compact layout gone), the ui-bible README's 'In the game'. Done 2026-11-21"
     status: completed

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SS3D.Systems.IdAccess;
+using SS3D.UI.Shell;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -49,6 +50,9 @@ namespace SS3D.UI.Lobby
             Root.pickingMode = PickingMode.Position;
 
             VisualElement head = LobbyUi.Box("switcher__head");
+            VisualElement headIcon = LobbyUi.Icon("users");
+            headIcon.AddToClassList("switcher__head-icon");
+            head.Add(headIcon);
             head.Add(LobbyUi.Titling("Characters", "switcher__title"));
             _count = LobbyUi.Mono("", "switcher__count");
             head.Add(_count);
@@ -111,6 +115,11 @@ namespace SS3D.UI.Lobby
             Root.BringToFront();
             Refresh();
             Place();
+            // The plate pops from the side of its anchor (Place sets the origin) and the rows follow one after another.
+            // Only on opening: the host's Refresh after a roster change or a new portrait doesn't replay it.
+            Root.AddToClassList("ui-enter--scale");
+            UiMotion.Enter(Root);
+            UiMotion.Stagger(_list, 28, 50, 10);
             Root.schedule.Execute(FocusSelected).ExecuteLater(1);
         }
 
@@ -188,6 +197,8 @@ namespace SS3D.UI.Lobby
             if (!_roster.CanDelete || _roster.Find(id) == null) return;
             _confirmId = id;
             Refresh();
+            // The question slides in under its row (a later Refresh keeps it still).
+            UiMotion.Enter(Root.Q("character-switcher-confirm"));
             Root.schedule.Execute(() => Root.Q<Button>("character-switcher-cancel")?.Focus()).ExecuteLater(1);
         }
 
@@ -401,15 +412,21 @@ namespace SS3D.UI.Lobby
             float width = float.IsNaN(Root.resolvedStyle.width) ? 440f : Root.resolvedStyle.width;
             float left = _below ? anchor.xMin - 48f : anchor.xMax + 8f;
             float top = _below ? anchor.yMax + 4f : anchor.yMax + 85f - (float.IsNaN(height) ? 0f : height);
+            // The opening pop grows out of the side that faces the anchor.
+            Vector2 origin = _below ? new Vector2(15f, 0f) : new Vector2(0f, 100f);
             if (_above)
             {
                 left = anchor.center.x - width / 2f;
                 top = anchor.yMin - 14f - (float.IsNaN(height) ? 0f : height);
+                origin = new Vector2(50f, 100f);
             }
             else if (_belowEnd)
             {
                 left = anchor.xMax - width;
+                origin = new Vector2(100f, 0f);
             }
+
+            Root.style.transformOrigin = new TransformOrigin(Length.Percent(origin.x), Length.Percent(origin.y), 0f);
 
             if (!float.IsNaN(height) && top + height > host.height - 8f) top = host.height - 8f - height;
             Root.style.left = Mathf.Max(8f, Mathf.Min(left, host.width - width - 8f));

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using SS3D.Systems.IdAccess;
 using SS3D.Systems.Roles;
+using SS3D.UI.Shell;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -22,6 +23,7 @@ namespace SS3D.UI.Lobby
         private readonly LobbyJoinModel _model = new();
         private readonly LobbyAssetCatalog _catalog;
         private readonly VisualElement _root;
+        private readonly VisualElement _card;
         private readonly Label _roundTime;
         private readonly Label _openCount;
         private readonly VisualElement _notice;
@@ -44,6 +46,10 @@ namespace SS3D.UI.Lobby
         private string _confirmDepartment;
         private bool _joining;
         private IVisualElementScheduledItem _joinRetry;
+        /// <summary>The job whose description last eased in; a new pick eases the next one in, a repaint doesn't.</summary>
+        private string _shownSelection;
+        /// <summary>The notice as last painted; it slides in when it appears or changes kind.</summary>
+        private JoinNoticeKind _shownNotice;
 
         /// <summary>Join pressed with this job; the server re-checks the slot (Decision 11).</summary>
         public event Action<string> JoinRequested;
@@ -54,6 +60,7 @@ namespace SS3D.UI.Lobby
         {
             _root = root;
             _catalog = catalog;
+            _card = root.Q("lobby-join-card");
             _roundTime = root.Q<Label>("lobby-join-round-time");
             _openCount = root.Q<Label>("lobby-join-open-count");
             _notice = root.Q("lobby-join-notice");
@@ -96,6 +103,13 @@ namespace SS3D.UI.Lobby
             _root.AddToClassList("lobby-join--open");
             _root.BringToFront();
             Paint();
+            // The backdrop fades (Lobby.uss keeps it in place), the card pops in, then the jobs and the crew groups
+            // follow one after another. Only here: the host's repaint and a rebuild on a count change don't replay it.
+            UiMotion.Enter(_root);
+            _card.AddToClassList("ui-enter--scale");
+            UiMotion.Enter(_card);
+            UiMotion.Stagger(_jobList, 30, 90);
+            foreach (VisualElement column in _manifest.Children()) UiMotion.Stagger(column, 35, 140, 8);
             _root.schedule.Execute(() => _confirm.Focus()).ExecuteLater(1);
         }
 
@@ -293,18 +307,25 @@ namespace SS3D.UI.Lobby
         private void Refresh()
         {
             // Only the chosen job shows its description; hover doesn't (owner feedback: rows jumped under the pointer).
+            // A new pick unfolds it (LobbyJoin.uss); the repaint and a rebuild keep it still.
+            bool picked = _model.Selected != _shownSelection;
             foreach ((string job, VisualElement item) in _jobs)
             {
                 bool on = job == _model.Selected;
                 item.EnableInClassList("lobby-join__job-item--on", on);
                 Label description = item.Q<Label>("lobby-join-description");
                 description.style.display = on && description.text.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+                if (on && picked) UiMotion.Enter(description);
             }
 
+            _shownSelection = _model.Selected;
             _openCount.text = _model.OpenCountText;
             JoinNoticeKind notice = _model.Notice;
             _noticeText.text = _model.NoticeText;
             _notice.EnableInClassList("lobby-join__notice--hidden", notice == JoinNoticeKind.None);
+            // A notice that appears, or turns from news to a warning, slides in.
+            if (notice != _shownNotice && notice != JoinNoticeKind.None) UiMotion.Enter(_notice);
+            _shownNotice = notice;
             _notice.EnableInClassList("lobby-join__notice--warning", notice == JoinNoticeKind.ChosenFilled);
             _noticeIcon?.EnableInClassList("lobby__icon--info", notice != JoinNoticeKind.ChosenFilled);
             _noticeIcon?.EnableInClassList("lobby__icon--warning", notice == JoinNoticeKind.ChosenFilled);

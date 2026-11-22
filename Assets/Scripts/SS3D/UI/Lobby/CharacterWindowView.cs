@@ -43,6 +43,17 @@ namespace SS3D.UI.Lobby
         /// <summary>Degrees the character turns per screen px dragged, as on the lobby's stage.</summary>
         private const float DegreesPerPixel = 0.4f;
 
+        /// <summary>Marks what the window moves, for CharacterWindow.uss's "Motion" rules.</summary>
+        internal const string MotionClass = "charwin-motion";
+
+        /// <summary>UiMotion's entrance variants (ui-controls.uss): from the left, from the right, scaled up.</summary>
+        internal const string EnterFromLeft = "ui-enter--left";
+        internal const string EnterFromRight = "ui-enter--right";
+        internal const string EnterScaled = "ui-enter--scale";
+
+        /// <summary>How long the Save ring takes each way while there is something to save.</summary>
+        private const long SavePulseMs = 800;
+
         private readonly LobbyAssetCatalog _catalog;
         private readonly CharacterRoster _roster;
         private readonly Func<string, Texture> _portraitOf;
@@ -68,15 +79,23 @@ namespace SS3D.UI.Lobby
         private Label _statusLabel;
         private Button _discard;
         private Button _save;
+        private VisualElement _saveRing;
+        private IVisualElementScheduledItem _savePulse;
+        private VisualElement _title;
+        private VisualElement _tabColumn;
+        private VisualElement _continue;
         private VisualElement _previewImage;
         private VisualElement _preview;
+        private VisualElement _under;
         private List<Button> _angles;
         private UiSelect _outfit;
         private Label _caption;
         private VisualElement _prompt;
+        private VisualElement _promptCard;
         private Label _promptError;
         private Button _promptSave;
         private Action _pending;
+        private string _jobsTabDept;
         private Texture _previewTexture;
         private string _activeTab = TabProfile;
         private int _angleIndex;
@@ -183,6 +202,8 @@ namespace SS3D.UI.Lobby
             LookChanged = null;
             OutfitChanged = null;
             _textEntry.Exit();
+            StopSavePulse();
+            _jobsTabDept = null;
             _unfit?.Invoke();
             _unfit = null;
             _root?.RemoveFromHierarchy();
@@ -214,6 +235,7 @@ namespace SS3D.UI.Lobby
             RefreshPreviewControls();
             SelectTab(tab);
             SetVisible(true);
+            PlayOpening();
             AngleChanged?.Invoke(_angleIndex);
             RaisePreview();
             _root.schedule.Execute(() =>
@@ -269,7 +291,11 @@ namespace SS3D.UI.Lobby
             RefreshPreviewControls();
         }
 
-        public void SetAntagonistDefault(bool optedIn) => _antags?.SetServerDefault(optedIn);
+        public void SetAntagonistDefault(bool optedIn)
+        {
+            _antags?.SetServerDefault(optedIn);
+            RefreshTabMarks();
+        }
 
         public void SetPreviewTexture(Texture texture)
         {
@@ -303,13 +329,18 @@ namespace SS3D.UI.Lobby
             _discard.clicked += Discard;
             _save = _root.Q<Button>("charwin-save");
             _save.clicked += () => Save();
-            _root.Q<Button>("charwin-return").clicked += RequestReturn;
+            _saveRing = _root.Q("charwin-save-ring");
+            Button returnButton = _root.Q<Button>("charwin-return");
+            returnButton.clicked += RequestReturn;
+            _continue = returnButton;
+            _title = _root.Q(className: "charwin__title");
         }
 
         private void BindPreview()
         {
             _preview = _root.Q("charwin-preview");
             _previewImage = _root.Q("charwin-preview-image");
+            _under = _root.Q(className: "charwin__under");
             _angles = _root.Q("charwin-angles").Query<Button>(className: "charwin__angle").ToList();
             for (int i = 0; i < _angles.Count; i++)
             {
@@ -345,6 +376,7 @@ namespace SS3D.UI.Lobby
 
         private void BindTabs()
         {
+            _tabColumn = _root.Q("charwin-tabs");
             foreach (string key in TabOrder)
             {
                 Button tab = _root.Q<Button>("charwin-tab-" + key);
@@ -400,6 +432,7 @@ namespace SS3D.UI.Lobby
         private void BindPrompt()
         {
             _prompt = _root.Q("charwin-prompt");
+            _promptCard = _prompt.Q(className: "lobby-prompt__card");
             _promptError = _root.Q<Label>("charwin-prompt-error");
             _promptSave = _root.Q<Button>("charwin-prompt-save");
             _promptSave.clicked += () =>
@@ -424,10 +457,23 @@ namespace SS3D.UI.Lobby
         public void SelectTab(string key)
         {
             if (!_tabs.ContainsKey(key)) key = TabProfile;
+            // A pane eases in when it is newly shown: on a switch, or as the window opens.
+            bool entering = key != _activeTab || !IsVisible;
+            bool wide = Array.IndexOf(WideTabs, key) >= 0;
+            bool backFromWide = !wide && _root.ClassListContains("charwin--wide");
             _activeTab = key;
             foreach ((string each, Button tab) in _tabs) tab.EnableInClassList("charwin__tab--active", each == key);
             foreach ((string each, VisualElement pane) in _panes) pane.EnableInClassList("charwin__pane--hidden", each != key);
-            _root.EnableInClassList("charwin--wide", Array.IndexOf(WideTabs, key) >= 0);
+            _root.EnableInClassList("charwin--wide", wide);
+            // The centre column's panes come in from the right, toward the viewport; Jobs and Antags rise from below.
+            if (entering && _panes.TryGetValue(key, out VisualElement shown)) Enter(shown, 0, wide ? null : EnterFromRight);
+            // Back from Jobs or Antags, the viewport comes back the way it does when the window opens.
+            if (backFromWide && IsVisible)
+            {
+                Enter(_preview, 40, EnterScaled);
+                Enter(_under, 90);
+            }
+
             // A focused field that gets hidden gets no FocusOut: let go of text entry and of the focus.
             _textEntry.Exit();
             _outfit?.Close();
@@ -454,6 +500,8 @@ namespace SS3D.UI.Lobby
             _appearance.NameField?.SetValueWithoutNotify(saved.Name);
             RefreshTopBar();
             Saved?.Invoke(saved);
+            // The save state flashes green as it turns back to Saved.
+            UiMotion.Flash(_status, 700);
             return true;
         }
 
@@ -482,6 +530,8 @@ namespace SS3D.UI.Lobby
             _switcher.Close();
             _outfit?.Close();
             _prompt.AddToClassList("charwin__prompt--open");
+            Enter(_prompt);
+            Enter(_promptCard, 0, EnterScaled);
             ShowPromptError();
             _prompt.schedule.Execute(() => (_model.NameValid ? _promptSave : _root.Q<Button>("charwin-prompt-keep")).Focus()).ExecuteLater(1);
         }
@@ -657,8 +707,94 @@ namespace SS3D.UI.Lobby
             _status.EnableInClassList("charwin__save--dirty", dirty);
             _statusLabel.text = dirty ? "unsaved changes" : "saved";
             _discard.SetEnabled(dirty);
-            _save.SetEnabled(_model.CanSave);
+            bool ready = _model.CanSave;
+            _save.SetEnabled(ready);
             _save.tooltip = _model.SaveTooltip;
+            // Something valid to save: Save turns into the call to action, its ring breathing until it is pressed.
+            _save.EnableInClassList("charwin__save-button--ready", ready);
+            if (!ready) StopSavePulse();
+            else if (_savePulse == null) _savePulse = UiMotion.Pulse(_saveRing, SavePulseMs);
+            RefreshTabMarks();
+        }
+
+        private void StopSavePulse()
+        {
+            if (_savePulse == null) return;
+            UiMotion.StopPulse(_saveRing, _savePulse);
+            _savePulse = null;
+        }
+
+        /// <summary>
+        /// What the tab column says before a tab is opened: Jobs takes the High job's department (its accent bar and
+        /// its glyph; grey with no High job), and Antags turns red while any role is switched on.
+        /// </summary>
+        private void RefreshTabMarks()
+        {
+            if (_model.Working == null || !_tabs.TryGetValue(TabJobs, out Button jobs)) return;
+            string high = _model.Working.Preferences.HighJob;
+            string dept = high != null ? LobbyView.DepartmentClass(_departmentOf(high)) : null;
+            if (dept != _jobsTabDept)
+            {
+                if (_jobsTabDept != null) jobs.RemoveFromClassList(_jobsTabDept);
+                if (dept != null) jobs.AddToClassList(dept);
+                jobs.EnableInClassList("charwin__tab--dept", dept != null);
+                _jobsTabDept = dept;
+            }
+
+            _tabs[TabAntags].EnableInClassList("charwin__tab--armed", _antags != null && _antags.AnyOn);
+        }
+
+        // ---- Motion ----
+
+        /// <summary>
+        /// The window's entrance: the title from the left, the tabs one after another, the viewport scaling up, then the
+        /// bottom row. The open tab's pane comes in with them (<see cref="SelectTab"/>).
+        /// </summary>
+        private void PlayOpening()
+        {
+            Enter(_title, 0, EnterFromLeft);
+            Stagger(_tabColumn, 30, 30, EnterFromLeft);
+            Enter(_preview, 90, EnterScaled);
+            Enter(_under, 150);
+            Enter(_status, 180);
+            Enter(_continue, 210);
+        }
+
+        /// <summary>
+        /// <see cref="UiMotion.Enter"/> as the window plays it. The window enters again what was shown before (the tab
+        /// column on each open, a pane on each tab switch), so CharacterWindow.uss ("Motion") snaps the hidden look on
+        /// <see cref="MotionClass"/> rather than easing it, and a stagger's delay is waited out here, on the scheduler,
+        /// rather than set as an inline transition delay: that would hold the hidden look back too, and stay on a tab or
+        /// a tile and slow every hover after it.
+        /// </summary>
+        internal static void Enter(VisualElement element, long delayMs = 0, string variant = null)
+        {
+            if (element == null) return;
+            element.AddToClassList(MotionClass);
+            if (variant != null) element.AddToClassList(variant);
+            element.AddToClassList(UiMotion.EnterClass);
+            element.RemoveFromClassList(UiMotion.InClass);
+            // Without a panel (EditMode tests, a detached tree) nothing would add it: show the element as it is.
+            if (element.panel == null)
+            {
+                element.AddToClassList(UiMotion.InClass);
+                return;
+            }
+
+            // A frame first, so the hidden look is drawn before the way in starts.
+            element.schedule.Execute(() => element.AddToClassList(UiMotion.InClass)).ExecuteLater(16 + delayMs);
+        }
+
+        /// <summary>Enters each child of <paramref name="parent"/>, <paramref name="stepMs"/> apart; after twelve, together.</summary>
+        internal static void Stagger(VisualElement parent, long stepMs, long firstMs = 0, string variant = null)
+        {
+            if (parent == null) return;
+            int i = 0;
+            foreach (VisualElement child in parent.Children())
+            {
+                Enter(child, firstMs + (Math.Min(i, 12) * stepMs), variant);
+                i++;
+            }
         }
     }
 }

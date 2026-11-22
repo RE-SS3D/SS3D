@@ -12,6 +12,13 @@
  * Lobby.uss brings the tokens, the shared controls (UiSelect), the switcher popover, icons, department colours
  * (--dept), thin scrollers and the unsaved-changes prompt. Buttons keep the runtime theme's .unity-button class, so
  * every Button class here sets its own background for :hover and :active too.
+ *
+ * Colour and motion (owner, 2026-11-21: "clearer colors, more movement"). State shows as an area, in ui-tokens' soft
+ * fills: the save state (warn while unsaved; Save turns green, its ring breathing, while there is something valid to
+ * save), a High job in its department's colour, an opted-in antagonist role in danger, the notices. The selected tab
+ * pulls out and grows an accent bar: blue for the look's tabs, the High job's department for Jobs, red for Antags.
+ * Every control answers a hover and a press in about 0.12 s (a press scales to 0.97); the window, its panes and the
+ * style grids ease in through UiMotion's classes, as CharacterWindowView.Enter plays them ("Motion", at the end).
  */
 
 .charwin {
@@ -76,6 +83,41 @@
     background-color: var(--ui-menu-rule);
 }
 
+/* ── Departments' soft fills ──
+ * ui-tokens has each department's colour; a fill needs its own alpha (USS can't derive one). Where a job is the
+ * subject (a High row) the window uses Lobby.uss's --dept-soft; a department's head takes the fainter wash kept here. */
+.charwin .lb-dept--command {
+    --charwin-dept-wash: rgba(112, 160, 255, 0.035);
+}
+
+.charwin .lb-dept--security {
+    --charwin-dept-wash: rgba(255, 104, 136, 0.035);
+}
+
+.charwin .lb-dept--engineering {
+    --charwin-dept-wash: rgba(255, 204, 60, 0.032);
+}
+
+.charwin .lb-dept--medical {
+    --charwin-dept-wash: rgba(56, 214, 222, 0.032);
+}
+
+.charwin .lb-dept--science {
+    --charwin-dept-wash: rgba(190, 124, 255, 0.035);
+}
+
+.charwin .lb-dept--cargo {
+    --charwin-dept-wash: rgba(222, 156, 96, 0.035);
+}
+
+.charwin .lb-dept--service {
+    --charwin-dept-wash: rgba(104, 224, 136, 0.032);
+}
+
+.charwin .lb-dept--civilian {
+    --charwin-dept-wash: rgba(226, 218, 198, 0.032);
+}
+
 /* ── Who you're editing: the switcher as the reference's dropdown ── */
 .charwin .charwin__who {
     position: absolute;
@@ -92,10 +134,15 @@
 }
 
 .charwin .charwin__switch,
-.charwin .charwin__switch:hover,
-.charwin .charwin__switch:active,
-.charwin .charwin__switch:hover:active {
+.charwin .charwin__switch:active {
     background-color: var(--ui-menu-field);
+}
+
+.charwin .charwin__switch:hover,
+.charwin .charwin__switch:hover:active,
+.charwin .charwin__switch--open,
+.charwin .charwin__switch--open:hover {
+    background-color: rgba(0, 0, 0, 0.68);
 }
 
 .charwin .charwin__switch {
@@ -104,6 +151,13 @@
     width: 270px;
     height: 33px;
     padding: 0 8px 0 6px;
+    transition-property: background-color, scale;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out-cubic;
+}
+
+.charwin .charwin__switch:hover:active {
+    scale: 0.98 0.98;
 }
 
 .charwin .charwin__switch-portrait {
@@ -124,6 +178,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    transition-property: color;
+    transition-duration: 0.12s;
 }
 
 .charwin .charwin__switch-count {
@@ -143,13 +199,16 @@
     flex-shrink: 0;
     background-image: url("project://database/Assets/Art/Graphics/UI/Chrome/DropdownArrow.png");
     -unity-background-scale-mode: stretch-to-fill;
+    transition-property: rotate;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out-back;
 }
 
 .charwin .charwin__switch--open .charwin__arrow {
     rotate: 180deg;
 }
 
-/* ── The tab column ── */
+/* ── The tab column: a glyph per tab; the selected one pulls out and grows its accent bar ── */
 .charwin .charwin__tabs {
     position: absolute;
     left: 105px;
@@ -158,23 +217,39 @@
 }
 
 .charwin .charwin__tab,
-.charwin .charwin__tab:hover,
-.charwin .charwin__tab:active,
-.charwin .charwin__tab:hover:active {
+.charwin .charwin__tab:active {
     background-color: var(--ui-menu-tab);
 }
 
+.charwin .charwin__tab:hover,
+.charwin .charwin__tab:hover:active {
+    background-color: rgba(0, 0, 0, 0.64);
+}
+
+/* The glyph sits in the first 40 px; the longest label (skin & eyes) still fits the 141 px column. */
 .charwin .charwin__tab {
     height: 40px;
     margin-bottom: 8px;
-    padding-left: 16px;
+    padding-left: 40px;
     -unity-text-align: middle-left;
     font-size: 19px;
-    color: var(--ui-menu-tab-text);
+    color: rgba(255, 255, 255, 0.42);
+}
+
+/* Its own transitions, kept once it has eased in (see "Motion"). */
+.charwin .charwin__tab,
+.charwin .charwin__tab.charwin-motion.ui-enter.ui-enter--in {
+    transition-property: background-color, color, translate, scale, opacity;
+    transition-duration: 0.12s, 0.12s, 0.2s, 0.12s, 0.24s;
+    transition-timing-function: ease-out-cubic;
 }
 
 .charwin .charwin__tab:hover {
     color: var(--ui-menu-tab-text-hover);
+}
+
+.charwin .charwin__tab:hover:active {
+    scale: 0.97 0.97;
 }
 
 .charwin .charwin__tab--active,
@@ -184,6 +259,97 @@
     background-color: var(--ui-menu-selected);
     color: var(--ui-text-on-light);
 }
+
+/* Hover nudges a tab out; the selected one sits further out. Under .charwin__tabs to win over UiMotion's in-place look. */
+.charwin .charwin__tabs .charwin__tab:hover {
+    translate: 3px 0;
+}
+
+.charwin .charwin__tabs .charwin__tab--active,
+.charwin .charwin__tabs .charwin__tab--active:hover {
+    translate: 6px 0;
+}
+
+/* The accent bar on the tab's left edge: a hint of it on hover, grown (with a small overshoot) once selected. */
+.charwin .charwin__tab-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: var(--ui-info);
+    opacity: 0;
+    scale: 1 0.2;
+    transition-property: scale, opacity;
+    transition-duration: 0.24s, 0.12s;
+    transition-timing-function: ease-out-back, ease-out-cubic;
+}
+
+/* Jobs: the High job's department (CharacterWindowView adds its lb-dept class and charwin__tab--dept); grey with none. */
+.charwin .charwin__tab--jobs .charwin__tab-bar {
+    background-color: rgb(140, 140, 136);
+}
+
+.charwin .charwin__tab--dept .charwin__tab-bar {
+    background-color: var(--dept);
+}
+
+.charwin .charwin__tab--antags .charwin__tab-bar {
+    background-color: var(--ui-danger);
+}
+
+.charwin .charwin__tab:hover .charwin__tab-bar {
+    opacity: 0.7;
+    scale: 1 0.5;
+}
+
+.charwin .charwin__tab--active .charwin__tab-bar,
+.charwin .charwin__tab--active:hover .charwin__tab-bar {
+    opacity: 1;
+    scale: 1 1;
+}
+
+/* The glyph: dim at rest, lit and a touch larger on hover, dark on the selected plate. Jobs shows the High job's
+   department colour and Antags turns red while a role is on, so both say something before they are opened. */
+.charwin .charwin__tab-icon {
+    position: absolute;
+    left: 14px;
+    top: 12px;
+    width: 16px;
+    height: 16px;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.36);
+    transition-property: -unity-background-image-tint-color, scale;
+    transition-duration: 0.12s, 0.2s;
+    transition-timing-function: ease-out-cubic, ease-out-back;
+}
+
+.charwin .charwin__tab--dept .charwin__tab-icon {
+    -unity-background-image-tint-color: var(--dept);
+}
+
+.charwin .charwin__tab--armed .charwin__tab-icon {
+    -unity-background-image-tint-color: var(--ui-danger);
+}
+
+.charwin .charwin__tab:hover .charwin__tab-icon {
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.85);
+    scale: 1.15 1.15;
+}
+
+.charwin .charwin__tab--active .charwin__tab-icon,
+.charwin .charwin__tab--active:hover .charwin__tab-icon {
+    -unity-background-image-tint-color: var(--ui-text-on-light);
+    scale: 1 1;
+}
+
+.charwin__tab-icon--profile { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Identification.png"); }
+.charwin__tab-icon--body { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/User.png"); }
+.charwin__tab-icon--skin { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Eye.png"); }
+.charwin__tab-icon--hair { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Scissors.png"); }
+.charwin__tab-icon--beard { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/EmojiHappy.png"); }
+.charwin__tab-icon--jobs { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Briefcase.png"); }
+.charwin__tab-icon--antags { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/ShieldExclamation.png"); }
 
 /* ── The centre column: labels over their controls ── */
 .charwin .charwin__column {
@@ -236,9 +402,28 @@
     margin-bottom: 14px;
 }
 
-.charwin .charwin__label {
-    align-self: center;
+/* A section label: centred between two hairlines across the column, which light up while the field is hovered. */
+.charwin .charwin__label-row {
+    flex-direction: row;
+    align-items: center;
     margin-bottom: 3px;
+}
+
+.charwin .charwin__label-line {
+    flex-grow: 1;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.14);
+    transition-property: background-color;
+    transition-duration: 0.12s;
+}
+
+.charwin .charwin__field:hover .charwin__label-line {
+    background-color: rgba(255, 255, 255, 0.36);
+}
+
+.charwin .charwin__label {
+    flex-shrink: 0;
+    margin: 0 10px;
     font-size: 19px;
     color: var(--ui-text);
 }
@@ -285,24 +470,37 @@
     font-size: 12px;
     color: rgba(255, 255, 255, 0.7);
     -unity-text-align: middle-left;
+    transition-property: border-color;
+    transition-duration: 0.12s;
 }
 
+.charwin .charwin__text-field:hover > .unity-base-text-field__input {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Focus in the look's accent. */
 .charwin .charwin__text-field:focus > .unity-base-text-field__input,
 .charwin .charwin__text-field > .unity-base-text-field__input:focus {
-    border-color: var(--ui-line-frame);
+    border-color: var(--ui-info);
 }
 
 .charwin .charwin-look__name--error > .unity-base-text-field__input,
+.charwin .charwin-look__name--error:hover > .unity-base-text-field__input,
 .charwin .charwin-look__name--error:focus > .unity-base-text-field__input,
 .charwin .charwin-look__name--error > .unity-base-text-field__input:focus {
     border-color: var(--ui-warn);
 }
 
+/* The name's error line: a small warn notice under the field, easing in when it appears. */
 .charwin .charwin-look__error {
     flex-direction: row;
     align-items: center;
     justify-content: center;
     margin-top: 6px;
+    padding: 4px 8px;
+    border-left-width: 2px;
+    border-color: var(--ui-warn);
+    background-color: var(--ui-warn-soft);
 }
 
 .charwin .charwin-look__error--hidden {
@@ -339,12 +537,19 @@
     font-size: 16px;
     color: var(--ui-menu-tab-text-hover);
     white-space: nowrap;
+    transition-property: background-color, color, scale;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out-cubic;
 }
 
 .charwin .charwin__small:hover,
 .charwin .charwin__small:hover:active {
-    background-color: rgba(0, 0, 0, 0.62);
+    background-color: rgba(0, 0, 0, 0.64);
     color: var(--ui-text);
+}
+
+.charwin .charwin__small:hover:active {
+    scale: 0.97 0.97;
 }
 
 .charwin .charwin__small:disabled {
@@ -358,21 +563,30 @@
 
 /* The job outfit preview: a UiSelect in the reference's dropdown look. */
 .charwin .charwin__select .ui-select__field,
-.charwin .charwin__select .ui-select__field:hover,
-.charwin .charwin__select .ui-select__field:active,
-.charwin .charwin__select .ui-select__field:hover:active {
+.charwin .charwin__select .ui-select__field:active {
     background-color: var(--ui-menu-field);
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.charwin .charwin__select .ui-select__field:hover,
+.charwin .charwin__select .ui-select__field:hover:active,
+.charwin .charwin__select.ui-select--open .ui-select__field {
+    background-color: rgba(0, 0, 0, 0.68);
     border-color: rgba(0, 0, 0, 0);
 }
 
 .charwin .charwin__select .ui-select__field {
     height: 33px;
     padding: 0 8px 0 14px;
+    transition-property: background-color;
+    transition-duration: 0.12s;
 }
 
 .charwin .charwin__select .ui-select__value {
     font-size: 17px;
     color: var(--ui-menu-field-text);
+    transition-property: color;
+    transition-duration: 0.12s;
 }
 
 .charwin .charwin__select .ui-select__field:hover .ui-select__value,
@@ -384,6 +598,9 @@
     width: 12px;
     height: 7px;
     -unity-background-image-tint-color: rgb(255, 255, 255);
+    transition-property: rotate;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out-back;
 }
 
 .charwin .ui-select__list .ui-select__item {
@@ -427,6 +644,12 @@
     margin: 3px 0;
     border-radius: 0;
     background-color: rgba(255, 255, 255, 0.36);
+    transition-property: background-color;
+    transition-duration: 0.12s;
+}
+
+.charwin .charwin__slider:hover .unity-base-slider__fill {
+    background-color: rgba(255, 255, 255, 0.6);
 }
 
 .charwin .charwin__slider .unity-base-slider__dragger {
@@ -439,17 +662,26 @@
     border-color: rgba(255, 255, 255, 0.24);
     border-radius: 3px;
     background-color: rgba(42, 38, 40, 0.96);
+    transition-property: border-color, background-color, scale;
+    transition-duration: 0.12s, 0.12s, 0.18s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-back;
 }
 
 .charwin .charwin__slider:hover .unity-base-slider__dragger {
     border-color: rgba(255, 255, 255, 0.7);
+    scale: 1.1 1.1;
+}
+
+.charwin .charwin__slider:active .unity-base-slider__dragger {
+    border-color: var(--ui-menu-selected);
+    background-color: rgba(62, 58, 60, 0.98);
 }
 
 .charwin .charwin__slider .unity-base-slider__dragger-border {
     display: none;
 }
 
-/* Colours: swatches in a centred row, the picked one outlined white. */
+/* Colours: swatches in a centred row. Hover pops one up; the picked one stays up, outlined white. */
 .charwin .charwin-look__swatches {
     flex-direction: row;
     flex-wrap: wrap;
@@ -464,18 +696,28 @@
     border-width: 2px;
     border-color: rgba(0, 0, 0, 0);
     border-radius: 3px;
+    transition-property: scale, border-color;
+    transition-duration: 0.18s, 0.12s;
+    transition-timing-function: ease-out-back, ease-out-cubic;
 }
 
 .charwin .charwin-look__swatch:hover {
-    border-color: rgba(255, 255, 255, 0.45);
+    border-color: rgba(255, 255, 255, 0.5);
+    scale: 1.15 1.15;
+}
+
+.charwin .charwin-look__swatch:hover:active {
+    scale: 0.94 0.94;
 }
 
 .charwin .charwin-look__swatch--selected,
 .charwin .charwin-look__swatch--selected:hover {
     border-color: var(--ui-menu-selected);
+    scale: 1.12 1.12;
 }
 
-/* Styles: the reference's style tiles, three across, the game's baked pictures in them. */
+/* Styles: the reference's style tiles, three across, the game's baked pictures in them. The content is inset 3 px so a
+   hovered tile's pop isn't clipped by the scroll area (the grid keeps its height: the last row shows 3 px less). */
 .charwin .charwin__styles {
     width: 276px;
     height: 254px; /* three rows: 80 + 7 + 80 + 7 + 80 */
@@ -491,13 +733,17 @@
 .charwin .charwin__styles-content {
     flex-direction: row;
     flex-wrap: wrap;
+    padding: 3px 0 0 3px;
 }
 
 .charwin .charwin-look__tile,
-.charwin .charwin-look__tile:hover,
-.charwin .charwin-look__tile:active,
-.charwin .charwin-look__tile:hover:active {
+.charwin .charwin-look__tile:active {
     background-color: var(--ui-menu-tab);
+}
+
+.charwin .charwin-look__tile:hover,
+.charwin .charwin-look__tile:hover:active {
+    background-color: rgba(0, 0, 0, 0.66);
 }
 
 .charwin .charwin-look__tile {
@@ -512,16 +758,29 @@
     border-radius: 3px;
 }
 
+/* Its own transitions, kept once it has popped in (see "Motion"). */
+.charwin .charwin-look__tile,
+.charwin .charwin-look__tile.charwin-motion.ui-enter.ui-enter--in {
+    transition-property: background-color, border-color, scale, opacity, translate;
+    transition-duration: 0.12s, 0.12s, 0.18s, 0.24s, 0.24s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-back, ease-out-cubic, ease-out-cubic;
+}
+
 .charwin .charwin-look__tile:hover {
-    border-color: rgba(205, 205, 205, 0.35);
+    border-color: rgba(255, 255, 255, 0.4);
+    scale: 1.06 1.06;
+}
+
+.charwin .charwin-look__tile:hover:active {
+    scale: 0.97 0.97;
 }
 
 .charwin .charwin-look__tile--selected,
 .charwin .charwin-look__tile--selected:hover,
 .charwin .charwin-look__tile--selected:active,
 .charwin .charwin-look__tile--selected:hover:active {
-    background-color: rgba(120, 120, 120, 0.42);
-    border-color: rgba(205, 205, 205, 0.75);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--ui-menu-selected);
 }
 
 .charwin .charwin-look__tile-thumb {
@@ -539,6 +798,30 @@
     -unity-background-image-tint-color: rgba(255, 255, 255, 0.3);
 }
 
+/* The picked tile's badge: a white corner with a check, popping in when the tile is picked. */
+.charwin .charwin-look__tile-check {
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    width: 15px;
+    height: 15px;
+    border-width: 2px;
+    border-color: var(--ui-menu-selected);
+    border-radius: 2px;
+    background-color: var(--ui-menu-selected);
+    -unity-background-image-tint-color: var(--ui-text-on-light);
+    opacity: 0;
+    scale: 0.4 0.4;
+    transition-property: opacity, scale;
+    transition-duration: 0.12s, 0.24s;
+    transition-timing-function: ease-out-cubic, ease-out-back;
+}
+
+.charwin .charwin-look__tile--selected .charwin-look__tile-check {
+    opacity: 1;
+    scale: 1 1;
+}
+
 .charwin .charwin__style-name {
     margin-top: 6px;
     align-self: center;
@@ -552,10 +835,13 @@
 }
 
 .charwin .charwin__seg-option,
-.charwin .charwin__seg-option:hover,
-.charwin .charwin__seg-option:active,
-.charwin .charwin__seg-option:hover:active {
+.charwin .charwin__seg-option:active {
     background-color: var(--ui-menu-tab);
+}
+
+.charwin .charwin__seg-option:hover,
+.charwin .charwin__seg-option:hover:active {
+    background-color: rgba(0, 0, 0, 0.68);
 }
 
 .charwin .charwin__seg-option {
@@ -565,10 +851,17 @@
     -unity-text-align: middle-center;
     font-size: 14px;
     color: var(--ui-menu-tab-text);
+    transition-property: background-color, color, scale;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out-cubic;
 }
 
 .charwin .charwin__seg-option:hover {
     color: var(--ui-menu-tab-text-hover);
+}
+
+.charwin .charwin__seg-option:hover:active {
+    scale: 0.96 0.96;
 }
 
 .charwin .charwin__seg-option--on,
@@ -596,6 +889,20 @@
     border-width: 3px;
     border-color: var(--ui-frame-outer);
     background-color: var(--ui-frame-mat);
+}
+
+/* Its own transitions, kept once it has eased in (see "Motion"). */
+.charwin .charwin__frame,
+.charwin .charwin__frame.charwin-motion.ui-enter.ui-enter--in {
+    transition-property: border-color, background-color, opacity, translate, scale;
+    transition-duration: 0.12s, 0.12s, 0.24s, 0.3s, 0.3s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic, ease-out-cubic, ease-out-back;
+}
+
+/* Hovered, the frame brightens a touch: it can be dragged. */
+.charwin .charwin__frame:hover {
+    border-color: rgb(255, 255, 255);
+    background-color: rgb(118, 121, 120);
 }
 
 .charwin .charwin__viewport {
@@ -632,19 +939,61 @@
     color: var(--ui-menu-tab-text);
 }
 
-/* ── Save state, then the continue button ── */
+/* ── Save state as an area, then the continue button ──
+ * Saved: a dark plate, an ok edge and a check. Unsaved: the warn soft fill, a warn edge and a pencil. A save flashes
+ * the area green (UiMotion.Flash). Bottom-aligned with the continue button. */
 .charwin .charwin__save {
     position: absolute;
     left: 105px;
-    bottom: 32px;
+    bottom: 28px;
+    height: 40px;
     flex-direction: row;
     align-items: center;
+    padding: 0 5px 0 10px;
+    border-left-width: 3px;
+    border-color: var(--ui-ok);
+    background-color: var(--ui-menu-tab);
+}
+
+.charwin .charwin__save,
+.charwin .charwin__save.charwin-motion.ui-enter.ui-enter--in {
+    transition-property: background-color, border-color, opacity, translate, scale;
+    transition-duration: 0.3s, 0.3s, 0.24s, 0.3s, 0.3s;
+    transition-timing-function: ease-out-cubic;
+}
+
+.charwin .charwin__save--dirty {
+    border-color: var(--ui-warn);
+    background-color: var(--ui-warn-soft);
+}
+
+.charwin .charwin__save.ui-flash {
+    background-color: rgba(92, 214, 122, 0.2);
+}
+
+.charwin .charwin__save-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+    flex-shrink: 0;
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Check.png");
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--ui-ok);
+    transition-property: -unity-background-image-tint-color;
+    transition-duration: 0.3s;
+}
+
+.charwin .charwin__save--dirty .charwin__save-icon {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Pencil.png");
+    -unity-background-image-tint-color: var(--ui-warn);
 }
 
 .charwin .charwin__save-state {
     margin-right: 12px;
     font-size: 17px;
     color: var(--ui-ok);
+    transition-property: color;
+    transition-duration: 0.3s;
 }
 
 .charwin .charwin__save--dirty .charwin__save-state {
@@ -655,7 +1004,48 @@
     margin-left: 6px;
 }
 
-/* Primary button: white plate, right-aligned label, a notch on the right edge (a rotated square behind it). */
+.charwin .charwin__save-button {
+    justify-content: center;
+}
+
+/* Save, with something valid to save: the call to action, in ok, its ring breathing (UiMotion.Pulse). */
+.charwin .charwin__save-button--ready,
+.charwin .charwin__save-button--ready:active {
+    background-color: var(--ui-ok);
+    color: var(--ui-text-on-light);
+}
+
+.charwin .charwin__save-button--ready:hover,
+.charwin .charwin__save-button--ready:hover:active {
+    background-color: rgb(136, 234, 158);
+    color: var(--ui-text-on-light);
+}
+
+.charwin .charwin__save-ring {
+    position: absolute;
+    left: -4px;
+    top: -4px;
+    right: -4px;
+    bottom: -4px;
+    border-width: 2px;
+    border-color: var(--ui-ok);
+    opacity: 0;
+    transition-property: opacity, scale;
+    transition-duration: 0.8s;
+    transition-timing-function: ease-in-out-sine;
+}
+
+.charwin .charwin__save-button--ready .charwin__save-ring {
+    opacity: 0.2;
+}
+
+.charwin .charwin__save-button--ready .charwin__save-ring.ui-pulse--on {
+    opacity: 0.75;
+    scale: 1.05 1.12;
+}
+
+/* Primary button: white plate, right-aligned label, a notch on the right edge (a rotated square behind it). Hovered,
+   the notch pushes out and the label follows it. */
 .charwin .charwin__continue,
 .charwin .charwin__continue .charwin__continue-tip {
     background-color: var(--ui-menu-selected);
@@ -673,6 +1063,13 @@
     padding-right: 6px;
 }
 
+.charwin .charwin__continue,
+.charwin .charwin__continue.charwin-motion.ui-enter.ui-enter--in {
+    transition-property: background-color, scale, opacity, translate;
+    transition-duration: 0.12s, 0.12s, 0.24s, 0.3s;
+    transition-timing-function: ease-out-cubic;
+}
+
 .charwin .charwin__continue-tip {
     position: absolute;
     right: -6px;
@@ -680,11 +1077,17 @@
     width: 12px;
     height: 12px;
     rotate: 45deg;
+    transition-property: background-color, right;
+    transition-duration: 0.12s, 0.2s;
+    transition-timing-function: ease-out-cubic, ease-out-back;
 }
 
 .charwin .charwin__continue-text {
     font-size: 25px;
     color: var(--ui-text-on-light);
+    transition-property: translate;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out-back;
 }
 
 .charwin .charwin__continue:hover,
@@ -693,7 +1096,11 @@
 }
 
 .charwin .charwin__continue:hover .charwin__continue-tip {
-    right: -8px;
+    right: -10px;
+}
+
+.charwin .charwin__continue:hover .charwin__continue-text {
+    translate: 3px 0;
 }
 
 .charwin .charwin__continue:active,
@@ -702,7 +1109,11 @@
     background-color: rgb(207, 207, 204);
 }
 
-/* ── Notices: the lobby's info banner ── */
+.charwin .charwin__continue:hover:active {
+    scale: 0.97 0.97;
+}
+
+/* ── Notices: the lobby's info banner, in the soft fills ── */
 .charwin .charwin__notice {
     flex-direction: row;
     align-items: flex-start;
@@ -711,8 +1122,7 @@
     padding: 10px 12px;
     border-left-width: 3px;
     border-color: var(--ui-info);
-    /* The bible's 10 % tints, at what UI Toolkit's linear blending needs to look the same over the veil. */
-    background-color: rgba(120, 196, 236, 0.035);
+    background-color: var(--ui-info-soft);
 }
 
 .charwin .charwin__notice--hidden {
@@ -721,7 +1131,7 @@
 
 .charwin .charwin__notice--success {
     border-color: var(--ui-ok);
-    background-color: rgba(128, 204, 122, 0.035);
+    background-color: var(--ui-ok-soft);
 }
 
 .charwin .charwin__notice .lobby__icon {
@@ -736,14 +1146,18 @@
 .charwin .charwin__notice-text {
     flex-shrink: 1;
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.85);
     white-space: normal;
 }
 
-/* ── Jobs: wide while open ── */
+/* ── Jobs: wide while open ──
+ * A department's head is washed in its colour. Rows rank by brightness: a Never row's name is dimmed, a Medium or Low
+ * row gets a white edge, the High row the department's soft fill, edge and name. */
 .charwin .charwin-jobs {
     flex-grow: 1;
     --dept: rgba(255, 255, 255, 0.5);
+    --dept-soft: rgba(255, 255, 255, 0.035);
+    --charwin-dept-wash: rgba(255, 255, 255, 0.021);
 }
 
 .charwin .charwin-jobs__intro {
@@ -786,7 +1200,7 @@
     padding: 0 10px;
     border-left-width: 3px;
     border-color: var(--dept);
-    background-color: var(--ui-menu-tab);
+    background-color: var(--charwin-dept-wash);
 }
 
 .charwin .charwin-jobs__dept-icon {
@@ -805,12 +1219,36 @@
     align-items: center;
     height: 36px;
     margin-top: 2px;
-    padding: 0 6px 0 10px;
+    padding: 0 6px 0 7px;
+    border-left-width: 3px;
+    border-color: rgba(0, 0, 0, 0);
     background-color: rgba(0, 0, 0, 0.28);
+    transition-property: background-color, border-color;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out-cubic;
 }
 
+.charwin .charwin-jobs__row-main:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.charwin .charwin-jobs__row--set .charwin-jobs__row-main {
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.charwin .charwin-jobs__row--high .charwin-jobs__row-main,
+.charwin .charwin-jobs__row--high .charwin-jobs__description {
+    background-color: var(--dept-soft);
+}
+
+.charwin .charwin-jobs__row--high .charwin-jobs__row-main {
+    border-color: var(--dept);
+}
+
+/* The job a new High moved down, for a moment (CharacterJobsTab.Set). */
 .charwin .charwin-jobs__row--flash .charwin-jobs__row-main {
-    background-color: rgba(238, 186, 78, 0.06);
+    border-color: var(--ui-warn);
+    background-color: var(--ui-warn-soft);
 }
 
 .charwin .charwin-jobs__job-icon {
@@ -823,14 +1261,24 @@
     flex-shrink: 1;
     margin-left: 8px;
     font-size: 11.5px;
-    color: var(--ui-text);
+    color: rgba(255, 255, 255, 0.62);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    transition-property: color;
+    transition-duration: 0.2s;
+}
+
+.charwin .charwin-jobs__row--set .charwin-jobs__job-name {
+    color: var(--ui-text);
+}
+
+.charwin .charwin-jobs__row--high .charwin-jobs__job-name {
+    color: var(--dept);
 }
 
 .charwin .charwin-jobs__row--locked .charwin-jobs__job-name {
-    color: var(--ui-menu-tab-text-hover);
+    color: rgba(255, 255, 255, 0.4);
 }
 
 .charwin .charwin-jobs__row--locked .charwin-jobs__job-icon {
@@ -857,6 +1305,9 @@
     width: 11px;
     height: 11px;
     -unity-background-image-tint-color: rgba(255, 255, 255, 0.35);
+    transition-property: -unity-background-image-tint-color, rotate;
+    transition-duration: 0.12s, 0.2s;
+    transition-timing-function: ease-out-cubic, ease-out-back;
 }
 
 .charwin .charwin-jobs__about:hover .lobby__icon {
@@ -868,8 +1319,8 @@
 }
 
 .charwin .charwin-jobs__slots {
-    margin: 0 8px 0 4px;
-    font-size: 10.5px;
+    margin: 0 6px 0 4px;
+    font-size: 10px;
     color: rgba(255, 255, 255, 0.4);
     white-space: nowrap;
 }
@@ -892,18 +1343,41 @@
     flex-shrink: 0;
 }
 
+/* 43 px a level: room for an eight-letter job beside "unlimited" (the row is 386 px). */
 .charwin .charwin-jobs__prio .charwin__seg-option {
-    width: 46px;
+    width: 43px;
     padding: 0;
     font-size: 13px;
 }
 
-/* High is the one choice that matters most: the department's colour fills it. */
+/* The levels, from loud to quiet: High in the department's colour, Medium white, Low grey, Never a muted plate, so the
+   few picks stand out from the many Nevers. Hovering High previews its colour. */
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--high:hover {
+    color: var(--dept);
+}
+
 .charwin .charwin-jobs__prio .charwin-jobs__prio-option--high-on,
 .charwin .charwin-jobs__prio .charwin-jobs__prio-option--high-on:hover,
 .charwin .charwin-jobs__prio .charwin-jobs__prio-option--high-on:active,
 .charwin .charwin-jobs__prio .charwin-jobs__prio-option--high-on:hover:active {
     background-color: var(--dept);
+    color: var(--ui-text-on-light);
+}
+
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--low-on,
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--low-on:hover,
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--low-on:active,
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--low-on:hover:active {
+    background-color: rgba(255, 255, 255, 0.5);
+    color: var(--ui-text-on-light);
+}
+
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--never-on,
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--never-on:hover,
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--never-on:active,
+.charwin .charwin-jobs__prio .charwin-jobs__prio-option--never-on:hover:active {
+    background-color: rgba(255, 255, 255, 0.13);
+    color: rgba(255, 255, 255, 0.75);
 }
 
 .charwin .charwin-jobs__description {
@@ -914,12 +1388,16 @@
     white-space: normal;
 }
 
+/* The fallback: pinned under the list, a hairline above it. */
 .charwin .charwin-jobs__fallback {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    margin-top: 12px;
+    margin-top: 8px;
+    padding-top: 8px;
     flex-shrink: 0;
+    border-top-width: 1px;
+    border-color: rgba(255, 255, 255, 0.14);
 }
 
 .charwin .charwin-jobs__fallback-label {
@@ -927,7 +1405,9 @@
     color: var(--ui-menu-tab-text-hover);
 }
 
-/* ── Antags ── */
+/* ── Antags ──
+ * An opted-in role is a danger area: the soft fill, a red edge, its frame and symbol in red (the symbol turns a third,
+ * which lands the trefoil on itself). On is a red plate, a chosen Off a muted one. */
 .charwin .charwin-antags__title {
     margin-bottom: 10px;
     font-size: 19px;
@@ -949,8 +1429,23 @@
     align-items: center;
     max-width: 640px;
     margin-bottom: 6px;
-    padding: 12px 14px;
+    padding: 12px 14px 12px 11px;
+    border-left-width: 3px;
+    border-color: rgba(0, 0, 0, 0);
     background-color: var(--ui-menu-tab);
+    transition-property: background-color, border-color;
+    transition-duration: 0.24s;
+    transition-timing-function: ease-out-cubic;
+}
+
+.charwin .charwin-antags__row:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.charwin .charwin-antags__row--on,
+.charwin .charwin-antags__row--on:hover {
+    border-color: var(--ui-danger);
+    background-color: var(--ui-danger-soft);
 }
 
 .charwin .charwin-antags__icon-frame {
@@ -963,16 +1458,26 @@
     border-width: 2px;
     border-color: rgba(255, 255, 255, 0.24);
     border-radius: 3px;
+    transition-property: border-color;
+    transition-duration: 0.24s;
+}
+
+.charwin .charwin-antags__row--on .charwin-antags__icon-frame {
+    border-color: var(--ui-danger);
 }
 
 .charwin .charwin-antags__icon {
     width: 24px;
     height: 24px;
     background-image: url("project://database/Assets/Art/Icons/External/lorc/radioactive.svg");
+    transition-property: -unity-background-image-tint-color, rotate;
+    transition-duration: 0.24s, 0.5s;
+    transition-timing-function: ease-out-cubic, ease-out-back;
 }
 
 .charwin .charwin-antags__row--on .charwin-antags__icon {
-    -unity-background-image-tint-color: rgb(232, 160, 160);
+    -unity-background-image-tint-color: var(--ui-danger);
+    rotate: 120deg;
 }
 
 .charwin .charwin-antags__text {
@@ -993,6 +1498,26 @@
     white-space: normal;
 }
 
+.charwin .charwin-antags__option--on:hover {
+    color: var(--ui-danger);
+}
+
+.charwin .charwin-antags__option--on.charwin__seg-option--on,
+.charwin .charwin-antags__option--on.charwin__seg-option--on:hover,
+.charwin .charwin-antags__option--on.charwin__seg-option--on:active,
+.charwin .charwin-antags__option--on.charwin__seg-option--on:hover:active {
+    background-color: var(--ui-danger);
+    color: var(--ui-text-on-light);
+}
+
+.charwin .charwin-antags__option--off.charwin__seg-option--on,
+.charwin .charwin-antags__option--off.charwin__seg-option--on:hover,
+.charwin .charwin-antags__option--off.charwin__seg-option--on:active,
+.charwin .charwin-antags__option--off.charwin__seg-option--on:hover:active {
+    background-color: rgba(255, 255, 255, 0.13);
+    color: rgba(255, 255, 255, 0.75);
+}
+
 /* ── The unsaved-changes prompt: the lobby's dialog, shown on demand ── */
 .charwin .charwin__prompt {
     display: none;
@@ -1000,4 +1525,36 @@
 
 .charwin .charwin__prompt--open {
     display: flex;
+}
+
+/* Opening, the backdrop only fades; the card scales in (CharacterWindowView.Guard). */
+.charwin .charwin__prompt.ui-enter {
+    translate: 0 0;
+}
+
+/* Its buttons ease and press like the window's (Lobby.uss scopes its own to the lobby's admin parts). */
+.charwin .charwin__prompt .lobby-admin__button {
+    transition-property: background-color, border-color, color, scale;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out-cubic;
+}
+
+.charwin .charwin__prompt .lobby-admin__button:hover:active {
+    scale: 0.97 0.97;
+}
+
+/* ── Motion: UiMotion's classes, as CharacterWindowView.Enter plays them ──
+ * The window enters again what was shown before (the tab column on each open, a pane on each tab switch). A transition
+ * comes from the style an element changes to, so ui-enter's own (ui-controls.uss) would fade a shown element out
+ * before easing it back in, a flicker: here the hidden look snaps and only the way in eases. charwin-motion marks what
+ * the window moves, so nothing else under it (the switcher) changes. A part with transitions of its own (a tab, a style
+ * tile, the frame, the save area, the continue button) lists them again for its in-place look, above. */
+.charwin .charwin-motion.ui-enter {
+    transition-duration: 0s;
+}
+
+.charwin .charwin-motion.ui-enter.ui-enter--in {
+    transition-property: opacity, translate, scale;
+    transition-duration: 0.24s, 0.3s, 0.3s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-back;
 }

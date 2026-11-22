@@ -4,11 +4,17 @@
 /*
  * Player Settings screen (main menu, lobby, Escape menu), drawn with the UI bible's parts (the "main menu" tab's
  * Settings state; components.css "Settings in the panel"): no plate of its own, so it sits on its host's plate.
- *   header        a Disket title, the context, an Esc chip and Back
- *   tabs          the map editor's sub-tabs: the open one gets a 2 px white line under its label
- *   rows          light tints; labels in Disket, notes in Kode; a changed setting has a dot in the info colour
+ *   header        the cog in the open tab's colour, a Disket title, the context, an Esc chip and Back
+ *   tabs          the map editor's sub-tabs with an icon each: the open one gets a 2 px white line under its label.
+ *                 Each tab has a colour (--tab): its icon on hover and while open, and through the open tab's content
+ *                 (the header's cog, the groups' ticks, the sliders' level)
+ *   rows          light tints, lighter on hover; labels in Disket, notes in Kode; a changed setting has a dot in the
+ *                 info colour. Groups are titled in Disket after a tick in the tab's colour
  *   segmented     dark plates in the row, the chosen one white
  *   keys          the map editor's key chips at row size
+ *   state areas   a soft fill (--ui-*-soft) and a 3 px left edge: Mute All's banner, Reset armed, the notices
+ *   motion        0.12 s on every hover and press, a press sinks a plate a little; a tab's content and a notice ease
+ *                 in, the Keep prompt pops in (UiMotion, from PlayerSettingsPanel)
  * Buttons keep the runtime theme's .unity-button class, so every Button class here sets its own background, border and
  * colour for :hover and :active too, or the theme's light grey shows through.
  */
@@ -31,9 +37,24 @@
 }
 
 .settings-panel {
+    --tab: var(--ui-text);
     flex-grow: 1;
     flex-shrink: 1;
     min-height: 0;
+}
+
+/* The open tab's colour reaches its content (PlayerSettingsPanel adds settings-panel--<tab>). A category colour, not a
+   state: the state colours stay for what they mean (the changed dot, warnings, notices). */
+.settings-panel--display {
+    --tab: var(--ui-cat-scripts);
+}
+
+.settings-panel--audio {
+    --tab: var(--ui-cat-items);
+}
+
+.settings-panel--controls {
+    --tab: var(--ui-cat-lower);
 }
 
 .settings-theme .settings-panel__mono {
@@ -53,6 +74,19 @@
 .settings-theme .settings-panel__title {
     -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
     font-size: 20px;
+}
+
+/* The screen's cog, in the open tab's colour: it changes as the tabs do. */
+.settings-panel__title-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Cog.png");
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--tab);
+    transition-property: -unity-background-image-tint-color;
+    transition-duration: 0.25s;
 }
 
 .settings-theme .settings-panel__context {
@@ -78,7 +112,8 @@
     -unity-text-align: middle-center;
 }
 
-/* ── Buttons: the main menu's, a light tint with a Disket label; the primary is the white plate ── */
+/* ── Buttons: the main menu's. A Disket label; the primary is the white plate, a secondary a light tint with a faint
+   edge. A press sinks it a little ── */
 .settings-theme .settings-panel__button {
     height: 32px;
     margin: 0;
@@ -86,33 +121,39 @@
     flex-shrink: 0;
     border-width: var(--ui-hairline);
     border-radius: 0;
-    border-color: rgba(0, 0, 0, 0);
+    border-color: rgba(255, 255, 255, 0.08);
     background-color: var(--ui-editor-button);
     -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
     font-size: 12px;
     color: var(--ui-text);
     white-space: nowrap;
     -unity-text-align: middle-center;
-    transition-property: background-color, border-color;
-    transition-duration: 0.09s;
+    transition-property: background-color, border-color, color, scale;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out-cubic;
 }
 
 .settings-theme .settings-panel__button:hover {
     background-color: var(--ui-editor-button-hover);
+    border-color: rgba(255, 255, 255, 0.24);
 }
 
 .settings-theme .settings-panel__button:active,
 .settings-theme .settings-panel__button:hover:active {
     background-color: var(--ui-editor-button-pressed);
+    scale: 0.97 0.97;
 }
 
 .settings-theme .settings-panel__button--accent {
+    border-color: rgba(0, 0, 0, 0);
     background-color: var(--ui-menu-selected);
     color: var(--ui-text-on-light);
 }
 
+/* The white plate can't get whiter: its hover is a faint ok wash (keep, confirm). */
 .settings-theme .settings-panel__button--accent:hover {
-    background-color: rgb(255, 255, 255);
+    border-color: rgba(0, 0, 0, 0);
+    background-color: rgb(236, 251, 241);
 }
 
 .settings-theme .settings-panel__button--accent:active,
@@ -120,15 +161,16 @@
     background-color: rgb(207, 207, 204);
 }
 
-/* Reset, armed: a second click resets, so the warn colour. */
+/* Reset, armed: a second click resets, so a warn area: its edge, a soft fill, the label in warn. */
 .settings-theme .settings-panel__button--amber,
-.settings-theme .settings-panel__button--amber:hover {
+.settings-theme .settings-panel__button--amber:hover,
+.settings-theme .settings-panel__button--amber:hover:active {
     border-color: var(--ui-warn);
-    background-color: rgba(238, 186, 78, 0.16);
+    background-color: var(--ui-warn-soft);
     color: var(--ui-warn);
 }
 
-/* ── Tabs: the map editor's sub-tabs ── */
+/* ── Tabs: the map editor's sub-tabs, an icon before each label ── */
 .settings-panel__tabs {
     flex-direction: row;
     flex-shrink: 0;
@@ -138,31 +180,98 @@
 .settings-theme .settings-panel__tab,
 .settings-theme .settings-panel__tab:hover,
 .settings-theme .settings-panel__tab:active,
-.settings-theme .settings-panel__tab:hover:active {
+.settings-theme .settings-panel__tab:hover:active,
+.settings-theme .settings-panel__tab:focus {
     background-color: rgba(0, 0, 0, 0);
+    color: rgba(0, 0, 0, 0);
 }
 
+/* The Button keeps its own text, which pilots find a tab by (LobbyUiPilot), but draws it clear: a Label child draws
+   the label beside the icon, and children size the button. */
 .settings-theme .settings-panel__tab {
+    --tab: var(--ui-text);
+    flex-direction: row;
+    align-items: center;
     height: 30px;
     margin: 0;
-    padding: 1px 10px 0 10px;
+    padding: 1px 12px 0 10px;
     justify-content: center;
     border-width: 0 0 2px 0;
     border-radius: 0;
     border-color: rgba(0, 0, 0, 0);
     -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(0, 0, 0, 0);
     -unity-text-align: middle-center;
+    transition-property: border-color, scale;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out-cubic;
 }
 
-.settings-theme .settings-panel__tab:hover {
-    color: rgba(255, 255, 255, 0.8);
+.settings-theme .settings-panel__tab:active,
+.settings-theme .settings-panel__tab:hover:active {
+    scale: 0.96 0.96;
+}
+
+.settings-theme .settings-panel__tab--display {
+    --tab: var(--ui-cat-scripts);
+}
+
+.settings-theme .settings-panel__tab--audio {
+    --tab: var(--ui-cat-items);
+}
+
+.settings-theme .settings-panel__tab--controls {
+    --tab: var(--ui-cat-lower);
 }
 
 .settings-theme .settings-panel__tab--active,
 .settings-theme .settings-panel__tab--active:hover {
     border-color: var(--ui-line-active);
+}
+
+.settings-panel__tab-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 7px;
+    flex-shrink: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.4);
+    transition-property: -unity-background-image-tint-color;
+    transition-duration: 0.12s;
+}
+
+.settings-panel__tab--display .settings-panel__tab-icon {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/DesktopComputer.png");
+}
+
+.settings-panel__tab--audio .settings-panel__tab-icon {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/VolumeUp.png");
+}
+
+.settings-panel__tab--controls .settings-panel__tab-icon {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/CursorClick.png");
+}
+
+/* Hover shows the tab's colour; the open tab keeps it. */
+.settings-theme .settings-panel__tab:hover .settings-panel__tab-icon,
+.settings-theme .settings-panel__tab--active .settings-panel__tab-icon {
+    -unity-background-image-tint-color: var(--tab);
+}
+
+.settings-theme .settings-panel__tab-text {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.45);
+    transition-property: color;
+    transition-duration: 0.12s;
+}
+
+.settings-theme .settings-panel__tab:hover .settings-panel__tab-text {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.settings-theme .settings-panel__tab.settings-panel__tab--active .settings-panel__tab-text {
     color: var(--ui-text);
 }
 
@@ -238,15 +347,25 @@
     white-space: normal;
 }
 
-/* Mute All: a warning, so the warn colour on its edge. */
+/* Mute All: a warning, so a warn area: its edge, a soft fill, the muted speaker. */
 .settings-panel__banner {
     flex-direction: row;
     align-items: center;
     margin-bottom: 18px;
-    padding: 10px 12px;
-    border-width: var(--ui-hairline);
+    padding: 10px 12px 10px 9px;
+    border-left-width: 3px;
     border-color: var(--ui-warn);
-    background-color: rgba(238, 186, 78, 0.08);
+    background-color: var(--ui-warn-soft);
+}
+
+.settings-panel__banner-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+    flex-shrink: 0;
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/VolumeOff.png");
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--ui-warn);
 }
 
 .settings-theme .settings-panel__banner-text {
@@ -261,11 +380,15 @@
     margin-bottom: 18px;
 }
 
+/* A group's title: Disket after a tick in the open tab's colour. */
 .settings-theme .settings-panel__group-title {
     margin-bottom: 6px;
+    padding-left: 7px;
+    border-left-width: 3px;
+    border-color: var(--tab);
     -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
     font-size: 10px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.62);
 }
 
 .settings-panel__group-heading {
@@ -287,6 +410,12 @@
     margin-bottom: 2px;
     padding: 6px 8px 6px 12px;
     background-color: var(--ui-editor-button);
+    transition-property: background-color;
+    transition-duration: 0.12s;
+}
+
+.settings-panel__row:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .settings-panel__row-copy {
@@ -386,18 +515,26 @@
     background-color: rgba(255, 255, 255, 0.5);
 }
 
-/* ── Segmented: dark plates in the row, the chosen one white ── */
+/* ── Segmented: dark plates in the row, lifting on hover; the chosen one white (it fades in as it is picked) ── */
 .settings-panel__segments {
     flex-wrap: wrap;
     justify-content: flex-end;
 }
 
 .settings-theme .settings-panel__segment,
-.settings-theme .settings-panel__segment:hover,
-.settings-theme .settings-panel__segment:active,
-.settings-theme .settings-panel__segment:hover:active,
-.settings-theme .settings-panel__segment:disabled {
+.settings-theme .settings-panel__segment:disabled,
+.settings-theme .settings-panel__segment:disabled:hover {
     background-color: rgba(0, 0, 0, 0.5);
+}
+
+.settings-theme .settings-panel__segment:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.settings-theme .settings-panel__segment:active,
+.settings-theme .settings-panel__segment:hover:active {
+    background-color: rgba(0, 0, 0, 0.3);
+    scale: 0.95 0.95;
 }
 
 .settings-theme .settings-panel__segment {
@@ -410,6 +547,9 @@
     padding: 0 10px;
     border-width: 0;
     border-radius: 0;
+    transition-property: background-color, scale;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out-cubic;
 }
 
 .settings-theme .settings-panel__segment-text {
@@ -417,6 +557,8 @@
     font-size: 11px;
     color: rgba(255, 255, 255, 0.45);
     white-space: nowrap;
+    transition-property: color;
+    transition-duration: 0.12s;
 }
 
 .settings-theme .settings-panel__segment:hover .settings-panel__segment-text {
@@ -441,7 +583,8 @@
 
 /* Locked by another setting: the effective choice shows with a padlock, and nothing can change. */
 .settings-theme .settings-panel__segment--locked-on,
-.settings-theme .settings-panel__segment--locked-on:disabled {
+.settings-theme .settings-panel__segment--locked-on:disabled,
+.settings-theme .settings-panel__segment--locked-on:disabled:hover {
     border-width: 1px;
     border-color: var(--ui-editor-cell-edge);
     background-color: var(--ui-editor-button-hover);
@@ -505,6 +648,8 @@
     border-color: rgba(255, 255, 255, 0.24);
     border-radius: 3px;
     background-color: rgba(42, 38, 40, 0.96);
+    transition-property: border-color;
+    transition-duration: 0.12s;
 }
 
 .settings-panel__slider:hover .unity-base-slider__dragger {
@@ -515,12 +660,13 @@
     display: none;
 }
 
+/* The level, in the open tab's colour. */
 .settings-panel__slider-fill {
     position: absolute;
     left: 0;
     top: 3px;
     height: 2px;
-    background-color: rgba(255, 255, 255, 0.36);
+    background-color: var(--tab);
 }
 
 .settings-theme .settings-panel__slider-value {
@@ -590,18 +736,27 @@
     border-radius: 0;
     border-color: rgba(0, 0, 0, 0);
     background-color: var(--ui-editor-button);
+    transition-property: background-color, border-color, scale;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out-cubic;
 }
 
-.settings-theme .settings-panel__bind:hover,
-.settings-theme .settings-panel__bind:active,
-.settings-theme .settings-panel__bind:hover:active {
+.settings-theme .settings-panel__bind:hover {
+    border-color: rgba(255, 255, 255, 0.14);
     background-color: var(--ui-editor-button-hover);
 }
 
-/* Moved by a swap: a flash in the news colour. */
+.settings-theme .settings-panel__bind:active,
+.settings-theme .settings-panel__bind:hover:active {
+    background-color: var(--ui-editor-button-hover);
+    scale: 0.985 0.985;
+}
+
+/* Moved by a swap: a flash in the news colour (stronger than its soft fill: it has to catch the eye), fading out as
+   the class comes off. */
 .settings-theme .settings-panel__bind--flash {
     border-color: var(--ui-info);
-    background-color: rgba(120, 196, 236, 0.12);
+    background-color: rgba(86, 178, 255, 0.14);
 }
 
 .settings-theme .settings-panel__bind--listening,
@@ -706,14 +861,14 @@
     color: rgba(255, 255, 255, 0.5);
 }
 
-/* ── Notices: a strip along the bottom ── */
+/* ── Notices: a strip along the bottom that rises in (UiMotion); a swap is an info area, a refusal a danger one ── */
 .settings-panel__notice {
     flex-direction: row;
     align-items: center;
     flex-shrink: 0;
-    padding: 10px 20px;
-    border-top-width: var(--ui-hairline);
-    border-color: rgba(255, 255, 255, 0.08);
+    padding: 10px 20px 10px 17px;
+    border-left-width: 3px;
+    border-color: rgba(255, 255, 255, 0.3);
     background-color: rgba(0, 0, 0, 0.3);
 }
 
@@ -734,7 +889,7 @@
 
 .settings-panel__notice--swap {
     border-color: var(--ui-info);
-    background-color: rgba(120, 196, 236, 0.08);
+    background-color: var(--ui-info-soft);
 }
 
 .settings-panel__notice--swap .settings-panel__notice-dot {
@@ -743,7 +898,7 @@
 
 .settings-panel__notice--refused {
     border-color: var(--ui-danger);
-    background-color: rgba(235, 98, 82, 0.12);
+    background-color: var(--ui-danger-soft);
 }
 
 .settings-panel__notice--refused .settings-panel__notice-dot {

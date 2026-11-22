@@ -4,6 +4,7 @@ using System.Linq;
 using SS3D.Permissions;
 using SS3D.Systems.Comms;
 using SS3D.Systems.Inputs;
+using SS3D.UI.Shell;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -16,6 +17,15 @@ namespace SS3D.UI.Lobby
     /// </summary>
     public sealed class LobbyChatView
     {
+        /// <summary>
+        /// More lines than this arriving in one snapshot are a history replay (connecting, the admin log), not someone
+        /// speaking: they appear without sliding in.
+        /// </summary>
+        private const int MaxSlidingLines = 4;
+
+        /// <summary>Lines arriving together slide in this far apart.</summary>
+        private const long SlideStepMilliseconds = 60;
+
         private readonly InputTextEntryScope _textEntry;
         private readonly ScrollView _log;
         private readonly TextField _input;
@@ -27,6 +37,10 @@ namespace SS3D.UI.Lobby
         private int _version = -1;
         private bool _admin;
         private bool _connected;
+        /// <summary>A real snapshot has been painted; lines added after it are news and slide in.</summary>
+        private bool _painted;
+        /// <summary>"No messages yet." while the log shows no line; the first line replaces it.</summary>
+        private Label _empty;
 
         public event Action<OocChannel, string> Submitted;
 
@@ -125,45 +139,106 @@ namespace SS3D.UI.Lobby
             _input.value = string.Empty;
         }
 
-        /// <summary>Replaces the log snapshot; the log rebuilds only when the version changes.</summary>
+        /// <summary>
+        /// Replaces the log snapshot; the log changes only when the version does. Lines added at the end are appended,
+        /// and a few at a time (someone speaking) slide in; anything else rebuilds the log in place.
+        /// </summary>
         public void SetChat(IEnumerable<OocChatMessage> log, int version, bool admin, bool connected)
         {
             _connected = connected;
+            bool rebuild = false;
             if (admin != _admin)
             {
                 _admin = admin;
                 _adminChannel.style.display = admin ? DisplayStyle.Flex : DisplayStyle.None;
                 if (!admin && _channel == OocChannel.Admin) SelectChannel(OocChannel.Ooc);
                 _version = -1;
+                rebuild = true;
             }
 
             if (version == _version) return;
             _version = version;
+            OocChatMessage[] before = _messages;
             _messages = log.ToArray();
-            Rebuild();
+            if (!rebuild && _painted && Extends(before, _messages)) Append(before.Length);
+            else Rebuild();
+            _painted = true;
+        }
+
+        /// <summary>The new snapshot is the old one with lines added at its end (ids are unique and ordered).</summary>
+        private static bool Extends(OocChatMessage[] before, OocChatMessage[] after)
+        {
+            if (before.Length == 0) return true;
+            return after.Length >= before.Length && after[0].Id == before[0].Id
+                && after[before.Length - 1].Id == before[before.Length - 1].Id;
+        }
+
+        /// <summary>Adds the lines from <paramref name="from"/> on; a few slide in, a burst just appears.</summary>
+        private void Append(int from)
+        {
+            bool follow = AtBottom();
+            int added = 0;
+            for (int i = from; i < _messages.Length; i++)
+                if (Shows(_messages[i])) added++;
+            if (added == 0)
+            {
+                if (_empty != null) _empty.text = EmptyText;
+                return;
+            }
+
+            _empty?.RemoveFromHierarchy();
+            _empty = null;
+            bool slide = added <= MaxSlidingLines;
+            int index = 0;
+            for (int i = from; i < _messages.Length; i++)
+            {
+                if (!Shows(_messages[i])) continue;
+                VisualElement row = Line(_messages[i]);
+                _log.Add(row);
+                if (slide) UiMotion.Enter(row, index * SlideStepMilliseconds);
+                index++;
+            }
+
+            if (follow) FollowEnd();
         }
 
         private void Rebuild()
         {
-            // Follow new lines only while the reader is already at the bottom.
-            bool follow = _log.panel == null || _log.scrollOffset.y >= _log.verticalScroller.highValue - 4f;
+            bool follow = AtBottom();
             _log.Clear();
+            _empty = null;
             bool any = false;
             foreach (OocChatMessage message in _messages)
             {
-                if (message.Channel == OocChannel.Admin && !_admin) continue;
+                if (!Shows(message)) continue;
                 _log.Add(Line(message));
                 any = true;
             }
 
-            if (!any) _log.Add(LobbyUi.Text(_connected ? "No messages yet." : "Not connected.", "lobby-chat__empty"));
-            if (!follow) return;
-            _log.schedule.Execute(() => _log.scrollOffset = new Vector2(0f, float.MaxValue)).ExecuteLater(1);
+            if (!any)
+            {
+                _empty = LobbyUi.Text(EmptyText, "lobby-chat__empty");
+                _log.Add(_empty);
+            }
+
+            if (follow) FollowEnd();
         }
+
+        private string EmptyText => _connected ? "No messages yet." : "Not connected.";
+
+        private bool Shows(OocChatMessage message) => message.Channel != OocChannel.Admin || _admin;
+
+        /// <summary>Follow new lines only while the reader is already at the bottom.</summary>
+        private bool AtBottom() => _log.panel == null || _log.scrollOffset.y >= _log.verticalScroller.highValue - 4f;
+
+        private void FollowEnd() =>
+            _log.schedule.Execute(() => _log.scrollOffset = new Vector2(0f, float.MaxValue)).ExecuteLater(1);
 
         private static VisualElement Line(OocChatMessage message)
         {
             VisualElement row = LobbyUi.Box("lobby-chat__line");
+            // Admin lines are an area in the admin colour (Lobby.uss), so they stand out of the scroll.
+            row.EnableInClassList("lobby-chat__line--admin", message.Channel == OocChannel.Admin);
             string time = DateTimeOffset.FromUnixTimeSeconds(message.UnixSeconds).ToLocalTime().ToString("HH:mm");
             row.Add(LobbyUi.Mono(time, "lobby-chat__time"));
             Label channel = LobbyUi.Text(ChannelTag(message.Channel), "lobby-chat__channel");

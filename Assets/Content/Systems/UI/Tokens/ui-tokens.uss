@@ -98,20 +98,29 @@
     --ui-cat-lower: rgb(236, 142, 84);
     --ui-cat-items: rgb(176, 214, 104);
     --ui-cat-scripts: rgb(188, 140, 240);
-    --ui-danger: rgb(235, 98, 82);
-    --ui-warn: rgb(238, 186, 78);
-    --ui-ok: rgb(128, 204, 122);
-    /* News, not a fault: a newer version, a changed setting (main menu, settings) */
-    --ui-info: rgb(120, 196, 236);
-    /* Departments (lobby): a department's colour is its glyph, its edge and its name, never a fill */
-    --ui-dept-command: rgb(143, 180, 242);
-    --ui-dept-security: rgb(242, 145, 168);
-    --ui-dept-engineering: rgb(236, 211, 94);
-    --ui-dept-medical: rgb(98, 208, 214);
-    --ui-dept-science: rgb(207, 157, 240);
-    --ui-dept-cargo: rgb(201, 162, 124);
-    --ui-dept-service: rgb(142, 219, 156);
-    --ui-dept-civilian: rgb(221, 215, 203);
+    /* State colours, clearer since 2026-11-21 (owner: "clearer colors"): saturated enough to read as a hue at a glance
+       on the near-black plates, at a glyph's or an edge's size. */
+    --ui-danger: rgb(242, 88, 74);
+    --ui-warn: rgb(255, 188, 64);
+    --ui-ok: rgb(92, 214, 122);
+    /* News, not a fault: a newer version, a changed setting, joining (main menu, settings) */
+    --ui-info: rgb(86, 178, 255);
+    /* Soft fills: a state as an area (a ready card, a notice, a working row). UI Toolkit blends in linear space, so a
+       few percent here reads as the bible's 10 to 15 % tint over the dark plates. */
+    --ui-danger-soft: rgba(242, 88, 74, 0.06);
+    --ui-warn-soft: rgba(255, 188, 64, 0.05);
+    --ui-ok-soft: rgba(92, 214, 122, 0.05);
+    --ui-info-soft: rgba(86, 178, 255, 0.05);
+    /* Departments (lobby): a department's colour is its glyph, its edge and its name, and a soft fill where it is the
+       subject (a picked job, the character's stage). Brighter than the shipped pastels, so eight read apart. */
+    --ui-dept-command: rgb(112, 160, 255);
+    --ui-dept-security: rgb(255, 104, 136);
+    --ui-dept-engineering: rgb(255, 204, 60);
+    --ui-dept-medical: rgb(56, 214, 222);
+    --ui-dept-science: rgb(190, 124, 255);
+    --ui-dept-cargo: rgb(222, 156, 96);
+    --ui-dept-service: rgb(104, 224, 136);
+    --ui-dept-civilian: rgb(226, 218, 198);
 
     /* Type sizes; fonts are set per rule with -unity-font-definition (Disket Mono Bold labels, Kode Mono text) */
     --ui-type-label: 11px;

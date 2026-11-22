@@ -1,17 +1,27 @@
 @import url("../Tokens/ui-tokens.uss");
+@import url("../Tokens/ui-controls.uss");
 
 /*
  * Main menu, drawn with the UI bible's parts (Documents/plans/assets/ui-bible, "main menu" tab; its components.css
- * main-menu section is this sheet line for line, in USS):
+ * main-menu section is this sheet's base, in USS):
  *   plates        --ui-editor-panel with the storage panel's 2 px edge and corner, 16 px from the screen's edges
  *   sidebar       the screen's tab column: light tints, Disket titles, Kode subtitles. The white plate marks where you
  *                 are: Join on the home screen (--accent), the open screen's row (--selected) with the notch
- *   server list   tints separated by spacing; colour only for a server's state, a refusal and the update news
+ *   server list   raised tints under headings with an icon and a rule. A server's state is an icon in its colour, and
+ *                 its card's left edge takes that colour on hover and while it is open
+ *   state areas   a soft fill (--ui-*-soft) and a 3 px left edge: the update news, first launch, a refusal, a failed
+ *                 fetch, a failed step. Inset (darker than the plate): fields, the port, empty lists
+ *   buttons       primary the white plate; secondary a tint with a faint edge; info and danger their colour's edge,
+ *                 filled soft on hover; quiet ones (links, Details) text only
  *   dialogs       a floating plate (--ui-float) over the blurred wallpaper. It eases in, and its colour (--op) says
  *                 what it is doing: hosting ok, joining info, updating warn, lost or failed danger. The icon, the
  *                 progress bar and the working step take it; MainMenuView spins the working step's icon
  *   colour code   Join a server is info and Play locally ok, as their dialogs: the row's left edge and its icon.
  *                 A server's state is an icon in its colour (the Checking one spins)
+ *   motion        0.12 s on every hover and press, and a press scales the plate down a little. Entrances are UiMotion's
+ *                 (Tokens/ui-controls.uss), run by MainMenuView: the sidebar's rows when it shows, a panel from the
+ *                 right, the list's rows and the dialog's steps one after another. One ambient loop: the wallpaper
+ *                 drifts on the home screen
  * Sizes are the bible's reference px: MainMenuView lays .main-menu out at 1200 × 675 and scales it to fill the
  * screen (UiReferenceScale), times the player's UI scale.
  * Labels are Disket Mono Bold, which draws only capitals; text is Kode Mono.
@@ -48,6 +58,9 @@
     display: none;
 }
 
+/* The one ambient loop: on the home screen MainMenuView toggles --drift every 18 s and the wallpaper eases between the
+   two looks over as long, so it never rests. Scaled up a little, so the drift never shows an edge. Behind a dialog it
+   settles and holds still (--still). */
 .main-menu__wallpaper {
     position: absolute;
     left: 0;
@@ -55,6 +68,23 @@
     right: 0;
     bottom: 0;
     -unity-background-scale-mode: scale-and-crop;
+    scale: 1.04 1.04;
+    translate: -8px -4px;
+    transition-property: scale, translate;
+    transition-duration: 18s;
+    transition-timing-function: ease-in-out-sine;
+}
+
+.main-menu__wallpaper--drift {
+    scale: 1.08 1.08;
+    translate: 8px 4px;
+}
+
+.main-menu__wallpaper--still {
+    scale: 1.04 1.04;
+    translate: 0 0;
+    transition-duration: 0.6s;
+    transition-timing-function: ease-out-cubic;
 }
 
 /* ── Thin scrollers: the map editor's ── */
@@ -90,6 +120,8 @@
     border-width: 0;
     border-radius: 3px;
     background-color: rgba(255, 255, 255, 0.22);
+    transition-property: background-color;
+    transition-duration: 0.12s;
 }
 
 .main-menu .unity-scroller--vertical .unity-base-slider__dragger:hover {
@@ -155,7 +187,8 @@
     flex-shrink: 0;
 }
 
-/* The menu's text field on an editor plate: near-black, as the editor's search. */
+/* The menu's text field on an editor plate: inset, near-black, as the editor's search. Its edge shows on hover and
+   brightens with focus. */
 .main-menu .main-menu__input {
     height: 32px;
     min-width: 0;
@@ -176,10 +209,12 @@
     -unity-text-align: middle-left;
     --unity-cursor-color: rgb(242, 242, 240);
     --unity-selection-color: rgba(255, 255, 255, 0.25);
+    transition-property: border-color;
+    transition-duration: 0.12s;
 }
 
 .main-menu .main-menu__input:hover > .unity-base-text-field__input {
-    border-color: rgba(0, 0, 0, 0);
+    border-color: rgba(255, 255, 255, 0.16);
 }
 
 .main-menu .main-menu__input:focus > .unity-base-text-field__input,
@@ -211,7 +246,7 @@
     flex-shrink: 0;
 }
 
-/* A row is a tab: a light tint, the label in Disket, a line of Kode under it. */
+/* A row is a tab: a light tint, the label in Disket, a line of Kode under it. A press sinks it a little. */
 .main-menu .main-menu__nav {
     flex-direction: row;
     height: 52px;
@@ -223,8 +258,9 @@
     border-radius: 0;
     border-color: rgba(0, 0, 0, 0);
     background-color: var(--ui-editor-button);
-    transition-property: background-color;
-    transition-duration: 0.09s;
+    transition-property: background-color, border-color, scale;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out-cubic;
 }
 
 .main-menu .main-menu__nav:hover {
@@ -234,6 +270,7 @@
 .main-menu .main-menu__nav:active,
 .main-menu .main-menu__nav:hover:active {
     background-color: var(--ui-editor-button-pressed);
+    scale: 0.98 0.98;
 }
 
 /* Settings and Quit: a title alone, so a shorter row. */
@@ -246,6 +283,8 @@
     font-size: 15px;
     color: var(--ui-text);
     white-space: nowrap;
+    transition-property: color;
+    transition-duration: 0.12s;
 }
 
 .main-menu .main-menu__nav-subtitle {
@@ -253,6 +292,8 @@
     font-size: 11px;
     color: rgba(255, 255, 255, 0.5);
     white-space: nowrap;
+    transition-property: color;
+    transition-duration: 0.12s;
 }
 
 .main-menu .main-menu__nav-subtitle--error {
@@ -287,6 +328,7 @@
     color: rgba(13, 13, 13, 0.6);
 }
 
+/* The notch slides out of the plate as its screen opens. */
 .main-menu__nav-tip {
     position: absolute;
     right: -6px;
@@ -296,11 +338,20 @@
     margin-top: -6px;
     rotate: 45deg;
     background-color: var(--ui-menu-selected);
-    display: none;
+    opacity: 0;
+    translate: -6px 0;
+    transition-property: opacity, translate, background-color;
+    transition-duration: 0.2s, 0.2s, 0.12s;
+    transition-timing-function: ease-out-cubic;
 }
 
 .main-menu .main-menu__nav--selected > .main-menu__nav-tip {
-    display: flex;
+    opacity: 1;
+    translate: 0 0;
+}
+
+.main-menu .main-menu__nav--selected:active > .main-menu__nav-tip {
+    background-color: rgb(207, 207, 204);
 }
 
 /* Disabled (no name yet): the plate fades and so does its text. */
@@ -335,6 +386,9 @@
     border-width: 0;
     border-radius: 0;
     background-color: var(--ui-editor-button);
+    transition-property: background-color, scale;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out-cubic;
 }
 
 .main-menu .main-menu__advanced:hover {
@@ -344,14 +398,22 @@
 .main-menu .main-menu__advanced:active,
 .main-menu .main-menu__advanced:hover:active {
     background-color: var(--ui-editor-button-pressed);
+    scale: 0.94 0.94;
 }
 
 .main-menu .main-menu__advanced-label {
     -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
     font-size: 9px;
     color: rgba(255, 255, 255, 0.55);
+    transition-property: color;
+    transition-duration: 0.12s;
 }
 
+.main-menu .main-menu__advanced:hover .main-menu__advanced-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* The caret flips as the port opens, with a small overshoot. */
 .main-menu__caret {
     width: 12px;
     height: 7px;
@@ -359,18 +421,28 @@
     background-image: url("project://database/Assets/Art/Graphics/UI/Chrome/DropdownArrow.png");
     -unity-background-scale-mode: stretch-to-fill;
     opacity: 0.6;
+    transition-property: rotate, opacity;
+    transition-duration: 0.3s, 0.12s;
+    transition-timing-function: ease-out-back, linear;
+}
+
+.main-menu .main-menu__advanced:hover .main-menu__caret {
+    opacity: 1;
 }
 
 .main-menu__caret--up {
     rotate: 180deg;
 }
 
+/* The port: inset under Play locally, with its ok edge, so it reads as that row's setting. */
 .main-menu__port {
     flex-direction: row;
     align-items: center;
     margin-bottom: 4px;
-    padding: 8px 14px;
-    background-color: rgba(255, 255, 255, 0.035);
+    padding: 8px 14px 8px 11px;
+    border-left-width: 3px;
+    border-color: var(--ui-ok);
+    background-color: rgba(0, 0, 0, 0.32);
 }
 
 .main-menu .main-menu__port > .main-menu__eyebrow {
@@ -415,17 +487,29 @@
     border-color: var(--ui-editor-cell-edge);
     border-radius: 4.2px; /* 15 % */
     background-color: rgba(0, 0, 0, 0);
-    transition-property: border-color;
-    transition-duration: 0.09s;
+    transition-property: border-color, background-color, scale;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out-cubic;
 }
 
 .main-menu .main-menu__music-toggle:hover,
-.main-menu .main-menu__music-next:hover,
+.main-menu .main-menu__music-next:hover {
+    border-color: var(--ui-editor-cell-edge-hover);
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
 .main-menu .main-menu__music-toggle:active,
 .main-menu .main-menu__music-next:active,
 .main-menu .main-menu__music-toggle:hover:active,
 .main-menu .main-menu__music-next:hover:active {
     border-color: var(--ui-editor-cell-edge-hover);
+    background-color: rgba(255, 255, 255, 0.1);
+    scale: 0.9 0.9;
+}
+
+.main-menu .main-menu__music-next:disabled,
+.main-menu .main-menu__music-next:disabled:hover {
+    border-color: var(--ui-editor-cell-edge);
     background-color: rgba(0, 0, 0, 0);
 }
 
@@ -439,6 +523,8 @@
     height: 14px;
     -unity-background-scale-mode: scale-to-fit;
     -unity-background-image-tint-color: rgba(255, 255, 255, 0.48);
+    transition-property: -unity-background-image-tint-color;
+    transition-duration: 0.12s;
 }
 
 .main-menu__music-icon--next {
@@ -446,7 +532,8 @@
 }
 
 .main-menu .main-menu__music-toggle--on .main-menu__music-icon,
-.main-menu .main-menu__music-next .main-menu__music-icon {
+.main-menu .main-menu__music-next .main-menu__music-icon,
+.main-menu .main-menu__music-toggle:hover .main-menu__music-icon {
     -unity-background-image-tint-color: rgb(255, 255, 255);
 }
 
@@ -522,6 +609,8 @@
     border-color: rgba(255, 255, 255, 0.24);
     border-radius: 3px;
     background-color: rgba(42, 38, 40, 0.96);
+    transition-property: border-color;
+    transition-duration: 0.12s;
 }
 
 .main-menu #music-volume:hover .unity-base-slider__dragger {
@@ -573,6 +662,7 @@
     white-space: nowrap;
 }
 
+/* A link: quiet, underlined, brightening on hover. */
 .main-menu .main-menu__link,
 .main-menu .main-menu__link:hover,
 .main-menu .main-menu__link:active,
@@ -591,6 +681,8 @@
     color: rgba(255, 255, 255, 0.75);
     white-space: nowrap;
     -unity-text-align: middle-left;
+    transition-property: color, border-color;
+    transition-duration: 0.12s;
 }
 
 .main-menu .main-menu__link:hover {
@@ -598,14 +690,19 @@
     color: var(--ui-text);
 }
 
-/* ── Update banner: news, so the info colour on its edge and dot ── */
+.main-menu .main-menu__link:hover:active {
+    border-color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* ── Update banner: news, so the info colour as an area: a soft fill, its left edge and the dot ── */
 .main-menu__update {
     margin-top: 12px;
-    padding: 12px;
+    padding: 12px 12px 12px 9px;
     flex-shrink: 0;
-    border-width: var(--ui-hairline);
+    border-left-width: 3px;
     border-color: var(--ui-info);
-    background-color: rgba(120, 196, 236, 0.08);
+    background-color: var(--ui-info-soft);
 }
 
 .main-menu .main-menu__update-title {
@@ -650,7 +747,8 @@
     background-color: var(--ui-info);
 }
 
-/* ── Buttons: a light tint with a Disket label; the primary is the white plate ── */
+/* ── Buttons: a Disket label. The primary is the white plate; a secondary a light tint with a faint edge; info and
+   danger carry their colour's edge and fill soft with it on hover. A press sinks every one a little ── */
 .main-menu .main-menu__button {
     flex-direction: row;
     height: 32px;
@@ -661,33 +759,39 @@
     justify-content: center;
     border-width: var(--ui-hairline);
     border-radius: 0;
-    border-color: rgba(0, 0, 0, 0);
+    border-color: rgba(255, 255, 255, 0.08);
     background-color: var(--ui-editor-button);
     -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
     font-size: 12px;
     color: var(--ui-text);
     white-space: nowrap;
     -unity-text-align: middle-center;
-    transition-property: background-color, border-color;
-    transition-duration: 0.09s;
+    transition-property: background-color, border-color, color, scale;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out-cubic;
 }
 
 .main-menu .main-menu__button:hover {
     background-color: var(--ui-editor-button-hover);
+    border-color: rgba(255, 255, 255, 0.24);
 }
 
 .main-menu .main-menu__button:active,
 .main-menu .main-menu__button:hover:active {
     background-color: var(--ui-editor-button-pressed);
+    scale: 0.97 0.97;
 }
 
 .main-menu .main-menu__button.main-menu__button--accent {
+    border-color: rgba(0, 0, 0, 0);
     background-color: var(--ui-menu-selected);
     color: var(--ui-text-on-light);
 }
 
+/* The white plate can't get whiter: its hover is a faint info wash (joining, connecting). */
 .main-menu .main-menu__button.main-menu__button--accent:hover {
-    background-color: rgb(255, 255, 255);
+    border-color: rgba(0, 0, 0, 0);
+    background-color: rgb(234, 245, 255);
 }
 
 .main-menu .main-menu__button.main-menu__button--accent:active,
@@ -696,17 +800,30 @@
 }
 
 /* Update a server: the info colour, as the banner. */
-.main-menu .main-menu__button--blue {
+.main-menu .main-menu__button--blue,
+.main-menu .main-menu__button--blue:hover,
+.main-menu .main-menu__button--blue:active,
+.main-menu .main-menu__button--blue:hover:active {
     border-color: var(--ui-info);
 }
 
-.main-menu .main-menu__button--danger {
+.main-menu .main-menu__button--blue:hover,
+.main-menu .main-menu__button--blue:hover:active {
+    background-color: var(--ui-info-soft);
+    color: var(--ui-info);
+}
+
+.main-menu .main-menu__button--danger,
+.main-menu .main-menu__button--danger:hover,
+.main-menu .main-menu__button--danger:active,
+.main-menu .main-menu__button--danger:hover:active {
     border-color: var(--ui-danger);
 }
 
 .main-menu .main-menu__button--danger:hover,
 .main-menu .main-menu__button--danger:hover:active {
-    background-color: rgba(235, 98, 82, 0.2);
+    background-color: var(--ui-danger-soft);
+    color: var(--ui-danger);
 }
 
 .main-menu .main-menu__button:disabled,
@@ -716,7 +833,8 @@
     color: var(--ui-menu-tab-text);
 }
 
-/* A cell with a glyph (refresh, close): the map editor's popover close. */
+/* A cell with a glyph (refresh, close): the map editor's popover close. Close turns a quarter on hover; refresh spins
+   in the info colour while a server is being asked. */
 .main-menu .main-menu__icon-btn,
 .main-menu .main-menu__icon-btn:active,
 .main-menu .main-menu__icon-btn:hover:active {
@@ -733,6 +851,9 @@
     border-width: var(--ui-hairline);
     border-color: rgba(0, 0, 0, 0);
     border-radius: 4.2px; /* 15 % */
+    transition-property: border-color, scale;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out-cubic;
 }
 
 .main-menu .main-menu__icon-btn:hover {
@@ -740,23 +861,43 @@
     background-color: rgba(0, 0, 0, 0);
 }
 
+.main-menu .main-menu__icon-btn:active,
+.main-menu .main-menu__icon-btn:hover:active {
+    border-color: var(--ui-editor-cell-edge-hover);
+    scale: 0.9 0.9;
+}
+
 .main-menu__icon-btn__icon {
     width: 14px;
     height: 14px;
     -unity-background-scale-mode: scale-to-fit;
     -unity-background-image-tint-color: rgba(255, 255, 255, 0.6);
+    transition-property: -unity-background-image-tint-color;
+    transition-duration: 0.12s;
 }
 
 .main-menu .main-menu__icon-btn:hover .main-menu__icon-btn__icon {
     -unity-background-image-tint-color: rgb(255, 255, 255);
 }
 
+/* No rotate transition: MainMenuView spins this one by hand, every frame. */
 .main-menu__icon-btn__icon--refresh {
     background-image: url("project://database/Assets/Art/Icons/Heroicons/Solid/Refresh.png");
 }
 
+.main-menu .main-menu__icon-btn__icon--refresh.main-menu__spin {
+    -unity-background-image-tint-color: var(--ui-info);
+}
+
 .main-menu__icon-btn__icon--close {
     background-image: url("project://database/Assets/Art/Icons/Heroicons/Solid/X.png");
+    transition-property: -unity-background-image-tint-color, rotate;
+    transition-duration: 0.12s, 0.25s;
+    transition-timing-function: linear, ease-out-cubic;
+}
+
+.main-menu .main-menu__icon-btn:hover .main-menu__icon-btn__icon--close {
+    rotate: 90deg;
 }
 
 /* A key name: the map editor's chip. */
@@ -794,6 +935,17 @@
     flex-grow: 1;
 }
 
+/* The server panel is Join a server's screen: its icon, in its colour. */
+.main-menu__panel-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/GlobeAlt.png");
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--ui-info);
+}
+
 .main-menu__server-scroll {
     flex-grow: 1;
     flex-shrink: 1;
@@ -809,12 +961,47 @@
     flex-shrink: 0;
 }
 
+/* A section's heading: an icon in the join colour, the title, a hairline out to the count. */
 .main-menu__section-heading {
+    align-items: center;
     margin-bottom: 8px;
 }
 
 .main-menu .main-menu__section-heading > .main-menu__eyebrow {
     margin-bottom: 0;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.main-menu__heading-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+    flex-shrink: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--ui-info);
+}
+
+.main-menu__heading-icon--direct {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Link.png");
+}
+
+.main-menu__heading-icon--recent {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Clock.png");
+}
+
+.main-menu__heading-icon--public {
+    background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/GlobeAlt.png");
+}
+
+.main-menu__heading-rule {
+    flex-grow: 1;
+    height: 1px;
+    margin: 0 0 0 10px;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.main-menu .main-menu__section-heading > .main-menu__fine {
+    margin-left: 10px;
 }
 
 .main-menu__direct-row {
@@ -828,10 +1015,16 @@
     margin-right: 6px;
 }
 
-/* First launch: the field explained, on a fainter tint. */
+/* First launch: the field explained, as an info area (a soft fill and its edge). */
 .main-menu__first {
-    padding: 16px;
-    background-color: rgba(255, 255, 255, 0.035);
+    padding: 16px 16px 16px 13px;
+    border-left-width: 3px;
+    border-color: var(--ui-info);
+    background-color: var(--ui-info-soft);
+}
+
+.main-menu .main-menu__first > .main-menu__section-heading {
+    margin-bottom: 0;
 }
 
 .main-menu .main-menu__first-title {
@@ -864,16 +1057,56 @@
     color: rgba(255, 255, 255, 0.4);
 }
 
+/* A server: a raised tint. Its left edge takes the state's colour (--state) on hover and keeps it while the card is
+   open; a refusal makes it danger. MainMenuView adds main-menu__server--<state>, --open and --refused. */
 .main-menu__server {
+    --state: rgba(255, 255, 255, 0.5);
     margin-bottom: 4px;
+    border-left-width: 3px;
+    border-color: rgba(0, 0, 0, 0);
     background-color: var(--ui-editor-button);
+    transition-property: background-color, border-color;
+    transition-duration: 0.12s;
 }
 
+.main-menu__server--online {
+    --state: var(--ui-ok);
+}
+
+.main-menu__server--update,
+.main-menu__server--checking {
+    --state: var(--ui-info);
+}
+
+.main-menu__server--full,
+.main-menu__server--older {
+    --state: var(--ui-warn);
+}
+
+.main-menu__server--offline {
+    --state: var(--ui-danger);
+}
+
+.main-menu__server:hover {
+    border-color: var(--state);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.main-menu__server--open {
+    border-color: var(--state);
+}
+
+.main-menu__server--refused,
+.main-menu__server--refused:hover {
+    border-color: var(--ui-danger);
+}
+
+/* 14 px in from the card's edge, as the column heads: the edge's 3 and these 11. */
 .main-menu__server-row {
     flex-direction: row;
     align-items: center;
     height: 52px;
-    padding: 0 10px 0 14px;
+    padding: 0 10px 0 11px;
 }
 
 .main-menu .main-menu__server-identity {
@@ -958,18 +1191,24 @@
     font-size: 10px;
     color: rgba(255, 255, 255, 0.55);
     -unity-text-align: middle-center;
+    transition-property: color;
+    transition-duration: 0.12s;
 }
 
 .main-menu .main-menu__details-button:hover {
     color: var(--ui-text);
 }
 
-/* Refused last time: the reason under the row, in the danger colour. */
+.main-menu .main-menu__details-button:hover:active {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Refused last time: the reason under the row, on a danger area; the card's edge is danger too. */
 .main-menu__refusal {
     flex-direction: row;
     justify-content: space-between;
-    padding: 7px 12px 7px 32px;
-    background-color: rgba(235, 98, 82, 0.12);
+    padding: 7px 12px 7px 29px;
+    background-color: var(--ui-danger-soft);
 }
 
 .main-menu .main-menu__refusal > .main-menu__text {
@@ -987,7 +1226,7 @@
 }
 
 .main-menu__details {
-    padding: 4px 12px 12px 32px;
+    padding: 4px 12px 12px 29px;
 }
 
 .main-menu__detail-row {
@@ -1028,16 +1267,30 @@
     margin: 0 12px 0 0;
 }
 
-/* Nothing here yet: a fainter tint, a title and a line of text. */
+/* Nothing here yet: inset, darker than the plate, with a faint edge. A list that could not be fetched is a warning
+   area instead. */
 .main-menu__empty {
     padding: 14px;
-    background-color: rgba(255, 255, 255, 0.035);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.06);
+    background-color: rgba(0, 0, 0, 0.28);
+}
+
+.main-menu__empty--failed {
+    padding: 15px 15px 15px 12px;
+    border-width: 0 0 0 3px;
+    border-color: var(--ui-warn);
+    background-color: var(--ui-warn-soft);
 }
 
 .main-menu .main-menu__empty-title {
     -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
     font-size: 12px;
     color: rgba(255, 255, 255, 0.8);
+}
+
+.main-menu .main-menu__empty--failed > .main-menu__empty-title {
+    color: var(--ui-warn);
 }
 
 .main-menu .main-menu__empty > .main-menu__hint {
@@ -1123,10 +1376,13 @@
     color: var(--ui-danger);
 }
 
+/* Why it failed: a danger area under the step. */
 .main-menu__step-reason {
     margin-bottom: 2px;
-    padding: 8px 10px;
-    background-color: rgba(235, 98, 82, 0.12);
+    padding: 8px 10px 8px 7px;
+    border-left-width: 3px;
+    border-color: var(--ui-danger);
+    background-color: var(--ui-danger-soft);
 }
 
 .main-menu .main-menu__step-reason > .main-menu__text {
@@ -1159,6 +1415,7 @@
     align-items: flex-start;
 }
 
+/* On hover the icon steps toward the panel; Settings' cog turns, Quit's door goes danger. */
 .main-menu__nav-icon {
     width: 18px;
     height: 18px;
@@ -1166,8 +1423,8 @@
     flex-shrink: 0;
     -unity-background-scale-mode: scale-to-fit;
     -unity-background-image-tint-color: rgba(255, 255, 255, 0.7);
-    transition-property: translate, -unity-background-image-tint-color;
-    transition-duration: 0.14s;
+    transition-property: translate, rotate, -unity-background-image-tint-color;
+    transition-duration: 0.14s, 0.45s, 0.14s;
     transition-timing-function: ease-out-cubic;
 }
 
@@ -1201,10 +1458,20 @@
     background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Cog.png");
 }
 
+.main-menu .main-menu__nav--settings:hover > .main-menu__nav-icon {
+    translate: 0 0;
+    rotate: 60deg;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+
 .main-menu__nav--quit > .main-menu__nav-icon {
     width: 16px;
     height: 16px;
     background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Logout.png");
+}
+
+.main-menu .main-menu__nav--quit:hover {
+    border-color: var(--ui-danger);
 }
 
 .main-menu .main-menu__nav--quit:hover > .main-menu__nav-icon {
@@ -1213,7 +1480,8 @@
 
 /* On the white plate the icon goes dark; the edge keeps its colour. */
 .main-menu .main-menu__button--accent > .main-menu__nav-icon,
-.main-menu .main-menu__nav--selected > .main-menu__nav-icon {
+.main-menu .main-menu__nav--selected > .main-menu__nav-icon,
+.main-menu .main-menu__nav--selected:hover > .main-menu__nav-icon {
     -unity-background-image-tint-color: var(--ui-text-on-light);
 }
 
@@ -1440,4 +1708,19 @@
     background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/X.png");
     -unity-background-image-tint-color: var(--ui-danger);
     scale: 1 1;
+}
+
+/* ══ Entrances (UiMotion; the looks are in Tokens/ui-controls.uss) ══
+ * An element easing in takes the entrance's transitions over its own (a row's hover, a step's highlight) until
+ * MainMenuView settles it: at this specificity they beat every rule above. On the arrival only, as the shared sheet:
+ * the hidden look snaps. A panel takes the panel's 0.35 s. The looks (.ui-enter, its variants and .ui-enter--in) stay
+ * the shared sheet's: no rule here sets opacity or translate on an element that enters, and scale only while pressed. */
+.main-menu .ui-enter.ui-enter--in {
+    transition-property: opacity, translate, scale;
+    transition-duration: 0.24s, 0.3s, 0.3s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-back;
+}
+
+.main-menu .main-menu__panel.ui-enter.ui-enter--in {
+    transition-duration: 0.24s, 0.35s, 0.35s;
 }

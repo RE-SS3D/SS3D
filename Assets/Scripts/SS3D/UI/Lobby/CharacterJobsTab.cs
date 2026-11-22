@@ -278,6 +278,8 @@ namespace SS3D.UI.Lobby
                 };
                 option.AddToClassList("charwin__seg-option");
                 option.AddToClassList("charwin-jobs__prio-option");
+                // Per level, so each can look its own (High previews the department's colour on hover).
+                option.AddToClassList("charwin-jobs__prio-option--" + Key(priority));
                 group.Add(option);
             }
 
@@ -358,8 +360,13 @@ namespace SS3D.UI.Lobby
 
             {
                 JobsNoticeKind kind = _model.Notice;
-                _noticeText.text = _model.NoticeText(_fallbackJob);
+                string text = _model.NoticeText(_fallbackJob);
+                // A notice that appears, or says something new, eases in again so the change is seen.
+                bool news = kind != JobsNoticeKind.None
+                    && (_notice.ClassListContains("charwin__notice--hidden") || text != _noticeText.text);
+                _noticeText.text = text;
                 _notice.EnableInClassList("charwin__notice--hidden", kind == JobsNoticeKind.None);
+                if (news) CharacterWindowView.Enter(_notice);
                 _notice.EnableInClassList("charwin__notice--success", kind == JobsNoticeKind.AllNever);
                 _notice.Q(className: "lobby__icon").EnableInClassList("lobby__icon--check", kind == JobsNoticeKind.AllNever);
                 _notice.Q(className: "lobby__icon").EnableInClassList("lobby__icon--info", kind != JobsNoticeKind.AllNever);

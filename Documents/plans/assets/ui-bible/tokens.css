@@ -61,20 +61,28 @@
     --ui-palette-slot: 78px;       /* map editor palette cell */
     --ui-palette-slot-radius: 11.7px; /* 15 % of 78, the gear slot's share */
     --ui-tool-radius: 6px;         /* 15 % of 40 */
-    --ui-danger: rgb(235, 98, 82); /* Map Check severity: the one place colour carries state. New, no reference */
-    --ui-warn: rgb(238, 186, 78);
-    --ui-ok: rgb(128, 204, 122);
-    --ui-info: rgb(120, 196, 236);  /* news, not a fault: a newer version (main menu). New, no reference */
-    /* Departments as UI text, glyphs and outlines (lobby): LobbyTokens.uss's pastels, each 4.5:1 or better on the
-       editor plate. The decals' darker tones (DepartmentColorsSettings) stay in the world. */
-    --ui-dept-command: rgb(143, 180, 242);
-    --ui-dept-security: rgb(242, 145, 168);
-    --ui-dept-engineering: rgb(236, 211, 94);
-    --ui-dept-medical: rgb(98, 208, 214);
-    --ui-dept-science: rgb(207, 157, 240);
-    --ui-dept-cargo: rgb(201, 162, 124);
-    --ui-dept-service: rgb(142, 219, 156);
-    --ui-dept-civilian: rgb(221, 215, 203);
+    /* State colours, clearer since 2026-11-21 (owner: "clearer colors"): saturated enough to read as a hue at a
+       glyph's or an edge's size on the near-black plates. New, no reference */
+    --ui-danger: rgb(242, 88, 74);
+    --ui-warn: rgb(255, 188, 64);
+    --ui-ok: rgb(92, 214, 122);
+    --ui-info: rgb(86, 178, 255);  /* news, not a fault: a newer version, joining (main menu) */
+    /* Soft fills: a state as an area (a ready card, a notice, a working row). The browser blends in sRGB, so these
+       are the alphas that look right here; USS uses single-digit alphas for the same look (linear blending). */
+    --ui-danger-soft: rgba(242, 88, 74, 0.16);
+    --ui-warn-soft: rgba(255, 188, 64, 0.14);
+    --ui-ok-soft: rgba(92, 214, 122, 0.14);
+    --ui-info-soft: rgba(86, 178, 255, 0.14);
+    /* Departments as UI text, glyphs, edges and soft fills (lobby, character window): brighter than the shipped
+       pastels, so eight read apart. The decals' darker tones (DepartmentColorsSettings) stay in the world. */
+    --ui-dept-command: rgb(112, 160, 255);
+    --ui-dept-security: rgb(255, 104, 136);
+    --ui-dept-engineering: rgb(255, 204, 60);
+    --ui-dept-medical: rgb(56, 214, 222);
+    --ui-dept-science: rgb(190, 124, 255);
+    --ui-dept-cargo: rgb(222, 156, 96);
+    --ui-dept-service: rgb(104, 224, 136);
+    --ui-dept-civilian: rgb(226, 218, 198);
     /* Editor surfaces: denser than the HUD's, so the tools read over a busy station. On them, fields and secondary
        buttons are light tints (a dark plate disappears on a dark panel); the search is near-black. */
     --ui-editor-panel: rgba(18, 18, 18, 0.92);

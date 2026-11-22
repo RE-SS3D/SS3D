@@ -21,14 +21,37 @@
                 </ui:Button>
             </ui:VisualElement>
 
+            <!-- Each tab: its accent bar (grown while selected) and its glyph. The look's tabs share one accent; Jobs takes
+                 the High job's department and Antags danger (CharacterWindowView.RefreshTabMarks). -->
             <ui:VisualElement name="charwin-tabs" class="charwin__tabs">
-                <ui:Button name="charwin-tab-profile" text="profile" class="charwin__tab" />
-                <ui:Button name="charwin-tab-body" text="body" class="charwin__tab" />
-                <ui:Button name="charwin-tab-skin" text="skin &amp; eyes" class="charwin__tab" />
-                <ui:Button name="charwin-tab-hair" text="hair" class="charwin__tab" />
-                <ui:Button name="charwin-tab-beard" text="facial hair" class="charwin__tab" />
-                <ui:Button name="charwin-tab-jobs" text="jobs" class="charwin__tab" />
-                <ui:Button name="charwin-tab-antags" text="antags" class="charwin__tab" />
+                <ui:Button name="charwin-tab-profile" text="profile" class="charwin__tab">
+                    <ui:VisualElement class="charwin__tab-bar" picking-mode="Ignore" />
+                    <ui:VisualElement class="charwin__tab-icon charwin__tab-icon--profile" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:Button name="charwin-tab-body" text="body" class="charwin__tab">
+                    <ui:VisualElement class="charwin__tab-bar" picking-mode="Ignore" />
+                    <ui:VisualElement class="charwin__tab-icon charwin__tab-icon--body" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:Button name="charwin-tab-skin" text="skin &amp; eyes" class="charwin__tab">
+                    <ui:VisualElement class="charwin__tab-bar" picking-mode="Ignore" />
+                    <ui:VisualElement class="charwin__tab-icon charwin__tab-icon--skin" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:Button name="charwin-tab-hair" text="hair" class="charwin__tab">
+                    <ui:VisualElement class="charwin__tab-bar" picking-mode="Ignore" />
+                    <ui:VisualElement class="charwin__tab-icon charwin__tab-icon--hair" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:Button name="charwin-tab-beard" text="facial hair" class="charwin__tab">
+                    <ui:VisualElement class="charwin__tab-bar" picking-mode="Ignore" />
+                    <ui:VisualElement class="charwin__tab-icon charwin__tab-icon--beard" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:Button name="charwin-tab-jobs" text="jobs" class="charwin__tab charwin__tab--jobs">
+                    <ui:VisualElement class="charwin__tab-bar" picking-mode="Ignore" />
+                    <ui:VisualElement class="charwin__tab-icon charwin__tab-icon--jobs" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:Button name="charwin-tab-antags" text="antags" class="charwin__tab charwin__tab--antags">
+                    <ui:VisualElement class="charwin__tab-bar" picking-mode="Ignore" />
+                    <ui:VisualElement class="charwin__tab-icon charwin__tab-icon--antags" picking-mode="Ignore" />
+                </ui:Button>
             </ui:VisualElement>
 
             <!-- The centre column holds the appearance panes; Jobs and Antags need the width and take the viewport's place. -->
@@ -49,11 +72,17 @@
                 <ui:Label text="drag to turn" class="charwin__hint" picking-mode="Ignore" />
             </ui:VisualElement>
 
-            <!-- Save state, then the continue button: back to the lobby. -->
+            <!-- Save state as an area (warn while unsaved), then the continue button: back to the lobby. Save turns into the
+                 call to action while there is something valid to save, its ring breathing (UiMotion.Pulse). -->
             <ui:VisualElement name="charwin-status" class="charwin__save">
+                <ui:VisualElement class="charwin__save-icon" picking-mode="Ignore" />
                 <ui:Label name="charwin-status-label" text="saved" class="charwin__save-state" picking-mode="Ignore" />
                 <ui:Button name="charwin-discard" text="discard" class="charwin__small" tooltip="Throw away the unsaved changes" />
-                <ui:Button name="charwin-save" text="save" class="charwin__small" />
+                <!-- A Button with children stops measuring its own text: the label is a child, so it sizes the button. -->
+                <ui:Button name="charwin-save" class="charwin__small charwin__save-button">
+                    <ui:Label text="save" class="charwin__save-label" picking-mode="Ignore" />
+                    <ui:VisualElement name="charwin-save-ring" class="charwin__save-ring" picking-mode="Ignore" />
+                </ui:Button>
             </ui:VisualElement>
             <ui:Button name="charwin-return" class="charwin__continue" tooltip="Return to the lobby (Esc)">
                 <ui:VisualElement class="charwin__continue-tip" picking-mode="Ignore" />

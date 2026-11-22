@@ -20,6 +20,9 @@ todos:
   - id: motion-colour
     content: "Owner, 2026-11-21: hosting and joining more animated, more colour coded, with icons. The dialog's colour says what it does (--op: hosting ok, joining info, updating warn, lost or failed danger) on its top edge, title icon, progress bar and working step; it eases in; the progress bar fills and a glint runs along it; the working step spins and a done step's check pops. Sidebar rows get icons, Join an info edge and Play locally an ok one; a server's state is a coloured icon. Bible first (components.css, bible.js), then MainMenu.uxml / .uss and MainMenuView (in-place step updates, Animate). Done 2026-11-21"
     status: completed
+  - id: polish
+    content: "Owner, 2026-11-21 (with the lobby's): sidebar and server rows stagger in, the side panel slides, section headings with icons, server cards edged in their state's colour, the wallpaper's slow drift, Settings' tabs with icons and colours, visible hovers on the white plates. Done 2026-11-21"
+    status: completed
   - id: captures
     content: "MainMenuPreviewWindow captures of every state at 1920 × 1080 for review; a Testing/ui visual step for the menu if the preview window can run headless"
     status: pending

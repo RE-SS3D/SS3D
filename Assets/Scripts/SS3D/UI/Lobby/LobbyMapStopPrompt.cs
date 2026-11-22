@@ -1,6 +1,7 @@
 using System;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Rounds;
+using SS3D.UI.Shell;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -82,7 +83,13 @@ namespace SS3D.UI.Lobby
             _name.style.display = unnamed ? DisplayStyle.Flex : DisplayStyle.None;
             if (changed) _name.SetValueWithoutNotify(unnamed ? "" : editingMap);
             _error.text = error ?? "";
-            if (changed) Root.Q<Button>("map-stop-cancel").Focus();
+            if (!changed) return;
+            Root.Q<Button>("map-stop-cancel").Focus();
+            // A new prompt: the backdrop fades in (Lobby.uss keeps it in place) and the card pops (UiMotion's scale
+            // variant). The host's repaint sends the same token, which doesn't replay it.
+            UiMotion.Enter(Root);
+            _card.AddToClassList("ui-enter--scale");
+            UiMotion.Enter(_card, 30);
         }
 
         /// <summary>Forgets the open prompt (the shell detached).</summary>

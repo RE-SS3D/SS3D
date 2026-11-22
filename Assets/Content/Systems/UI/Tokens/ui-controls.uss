@@ -130,3 +130,46 @@
 .ui-select__list .ui-select__item--on {
     color: var(--ui-text);
 }
+
+/* ══ Motion (UiMotion) ══
+ * One vocabulary for every screen. Durations: 0.12 s for a hover or a press, 0.24 s for an element easing in,
+ * 0.35 s for a panel. Easing: ease-out-cubic to arrive, ease-out-back for a small overshoot (a pop), ease-in-out-sine
+ * for loops. USS has no keyframes: an entrance is .ui-enter (hidden look) then .ui-enter--in a frame later; a loop
+ * toggles .ui-pulse--on on a timer.
+ * transition-property replaces rather than adds, and a screen's own two-class rule (.lobby .x) comes later than this
+ * sheet: an element with its own transitions needs one combined rule for .x.ui-enter.ui-enter--in, or its entrance
+ * snaps. Ease containers and rows in, not buttons with hover transitions. */
+.ui-enter {
+    opacity: 0;
+    translate: 0 10px;
+}
+
+/* Variants only with .ui-enter, so an element left holding one is not offset once it has arrived. */
+.ui-enter.ui-enter--left {
+    translate: -18px 0;
+}
+
+.ui-enter.ui-enter--right {
+    translate: 18px 0;
+}
+
+.ui-enter.ui-enter--scale {
+    translate: 0 0;
+    scale: 0.95 0.95;
+}
+
+/* After the variants, so it wins over them. The transition is on the "in" look only: a transition comes from the
+   style an element changes to, so the hidden look snaps (an element already shown is reset, not faded out) and only
+   the arrival eases. */
+.ui-enter.ui-enter--in {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1 1;
+    transition-property: opacity, translate, scale;
+    transition-duration: 0.24s, 0.3s, 0.3s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-back;
+}
+
+.ui-flash {
+    background-color: rgba(255, 255, 255, 0.16);
+}

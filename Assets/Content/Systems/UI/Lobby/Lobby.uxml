@@ -15,6 +15,7 @@
 
             <ui:VisualElement name="lobby-round" class="lobby__section lobby__round lb-tone--neutral">
                 <ui:VisualElement class="lobby__row">
+                    <ui:VisualElement class="lobby__icon lobby__icon--clock lobby__eyebrow-icon" picking-mode="Ignore" />
                     <ui:Label text="Round" class="lobby__eyebrow" />
                     <ui:VisualElement class="lobby__grow" />
                     <ui:VisualElement name="lobby-round-dot" class="lobby__dot" />
@@ -82,9 +83,11 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- The character stage: who you play, the live preview large, Switch character and Edit character. -->
+        <!-- The character stage: who you play, the live preview large, Switch character and Edit character. The plate
+             carries the High job's department as a wash; the floor glow breathes in it (LobbyView). -->
         <ui:VisualElement name="lobby-character-stage" class="lobby__stage lobby__stage--neutral">
-            <ui:VisualElement class="lobby__stage-plate" picking-mode="Ignore">
+            <ui:VisualElement name="lobby-stage-plate" class="lobby__stage-plate" picking-mode="Ignore">
+                <ui:VisualElement class="lobby__stage-wash" picking-mode="Ignore" />
                 <ui:Label text="Playing as" class="lobby__eyebrow" picking-mode="Ignore" />
                 <ui:Label name="lobby-character-name" text="Rory Lindqvist" class="lobby__stage-name" picking-mode="Ignore" />
                 <ui:VisualElement class="lobby__row lobby__stage-high" picking-mode="Ignore">
@@ -95,7 +98,8 @@
                 <ui:VisualElement class="lobby__stage-accent" picking-mode="Ignore" />
             </ui:VisualElement>
             <ui:Button name="lobby-character" class="lobby__stage-figure" tooltip="Drag to turn; click to edit">
-                <ui:VisualElement class="lobby__stage-floor" picking-mode="Ignore" />
+                <ui:VisualElement name="lobby-stage-floor" class="lobby__stage-floor" picking-mode="Ignore" />
+                <ui:VisualElement class="lobby__stage-ring" picking-mode="Ignore" />
                 <ui:VisualElement class="lobby__stage-shadow" picking-mode="Ignore" />
                 <ui:VisualElement name="lobby-preview-image" class="lobby__stage-model" picking-mode="Ignore" />
             </ui:Button>
@@ -118,6 +122,9 @@
         <ui:VisualElement name="lobby-shell-window" class="lobby__main">
             <ui:VisualElement class="lobby__header lobby__header--stacked">
                 <ui:VisualElement class="lobby__header-row">
+                    <ui:VisualElement class="lobby__server-cell" picking-mode="Ignore">
+                        <ui:VisualElement class="lobby__icon lobby__icon--server" picking-mode="Ignore" />
+                    </ui:VisualElement>
                     <ui:Label name="lobby-server-name" text="RE:SS3D SANDBOX" class="lobby__server-name" />
                     <ui:VisualElement class="lobby__grow" />
                     <ui:Button name="lobby-back-to-round" class="lobby__quiet-button lobby__back" tooltip="Close this menu (Esc)">
@@ -173,6 +180,7 @@
                 <ui:VisualElement class="lobby-join__body">
                     <ui:VisualElement name="lobby-join-jobs" class="lobby-join__jobs">
                         <ui:VisualElement class="lobby-join__section-head">
+                            <ui:VisualElement class="lobby__icon lobby__icon--briefcase lobby-join__section-icon" picking-mode="Ignore" />
                             <ui:Label text="OPEN JOBS" class="lobby-join__section-title lb-titling" />
                             <ui:Label name="lobby-join-open-count" text="2 open" class="lobby-join__section-count lb-mono" />
                             <ui:VisualElement class="lobby__grow" />
@@ -206,6 +214,7 @@
                     </ui:VisualElement>
                     <ui:VisualElement name="lobby-join-manifest-section" class="lobby-join__manifest-section">
                         <ui:VisualElement class="lobby-join__section-head">
+                            <ui:VisualElement class="lobby__icon lobby__icon--user-group lobby-join__section-icon" picking-mode="Ignore" />
                             <ui:Label text="CREW MANIFEST" class="lobby-join__section-title lb-titling" />
                             <ui:Label name="lobby-join-aboard" text="12 aboard" class="lobby-join__section-count lb-mono" />
                         </ui:VisualElement>
