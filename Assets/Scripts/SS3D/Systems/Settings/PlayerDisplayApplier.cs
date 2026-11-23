@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -24,7 +26,39 @@ namespace SS3D.Systems.Settings
         private int _editorQualityLevel = -1;
 #endif
 
-        public static bool StpSupported => STP.IsSupported();
+        private static bool? s_stpResourcesInBuild;
+
+        /// <summary>
+        /// STP needs SM5 compute and its compute shaders in the build. A build strips those shaders when no URP asset
+        /// selects STP, and STP then throws every frame and the camera draws nothing; treat that as unsupported so the
+        /// plan falls back to FSR 1.
+        /// </summary>
+        public static bool StpSupported => STP.IsSupported() && StpResourcesInBuild;
+
+        /// <summary>
+        /// Whether <c>STP.RuntimeResources</c> (internal to core RP) is registered in GraphicsSettings. Assumes yes if
+        /// the lookup itself is missing, so an API rename cannot switch STP off; StpResourcesTests catches that.
+        /// </summary>
+        internal static bool StpResourcesInBuild => s_stpResourcesInBuild ??= ProbeStpResources();
+
+        internal static bool? ProbeStpResourcesOrNull()
+        {
+            Type resources = typeof(STP).GetNestedType("RuntimeResources", BindingFlags.NonPublic | BindingFlags.Public);
+            MethodInfo get = typeof(GraphicsSettings).GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .FirstOrDefault(m => m.Name == nameof(GraphicsSettings.GetRenderPipelineSettings)
+                    && m.IsGenericMethodDefinition && m.GetParameters().Length == 0);
+            if (resources == null || get == null) return null;
+            try
+            {
+                return get.MakeGenericMethod(resources).Invoke(null, null) != null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private static bool ProbeStpResources() => ProbeStpResourcesOrNull() ?? true;
 
         public static Vector2Int Native => new(Display.main.systemWidth, Display.main.systemHeight);
 
