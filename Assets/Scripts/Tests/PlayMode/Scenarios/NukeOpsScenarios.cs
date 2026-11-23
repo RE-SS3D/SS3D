@@ -8,6 +8,7 @@ using SS3D.Systems.Comms;
 using SS3D.Systems.Examine;
 using SS3D.Systems.Furniture;
 using SS3D.Systems.Gamemodes;
+using SS3D.Systems.Gamemodes.Uplink;
 using SS3D.Systems.Health;
 using SS3D.Interactions;
 using SS3D.Systems.Interactions;
@@ -88,10 +89,14 @@ namespace SS3D.Tests
             Assert.Less(new Vector2(offset.x, offset.z).magnitude, 0.75f, $"The operative spawns on the marker at {marker.Position}");
 
             Hands hands = Body.GetComponentInParent<HumanInventory>().Hands;
-            Assert.IsTrue(hands.PlayerHands.Any(hand => hand.ItemInHand != null), "The operative kit puts a gun in hand");
-            SyndicateBombBeacon[] beacons = Object.FindObjectsByType<SyndicateBombBeacon>(FindObjectsSortMode.None);
-            Assert.AreEqual(1, beacons.Length, "The first operative carries the squad's one bomb beacon");
-            Assert.IsNotNull(beacons[0].GetComponent<Item>().Container, "The beacon fits in the operative's bag");
+            Assert.IsTrue(hands.PlayerHands.All(hand => hand.ItemInHand == null),
+                "The uplink replaces the fixed kit: no rifle in hand, the C-20r is bought");
+            Assert.IsEmpty(Object.FindObjectsByType<SyndicateBombBeacon>(FindObjectsSortMode.None),
+                "The squad's one bomb beacon is bought on the uplink, not issued");
+            SS3D.UI.MachineInterface.OperativeUplinkController[] uplinks =
+                Object.FindObjectsByType<SS3D.UI.MachineInterface.OperativeUplinkController>(FindObjectsSortMode.None);
+            Assert.AreEqual(1, uplinks.Length, "The operative carries a telecrystal uplink");
+            Assert.IsNotNull(uplinks[0].GetComponent<Item>().Container, "The uplink fits in the operative's bag");
 
             yield return WaitFor(() => Briefings.Count > 0, "the briefing reaches the operative's feed", 10f);
             StringAssert.Contains("Operative", Briefings[0], "The briefing names the role");
@@ -173,6 +178,58 @@ namespace SS3D.Tests
             StringAssert.Contains("not armed", Examine(nuke));
             cutters.Delete();
         }
+
+        // The operative uplink (antagonist-content.md §4): opens from hand, one click buys into the free hand, a full
+        // pair of hands drops the item at the feet, and the squad's one bomb sells out with no TC spent.
+        [UnityTest]
+        public IEnumerator Uplink_OpensFromHand_BuysDeliversAndRefusesSoldOut()
+        {
+            // The body loses its gun and gains items; the next scenario reboots.
+            ChangesRoom = true;
+            SS3D.UI.MachineInterface.OperativeUplinkController uplink =
+                Object.FindFirstObjectByType<SS3D.UI.MachineInterface.OperativeUplinkController>();
+            Assert.IsNotNull(uplink, "The operative carries an uplink");
+
+            EmptyHands(Body);
+            Hands hands = Body.GetComponent<Hands>();
+            Hand hand = hands.SelectedHand;
+            Assert.IsTrue(hand.Container.AddItem(uplink.GetComponent<Item>()), "The uplink comes out of the bag into the hand");
+            yield return Hold(0.3f);
+
+            SS3D.UI.MachineInterface.MachineInterfaceSubSystem panels = SubSystems.Get<SS3D.UI.MachineInterface.MachineInterfaceSubSystem>();
+            Assert.IsNull(Run(uplink.gameObject, "OpenUplink"), "Use in hand opens the uplink");
+            yield return WaitFor(() => panels.IsOpen, "the uplink panel opens", 3f);
+
+            int start = uplink.Account.Balance;
+            Assert.AreEqual(uplink.Catalog.StartingBalance, start);
+            Hand other = hands.PlayerHands.First(h => h != hand);
+
+            Assert.AreEqual(UplinkRefusal.None, uplink.ServerBuy(uplink.Catalog.IndexOf("c4"), hands.Owner), "C4 is affordable");
+            Assert.AreEqual(start - 2, uplink.Account.Balance);
+            Assert.IsNotNull(other.ItemInHand, "The C4 lands in the free hand");
+            Assert.AreEqual(1, uplink.Account.Ledger.Count);
+
+            Item[] before = Object.FindObjectsByType<Item>(FindObjectsSortMode.None);
+            Assert.AreEqual(UplinkRefusal.None, uplink.ServerBuy(uplink.Catalog.IndexOf("gauze"), hands.Owner), "Gauze with both hands full");
+            yield return Hold(0.2f);
+            Item dropped = Object.FindObjectsByType<Item>(FindObjectsSortMode.None).Except(before).SingleOrDefault();
+            Assert.IsNotNull(dropped, "The gauze spawns");
+            Assert.IsNull(dropped.Container, "Both hands are full, so it lands at the feet");
+            Assert.Less(Vector3.Distance(dropped.transform.position, Body.transform.position), 1.5f, "At the operative's feet");
+
+            Assert.AreEqual(UplinkRefusal.None, uplink.ServerBuy(uplink.Catalog.IndexOf("synbomb"), hands.Owner), "The squad's one bomb");
+            int afterBomb = uplink.Account.Balance;
+            Assert.AreEqual(UplinkRefusal.SoldOut, uplink.ServerBuy(uplink.Catalog.IndexOf("synbomb"), hands.Owner), "Only one per squad");
+            Assert.AreEqual(afterBomb, uplink.Account.Balance, "A refusal spends nothing");
+            Assert.AreEqual(3, uplink.Account.Ledger.Count);
+
+            panels.Close();
+            yield return WaitFor(() => !panels.IsOpen, "the uplink panel closes", 3f);
+        }
+
+        private string Run(GameObject target, string genericName) =>
+            Body.GetComponent<InteractionController>()
+                .RunInteractionForTesting(target, target.transform.position, genericName, IntentType.Help);
 
         // Down is not out (health.md §4): the crew-win check needs operatives dead, so a Downed or Critical one keeps the
         // round going and can still be rescued by the squad.

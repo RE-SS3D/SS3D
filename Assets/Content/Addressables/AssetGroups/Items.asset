@@ -20,6 +20,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0211c49cbbb3e58de96a4869fb087d4b
+    m_Address: OperativeUplink
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0457ff6928c09cf5fb2f211be2dd4360
     m_Address: Gauze
     m_ReadOnly: 0

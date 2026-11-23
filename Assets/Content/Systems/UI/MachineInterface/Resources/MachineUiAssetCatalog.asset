@@ -223,6 +223,16 @@ MonoBehaviour:
   - {fileID: 7433441132597879392, guid: 9365d8d679b5fd6f198e3b26289ce734, type: 3}
   - {fileID: 7433441132597879392, guid: 405883fb6d97700a88512540441e6e61, type: 3}
   - {fileID: 7433441132597879392, guid: a43654446bb8a484e831645bd7ee1c00, type: 3}
+  _operativeUplinkTemplate: {fileID: 9197481963319205126, guid: 091e29da1eeb4c8a969ad137a3e2d918, type: 3}
+  _operativeUplinkTemplateStyle: {fileID: 7433441132597879392, guid: 13fec1fea4ef409893c2bb33d666394c, type: 3}
+  _operativeUplinkComponentStyles:
+  - {fileID: 7433441132597879392, guid: 262968ad957a29c0b911189ebd1dc313, type: 3}
+  - {fileID: 7433441132597879392, guid: 5051dc4d3239c2f7c818b19f0921a499, type: 3}
+  - {fileID: 7433441132597879392, guid: 4ea59d7e784d660e199c8b32808f5a7f, type: 3}
+  - {fileID: 7433441132597879392, guid: c109b55996e99b766ac945222cdaf5d9, type: 3}
+  - {fileID: 7433441132597879392, guid: 18953952b936d3e31b09d0b121fda12d, type: 3}
+  - {fileID: 7433441132597879392, guid: c1047cfd2dc96f64e965c17afa9f9707, type: 3}
+  - {fileID: 7433441132597879392, guid: e7dc176e2babd6a668c2f7a325c6baf8, type: 3}
   _healthScannerTemplate: {fileID: 9197481963319205126, guid: 2d5b4caa8c6b4f9b9c8b9f9a53584903, type: 3}
   _healthScannerTemplateStyle: {fileID: 7433441132597879392, guid: af4e476b581e4383a7c5c0a8a056e2ea, type: 3}
   _healthScannerComponentStyles:

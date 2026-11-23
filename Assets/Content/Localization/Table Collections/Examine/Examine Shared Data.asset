@@ -2151,6 +2151,14 @@ MonoBehaviour:
     m_Key: furniture.machines.atmospherics.scrubber_intake.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 300880094745042944
+    m_Key: items.weapons.operativeuplink.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300880094766014464
+    m_Key: items.weapons.operativeuplink.desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 300177990510419968
     m_Key: structures.doors.airlock.name
     m_Metadata:

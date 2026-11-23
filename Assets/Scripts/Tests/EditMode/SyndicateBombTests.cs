@@ -125,7 +125,7 @@ namespace SS3D.Tests.EditMode
         }
 
         [Test]
-        public void Beacon_PointsAtTheBomb_AndOnlyTheFirstOperativeCarriesIt()
+        public void Beacon_PointsAtTheBomb_AndIsBoughtOnTheUplinkNotIssued()
         {
             GameObject beacon = AssetDatabase.LoadAssetAtPath<GameObject>(
                 "Assets/Content/WorldObjects/Items/Weapons/SyndicateBombBeacon.prefab");
@@ -136,7 +136,8 @@ namespace SS3D.Tests.EditMode
             RoleLoadout operative = AssetDatabase.LoadAssetAtPath<RoleLoadout>(
                 "Assets/Content/Data/Roles/Loadouts/OperativeLoadout.asset");
             Item beaconItem = beacon.GetComponent<Item>();
-            Assert.AreEqual(1, operative.FirstHolderContents.SelectMany(c => c.Items).Count(r => r == beaconItem.Asset));
+            Assert.IsFalse(operative.FirstHolderContents.SelectMany(c => c.Items).Any(r => r == beaconItem.Asset),
+                "The squad's one beacon is sold on the uplink (its catalog asset), not issued to the first operative");
             Assert.IsFalse(operative.EquipmentContents.SelectMany(c => c.Items).Any(r => r == beaconItem.Asset),
                 "Not in every operative's bag");
         }

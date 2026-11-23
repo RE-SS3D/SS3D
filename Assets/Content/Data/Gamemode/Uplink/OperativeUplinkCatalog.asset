@@ -1,0 +1,187 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c17c76a46c9514547be27e62f1490604, type: 3}
+  m_Name: OperativeUplinkCatalog
+  m_EditorClassIdentifier: SS3D.Systems::SS3D.Systems.Gamemodes.Uplink.UplinkCatalog
+  _startingBalance: 40
+  _categories:
+  - Weapons
+  - Explosives
+  - Wearables
+  - Medical
+  _listings:
+  - _id: c20r
+    _category: Weapons
+    _name: C-20r SMG
+    _price: 14
+    _kind: "Ranged \xB7 SMG"
+    _description: Compact Syndicate submachine gun. Fires fast, short bursts; deadly
+      at close range.
+    _items:
+    - {fileID: 11400000, guid: fa54ce89709c7df79b33f29216e85a10, type: 2}
+    _includes: 
+    _squadStock: -1
+    _restriction: 
+    _bundle: 0
+  - _id: stechkin
+    _category: Weapons
+    _name: Stechkin pistol
+    _price: 6
+    _kind: "Ranged \xB7 pistol \xB7 one-handed"
+    _description: Small Syndicate sidearm. Fits a bag or pocket, and leaves a hand
+      free.
+    _items:
+    - {fileID: 11400000, guid: e1be91a48608ab64e822afa33347459c, type: 2}
+    _includes: 
+    _squadStock: -1
+    _restriction: 
+    _bundle: 0
+  - _id: c4
+    _category: Explosives
+    _name: C4 charge
+    _price: 2
+    _kind: "Placed \xB7 timed"
+    _description: Plastic explosive. Stick it to a wall or door, it arms with a fifteen-second
+      fuse. Breaches one tile.
+    _items:
+    - {fileID: 11400000, guid: 85c7d64ad33dbc7d6a808f7e759dab07, type: 2}
+    _includes: 
+    _squadStock: -1
+    _restriction: 
+    _bundle: 0
+  - _id: x4
+    _category: Explosives
+    _name: X4 charge
+    _price: 4
+    _kind: "Placed \xB7 timed \xB7 directional"
+    _description: Directional breaching charge. Put on a wall or door, it blasts
+      through to the far side.
+    _items:
+    - {fileID: 11400000, guid: eae54bc90ae99ac38bec17d24127081b, type: 2}
+    _includes: 
+    _squadStock: -1
+    _restriction: 
+    _bundle: 0
+  - _id: minibomb
+    _category: Explosives
+    _name: Syndicate minibomb
+    _price: 6
+    _kind: "Thrown \xB7 short fuse"
+    _description: Throwable bomb on a five-second fuse. Tears open hull and floor,
+      so expect vacuum afterwards. Cannot be defused.
+    _items:
+    - {fileID: 11400000, guid: e2e5a3bc6dba95ae6b6167ce7df8f6fc, type: 2}
+    _includes: 
+    _squadStock: -1
+    _restriction: 
+    _bundle: 0
+  - _id: synbomb
+    _category: Explosives
+    _name: Syndicate bomb
+    _price: 11
+    _kind: "Deployed \xB7 long countdown"
+    _description: 'Large bomb with a long, audible countdown. Comes as a beacon:
+      use it in hand where the bomb should land. Bolt it down and it levels a department
+      if nobody defuses it.'
+    _items:
+    - {fileID: 11400000, guid: 8233cf2c893d4d0e69548d9beb5e95d2, type: 2}
+    _includes: Delivery beacon
+    _squadStock: 1
+    _restriction: One per squad
+    _bundle: 0
+  - _id: hardsuit
+    _category: Wearables
+    _name: Syndicate hardsuit
+    _price: 7
+    _kind: "Outer suit \xB7 spaceproof"
+    _description: Armoured spacesuit. Protects in vacuum and against most damage.
+    _items:
+    - {fileID: 11400000, guid: 07875cb9b07567f608c409b35f917fd6, type: 2}
+    - {fileID: 11400000, guid: 08db124c308ef12468512352cb307c60, type: 2}
+    _includes: Suit + helmet
+    _squadStock: -1
+    _restriction: 
+    _bundle: 0
+  - _id: magboots
+    _category: Wearables
+    _name: Magboots
+    _price: 2
+    _kind: Shoes
+    _description: Keep you on your feet in zero gravity and when a breach starts
+      pulling the room out.
+    _items:
+    - {fileID: 11400000, guid: a41a1dfa72bfb1f068f59940813a6d31, type: 2}
+    _includes: 
+    _squadStock: -1
+    _restriction: 
+    _bundle: 0
+  - _id: vest
+    _category: Wearables
+    _name: Syndicate armour vest
+    _price: 3
+    _kind: "Armour \xB7 chest"
+    _description: Light armour vest. Takes the edge off bullets and blades without
+      slowing you down.
+    _items:
+    - {fileID: 11400000, guid: 77bab33744271345faeafc059905266c, type: 2}
+    _includes: 
+    _squadStock: -1
+    _restriction: 
+    _bundle: 0
+  - _id: gauze
+    _category: Medical
+    _name: Gauze
+    _price: 1
+    _kind: "Medical \xB7 bandage"
+    _description: Stops bleeding from a wound.
+    _items:
+    - {fileID: 11400000, guid: 8dad7140627d125a1ac6cb366630a3e3, type: 2}
+    _includes: 
+    _squadStock: -1
+    _restriction: 
+    _bundle: 0
+  - _id: brutepatch
+    _category: Medical
+    _name: Brute patch
+    _price: 1
+    _kind: "Medical \xB7 patch"
+    _description: Heals bruises and cuts.
+    _items:
+    - {fileID: 11400000, guid: 8ec2a780fae01344a9431a9cb06d8a7c, type: 2}
+    _includes: 
+    _squadStock: -1
+    _restriction: 
+    _bundle: 0
+  - _id: burnpatch
+    _category: Medical
+    _name: Burn patch
+    _price: 1
+    _kind: "Medical \xB7 patch"
+    _description: Heals burns.
+    _items:
+    - {fileID: 11400000, guid: e28b644ad26ceae45acf3ceb84b8cbff, type: 2}
+    _includes: 
+    _squadStock: -1
+    _restriction: 
+    _bundle: 0
+  - _id: defib
+    _category: Medical
+    _name: Defibrillator
+    _price: 5
+    _kind: "Medical \xB7 tool"
+    _description: Restarts a stopped heart, if the body is still in one piece.
+    _items:
+    - {fileID: 11400000, guid: 4cc1691fd8fca4e7a840b0538053bab8, type: 2}
+    _includes: 
+    _squadStock: -1
+    _restriction: 
+    _bundle: 0
