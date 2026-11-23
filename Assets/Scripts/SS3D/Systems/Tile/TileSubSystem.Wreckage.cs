@@ -25,6 +25,8 @@ namespace SS3D.Systems.Tile
             _steelWreckage.OnChange -= OnWreckageChanged;
             if (_wreckageView != null) Destroy(_wreckageView);
             if (_structuralAudio != null) Destroy(_structuralAudio);
+            // The next server's floor paint arrives with its own sync; this one's must not stay on its floors.
+            FloorVisuals.FloorPaintView.Clear();
             base.OnStopClient();
         }
 

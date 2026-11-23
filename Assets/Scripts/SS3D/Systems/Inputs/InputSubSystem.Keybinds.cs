@@ -113,7 +113,8 @@ namespace SS3D.Systems.Inputs
             Plain("Map Editor", tile.Replace, "Replace", hint: "Hold");
             Plain("Map Editor", tile.SquareDrag, "Square Drag", hint: "Hold");
             Plain("Map Editor", tile.Place, "Place", readOnly: true, fixedText: "Left click");
-            Plain("Map Editor", tile.Delete, "Delete", readOnly: true, fixedText: "Right click");
+            // Right click cancels a drag, or puts down the held object (ConstructionHologramManager); Delete is a tool.
+            Plain("Map Editor", tile.Delete, "Cancel / Put Down", readOnly: true, fixedText: "Right click");
 
             // Everything else that still has a binding (console, debug toggles, hacks) is hidden but reserved.
             foreach (InputAction action in CollectAllActions().Where(a => !shown.Contains(a)))

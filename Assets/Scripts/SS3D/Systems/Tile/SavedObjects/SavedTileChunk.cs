@@ -25,5 +25,8 @@ namespace SS3D.Systems.Tile
         public ushort[] areaIds;
 
         public ushort[] floorDecalIds;
+
+        /// <summary>Floor paint per tile (<see cref="FloorVisuals.FloorPaint"/>); null when the chunk has none. Schema 4.</summary>
+        public ushort[] floorPaint;
     }
 }

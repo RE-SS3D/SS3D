@@ -73,7 +73,7 @@ namespace SS3D.Systems.Selection
             {
                 MeshRenderer renderer = _meshRenderers[i];
                 MeshFilter filter = _meshFilters[i];
-                if (renderer == null || filter == null || !renderer.enabled || !renderer.gameObject.activeInHierarchy)
+                if (renderer == null || filter == null || !renderer.enabled || renderer.forceRenderingOff || !renderer.gameObject.activeInHierarchy)
                     continue;
 
                 if (IsExcludedFromPick(renderer))
@@ -120,7 +120,7 @@ namespace SS3D.Systems.Selection
             for (int i = 0; i < _skinnedRenderers.Count; i++)
             {
                 SkinnedMeshRenderer renderer = _skinnedRenderers[i];
-                if (renderer == null || !renderer.enabled || !renderer.gameObject.activeInHierarchy)
+                if (renderer == null || !renderer.enabled || renderer.forceRenderingOff || !renderer.gameObject.activeInHierarchy)
                     continue;
 
                 if (IsExcludedFromPick(renderer))

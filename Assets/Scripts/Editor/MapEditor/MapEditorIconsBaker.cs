@@ -83,6 +83,7 @@ namespace SS3D.Editor.MapEditor
             ("_move", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.Move),
             ("_dropper", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.Dropper),
             ("_delete", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.Delete),
+            ("_room", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.Room),
             ("_undo", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.Undo),
             ("_redo", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.Redo),
             ("_saveMap", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.SaveMap),

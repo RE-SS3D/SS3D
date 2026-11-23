@@ -16,6 +16,7 @@ Server-side crew identity rail and shared access checks per `Documents/design/id
 - `Assets/Scripts/SS3D/Systems/IdAccess/AccessMask.cs` / `AccessLevel.cs` — flat bitmask model
 - `Assets/Scripts/SS3D/Systems/IdAccess/AccessLevelCatalog.cs` — editable level list for ID console UI
 - `Assets/Scripts/SS3D/Systems/IdAccess/AuthLogDeviceBehaviour.cs` — per-device auth log adapter
+- `Assets/Scripts/SS3D/Systems/IdAccess/DepartmentColors.cs` — one colour per `Department` (ScriptableSettings, Project Settings › SS3D › Assets › Department Colors; asset `Assets/Settings/DepartmentColorsSettings.asset`); floor paint reads it
 - `Assets/Scripts/SS3D/Systems/Inventory/Items/Identification/IDCard.cs` — physical token; no independent access state
 - `Assets/Scripts/SS3D/Systems/Furniture/AirLockAccessGate.cs` — door access from room explicit/department requirements; legacy skin masks only outside assigned rooms
 - `Assets/Scripts/SS3D/UI/MachineInterface/AccessGatedMachineInterfaceBehaviour.cs` — server ID scan session for machine UIs
@@ -29,6 +30,8 @@ Server-side crew identity rail and shared access checks per `Documents/design/id
 **Credential resolution:** scans all `HumanInventory.Containers` plus `Hands.HandContainers`; accepts direct `IDCard` or card inside `PDA`.
 
 **Machine UI gate:** subclass `AccessGatedMachineInterfaceBehaviour`, set `ReadIdControlId` and `RequiredAccess`; sync `AccessGranted`, `AccessScanning`, `AccessDenied` in snapshots.
+
+**Department colour:** `DepartmentColors.Get(department)` (sRGB; the shipped defaults until the asset loads). Subscribe to `DepartmentColors.Changed` to redraw when a colour is edited. The lobby's `LobbyTokens.uss` `--dept-*` tokens hold the same values by hand, since USS can't read the asset.
 
 **Dev testing:** use in-game console commands or `IdAccessDevSettings.AllowConsoleAccessEditing` to bypass Change ID on the ID console.
 
