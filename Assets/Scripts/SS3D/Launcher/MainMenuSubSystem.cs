@@ -77,6 +77,7 @@ namespace SS3D.Launcher
         private PlayerSettingsPanel _settingsPanel;
         private PlayerSettingsSubSystem _playerSettings;
         private (bool On, float Volume) _shownMusic;
+        private MainMenuAmbience _ambience;
         private AudioListener _listener;
         private float _nextListenerCheck;
 #if UNITY_EDITOR
@@ -229,6 +230,8 @@ namespace SS3D.Launcher
                 EnsureListener();
             }
 
+            if (_ambience.Tick(_model, Time.unscaledTime)) _view.PresentWallpaper(_model);
+
             _query?.Tick();
             if (_presentPending && !IsEditingServerList())
             {
@@ -276,6 +279,9 @@ namespace SS3D.Launcher
             _view.Attach(layer);
             _model.Screen = MainMenuScreen.Menu;
             AttachSettings();
+            _ambience ??= new MainMenuAmbience(gameObject, _catalog);
+            _ambience.Show(_model, Time.unscaledTime);
+
             // The music service outlives the menu (lobby effort Decision 15). A fresh launcher visit starts the
             // current track from the beginning.
             if (SubSystems.TryGet(out _music))
@@ -314,6 +320,7 @@ namespace SS3D.Launcher
                 _music = null;
             }
 
+            _ambience?.Stop();
             RemoveListener();
             if (_query != null)
             {
@@ -893,6 +900,7 @@ namespace SS3D.Launcher
             }
 
             UpdateMusic();
+            _ambience?.UpdateVideo(_model);
             if (_model.Screen != MainMenuScreen.Settings) _settingsPanel?.CancelTransient();
             _model.MusicOn = MusicOn;
             _model.MusicTitle = _music?.Title ?? "";

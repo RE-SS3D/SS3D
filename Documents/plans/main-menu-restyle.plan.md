@@ -42,7 +42,7 @@ See [ui-shell-main-menu](../architecture/systems/ui-shell-main-menu.md). The men
 
 - `MainMenu.uxml` / `MainMenu.uss` (`Assets/Content/Systems/UI/MainMenu/`), built by `MainMenuView`, driven by `MainMenuSubSystem`.
 - A 400 px left sidebar at 97 % (logo, update banner, NAME, JOIN A SERVER in rust, PLAY LOCALLY with an Advanced port, SETTINGS, QUIT, a music row, a footer with version, Discord and the art credit). A panel to its right holds the server list or the live `PlayerSettingsPanel`. Dialogs (connecting, starting, refused, connection lost, update) are 440 px over a blurred wallpaper.
-- Wallpaper: Clownin only, since 2026-11-21 (until then 40 stills and 6 videos rotated every 60 s).
+- Wallpaper: 40 stills and 6 videos rotating every 60 s (Clownin alone from 2026-11-21 to 2026-11-23).
 - Type: Gurajada titles, Liberation Sans body, Spessman mono, all raw TTFs. Palette: its own `--menu-*` sheet, the same hex values as `LobbyTokens.uss` (`--lb-*`) and `PlayerSettingsPanel.uss` (`--sp-*`).
 - `ui-tokens.uss` (the bible's tokens) is imported only by `MapEditor.uss`; it is not on the shell root.
 
@@ -78,7 +78,7 @@ The owner approved the bible tab as drawn, which settles the questions this plan
 2. **The sidebar layout stays.**
 3. **Titles are Disket Mono Bold,** as on the map editor; this closes the bible's titling-font question.
 4. **The white plate marks where you are:** Join holds it on the home screen and gives it up while Settings is open; the open row keeps the notch; `--ui-info` (sky) is the news colour.
-5. **One wallpaper, Clownin, always.** Shipped ahead of the port: the game no longer picks a random still or video, rotates every 60 s or dips to black ([ui-shell-main-menu](../architecture/systems/ui-shell-main-menu.md)). The bible draws Clownin and has no wallpaper arrows.
+5. **One wallpaper, Clownin, always.** Shipped ahead of the port: the game no longer picks a random still or video, rotates every 60 s or dips to black ([ui-shell-main-menu](../architecture/systems/ui-shell-main-menu.md)). The bible draws Clownin and has no wallpaper arrows. **Reversed 2026-11-23:** the owner missed the variety of art and Bug's clips, so the rotation of stills and videos is back; the bible still draws Clownin as its sample, and a still drifts on the home screen as Clownin did.
 
 **Scale, settled by the port (2026-11-21):** the menu draws as the bible does. `UiReferenceScale` lays the menu's root out at 1200 × 675 and scales it to fill the screen, times the player's UI scale, so the USS keeps the bible's numbers. The lobby port will use the same helper. The earlier note follows for the record.
 

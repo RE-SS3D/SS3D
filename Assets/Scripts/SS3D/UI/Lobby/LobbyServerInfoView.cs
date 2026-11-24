@@ -9,6 +9,7 @@ namespace SS3D.UI.Lobby
     /// <summary>
     /// The lobby's Server Info tab (lobby.md §8): banner art, message of the day, the server's map, mode, build and
     /// uptime, and the client build's change log grouped by release. Built once; the setters change text in place.
+    /// In the narrow panel it is one column that scrolls as a whole (<c>server-info-scroll</c>), as the UI bible draws it.
     /// </summary>
     public sealed class LobbyServerInfoView
     {
@@ -33,6 +34,14 @@ namespace SS3D.UI.Lobby
         {
             Root = LobbyUi.Box("lobby-info");
             Root.name = "server-info";
+            ScrollView scroll = new(ScrollViewMode.Vertical)
+            {
+                name = "server-info-scroll",
+                horizontalScrollerVisibility = ScrollerVisibility.Hidden,
+            };
+            scroll.AddToClassList("lobby-info__scroll");
+            scroll.contentContainer.AddToClassList("lobby-info__content");
+            Root.Add(scroll);
 
             VisualElement left = LobbyUi.Box("lobby-info__left");
             _banner = LobbyUi.Box("lobby-info__banner");
@@ -51,7 +60,7 @@ namespace SS3D.UI.Lobby
             _motd.name = "server-info-motd";
             motdScroll.Add(_motd);
             left.Add(motdScroll);
-            Root.Add(left);
+            scroll.Add(left);
 
             VisualElement right = LobbyUi.Box("lobby-info__right");
             right.Add(LobbyUi.SectionHead("Server", "server"));
@@ -60,7 +69,7 @@ namespace SS3D.UI.Lobby
             _build = AddRow(right, "Build", "server-info-build", true);
             _uptime = AddRow(right, "Uptime", "server-info-uptime", true);
             right.Add(BuildChangelog());
-            Root.Add(right);
+            scroll.Add(right);
         }
 
         private static Label AddRow(VisualElement parent, string key, string name, bool mono)

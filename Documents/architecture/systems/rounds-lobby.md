@@ -31,7 +31,8 @@ tabs apply through `PlayerSettingsSubSystem`; controls use real binding override
 rules ([player settings](../2026-10_player-settings.md), [inputs](inputs.md)). The Chat tab carries
 OOC/LOOC/Admin chat ([comms](chat-audio-screens.md)). Server Info shows persisted server name/MOTD,
 configured mode, server build/uptime, git-generated change log and one of five banners per round
-(`RoundId` mod 5). Ping and account-age fields are absent.
+(`RoundId` mod 5), in one column that scrolls as a whole (`server-info-scroll`). Ping and account-age fields are
+absent. In chat, Enter sends and the field stays focused for the next line (as does the Send button).
 
 The UITK shell is the sole lobby UI. Do not restore the removed uGUI lobby/customizer or
 `GameScreens`; the round simulation remains live ([composition policy](../2026-07_agent-first-composition.md)).
@@ -143,6 +144,8 @@ original) and tells admins in Admin chat. Unloading resets the editor's history 
 
 - **Surface decals are client-local round state:** clearing the tilemap does not clear blood/bullet projectors held by static spawners. `SyncRoundState(Stopped)` clears both spawners on server/host and pure clients, including their instance materials.
 
+- **Server Info overflowed the panel in layout B.** The one-column layout sets every part to its full height (no shrink), but the port had no scroll view around the column, so the change log ran past the panel's bottom and could not be scrolled. The column now sits in `server-info-scroll`; `LobbyUiPilot` checks its viewport ends inside the tab content.
+- **Enter in chat ended the edit.** Enter reaches a single-line `TextField` as two key events: the Return key, then a `'\n'` character. The chat took only the key, so the field saw the character and moved focus to its root. A navigation submit would start the edit again, but the `StandaloneInputModule` skips it once the panel has used that frame's key events, so typing stopped after each line. `LobbyChatView` takes both and refocuses the field after a send (`KeepTyping`). To reproduce from a script, send the two `KeyDownEvent`s without a `NavigationSubmitEvent`: adding the submit restarts the edit and hides the bug.
 - **The empty change log needs its own label style.** A row label with `flex-basis: 0` reused on the lone "No change log in this build." label in the ScrollView's column collapses to ~0 px, and only the tops of the glyphs show (v0.1.0, every build without `BuildInfo.json`). The editor always has the file, so only player builds show it. The empty line uses `lobby-info__empty`.
 - **Portrait capture must restore `RenderTexture.active`:** `Graphics.Blit` changes the global active target. Save/restore it around the head crop so later rendering/readback does not inherit the portrait target; the lifecycle pilot uses a sentinel target to check this.
 

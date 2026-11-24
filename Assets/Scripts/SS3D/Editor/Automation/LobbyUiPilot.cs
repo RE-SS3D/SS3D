@@ -300,6 +300,10 @@ namespace SS3D.Editor.Automation
                     VisualElement info = shell.Q("server-info");
                     Require(info.worldBound.yMax <= shell.Q("lobby-tab-content").worldBound.yMax + 1f,
                         "Server Info content fits the panel");
+                    ScrollView infoScroll = shell.Q<ScrollView>("server-info-scroll");
+                    Require(infoScroll != null
+                        && infoScroll.contentViewport.worldBound.yMax <= shell.Q("lobby-tab-content").worldBound.yMax + 1f,
+                        "Server Info scrolls inside the panel (the change log doesn't stick out)");
                     Rect stage = shell.Q("lobby-character-stage").worldBound;
                     Require(stage.xMin >= shell.Q("lobby-sidebar").worldBound.xMax - 1f
                         && stage.xMax <= shell.Q("lobby-shell-window").worldBound.xMin + 1f,

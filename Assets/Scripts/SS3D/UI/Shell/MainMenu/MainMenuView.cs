@@ -56,6 +56,7 @@ namespace SS3D.UI.Shell.MainMenu
         public VisualElement SettingsHost => _settingsHost;
         private readonly MainMenuAssetCatalog _catalog;
         private Texture2D _blurredWallpaper;
+        private Texture _blurredSource;
         private MainMenuPresentation _model = new();
 
         /// <summary>The dialog's kinds, as <c>main-menu__overlay--*</c> classes: each sets the dialog's colour (--op).</summary>
@@ -184,9 +185,9 @@ namespace SS3D.UI.Shell.MainMenu
         }
 
         /// <summary>
-        /// The one ambient loop: on the home screen the wallpaper drifts, a class toggled every <see cref="DriftMs"/>
+        /// The one ambient loop: on the home screen a still wallpaper drifts, a class toggled every <see cref="DriftMs"/>
         /// that MainMenu.uss eases over as long, so it never rests. On other screens the current leg ends and it waits;
-        /// behind a dialog it holds still (<see cref="PresentWallpaper"/>).
+        /// behind a dialog it holds still (<see cref="PresentWallpaper"/>). A video wallpaper covers it and moves itself.
         /// </summary>
         private void Drift()
         {
@@ -199,12 +200,42 @@ namespace SS3D.UI.Shell.MainMenu
             Root.Q("music-volume-fill").style.width = Length.Percent(Mathf.Clamp01(value) * 100f);
         }
 
-        /// <summary>The wallpaper, blurred and still behind the operation dialogs (the blur is made once per attach).</summary>
-        private void PresentWallpaper(bool operation)
+        /// <summary>
+        /// The wallpaper alone: unlike <see cref="Present"/> it leaves the server list and its focus alone. Behind the
+        /// operation dialogs it is blurred and still: the still, or a video's current frame.
+        /// </summary>
+        public void PresentWallpaper(MainMenuPresentation model)
         {
-            if (operation && _blurredWallpaper == null) _blurredWallpaper = MainMenuWallpaper.Blur(_catalog.Wallpaper);
-            _wallpaper.style.backgroundImage = operation ? _blurredWallpaper : _catalog.Wallpaper;
+            bool operation = IsOperation(model.Screen);
+            Texture2D still = _catalog.Wallpaper(model.Wallpaper);
+            _wallpaper.style.backgroundImage = still;
+            if (operation)
+            {
+                Texture source = model.VideoWallpaper != null ? model.VideoWallpaper : still;
+                if (_blurredWallpaper == null || _blurredSource != source)
+                {
+                    DestroyBlur();
+                    _blurredSource = source;
+                    _blurredWallpaper = MainMenuWallpaper.Blur(source);
+                }
+
+                _wallpaper.style.backgroundImage = _blurredWallpaper;
+            }
+            else
+            {
+                DestroyBlur(); // A video has moved on by the next dialog.
+            }
+
             _wallpaper.EnableInClassList(WallpaperStillClass, operation);
+            PresentVideo(model.VideoWallpaper, operation);
+            Root.Q("wallpaper-veil").EnableInClassList("main-menu__wallpaper-veil--on", model.WallpaperVeiled);
+        }
+
+        private void PresentVideo(Texture frame, bool operation)
+        {
+            VisualElement video = Root.Q("video-wallpaper");
+            if (frame is RenderTexture target) video.style.backgroundImage = new StyleBackground(Background.FromRenderTexture(target));
+            video.EnableInClassList("main-menu__video-wallpaper--visible", frame != null && !operation);
         }
 
         public void Attach(VisualElement layerRoot) { Detach(); layerRoot.Add(Root); }
@@ -220,6 +251,7 @@ namespace SS3D.UI.Shell.MainMenu
             if (UnityEngine.Application.isPlaying) Object.Destroy(_blurredWallpaper);
             else Object.DestroyImmediate(_blurredWallpaper);
             _blurredWallpaper = null;
+            _blurredSource = null;
         }
 
         public void Present(MainMenuPresentation model)
@@ -273,7 +305,7 @@ namespace SS3D.UI.Shell.MainMenu
             Root.Q("join").EnableInClassList("main-menu__button--accent", !servers && !settings);
             Root.Q("settings").EnableInClassList("main-menu__nav--selected", settings);
             bool operation = IsOperation(model.Screen);
-            PresentWallpaper(operation);
+            PresentWallpaper(model);
             Show("sidebar", !operation);
             PresentSidebarMotion(operation, previous);
             Reveal(_sidePanel, servers, EnterRight);

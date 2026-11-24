@@ -58,8 +58,10 @@
     display: none;
 }
 
-/* The one ambient loop: on the home screen MainMenuView toggles --drift every 18 s and the wallpaper eases between the
-   two looks over as long, so it never rests. Scaled up a little, so the drift never shows an edge. Behind a dialog it
+/* The wallpaper rotates every 60 s while browsing: a still or one of Bug's looping clips, picked at random, with a dip
+   to black between them (MainMenuWallpaperRotation).
+   The one ambient loop: on the home screen MainMenuView toggles --drift every 18 s and a still eases between the two
+   looks over as long, so it never rests. Scaled up a little, so the drift never shows an edge. Behind a dialog it
    settles and holds still (--still). */
 .main-menu__wallpaper {
     position: absolute;
@@ -85,6 +87,40 @@
     translate: 0 0;
     transition-duration: 0.6s;
     transition-timing-function: ease-out-cubic;
+}
+
+/* A video wallpaper's frames, over the still (its fallback until the first frame, or if it fails). */
+.main-menu__video-wallpaper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-scale-mode: scale-and-crop;
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 0.5s;
+}
+
+.main-menu__video-wallpaper--visible {
+    opacity: 1;
+}
+
+/* Black over the wallpaper while it changes; the fade matches MainMenuWallpaperRotation.FadeSeconds. */
+.main-menu__wallpaper-veil {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgb(0, 0, 0);
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 0.5s;
+}
+
+.main-menu__wallpaper-veil--on {
+    opacity: 1;
 }
 
 /* ── Thin scrollers: the map editor's ── */

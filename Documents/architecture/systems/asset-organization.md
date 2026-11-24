@@ -73,8 +73,8 @@ A new `Art/Icons/<Source>/` folder must also be added to the source list at the 
   roots; `Art/Icons/Lobby/` is not in it today, so its icons never reach `icon-index.json`. Add the root
   when you add the folder.
 - **Videos under `Content/` pass the taxonomy test.** `AssetAuditUtilities.RawArtExtensions` covers
-  images, audio, models and fonts, not `.webm`/`.mp4`. The main menu's old wallpaper clips (unused since
-  2026-11-21) live in `Art/Videos/`; keep new video there by hand.
+  images, audio, models and fonts, not `.webm`/`.mp4`. Main-menu wallpapers live in `Art/Videos/`; keep
+  new video there by hand.
 
 ## Tests
 

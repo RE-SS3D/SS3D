@@ -141,7 +141,7 @@
     left: 16px;
     right: 16px;
     bottom: 16px;
-    height: 144px;
+    height: 155px;
     flex-direction: row;
     align-items: flex-start;
 }
@@ -439,13 +439,16 @@
 }
 
 /* ── Object library ──────────────────────────────────────────────────────── */
+/* The library's chrome is larger than the bible's first numbers (owner, 2026-11-23: the categories read too small): the
+   category rail 1.4x (28 px tabs, 14 px type), the sub-tabs 1.2x (12 px type, just room for Upper's eight beside the
+   188 px search at the bible's 1200 px width), the header 30 px. MapEditorView.PaletteHeights follows the header. */
 .map-editor-bottom-row {
     flex-direction: row;
 }
 
 .map-editor-mode-rail {
-    width: 76px;
-    margin-right: 4px;
+    width: 112px;
+    margin-right: 6px;
     flex-shrink: 0;
 }
 
@@ -459,16 +462,16 @@
 }
 
 .map-editor-mode-tab {
-    height: 19px;
+    height: 28px;
     min-height: 0;
-    margin: 0 0 2px 0;
-    padding: 0 0 0 6px;
-    border-width: 0 0 0 3px;
+    margin: 0 0 3px 0;
+    padding: 0 0 0 10px;
+    border-width: 0 0 0 4px;
     border-color: rgba(0, 0, 0, 0);
     border-radius: 0;
     -unity-text-align: middle-left;
     -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
-    font-size: 10px;
+    font-size: 14px;
     color: var(--ui-menu-tab-text);
 }
 
@@ -488,7 +491,7 @@
 .map-editor-library {
     flex-grow: 1;
     flex-shrink: 1;
-    padding: 2px 6px 2px 6px;
+    padding: 3px 9px 3px 9px;
     background-color: var(--ui-editor-panel);
     border-width: var(--ui-hairline);
     border-color: var(--ui-panel-edge);
@@ -498,8 +501,8 @@
 .map-editor-library-header {
     flex-direction: row;
     align-items: center;
-    height: 22px;
-    margin-bottom: 3px;
+    height: 30px;
+    margin-bottom: 4px;
     flex-shrink: 0;
 }
 
@@ -507,7 +510,7 @@
     flex-direction: row;
     flex-grow: 1;
     flex-shrink: 1;
-    height: 22px;
+    height: 30px;
     overflow: hidden;
 }
 
@@ -520,15 +523,15 @@
 }
 
 .map-editor-subcat-tab {
-    height: 22px;
+    height: 30px;
     min-height: 0;
     margin: 0;
-    padding: 1px 8px 0 8px;
-    border-width: 0 0 2px 0;
+    padding: 2px 10px 0 10px;
+    border-width: 0 0 3px 0;
     border-color: rgba(0, 0, 0, 0);
     border-radius: 0;
     -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
-    font-size: 10px;
+    font-size: 12px;
     color: rgba(255, 255, 255, 0.45);
     white-space: nowrap;
 }
@@ -550,9 +553,9 @@
     flex-direction: row;
     align-items: center;
     width: 188px;
-    height: 20px;
-    margin-left: 8px;
-    padding-left: 8px;
+    height: 28px;
+    margin-left: 12px;
+    padding-left: 10px;
     flex-shrink: 0;
     background-color: var(--ui-editor-search);
     border-width: 1px;
@@ -565,9 +568,9 @@
 }
 
 .map-editor-search-icon {
-    width: 12px;
-    height: 12px;
-    margin-right: 6px;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
     flex-shrink: 0;
     -unity-background-image-tint-color: var(--ui-glyph-placeholder);
 }
@@ -579,7 +582,7 @@
     min-height: 0;
     margin: 0;
     padding: 0;
-    font-size: 11px;
+    font-size: 13px;
     color: var(--ui-text);
 }
 
@@ -592,7 +595,7 @@
     background-color: rgba(0, 0, 0, 0);
     border-width: 0;
     -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
-    font-size: 11px;
+    font-size: 13px;
     color: var(--ui-text);
 }
 
@@ -603,7 +606,7 @@
 .map-editor-library-header__buttons {
     flex-direction: row;
     flex-shrink: 0;
-    margin-left: 6px;
+    margin-left: 9px;
 }
 
 /* Collapse / expand and Map Check's close: a bare glyph in a cell-shaped hit area. */
@@ -616,16 +619,16 @@
 }
 
 .map-editor-header-icon-btn {
-    width: 20px;
-    height: 20px;
+    width: 28px;
+    height: 28px;
     min-height: 0;
-    margin: 0 0 0 2px;
+    margin: 0 0 0 3px;
     padding: 0;
     align-items: center;
     justify-content: center;
     border-width: var(--ui-hairline);
     border-color: rgba(0, 0, 0, 0);
-    border-radius: 3px;
+    border-radius: 4px;
 }
 
 .map-editor-header-icon-btn:hover {
@@ -638,8 +641,8 @@
 }
 
 .map-editor-header-icon-btn__icon {
-    width: 12px;
-    height: 12px;
+    width: 16px;
+    height: 16px;
     -unity-background-image-tint-color: var(--ui-glyph-placeholder);
 }
 

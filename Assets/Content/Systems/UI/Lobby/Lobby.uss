@@ -1315,6 +1315,17 @@
     padding: 16px 20px 20px 20px;
 }
 
+/* The tab's scroll view; its content holds the two halves (one column in the narrow panel, below). */
+.lobby .lobby-info__scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.lobby .lobby-info__content {
+    flex-direction: row;
+}
+
 .lobby .lobby-info__left {
     flex-grow: 1;
     flex-shrink: 1;
@@ -2434,11 +2445,17 @@
     font-size: 11px;
 }
 
-/* Server Info in one column: banner, message of the day, server, change log, scrolling together. */
+/* Server Info in one column: banner, message of the day, server, change log, scrolling together (server-info-scroll).
+   Every part keeps its full height; the scroll view's content is the column. */
 
 .lobby--stage .lobby-info {
     flex-direction: column;
-    padding: 14px 16px 16px 16px;
+    padding: 14px 8px 16px 16px;
+}
+
+.lobby--stage .lobby-info__content {
+    flex-direction: column;
+    padding-right: 8px;
 }
 
 .lobby--stage .lobby-info__left {

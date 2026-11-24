@@ -1,6 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:VisualElement name="main-menu" class="main-menu">
         <ui:VisualElement name="wallpaper" class="main-menu__wallpaper" picking-mode="Ignore" />
+        <ui:VisualElement name="video-wallpaper" class="main-menu__video-wallpaper" picking-mode="Ignore" />
+        <ui:VisualElement name="wallpaper-veil" class="main-menu__wallpaper-veil" picking-mode="Ignore" />
         <ui:VisualElement name="sidebar" class="main-menu__sidebar">
             <ui:ScrollView name="sidebar-scroll" class="main-menu__sidebar-scroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto">
                 <ui:VisualElement name="logo" class="main-menu__logo" picking-mode="Ignore" />
@@ -33,7 +35,7 @@
                 </ui:VisualElement>
                 <ui:VisualElement class="main-menu__footer">
                     <ui:VisualElement class="main-menu__row main-menu__spread"><ui:Label name="version" text="v0.4.2 pre-alpha" class="main-menu__text main-menu__fine" /><ui:Button name="discord" text="Discord" class="main-menu__link" /></ui:VisualElement>
-                    <ui:VisualElement class="main-menu__row"><ui:Label text="Wallpaper:" class="main-menu__text main-menu__fine" /><ui:Button name="credits" text="RE:SS3D art contributors" class="main-menu__link" /></ui:VisualElement>
+                    <ui:VisualElement class="main-menu__row"><ui:Label text="Wallpapers:" class="main-menu__text main-menu__fine" /><ui:Button name="credits" text="RE:SS3D art contributors" class="main-menu__link" /></ui:VisualElement>
                 </ui:VisualElement>
             </ui:ScrollView>
         </ui:VisualElement>

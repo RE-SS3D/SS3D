@@ -76,11 +76,21 @@ namespace SS3D.UI.Lobby
             _input.AddToClassList("lobby-chat__input");
             if (_input.textEdition != null) _input.textEdition.hidePlaceholderOnFocus = true;
             // TrickleDown: a real Return targets the inner text element, which consumes it before it bubbles to the field.
+            // Enter arrives as two key events, the key and then its '\n' character. A single-line field ends its edit on
+            // the character (focus moves to the field's root and typing stops), so both are taken here; the second
+            // Send finds the field empty.
             _input.RegisterCallback<KeyDownEvent>(evt =>
             {
-                if (evt.keyCode is not (KeyCode.Return or KeyCode.KeypadEnter)) return;
+                bool enterKey = evt.keyCode is KeyCode.Return or KeyCode.KeypadEnter;
+                bool enterCharacter = evt.keyCode == KeyCode.None && evt.character is '\n' or '\r' or '\u0003';
+                if (!enterKey && !enterCharacter) return;
                 Send();
                 evt.StopPropagation();
+            }, TrickleDown.TrickleDown);
+            // While typing, Enter's navigation submit has nothing to do either (on the field's root, it starts an edit).
+            _input.RegisterCallback<NavigationSubmitEvent>(evt =>
+            {
+                if (evt.target != _input) evt.StopPropagation();
             }, TrickleDown.TrickleDown);
             LobbyUi.EditorInput(_input);
             LobbyUi.HoldTextEntry(_input, _textEntry);
@@ -137,6 +147,24 @@ namespace SS3D.UI.Lobby
             Debug.Log($"[Lobby] Chat send ({_channel.ToString().ToLowerInvariant()}): {text}");
             Submitted?.Invoke(_channel, text);
             _input.value = string.Empty;
+            KeepTyping();
+        }
+
+        /// <summary>
+        /// The field stays ready for the next line, whether Enter or the Send button sent this one: focused again on the
+        /// next tick (the button takes focus on its click), unless the chat has gone from view by then.
+        /// </summary>
+        private void KeepTyping()
+        {
+            _input.schedule.Execute(() =>
+            {
+                if (_input.panel == null || !_input.enabledInHierarchy || _input.resolvedStyle.display == DisplayStyle.None)
+                {
+                    return;
+                }
+
+                _input.Focus();
+            });
         }
 
         /// <summary>

@@ -21,13 +21,13 @@ namespace SS3D.Systems.Tile.MapEditor.UI
     {
         /// <summary>
         /// Object library heights (px) for the three resize states: the header row alone, one row of slots, three. Each is
-        /// the panel's 2 px border and 2 px padding top and bottom, the 22 px header and its 3 px gap, then the rows.
+        /// the panel's 2 px border and 3 px padding top and bottom, the 30 px header and its 4 px gap, then the rows.
         /// </summary>
         private static readonly Dictionary<PaletteMode, float> PaletteHeights = new()
         {
-            [PaletteMode.Min] = 33f,
-            [PaletteMode.Normal] = 144f,
-            [PaletteMode.Max] = 366f,
+            [PaletteMode.Min] = 44f,
+            [PaletteMode.Normal] = 155f,
+            [PaletteMode.Max] = 377f,
         };
 
         /// <summary>Object library grid row count per resize state (extra rows scroll).</summary>
