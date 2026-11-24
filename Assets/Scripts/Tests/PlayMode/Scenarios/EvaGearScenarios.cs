@@ -261,9 +261,13 @@ namespace SS3D.Tests
 
         private AttachedContainer Worn(ContainerType slot) => Body.GetComponent<HumanInventory>().Containers.Single(worn => worn.ContainerType == slot);
 
+        // Clears the slot first: the body wears its job's kit, and the job follows the host's saved character (an
+        // Engineer starts in a hard hat), so a full slot would silently refuse the item.
         private Item Wear(string item, ContainerType slot)
         {
             AttachedContainer container = Body.GetComponent<HumanInventory>().Containers.Single(worn => worn.ContainerType == slot);
+            foreach (Item worn in container.Items.ToList())
+                worn.Delete();
             return SubSystems.Get<ItemSubSystem>().SpawnItemInContainer(item, container);
         }
 

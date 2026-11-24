@@ -21,7 +21,10 @@ namespace SS3D.Tests
     [Category(TestCategories.Scenarios)]
     public class SelectionHoverScenarios : ScenarioFixture
     {
-        private const float OverviewDistance = 9f;
+        // Far enough out that the wall straight ahead of the spawn (two tiles north in the test room) sits inside
+        // OnScreen's window at any aspect. At 9 it sat above the window, so only a wide view (the side walls) passed;
+        // the nightly's batchmode editor has a narrower game view and failed every run.
+        private const float OverviewDistance = 13f;
         private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
         private static readonly FieldInfo CameraDistance = typeof(CameraFollow).GetField("_cameraDistance", Private);
         private static readonly FieldInfo CurrentDistance = typeof(CameraFollow).GetField("_currentDistance", Private);
@@ -103,11 +106,12 @@ namespace SS3D.Tests
             PlacedTileObject[] ofType = tiles.Where(tile => tile.GenericType == type).ToArray();
             PlacedTileObject nearest = ofType.OrderBy(tile => (TopCentre(tile.gameObject) - near).sqrMagnitude)
                 .FirstOrDefault();
+            string view = $"camera {camera.pixelWidth}x{camera.pixelHeight}";
             return nearest == null
-                ? $"none of {tiles.Length} tile objects is a {type}"
+                ? $"none of {tiles.Length} tile objects is a {type} ({view})"
                 : $"{ofType.Length} of type {type}, nearest {nearest.name} at viewport "
                 + $"{camera.WorldToViewportPoint(TopCentre(nearest.gameObject))}, selectable "
-                + (nearest.GetComponentInChildren<Selectable>() != null);
+                + (nearest.GetComponentInChildren<Selectable>() != null) + $" ({view})";
         }
 
         private static IEnumerator ExpectHover(Mouse mouse, Camera camera, GameObject target, string what)
