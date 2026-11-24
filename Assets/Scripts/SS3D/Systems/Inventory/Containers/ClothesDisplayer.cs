@@ -44,28 +44,64 @@ namespace SS3D.Systems.Inventory.Containers
         private readonly SyncList<ClothDisplayData> _clothedBodyParts = new SyncList<ClothDisplayData>();
 
         private readonly HashSet<Renderer> _occludedRenderers = new();
+        private readonly Dictionary<SkinnedMeshRenderer, Mesh> _uncoveredMeshes = new();
 
         /// <summary>
         /// Hides the renderers the worn clothing covers. Human calls it again after respawning the hair, which a hat hides.
         /// </summary>
         public void RefreshOcclusion()
         {
-            foreach (Renderer renderer in _occludedRenderers)
-            {
-                if (renderer != null) renderer.forceRenderingOff = false;
-            }
-            _occludedRenderers.Clear();
+            RestoreOcclusion();
             Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
             foreach (ClothDisplayData data in _clothedBodyParts)
             {
                 if (data.ClothToDisplay == null || !data.ClothToDisplay.TryGetComponent(out Cloth cloth)) continue;
                 foreach (Renderer renderer in renderers)
                 {
-                    if (!cloth.Occludes(renderer)) continue;
-                    renderer.forceRenderingOff = true;
-                    _occludedRenderers.Add(renderer);
+                    if (cloth.Occludes(renderer))
+                    {
+                        renderer.forceRenderingOff = true;
+                        _occludedRenderers.Add(renderer);
+                    }
+
+                    if (renderer is not SkinnedMeshRenderer skin || cloth.BodyMeshOverrides == null) continue;
+                    foreach (Cloth.BodyMeshOverride coverage in cloth.BodyMeshOverrides)
+                    {
+                        if (skin.name != coverage.RendererName || coverage.BodyMesh == null || coverage.CoveredMesh == null) continue;
+                        Mesh original = _uncoveredMeshes.TryGetValue(skin, out Mesh saved) ? saved : skin.sharedMesh;
+                        // Coverage is authored for a particular mesh, never another species or a replaced limb.
+                        if (original != coverage.BodyMesh) continue;
+                        _uncoveredMeshes.TryAdd(skin, original);
+                        SetBodyMesh(skin, coverage.CoveredMesh);
+                    }
                 }
             }
+        }
+
+        private void RestoreOcclusion()
+        {
+            foreach (Renderer renderer in _occludedRenderers)
+            {
+                if (renderer != null) renderer.forceRenderingOff = false;
+            }
+            _occludedRenderers.Clear();
+            foreach (KeyValuePair<SkinnedMeshRenderer, Mesh> entry in _uncoveredMeshes)
+            {
+                if (entry.Key != null) SetBodyMesh(entry.Key, entry.Value);
+            }
+            _uncoveredMeshes.Clear();
+        }
+
+        private static void SetBodyMesh(SkinnedMeshRenderer renderer, Mesh mesh)
+        {
+            Mesh previous = renderer.sharedMesh;
+            var morphs = new Dictionary<string, float>();
+            if (previous != null)
+                for (int i = 0; i < previous.blendShapeCount; i++)
+                    morphs[previous.GetBlendShapeName(i)] = renderer.GetBlendShapeWeight(i);
+            renderer.sharedMesh = mesh;
+            for (int i = 0; i < mesh.blendShapeCount; i++)
+                renderer.SetBlendShapeWeight(i, morphs.TryGetValue(mesh.GetBlendShapeName(i), out float weight) ? weight : 0f);
         }
 
         public override void OnStartServer()
@@ -93,6 +129,7 @@ namespace SS3D.Systems.Inventory.Containers
         public override void OnStopClient()
         {
             _clothedBodyParts.OnChange -= ClothedBodyPartsOnChange;
+            RestoreOcclusion();
             base.OnStopClient();
         }
 

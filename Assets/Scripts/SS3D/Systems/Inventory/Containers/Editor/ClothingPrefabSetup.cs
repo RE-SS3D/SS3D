@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -43,6 +44,48 @@ namespace SS3D.Systems.Inventory.Containers.Editor
             return updated;
         }
 
+        private static void WireCoverage(Cloth cloth)
+        {
+            const string humanPath = "Assets/Content/WorldObjects/Entities/Humanoids/Human/Human.prefab";
+            const string art = "Assets/Art/Models/Entities/Humanoids/Human/";
+            GameObject human = AssetDatabase.LoadAssetAtPath<GameObject>(humanPath);
+            SerializedObject so = new(cloth);
+            string[] hidden = { "HumanTorso", "HumanArmLeft", "HumanArmRight", "UnderwearTop", "UnderwearBottom" };
+            SerializedProperty occluded = so.FindProperty("_occludedBodyRenderers");
+            occluded.arraySize = hidden.Length;
+            for (int i = 0; i < hidden.Length; i++) occluded.GetArrayElementAtIndex(i).stringValue = hidden[i];
+            SerializedProperty overrides = so.FindProperty("_bodyMeshOverrides");
+            overrides.arraySize = 2;
+            for (int i = 0; i < 2; i++)
+            {
+                string name = i == 0 ? "HumanLegLeft" : "HumanLegRight";
+                SkinnedMeshRenderer body = human.GetComponentsInChildren<SkinnedMeshRenderer>(true).First(r => r.name == name);
+                // The trouser hem is near 0.14 m. Keep a small overlap above it to avoid a bare-ankle gap.
+                Mesh source = body.sharedMesh;
+                Matrix4x4[] matrices = body.bones.Select((bone, index) =>
+                    human.transform.worldToLocalMatrix * bone.localToWorldMatrix * source.bindposes[index]).ToArray();
+                BoneWeight[] weights = source.boneWeights;
+                float[] heights = source.vertices.Select((v, index) =>
+                {
+                    BoneWeight w = weights[index];
+                    return matrices[w.boneIndex0].MultiplyPoint3x4(v).y * w.weight0
+                        + matrices[w.boneIndex1].MultiplyPoint3x4(v).y * w.weight1
+                        + matrices[w.boneIndex2].MultiplyPoint3x4(v).y * w.weight2
+                        + matrices[w.boneIndex3].MultiplyPoint3x4(v).y * w.weight3;
+                }).ToArray();
+                string path = art + name + "JumpsuitAnkles.asset";
+                Mesh saved = AssetDatabase.LoadAssetAtPath<Mesh>(path);
+                Mesh generated = ClothingCoverageMeshBuilder.KeepBelow(source, heights, 0.17f, saved);
+                if (saved == null) { AssetDatabase.CreateAsset(generated, path); saved = generated; }
+                else EditorUtility.SetDirty(saved);
+                SerializedProperty entry = overrides.GetArrayElementAtIndex(i);
+                entry.FindPropertyRelative("RendererName").stringValue = name;
+                entry.FindPropertyRelative("BodyMesh").objectReferenceValue = body.sharedMesh;
+                entry.FindPropertyRelative("CoveredMesh").objectReferenceValue = saved;
+            }
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
         private static bool SetupGrey()
         {
             GameObject root = PrefabUtility.LoadPrefabContents(GreyJumpsuit);
@@ -54,11 +97,13 @@ namespace SS3D.Systems.Inventory.Containers.Editor
 
             try
             {
-                if (!root.TryGetComponent(out Cloth _))
+                if (!root.TryGetComponent(out Cloth cloth))
                 {
                     Debug.LogError($"[ClothingPrefabSetup] No Cloth on {GreyJumpsuit}");
                     return false;
                 }
+
+                WireCoverage(cloth);
 
                 Transform worn = root.transform.Find(WornChildName);
                 Transform folded = root.transform.Find(FoldedChildName);

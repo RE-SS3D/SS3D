@@ -13,6 +13,14 @@ namespace SS3D.Systems.Inventory.Containers
     /// </summary>
     public class Cloth : MonoBehaviour
     {
+        [System.Serializable]
+        public struct BodyMeshOverride
+        {
+            public string RendererName;
+            public Mesh BodyMesh;
+            public Mesh CoveredMesh;
+        }
+
         [SerializeField]
         private SerializableDictionary<ClothType, Mesh> _clothMeshes;
 
@@ -21,6 +29,12 @@ namespace SS3D.Systems.Inventory.Containers
 
         [SerializeField]
         private string[] _occludedBodyRenderers;
+
+        [SerializeField]
+        private BodyMeshOverride[] _bodyMeshOverrides;
+
+        /// <summary>Partial coverage keeps exposed skin (such as ankles) instead of hiding a whole limb.</summary>
+        public BodyMeshOverride[] BodyMeshOverrides => _bodyMeshOverrides;
 
         /// <summary>Opaque equipment can conceal underlying body/clothing surfaces to prevent clipping.</summary>
         public string[] OccludedBodyRenderers => _occludedBodyRenderers;

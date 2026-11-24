@@ -289,7 +289,19 @@ MonoBehaviour:
       _value: {fileID: -6331385627053906942, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
     _new: 0
   _wornMaterials: []
-  _occludedBodyRenderers: []
+  _occludedBodyRenderers:
+  - HumanTorso
+  - HumanArmLeft
+  - HumanArmRight
+  - UnderwearTop
+  - UnderwearBottom
+  _bodyMeshOverrides:
+  - RendererName: HumanLegLeft
+    BodyMesh: {fileID: -4416625488342582949, guid: f553c8289710b5e4dab99c3bcbbb802e, type: 3}
+    CoveredMesh: {fileID: 4300000, guid: 6a04a4515e94381e093be13e22158f4a, type: 2}
+  - RendererName: HumanLegRight
+    BodyMesh: {fileID: -4241497595815756514, guid: f553c8289710b5e4dab99c3bcbbb802e, type: 3}
+    CoveredMesh: {fileID: 4300000, guid: f20354c97d38df3a081d54fe56ea1b04, type: 2}
 --- !u!114 &173897779263585381
 MonoBehaviour:
   m_ObjectHideFlags: 0
