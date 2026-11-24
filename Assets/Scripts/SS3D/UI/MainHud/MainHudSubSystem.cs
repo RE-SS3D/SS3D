@@ -101,10 +101,8 @@ namespace SS3D.UI.MainHud
         private IntentType? _cachedIntent;
         private Hand _cachedSelectedHand;
         private bool _machineUiOpen;
-        private bool _subscribedToMachineUi;
         private MachineInterfaceSubSystem _machineUi;
         private bool _mapEditorOpen;
-        private bool _subscribedToMapEditor;
         private MapEditorSubSystem _mapEditor;
         private StoragePanelHost _boundPanelHost;
 
@@ -966,11 +964,13 @@ namespace SS3D.UI.MainHud
 
         private void EnsureMachineUiSubscription()
         {
-            if (_subscribedToMachineUi)
+            // The HUD outlives the session; each session brings a new machine UI, so follow it once the old one is destroyed.
+            if (_machineUi != null)
             {
                 return;
             }
 
+            _machineUiOpen = false;
             if (!SubSystems.TryGet(out MachineInterfaceSubSystem machineUi))
             {
                 return;
@@ -979,14 +979,13 @@ namespace SS3D.UI.MainHud
             _machineUi = machineUi;
             _machineUi.InterfaceOpened += HandleMachineUiOpened;
             _machineUi.InterfaceClosed += HandleMachineUiClosed;
-            _subscribedToMachineUi = true;
             _machineUiOpen = _machineUi.IsOpen;
             ApplyVisibility();
         }
 
         private void UnsubscribeMachineUi()
         {
-            if (!_subscribedToMachineUi || _machineUi == null)
+            if (_machineUi == null)
             {
                 return;
             }
@@ -994,7 +993,6 @@ namespace SS3D.UI.MainHud
             _machineUi.InterfaceOpened -= HandleMachineUiOpened;
             _machineUi.InterfaceClosed -= HandleMachineUiClosed;
             _machineUi = null;
-            _subscribedToMachineUi = false;
         }
 
         private void HandleMachineUiOpened()
@@ -1011,11 +1009,13 @@ namespace SS3D.UI.MainHud
 
         private void EnsureMapEditorSubscription()
         {
-            if (_subscribedToMapEditor)
+            // The HUD outlives the session; each session brings a new map editor, so follow it once the old one is destroyed.
+            if (_mapEditor != null)
             {
                 return;
             }
 
+            _mapEditorOpen = false;
             if (!SubSystems.TryGet(out MapEditorSubSystem mapEditor))
             {
                 return;
@@ -1025,14 +1025,13 @@ namespace SS3D.UI.MainHud
             _mapEditor.EditorOpened += HandleMapEditorOpened;
             _mapEditor.EditorClosed += HandleMapEditorClosed;
             _mapEditor.OpenDenied += HandleMapEditorOpenDenied;
-            _subscribedToMapEditor = true;
             _mapEditorOpen = _mapEditor.IsActive;
             ApplyVisibility();
         }
 
         private void UnsubscribeMapEditor()
         {
-            if (!_subscribedToMapEditor || _mapEditor == null)
+            if (_mapEditor == null)
             {
                 return;
             }
@@ -1041,7 +1040,6 @@ namespace SS3D.UI.MainHud
             _mapEditor.EditorClosed -= HandleMapEditorClosed;
             _mapEditor.OpenDenied -= HandleMapEditorOpenDenied;
             _mapEditor = null;
-            _subscribedToMapEditor = false;
         }
 
         private void HandleMapEditorOpened()

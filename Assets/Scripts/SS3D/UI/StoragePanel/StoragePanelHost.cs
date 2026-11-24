@@ -79,7 +79,6 @@ namespace SS3D.UI.StoragePanel
         private VisualElement _highlightedHudElement;
 
         private MachineInterfaceSubSystem _machineUi;
-        private bool _subscribedToMachineUi;
         private bool _machineUiOpen;
 
         protected override void OnAwake()
@@ -292,11 +291,13 @@ namespace SS3D.UI.StoragePanel
 
         private void EnsureMachineUiSubscription()
         {
-            if (_subscribedToMachineUi)
+            // The host outlives the session; each session brings a new machine UI, so follow it once the old one is destroyed.
+            if (_machineUi != null)
             {
                 return;
             }
 
+            _machineUiOpen = false;
             if (!SubSystems.TryGet(out MachineInterfaceSubSystem machineUi))
             {
                 return;
@@ -305,14 +306,13 @@ namespace SS3D.UI.StoragePanel
             _machineUi = machineUi;
             _machineUi.InterfaceOpened += HandleMachineUiOpened;
             _machineUi.InterfaceClosed += HandleMachineUiClosed;
-            _subscribedToMachineUi = true;
             _machineUiOpen = _machineUi.IsOpen;
             ApplyMachineUiVisibility();
         }
 
         private void UnsubscribeMachineUi()
         {
-            if (!_subscribedToMachineUi || _machineUi == null)
+            if (_machineUi == null)
             {
                 return;
             }
@@ -320,7 +320,6 @@ namespace SS3D.UI.StoragePanel
             _machineUi.InterfaceOpened -= HandleMachineUiOpened;
             _machineUi.InterfaceClosed -= HandleMachineUiClosed;
             _machineUi = null;
-            _subscribedToMachineUi = false;
         }
 
         private void HandleMachineUiOpened()
