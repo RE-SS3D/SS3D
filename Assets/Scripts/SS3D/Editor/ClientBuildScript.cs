@@ -47,6 +47,7 @@ namespace SS3D.Editor
         {
             Directory.CreateDirectory(Path.GetDirectoryName(buildPath) ?? string.Empty);
 
+            AddressablesBuildPrompt.MarkAnswered();
             EditorUserBuildSettings.standaloneBuildSubtarget = StandaloneBuildSubtarget.Player;
 
             BuildPlayerOptions buildPlayerOptions = new()

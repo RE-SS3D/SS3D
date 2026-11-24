@@ -53,6 +53,7 @@ namespace SS3D.Editor
         {
             Directory.CreateDirectory(Path.GetDirectoryName(buildPath) ?? string.Empty);
 
+            AddressablesBuildPrompt.MarkAnswered();
             StandaloneBuildSubtarget previous = EditorUserBuildSettings.standaloneBuildSubtarget;
             EditorUserBuildSettings.standaloneBuildSubtarget = StandaloneBuildSubtarget.Server;
 

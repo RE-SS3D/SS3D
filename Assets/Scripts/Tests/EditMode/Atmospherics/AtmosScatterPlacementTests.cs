@@ -11,7 +11,7 @@ namespace EditorTests
     /// Renders a synthetic gas atlas through the real <see cref="AtmosRendererFeature"/> and checks where the
     /// fog lands on screen. Guards issue #125: gas drawn mirrored across the screen's horizontal centre line,
     /// which put clouds in empty space and upside-down silhouettes in the fog.
-    /// Skipped without a graphics device, so it runs locally and not in the headless CI job.
+    /// Skipped without a graphics device. The EditMode CI job does have one (software GL), so the test also runs there.
     /// </summary>
     public class AtmosScatterPlacementTests
     {
@@ -26,12 +26,24 @@ namespace EditorTests
         private readonly List<Object> _created = new();
         private RenderTexture _target;
         private Camera _camera;
+        private UniversalRenderPipelineAsset _pipeline;
+        private UpscalingFilterSelection _upscalingFilter;
 
         [SetUp]
         public void SetUp()
         {
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
                 Assert.Ignore("Needs a graphics device to render.");
+
+            // The quality assets pick STP, which URP runs on a game camera even at 100% scale (with TAA forced on).
+            // That is not what this test checks, and on the CI job's software GL it logs "Invalid texture unit" errors
+            // that fail the test. Plain filtering for the test's render; a field write, so the asset is not dirtied.
+            _pipeline = GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
+            if (_pipeline != null)
+            {
+                _upscalingFilter = _pipeline.upscalingFilter;
+                _pipeline.upscalingFilter = UpscalingFilterSelection.Auto;
+            }
 
             _target = new RenderTexture(Width, Height, 24, RenderTextureFormat.ARGB32);
             _target.Create();
@@ -55,6 +67,12 @@ namespace EditorTests
         {
             AtmosRenderContext.ClearRequest();
             AtmosRenderContext.ClearSnapshot();
+            if (_pipeline != null)
+            {
+                _pipeline.upscalingFilter = _upscalingFilter;
+                _pipeline = null;
+            }
+
             foreach (Object created in _created)
             {
                 if (created != null)
