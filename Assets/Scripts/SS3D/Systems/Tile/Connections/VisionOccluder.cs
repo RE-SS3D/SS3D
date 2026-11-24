@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SS3D.Systems.Tile.Connections
 {
     /// <summary>
-    /// What a wall tile blocks sight with (fov.md §2, 2026-11_fov-rework D3): boxes on the
+    /// What a wall tile blocks sight with (fov.md §2, systems/fov.md Sight blockers): boxes on the
     /// <see cref="LayerName"/> layer under a <see cref="HolderName"/> child, a centre block plus one arm
     /// toward each connected cardinal neighbour, as thick as the wall mesh at <see cref="EyeHeight"/>.
     /// Built by <c>VisionOccluderRecipe</c>; <see cref="TileAdjacencyView"/> switches the arms when it

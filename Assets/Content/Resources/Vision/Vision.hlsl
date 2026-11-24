@@ -4,7 +4,7 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 
-// Written by VisionSubSystem each frame (2026-11_fov-rework D1, D4, D8).
+// Written by VisionSubSystem each frame (systems/fov.md Rule + Cast).
 TEXTURE2D(_VisionMap);      // R16: per angular bin, the distance a level ray went before a sight blocker / _ViewRange
 TEXTURE2D(_VisionTiles);    // R8: one texel per tile around the player; set where a ray hit a sight blocker
 float4 _VisionMap_TexelSize; // z = bin count
@@ -100,7 +100,7 @@ bool VisionInSeenOccluderTile(float3 posWorld)
     return LOAD_TEXTURE2D(_VisionTiles, tile).r > 0.5;
 }
 
-// fov.md §3, 2026-11_fov-rework D1: a point shows when the ray at its angle went at least that far,
+// fov.md §3, systems/fov.md Rule: a point shows when the ray at its angle went at least that far,
 // or when it is part of a wall a ray hit (inside that tile, above the floor), so walls show whole.
 bool VisionIsVisibleWorld(float3 posWorld)
 {

@@ -2,7 +2,7 @@ namespace SS3D.Rendering.URP
 {
     /// <summary>
     /// What the vision render passes read each frame. Written only by <c>VisionSubSystem</c>, which owns the
-    /// vision state (2026-11_fov-rework D6); the rendering assembly can't reference it directly.
+    /// vision state (systems/fov.md State); the rendering assembly can't reference it directly.
     /// </summary>
     public static class VisionRenderContext
     {

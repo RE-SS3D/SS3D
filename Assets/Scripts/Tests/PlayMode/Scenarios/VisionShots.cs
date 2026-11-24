@@ -18,8 +18,8 @@ using Object = UnityEngine.Object;
 namespace SS3D.Tests
 {
     /// <summary>
-    /// Before/after pictures and cost of the FOV on Classic MiniStation (2026-11_fov-rework P0, P2, P3):
-    /// a doorway and the wall corner beside it at 10°, 45° and 80° camera tilt, and the
+    /// Before/after pictures and cost of the FOV on Classic MiniStation:
+    /// a doorway and the wall corner beside it at 30° (the lowest the camera goes), 45° and 80° camera tilt, and the
     /// <c>Vision.*</c> profiler markers averaged over a few seconds. Writes to
     /// <c>artifacts/ui/vision-shots-&lt;UTC&gt;/</c>. Explicit: run with <c>validate.sh --steps scenarios:VisionShots</c>.
     /// </summary>
@@ -27,7 +27,7 @@ namespace SS3D.Tests
     [Category("VisionShots")]
     public class VisionShots : ScenarioFixture
     {
-        private static readonly float[] Tilts = { 10f, 45f, 80f };
+        private static readonly float[] Tilts = { 30f, 45f, 80f };
         private static readonly string[] Markers = { "Vision.ViewPoints", "Vision.VisionMap", "Vision.Cull" };
 
         protected override string StationFixture => "Builds/Game/Data/StationTemplates/classic-ministation.json";

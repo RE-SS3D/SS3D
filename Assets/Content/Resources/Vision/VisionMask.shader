@@ -22,7 +22,7 @@ Shader "Vision/VisionMask"
             #include "Vision.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareRenderingLayerTexture.hlsl"
 
-            // 2026-11_fov-rework D9: people, items and wall mounts carry this rendering-layer bit. The culler has
+            // systems/fov.md People, items, wall mounts: people, items and wall mounts carry this rendering-layer bit. The culler has
             // already decided they're in sight, so their pixels show whole instead of being cut at the edge.
             int _VisionEntityLayer;
             float _VisionUseRenderingLayers;

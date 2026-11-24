@@ -5,7 +5,7 @@ using UnityEngine;
 namespace EditorTests
 {
     /// <summary>
-    /// The CPU half of the FOV rule (2026-11_fov-rework D1, D4): gameplay asks <see cref="VisionSubSystem.IsVisible"/>
+    /// The CPU half of the FOV rule (systems/fov.md Rule + Cast): gameplay asks <see cref="VisionSubSystem.IsVisible"/>
     /// the same question the mask shader answers, so these pin the depth test, the hit tile and the wall rule.
     /// </summary>
     public class VisionFovTests

@@ -100,7 +100,7 @@ Client FOV / fog of war (`VisionRendererFeature` and its mask and composite pass
 
 - [merge guide](../../archive/architecture/2026-11_merge-guide.md#urp-migration) § URP migration
 - Plan: [urp_lighting_look_plan_d42c32f5.plan.md](../../plans/urp_lighting_look_plan_d42c32f5.plan.md)
-- FOV: [fov](fov.md) map; effort [2026-11_fov-rework.md](../2026-11_fov-rework.md)
+- FOV: [fov](fov.md) map; effort [2026-11_fov-rework.md](../../archive/architecture/2026-11_fov-rework.md)
 - Polish handoff: [2026-07_urp-lighting-look-polish.md](../2026-07_urp-lighting-look-polish.md)
 - Effort (shipped): [2026-07_srp-batcher-gpu-instancing.md](../2026-07_srp-batcher-gpu-instancing.md)
 - Effort (shipped): [2026-07_unity-framedebug-ai-tooling.md](../2026-07_unity-framedebug-ai-tooling.md) — Frame Debugger → `Logs/framedebug/` markdown

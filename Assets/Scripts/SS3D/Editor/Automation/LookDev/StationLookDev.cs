@@ -173,7 +173,7 @@ namespace SS3D.Editor.Automation
         /// </summary>
         public static string SetLineOfSight(bool enabled)
         {
-            // VisionSubSystem owns the vision state (2026-11_fov-rework D6); without it there is no mask to switch.
+            // VisionSubSystem owns the vision state (systems/fov.md State); without it there is no mask to switch.
             if (!SubSystems.TryGet(out VisionSubSystem vision))
             {
                 return "No vision subsystem yet; line of sight unchanged.";

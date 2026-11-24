@@ -14,7 +14,7 @@ using Coimbra.Services.Events;
 
 namespace SS3D.Systems.Vision
 {
-    /// <summary>Whether the client field of view is drawn (2026-11_fov-rework D6).</summary>
+    /// <summary>Whether the client field of view is drawn (systems/fov.md State).</summary>
     public enum VisionState
     {
         /// <summary>No living body to see from (ghost, lobby, server), or not set up yet.</summary>
@@ -28,7 +28,7 @@ namespace SS3D.Systems.Vision
     }
 
     /// <summary>
-    /// Client-side field of view (fov.md, 2026-11_fov-rework). Each frame casts one batch of level rays
+    /// Client-side field of view (fov.md; map: systems/fov.md). Each frame casts one batch of level rays
     /// from <see cref="Entity.ViewPoint"/> against the <see cref="VisionOccluder.LayerName"/> layer, then
     /// writes the hit distances into the polar <c>_VisionMap</c> and the wall tiles they hit into
     /// <c>_VisionTiles</c>. <c>VisionRendererFeature</c> draws the mask from those; <see cref="IsVisible"/>

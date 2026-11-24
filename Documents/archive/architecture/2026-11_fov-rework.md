@@ -1,16 +1,16 @@
 > Implements: Documents/design/fov.md §2 (what blocks sight), §3 (what hidden looks like), §4 (people, things and what they give away), §5 (sight from the eyes), §6 (one line of sight)
 > Touches systems: rendering, tile, entities, examine, action-messages, map-editor-creative-hooks
-> Status: in-progress
+> Status: shipped
 
-**Progress:** P0–P4 built 2026-11-16 on `feature/jolly-newton-n5itdr` (findings under each phase). Left: the owner's look at the 10° shots and a Metastation check of the cast budget; then archive. The map is now [fov](systems/fov.md). Grilled with the owner on 2026-11-16, after an architecture review of the FOV and playtest feedback that the black "shadows don't match the walls". The same grill produced [fov.md](../design/fov.md). Serves [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M13.
+**Progress:** P0–P4 built 2026-11-16 on `feature/jolly-newton-n5itdr`; develop merged in and the camera's minimum tilt raised from 10° to 30° on the owner's call after the 10° shots (2026-11-24). The Metastation cast-budget check moved to the M13 slice. The map is now [fov](../../architecture/systems/fov.md). Grilled with the owner on 2026-11-16, after an architecture review of the FOV and playtest feedback that the black "shadows don't match the walls". The same grill produced [fov.md](../../design/fov.md). Serves [mvp1-nuke-ops.md](../../milestones/mvp1-nuke-ops.md) M13.
 
 # Field of view rework: walls drawn whole, sharp edges, one raycast batch (Nov 2026)
 
-The FOV mask splits walls down the middle, breaks its edges where they climb a wall, stair-steps at corners, and at low camera tilts reads as a black shadow that doesn't match any wall. Its rays re-cast up to 64 times a frame on the main thread to skip furniture. This effort keeps the black, memoryless fog ([fov.md](../design/fov.md) §1) and Seteron's polar raycast idea, and replaces how rays find occluders and how wall pixels are judged.
+The FOV mask splits walls down the middle, breaks its edges where they climb a wall, stair-steps at corners, and at low camera tilts reads as a black shadow that doesn't match any wall. Its rays re-cast up to 64 times a frame on the main thread to skip furniture. This effort keeps the black, memoryless fog ([fov.md](../../design/fov.md) §1) and Seteron's polar raycast idea, and replaces how rays find occluders and how wall pixels are judged.
 
 ## Starting state (2026-11-16, `e8905cebb`)
 
-Read directly from code and prefabs; the [rendering](systems/rendering.md) map is stamped `f481dc3b1`.
+Read directly from code and prefabs; the [rendering](../../architecture/systems/rendering.md) map is stamped `f481dc3b1`.
 
 - **Producer.** `VisionSubSystem` (process-wide, `SystemsBootstrap` `AddComponent`, so every `[SerializeField]` is its field default) casts `3 × 360` rays from `Entity.ViewPoint` against every layer except a few, in waves: each wave is `RaycastCommand.ScheduleBatch(...).Complete()` on the main thread, up to `MaxOccluderSkips = 64`, advancing rays past non-occluders.
 - **Occluders.** `ClassifyVisionOccluder` decides per collider: `Walls` layer, or a `PlacedTileObject` Door or non-window Wall, minus `TileObjectSo.blocksVision == false`. Results are cached by collider instance id (cleared at 4096). On a pure client a door leaf hit mid-spawn returns false and the cache keeps it; not reproduced.
@@ -39,11 +39,11 @@ Read directly from code and prefabs; the [rendering](systems/rendering.md) map i
 | D10 | **Cast off the main thread.** Schedule the batch in `LateUpdate` after the view point settles; complete it in `RenderPipelineManager.beginContextRendering`. Budget: under 0.5 ms main-thread time on the Metastation under the `Vision.ViewPoints` and `Vision.VisionMap` markers | Today's cost is the blocking waves; one batch overlaps other late work |
 | D11 | **Line-of-sight query for later server use.** `VisionLineOfSight.HasSight(from, to)`: one raycast on `VisionOccluder`, usable without rendering. No server consumer in this effort | fov.md §6; moving action messages and examine to the server is a follow-up |
 | D12 | **Own system map**, `systems/fov.md`; `rendering.md` keeps a pointer for the render feature | The domain now owns a layer, a recipe, culling and a query |
-| D13 | **Versioning.** No `ProtocolVersion` or `PersistenceEnvelope` bump: nothing new crosses the network or the save, and occluder children carry no `NetworkBehaviour`. The commit that completes P3 carries `Version-Bump: minor` | [game-versioning](2026-10_game-versioning.md) |
+| D13 | **Versioning.** No `ProtocolVersion` or `PersistenceEnvelope` bump: nothing new crosses the network or the save, and occluder children carry no `NetworkBehaviour`. The commit that completes P3 carries `Version-Bump: minor` | [game-versioning](../../architecture/2026-10_game-versioning.md) |
 
 ## Deviations from design
 
-- **rendering-lighting.md §5, combat.md §3, comms.md §3 (one shared occlusion raycast):** sight gets its own `VisionOccluder` layer; speech (Default) and combat cover (Default + `Walls`) keep their masks. Unifying them is a follow-up grill. Sight stays the most permissive of the three, so "what you can't see, you can't hit" holds ([fov.md](../design/fov.md) §8).
+- **rendering-lighting.md §5, combat.md §3, comms.md §3 (one shared occlusion raycast):** sight gets its own `VisionOccluder` layer; speech (Default) and combat cover (Default + `Walls`) keep their masks. Unifying them is a follow-up grill. Sight stays the most permissive of the three, so "what you can't see, you can't hit" holds ([fov.md](../../design/fov.md) §8).
 
 ## Phases
 
@@ -122,7 +122,7 @@ Read directly from code and prefabs; the [rendering](systems/rendering.md) map i
 
 - [x] Rename `VisionBlurRenderPass` and `VisionMaskBlur` to composite; delete `SpacePlane.shader`, `Spaceplane.mat`, unused `ViewCastInfo` fields, `transform.position` write, dead `[SerializeField]`s; `.editorconfig` naming on public members; ghost check through an `Entity` capability rather than `HumanoidGhostController`
 - [x] Rewrite `systems/fov.md`; move the vision pitfalls out of `rendering.md`, dropping the slack pitfall; `MERGE_GUIDE.md` Vision row (was `FORK_STATUS.md`)
-- [ ] Owner looks at the 10° screenshots; decide whether to raise the camera's minimum tilt
+- [x] Owner looks at the 10° screenshots; decide whether to raise the camera's minimum tilt (raised to 30°, 2026-11-24)
 - [x] `update-system-docs`; M13 status
 - Validation: `compile,editmode`
 
@@ -132,7 +132,7 @@ Read directly from code and prefabs; the [rendering](systems/rendering.md) map i
 
 - **Delete** the slack tests in `VisionFovTests` (they check the old constants, not behaviour). Keep the `IsWithinDepths` tests.
 - **EditMode:** tile from hit point and normal; the D1 rule as the CPU mirror of the shader; the three-point entity check; wall-mount facing tile; occluder `AssetAudit` (D3).
-- **Scenarios** (`[Category("Vision")]`, `scenarios:Vision`), each with a `Guards:` line per [testing philosophy](2026-11_testing-philosophy.md):
+- **Scenarios** (`[Category("Vision")]`, `scenarios:Vision`), each with a `Guards:` line per [testing philosophy](../../architecture/2026-11_testing-philosophy.md):
   - hugging a wall: the next room hidden, the wall beside a door drawn whole (rewrite of the current scenario);
   - an airlock opening reveals the room behind it;
   - a person half behind a jamb is shown, fully behind it hidden, with no shadow.
@@ -142,15 +142,15 @@ Read directly from code and prefabs; the [rendering](systems/rendering.md) map i
 
 - Moving action-message and examine filtering to the server (D11 makes it possible).
 - Unifying the speech, combat and sight occluder sets (see Deviations).
-- Anything in [fov.md](../design/fov.md) §9.
+- Anything in [fov.md](../../design/fov.md) §9.
 
 ## Open questions for the owner
 
-- After P2: does the 10° tilt still look wrong, and should the camera's minimum tilt go up? Shots: `doorway-10`, `corner-10` and `person-*` in the latest `artifacts/ui/vision-shots-*` (regenerate with `validate.sh --steps scenarios:VisionShots`).
+- ~~After P2: does the 10° tilt still look wrong, and should the camera's minimum tilt go up?~~ Answered 2026-11-24: raise it to 30°. Shots: `doorway-10`, `corner-10` and `person-*` in the latest `artifacts/ui/vision-shots-*` (regenerate with `validate.sh --steps scenarios:VisionShots`).
 
 ## Related docs
 
-- Design: [fov.md](../design/fov.md); [examine.md](../design/examine.md) §2; [action-messages.md](../design/action-messages.md); [combat.md](../design/combat.md) §3; [comms.md](../design/comms.md) §3; [construction.md](../design/construction.md) §6–§7
-- Maps: [fov](systems/fov.md); [rendering](systems/rendering.md) (URP feature registration); [tile](systems/tile.md); [examine](systems/examine.md); [action-messages](systems/action-messages.md)
-- Milestone: [mvp1-nuke-ops.md](../milestones/mvp1-nuke-ops.md) M13
-- Policy: [agent-first composition](2026-07_agent-first-composition.md) (tier-B recipes); [editor tooling tiers](2026-07_editor-tooling-tiers.md); [testing philosophy](2026-11_testing-philosophy.md)
+- Design: [fov.md](../../design/fov.md); [examine.md](../../design/examine.md) §2; [action-messages.md](../../design/action-messages.md); [combat.md](../../design/combat.md) §3; [comms.md](../../design/comms.md) §3; [construction.md](../../design/construction.md) §6–§7
+- Maps: [fov](../../architecture/systems/fov.md); [rendering](../../architecture/systems/rendering.md) (URP feature registration); [tile](../../architecture/systems/tile.md); [examine](../../architecture/systems/examine.md); [action-messages](../../architecture/systems/action-messages.md)
+- Milestone: [mvp1-nuke-ops.md](../../milestones/mvp1-nuke-ops.md) M13
+- Policy: [agent-first composition](../../architecture/2026-07_agent-first-composition.md) (tier-B recipes); [editor tooling tiers](../../architecture/2026-07_editor-tooling-tiers.md); [testing philosophy](../../architecture/2026-11_testing-philosophy.md)

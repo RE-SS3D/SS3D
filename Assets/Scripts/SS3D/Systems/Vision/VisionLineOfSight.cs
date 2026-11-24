@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SS3D.Systems.Vision
 {
     /// <summary>
-    /// The one line of sight (fov.md §6, 2026-11_fov-rework D11): blocked only by what blocks sight, the
+    /// The one line of sight (fov.md §6, systems/fov.md Gameplay): blocked only by what blocks sight, the
     /// <see cref="VisionOccluder.LayerName"/> layer. Needs no rendering, so a server can ask it too.
     /// </summary>
     public static class VisionLineOfSight

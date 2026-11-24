@@ -7,7 +7,7 @@ namespace SS3D.Systems.Vision
 {
     /// <summary>
     /// Fills one level ray per angular bin, through the bin's centre, so a point lookup of a bin finds the ray
-    /// through its middle (2026-11_fov-rework D2, D10).
+    /// through its middle (systems/fov.md Cast).
     /// </summary>
     [BurstCompile]
     internal struct VisionRayCommandsJob : IJobParallelFor

@@ -1,16 +1,16 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Vision/, Assets/Scripts/SS3D/Rendering/URP/Vision*, Assets/Content/Resources/Vision/, Assets/Scripts/SS3D/Systems/Tile/Connections/VisionOccluder.cs
 > Entry points: VisionSubSystem, VisionLineOfSight, VisionEntityCuller, VisionRendererFeature, VisionOccluderRecipe
 > Status: partial
-> Verified: 953fcbbdc — 2026-11-16
+> Verified: 4737edad8 — 2026-11-24
 
 # Field of view
 
 ## Overview
 
-Client fog of war per [fov.md](../../design/fov.md): what the local living body can see right now; everything else is solid black, nothing remembered. Built by [2026-11_fov-rework](../2026-11_fov-rework.md).
+Client fog of war per [fov.md](../../design/fov.md): what the local living body can see right now; everything else is solid black, nothing remembered. Built by [2026-11_fov-rework](../../archive/architecture/2026-11_fov-rework.md); the camera's lowest tilt is 30° (`CameraFollow.MinVerticalAngle`, raised from 10° after the rework, where low views read as a wall of black).
 
 - **Sight blockers** are boxes on the `VisionOccluder` physics layer (14), which collides with nothing; only queries use it. Every wall-type tile that blocks sight (steel, reinforced, plated girder; not windows or bare girders) carries a `VisionOccluder`: a centre block and one arm per connected cardinal neighbour, as thick as its mesh at eye height (1.5 m). `TileAdjacencyView` switches the arms when it swaps the mesh. Each leaf of a solid airlock carries a box the size of its mesh, so an opening door reveals the room as it opens; the external airlock's skinned leaf has its box under the `Blocker` that rides the sinking door's bone. Glass airlock skins (`blocksVision` off) carry none, like windows. Furniture, machines and people never block sight (fov.md §2).
-- **Cast.** `VisionSubSystem` schedules one batch per frame in `LateUpdate`: 1080 level rays (3 per degree) from `Entity.ViewPoint` against that layer, filled and post-processed by Burst jobs (`VisionCastJobs.cs`), completed at `RenderPipelineManager.beginContextRendering`. It writes `_VisionMap` (R16, per angular bin the distance to the first blocker) and `_VisionTiles` (R8, one texel per tile around the eye, set where a ray hit a blocker).
+- **Cast.** `VisionSubSystem` schedules one batch per frame in `LateUpdate`: 1080 level rays (3 per degree) from `Entity.ViewPoint` against that layer, filled and post-processed by Burst jobs (`VisionCastJobs.cs`), completed at `RenderPipelineManager.beginContextRendering`. It writes `_VisionMap` (R16, per angular bin the distance to the first blocker) and `_VisionTiles` (R8, one texel per tile around the eye, set where a ray hit a blocker). Constants the CPU and shader share (`_VisionDepthEpsilon`, `_VisionNearBubble`) are shader globals the subsystem sets, not duplicated literals.
 - **Rule** (shader `VisionIsVisibleWorld`, CPU `IsVisible`): a point shows when the ray at its angle went at least that far, or when it is inside a wall tile a ray hit and above the body's feet + 0.08 m. Walls in view therefore draw whole, top and faces, and the black starts at their outline (fov.md §3); the floor of a door tile keeps the depth test, so nothing behind a closed leaf leaks.
 - **People, items, wall mounts** (fov.md §4): `VisionEntityCuller` shows each whole or hides it whole (`forceRenderingOff`, so no shadow). Bodies and loose items show when the middle or either side across the line of sight is visible; held and worn items follow their holder; wall mounts follow the floor tile they face. Every renderer it tracks carries rendering layer `VisionEntity` (bit 2), and the mask pass shows those pixels, so a shown person is never cut by the edge. Lights they carry are untouched.
 - **Render.** `VisionRendererFeature`: an R8 mask at full resolution (`VisionMaskRenderPass`), a separable blur at half resolution, and a composite of colour × mask × blur into a new camera colour target (`VisionCompositeRenderPass`). The edge fades inward only, over 0.5 % of screen height; hidden stays black (fov.md §3).
@@ -36,7 +36,8 @@ Client fog of war per [fov.md](../../design/fov.md): what the local living body 
 - **A new wall or door type:** give its `TileObjectSo` the `Wall` or `Door` generic type and the right `blocksVision`, then run **SS3D → Rendering → Run Content Prefab Recipes**. The recipe sizes arms from the prefab's straight (`i`) `AdvancedConnector` mesh; a prefab whose sight-blocking mesh is on a child lists it in `VisionOccluderRecipe.SightMeshChild`. `VisionOccluderAuditTests` fails until the recipe has run. `AirlockSkinSetup` and `ExternalAirlockSetup` run it after rebuilding their prefabs.
 - **Something else that should block sight** (a future shutter): put a solid box on the `VisionOccluder` layer under a `VisionOccluder` child that moves with it. Never move an existing collider onto the layer: speech reads Default, combat cover Default + `Walls`.
 - **Another owner of `forceRenderingOff`** on bodies or items: add a `RendererHiding.Reason` and set it through `RendererHiding.Set`, never the property directly.
-- **Server line of sight:** `VisionLineOfSight.HasSight` from eye to eye. Moving action messages and examine to the server is a follow-up (effort Out of scope).
+- **Server line of sight:** `VisionLineOfSight.HasSight` from eye to eye. Moving action messages and examine to the server is a follow-up.
+- **Sight has its own occluder set.** Speech (Default) and combat cover (Default + `Walls`) keep their masks; unifying the three is a follow-up grill (deviation from rendering-lighting.md §5, combat.md §3, comms.md §3). Sight stays the most permissive, so what you can't see you can't hit ([fov.md](../../design/fov.md) §8).
 
 ## Pitfalls
 
@@ -49,13 +50,14 @@ Client fog of war per [fov.md](../../design/fov.md): what the local living body 
 - **Point sampling, not bilinear:** `_VisionMap` is read with `LOAD` of the bin a pixel's angle falls in, which is what `IsWithinDepths` does. Bilinear interpolation across a depth jump would draw a smear past wall edges and disagree with gameplay. The inward blur hides the 1/3° steps.
 - **Ghost and map editor:** a ghost body has no field of view (`Entity.HasFieldOfView`), so `State` is `Off` whatever the map editor does; closing the editor must not bring the mask back for a ghost, and respawning into a living body does. `LobbyLifecyclePilot.Sandbox` checks both.
 - **Map uploads on the per-frame path:** no `new Color[]` / `SetPixels`; the jobs write native arrays and `SetPixelData` uploads them (an earlier `Color[]` path was a multi-MB-per-frame GC hotspot).
+- **No hole filling:** the old CPU dilate and the shader's neighbour fill are gone; they made CPU and GPU disagree. If angular stripes show on floors, add one fill in the shader only and mirror it in `IsWithinDepths`.
 - **Ray hits are a frame old for moving doors:** colliders follow the leaf animation on the physics step (`Physics.autoSyncTransforms` is off), so an opening door reveals the room a fixed step late. Scenarios wait for a `WaitForFixedUpdate`.
 
 ## Tests
 
 - EditMode `VisionFovTests` — `IsWithinDepths`, `HitTile`, `IsPartOfSeenWall`; AssetAudit `VisionOccluderAuditTests` — occluders match tiles and meshes, layer collides with nothing.
 - PlayMode `VisionScenarios` (`scenarios:Vision`) — hugging a wall, a point behind a wall, an airlock opening, a person half behind a jamb.
-- `VisionShots` (explicit, `scenarios:VisionShots`) — doorway, corner and person pictures at 10°/45°/80° with and without the FOV, plus `Vision.*` marker timings, into `artifacts/ui/vision-shots-<UTC>/`.
+- `VisionShots` (explicit, `scenarios:VisionShots`) — doorway, corner and person pictures at 30° (the camera's lowest tilt)/45°/80° with and without the FOV, plus `Vision.*` marker timings, into `artifacts/ui/vision-shots-<UTC>/`.
 
 ## Depends on / Used by
 
@@ -65,5 +67,5 @@ Client fog of war per [fov.md](../../design/fov.md): what the local living body 
 ## Related docs
 
 - Design: [fov.md](../../design/fov.md)
-- Effort: [2026-11_fov-rework.md](../2026-11_fov-rework.md)
+- Effort (archived): [2026-11_fov-rework.md](../../archive/architecture/2026-11_fov-rework.md)
 - Milestone: [mvp1-nuke-ops.md](../../milestones/mvp1-nuke-ops.md) M13

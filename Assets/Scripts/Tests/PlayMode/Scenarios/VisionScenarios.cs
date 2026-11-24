@@ -20,7 +20,7 @@ namespace SS3D.Tests
         // Steel wall faces at eye height, from the tile centre (VisionOccluderRecipe measures 0.216).
         private const float WallFaceFromCentre = 0.216f;
 
-        // Guards: the wall beside a door drawn whole while the room behind it stays black (VisionOccluder arms, VisionSubSystem.IsPartOfSeenWall, 2026-11_fov-rework D1) · Not cheaper because: it needs the real wall's arms, switched by its real connections, and the live cast
+        // Guards: the wall beside a door drawn whole while the room behind it stays black (VisionOccluder arms, VisionSubSystem.IsPartOfSeenWall, systems/fov.md Rule) · Not cheaper because: it needs the real wall's arms, switched by its real connections, and the live cast
         [UnityTest]
         public IEnumerator HuggingAWall_HidesTheNextRoom_ShowsTheWallWhole()
         {

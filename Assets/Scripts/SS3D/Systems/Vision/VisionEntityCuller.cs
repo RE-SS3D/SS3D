@@ -9,7 +9,7 @@ using UnityEngine;
 namespace SS3D.Systems.Vision
 {
     /// <summary>
-    /// Shows people, items and wall mounts whole or not at all (fov.md §4, 2026-11_fov-rework D9). A person or
+    /// Shows people, items and wall mounts whole or not at all (fov.md §4, systems/fov.md People, items, wall mounts). A person or
     /// item shows when any of three points is in sight: the middle of its footprint and both sides of it across
     /// the line of sight. A wall mount shows when the floor tile it faces is in sight. Hidden ones get
     /// <see cref="RendererHiding.Reason.OutOfSight"/>, which also drops their shadows; lights they carry keep

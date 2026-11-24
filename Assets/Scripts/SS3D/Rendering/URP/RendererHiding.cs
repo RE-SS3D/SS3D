@@ -7,7 +7,7 @@ namespace SS3D.Rendering.URP
     /// <summary>
     /// Shares <see cref="Renderer.forceRenderingOff"/> between owners that hide renderers for different reasons,
     /// so one showing a renderer never undoes another's hide: worn clothes covering a body part, the field of
-    /// view culling a whole person or item (2026-11_fov-rework D9), an item stored in a container, and floor
+    /// view culling a whole person or item (systems/fov.md People, items, wall mounts), an item stored in a container, and floor
     /// cover over underfloor objects. A renderer renders when no reason holds.
     /// </summary>
     public static class RendererHiding

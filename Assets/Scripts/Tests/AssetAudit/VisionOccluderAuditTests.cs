@@ -7,7 +7,7 @@ using UnityEngine;
 namespace SS3D.Tests.AssetAudit
 {
     /// <summary>
-    /// Sight blockers match the tiles and the art (2026-11_fov-rework D3): every wall-type tile that blocks sight
+    /// Sight blockers match the tiles and the art (systems/fov.md Sight blockers): every wall-type tile that blocks sight
     /// has a <see cref="VisionOccluder"/> as thick as its mesh at eye height, windows and bare girders have none,
     /// and every door leaf carries a box the size of its mesh. Fix drift with
     /// SS3D → Rendering → Run Content Prefab Recipes.

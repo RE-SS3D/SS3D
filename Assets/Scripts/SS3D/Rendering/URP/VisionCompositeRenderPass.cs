@@ -7,7 +7,7 @@ using UnityEngine.Rendering.Universal;
 namespace SS3D.Rendering.URP
 {
     /// <summary>
-    /// Softens the vision mask inward and composites it (2026-11_fov-rework D7): a separable blur of the
+    /// Softens the vision mask inward and composites it (systems/fov.md Render): a separable blur of the
     /// mask at half resolution, then the scene times mask × blur(mask) into a new colour target that
     /// becomes the camera colour. Hidden pixels stay fully black, so nothing about an unseen tile leaks.
     /// </summary>

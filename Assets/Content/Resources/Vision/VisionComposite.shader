@@ -1,6 +1,6 @@
 Shader "Vision/VisionComposite"
 {
-    // 2026-11_fov-rework D7: the visibility mask is blurred at half resolution and the composite
+    // systems/fov.md Render: the visibility mask is blurred at half resolution and the composite
     // multiplies the scene by mask × blur(mask). Hidden pixels stay fully black (mask 0); visible ones
     // near the edge fade toward it, so the edge softens inward only and nothing hidden lights up.
     SubShader

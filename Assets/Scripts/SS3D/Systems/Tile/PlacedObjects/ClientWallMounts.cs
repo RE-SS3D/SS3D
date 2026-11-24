@@ -5,7 +5,7 @@ namespace SS3D.Systems.Tile
 {
     /// <summary>
     /// Wall mounts spawned on this client. The field of view shows or hides each one with the floor tile it
-    /// faces (fov.md §4, 2026-11_fov-rework D9). Main thread only.
+    /// faces (fov.md §4, systems/fov.md People, items, wall mounts). Main thread only.
     /// </summary>
     public static class ClientWallMounts
     {

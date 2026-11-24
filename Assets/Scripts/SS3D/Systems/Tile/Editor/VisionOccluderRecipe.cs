@@ -9,7 +9,7 @@ using UnityEngine;
 namespace SS3D.Systems.Tile.Editor
 {
     /// <summary>
-    /// Tier-B recipe for sight blockers (2026-11_fov-rework D3). Every wall-type tile that blocks sight gets
+    /// Tier-B recipe for sight blockers (systems/fov.md Sight blockers). Every wall-type tile that blocks sight gets
     /// a <see cref="VisionOccluder"/>: a centre block and four arms on the <see cref="VisionOccluder.LayerName"/>
     /// layer, as thick as its straight mesh at <see cref="VisionOccluder.EyeHeight"/>. Every leaf of a door that
     /// blocks sight gets a box the size of its mesh, or of its <c>Blocker</c> box when the leaf is a skinned model
