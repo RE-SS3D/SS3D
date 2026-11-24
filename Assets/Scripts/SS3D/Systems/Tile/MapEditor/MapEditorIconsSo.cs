@@ -38,6 +38,7 @@ namespace SS3D.Systems.Tile.MapEditor
             public const string Camera = Root + "camera.svg";
             public const string Settings = Root + "settings.svg";
             public const string Search = Root + "search.svg";
+            public const string Warning = Root + "warning.svg";
             public const string ModeUpper = Root + "chevronUp.svg";
             public const string ModeLower = Root + "chevronDown.svg";
             public const string ModeItems = Root + "box.svg";
@@ -75,6 +76,7 @@ namespace SS3D.Systems.Tile.MapEditor
         [SerializeField] private VectorImage _camera;
         [SerializeField] private VectorImage _settings;
         [SerializeField] private VectorImage _search;
+        [SerializeField] private VectorImage _warning;
         [SerializeField] private VectorImage _modeUpper;
         [SerializeField] private VectorImage _modeLower;
         [SerializeField] private VectorImage _modeItems;
@@ -152,6 +154,8 @@ namespace SS3D.Systems.Tile.MapEditor
         public VectorImage Camera => Resolve(_camera, Paths.Camera);
         public VectorImage Settings => Resolve(_settings, Paths.Settings);
         public VectorImage Search => Resolve(_search, Paths.Search);
+        /// <summary>Map Check's cell under the view tools.</summary>
+        public VectorImage Warning => Resolve(_warning, Paths.Warning);
 
         /// <summary>
         /// Icon for the floating reveal button, visible only while the HUD is hidden (toggled via

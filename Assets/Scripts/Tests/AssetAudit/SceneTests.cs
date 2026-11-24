@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using NUnit.Framework;
@@ -6,12 +7,30 @@ using SS3D.Attributes;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using Object = UnityEngine.Object;
+using UnityEngine.SceneManagement;
 
 namespace AssetAudit
 {
+    /// <summary>
+    /// Audits every scene under <see cref="AssetAuditUtilities.SceneRootPath"/>. Each scene loads as a preview scene,
+    /// so the scenes open in the Editor stay as they are. Opening them with EditorSceneManager.OpenScene left the last
+    /// one open as the active scene for the rest of the run.
+    /// </summary>
     public class SceneTests
     {
+        private Scene _previewScene;
+
+        [TearDown]
+        public void ClosePreviewScene()
+        {
+            if (_previewScene.IsValid())
+            {
+                EditorSceneManager.ClosePreviewScene(_previewScene);
+            }
+
+            _previewScene = default;
+        }
+
         #region Tests
         /// <summary>
         /// Test to confirm that MonoBehaviours have serialized fields (marked by NotNullAttribute) initialized.
@@ -20,18 +39,19 @@ namespace AssetAudit
         [Test, TestCaseSource(nameof(AllScenes))]
         public void SpecifiedFieldsWithinSceneAreNotNull(SceneAsset scene)
         {
-
-            // Load all MonoBehaviours in the desired scene
-            EditorSceneManager.OpenScene(FullScenePathAndName(scene.name));
-            MonoBehaviour[] _allMonoBehaviours = Object.FindObjectsOfType<MonoBehaviour>();
-
             bool allRelevantFieldsHaveBeenSet = true;
             BindingFlags flags = GetBindingFlags();
             StringBuilder sb = new();
 
             // ACT - Check each MonoBehaviour in the scene
-            foreach (MonoBehaviour mono in _allMonoBehaviours)
+            foreach (MonoBehaviour mono in SceneMonoBehaviours(scene))
             {
+                // Missing scripts appear as null entries; SceneObjectsDoNotHaveMissingScripts covers those.
+                if (mono == null)
+                {
+                    continue;
+                }
+
                 // Get all fields from the MonoBehaviour using reflection
                 Type monoType = mono.GetType();
                 FieldInfo[] objectFields = monoType.GetFields(flags);
@@ -74,9 +94,8 @@ namespace AssetAudit
         public void SceneObjectsAreOnTheirMandatedLayers(SceneAsset scene)
         {
             StringBuilder sb = new();
-            EditorSceneManager.OpenScene(FullScenePathAndName(scene.name));
-            MonoBehaviour[] sceneMonoBehaviours = Object.FindObjectsOfType<MonoBehaviour>();
-            bool allRelevantMonoBehavioursAreOnTheRightLayer = AssetAuditUtilities.CheckMonoBehavioursForCorrectLayer(sceneMonoBehaviours, ref sb);
+            bool allRelevantMonoBehavioursAreOnTheRightLayer =
+                AssetAuditUtilities.CheckMonoBehavioursForCorrectLayer(SceneMonoBehaviours(scene), ref sb);
             Assert.IsTrue(allRelevantMonoBehavioursAreOnTheRightLayer, sb.ToString());
         }
 
@@ -88,14 +107,16 @@ namespace AssetAudit
         public void SceneObjectsDoNotHaveMissingScripts(SceneAsset scene)
         {
             StringBuilder sb = new();
-            EditorSceneManager.OpenScene(FullScenePathAndName(scene.name));
-            bool allScriptsExist = true;
-            GameObject[] sceneGameObjects = Object.FindObjectsOfType<GameObject>();
-            foreach (GameObject sceneObject in sceneGameObjects)
+            foreach (GameObject sceneObject in SceneGameObjects(scene))
             {
-                allScriptsExist = allScriptsExist && AssetAuditUtilities.CheckGameObjectForMissingScripts(sceneObject, ref sb);
+                int missingCount = GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(sceneObject);
+                if (missingCount > 0)
+                {
+                    sb.Append($"-> {missingCount} missing script(s) on '{sceneObject.name}'.\n");
+                }
             }
-            Assert.IsTrue(allScriptsExist, sb.ToString());
+
+            Assert.IsTrue(sb.Length == 0, sb.ToString());
         }
         #endregion
 
@@ -113,9 +134,34 @@ namespace AssetAudit
             return AssetAuditUtilities.AllScenes();
         }
 
-        private static string FullScenePathAndName(string sceneName)
+        /// <summary>
+        /// Loads the scene as a preview scene (closed in <see cref="ClosePreviewScene"/>) and returns its root objects.
+        /// </summary>
+        private GameObject[] OpenSceneRoots(SceneAsset scene)
         {
-            return $"{AssetAuditUtilities.SceneRootPath}/{sceneName}.unity";
+            _previewScene = EditorSceneManager.OpenPreviewScene(AssetDatabase.GetAssetPath(scene));
+            return _previewScene.GetRootGameObjects();
+        }
+
+        /// <summary>
+        /// Every MonoBehaviour in the scene, inactive ones included.
+        /// </summary>
+        private MonoBehaviour[] SceneMonoBehaviours(SceneAsset scene)
+        {
+            return OpenSceneRoots(scene)
+                .SelectMany(root => root.GetComponentsInChildren<MonoBehaviour>(true))
+                .ToArray();
+        }
+
+        /// <summary>
+        /// Every GameObject in the scene, inactive ones included.
+        /// </summary>
+        private GameObject[] SceneGameObjects(SceneAsset scene)
+        {
+            return OpenSceneRoots(scene)
+                .SelectMany(root => root.GetComponentsInChildren<Transform>(true))
+                .Select(transform => transform.gameObject)
+                .ToArray();
         }
         #endregion
     }

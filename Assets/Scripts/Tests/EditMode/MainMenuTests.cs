@@ -50,10 +50,10 @@ namespace SS3D.Tests.EditMode
         {
             MainMenuAssetCatalog catalog = Resources.Load<MainMenuAssetCatalog>(MainMenuAssetPaths.ResourcesCatalogName);
             int previous = catalog.PickWallpaper(0f, 0f);
-            Assert.AreNotEqual(previous, MainMenuSubSystem.PickOtherWallpaper(catalog, previous, () => 0f));
+            Assert.AreNotEqual(previous, MainMenuAmbience.PickOtherWallpaper(catalog, previous, () => 0f));
             float[] rolls = { 0f, 0f, 0f, 0f, 1f, 0f };
             int roll = 0;
-            Assert.AreEqual(catalog.PickWallpaper(1f, 0f), MainMenuSubSystem.PickOtherWallpaper(catalog, previous, () => rolls[roll++]), "rerolls past a repeat");
+            Assert.AreEqual(catalog.PickWallpaper(1f, 0f), MainMenuAmbience.PickOtherWallpaper(catalog, previous, () => rolls[roll++]), "rerolls past a repeat");
         }
 
         [Test]

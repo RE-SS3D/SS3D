@@ -1,154 +1,784 @@
 /*
- * Join picker (lobby effort Phase 6), to the canvas boards "7 · Join: two jobs open" and "7 · Join: only Assistant
- * open". It sits in the lobby shell (Lobby.uxml, lobby-join) and Lobby.uss imports this sheet. Rules are prefixed
- * with .lobby so they beat the shell's Label and Button resets.
+ * Join picker (lobby.md §7), drawn with the UI bible's parts (Documents/plans/assets/ui-bible, "lobby" tab; its
+ * components.css join-picker section, and the join rules of its "Lobby: colour coding" block, are this sheet line for
+ * line, in USS). It sits in the lobby shell (Lobby.uxml, lobby-join); Lobby.uss imports it after ui-tokens.uss.
+ *   card       a floating plate (--ui-float) over the dimmed lobby
+ *   jobs       tints, each with its department's 3 px left edge, glyph cell and name. The picked job outlines in its
+ *              department's colour and fills its ring; Join is the white plate, filled with that colour once a job is
+ *              picked
+ *   manifest   department groups with the edge and a coloured name; a gap ("No Doctor aboard") is news, in info
+ * Sizes are the bible's reference px: the lobby root is laid out at 1200 × 675 and scaled to the screen in C#.
+ * Labels are Disket Mono Bold, which draws only capitals; text is Kode Mono. Labels that carry .lb-titling or .lb-mono
+ * set their font here, so the bible's font wins.
+ * --dept comes from the .lb-dept--<department> classes (Lobby.uss) that LobbyJoinPicker puts on a job item, its glyph
+ * cell, Join and a manifest group. A job or group with no department reads the neutral default set on .lobby-join.
+ * --dept-soft (Lobby.uss) is the department as an area: the picked job's fill, a hovered job's glyph cell.
+ * Motion (LobbyJoinPicker, UiMotion): opening fades the backdrop, scales the card in and staggers the jobs and the
+ * crew groups; a picked job's description eases in, a notice slides in when it appears. Actions are raised tints,
+ * the crew manifest's groups are inset wells (facts, not actions).
+ * Rules are prefixed with .lobby so they beat the runtime theme and the shell's resets. Buttons keep the theme's
+ * .unity-button class, so every Button class here sets its own background, border and colour for :hover and :active
+ * too, or the theme's light grey shows through.
  */
-.lobby-join {
-    position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center;
-    background-color: rgba(6, 7, 9, 0.35); display: none;
+
+/* ── Join picker: a floating plate over the lobby ── */
+.lobby .lobby-join {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.35);
+    display: none;
+    /* Neutral, for a job the server and the roster don't place in a department ("Other"). */
+    --dept: rgba(255, 255, 255, 0.5);
+    --dept-soft: var(--ui-editor-button-hover);
 }
-.lobby-join--open { display: flex; }
+
+.lobby .lobby-join--open {
+    display: flex;
+}
+
+.lobby .lobby-join .unity-disabled {
+    opacity: 1;
+}
+
+/* No overflow: hidden here: with border-radius it renders the whole card white. */
 .lobby .lobby-join__card {
-    width: 1280px; height: 800px; max-width: 96%; max-height: 94%;
-    /* No overflow: hidden here: with border-radius it renders the whole card white (stencil clip). */
-    background-color: var(--lb-panel); border-width: 1px; border-color: var(--lb-border); border-radius: 4px;
+    width: 1040px;
+    height: 600px;
+    max-width: 96%;
+    max-height: 94%;
+    background-color: var(--ui-float);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
 }
 
-/* ---- Header ---- */
+/* ── Thin scrollers: the map editor's ── */
+.lobby .lobby-join .unity-scroller--vertical {
+    width: 6px;
+    min-width: 6px;
+    margin-left: 2px;
+}
+
+.lobby .lobby-join .unity-scroller--vertical .unity-scroller__low-button,
+.lobby .lobby-join .unity-scroller--vertical .unity-scroller__high-button {
+    display: none;
+}
+
+.lobby .lobby-join .unity-scroller--vertical .unity-scroller__slider {
+    width: 6px;
+    min-width: 6px;
+    margin: 0;
+}
+
+.lobby .lobby-join .unity-scroller--vertical .unity-base-slider__tracker {
+    width: 6px;
+    left: 0;
+    border-width: 0;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.lobby .lobby-join .unity-scroller--vertical .unity-base-slider__dragger {
+    width: 6px;
+    left: 0;
+    margin-left: 0;
+    border-width: 0;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+.lobby .lobby-join .unity-scroller--vertical .unity-base-slider__dragger:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.lobby .lobby-join .unity-scroller--vertical .unity-base-slider__dragger-border {
+    display: none;
+}
+
+/* ── Header ── */
 .lobby .lobby-join__header {
-    flex-direction: row; align-items: center; height: 56px; flex-shrink: 0; padding: 0 16px 0 24px;
-    background-color: var(--lb-chrome);
+    flex-direction: row;
+    align-items: center;
+    height: 52px;
+    flex-shrink: 0;
+    padding: 0 12px 0 20px;
 }
-.lobby .lobby-join__title { height: 16px; font-size: 20px; letter-spacing: 1.6px; -unity-text-align: middle-left; }
-.lobby .lobby-join__meta-key { margin-left: 16px; font-size: 13px; color: var(--lb-text-2); }
-.lobby .lobby-join__clock { margin-left: 16px; font-size: 14px; color: var(--lb-text); }
-.lobby .lobby-join__close { width: 32px; height: 32px; align-items: center; justify-content: center; border-width: 1px; border-color: rgba(0, 0, 0, 0); border-radius: 4px; }
-.lobby .lobby-join__close:hover { background-color: var(--lb-hover); }
-.lobby .lobby-join__close:focus { border-color: var(--lb-border-strong); }
 
-.lobby-join__body { flex-direction: row; flex-grow: 1; min-height: 0; }
+.lobby .lobby-join__title {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 17px;
+}
 
-/* ---- Open jobs ---- */
+.lobby .lobby-join__meta-key {
+    margin-left: 18px;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby .lobby-join__clock {
+    margin-left: 6px;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
+    font-size: 12px;
+}
+
+/* Close: the main menu's glyph cell. */
+.lobby .lobby-join__close,
+.lobby .lobby-join__close:active,
+.lobby .lobby-join__close:hover:active {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.lobby .lobby-join__close {
+    width: 28px;
+    height: 28px;
+    margin: 0 0 0 6px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 4.2px; /* 15 % */
+    transition-property: border-color, scale;
+    transition-duration: 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic;
+}
+
+.lobby .lobby-join__close:hover {
+    border-color: var(--ui-editor-cell-edge);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.lobby .lobby-join__close:active,
+.lobby .lobby-join__close:hover:active {
+    scale: 0.9 0.9;
+}
+
+.lobby .lobby-join__close .lobby__icon {
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.55);
+    transition-property: rotate, -unity-background-image-tint-color;
+    transition-duration: 0.24s, 0.12s;
+    transition-timing-function: ease-out-back, ease-out-cubic;
+}
+
+/* The cross turns a quarter as the pointer arrives. */
+.lobby .lobby-join__close:hover .lobby__icon {
+    rotate: 90deg;
+    -unity-background-image-tint-color: var(--ui-text);
+}
+
+.lobby .lobby-join__body {
+    flex-direction: row;
+    flex-grow: 1;
+    min-height: 0;
+}
+
+/* ── Open jobs ── */
 .lobby .lobby-join__jobs {
-    width: 520px; flex-shrink: 0; padding: 20px 24px;
-    border-right-width: 1px; border-right-color: var(--lb-border-subtle);
+    width: 440px;
+    flex-shrink: 0;
+    padding: 4px 20px 20px 20px;
 }
-.lobby .lobby-join__section-head { flex-direction: row; align-items: center; flex-shrink: 0; margin-bottom: 12px; }
-.lobby .lobby-join__section-title { height: 16px; font-size: 20px; letter-spacing: 1.6px; -unity-text-align: middle-left; }
-.lobby .lobby-join__section-count { margin-left: 10px; font-size: 12px; color: var(--lb-text-2); }
-.lobby .lobby-join__hint { font-size: 12px; color: var(--lb-text-2); }
-.lobby .lobby-join__empty { font-size: 13px; color: var(--lb-text-2); white-space: normal; }
 
+.lobby .lobby-join__section-head {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    height: 20px;
+    margin-bottom: 8px;
+}
+
+/* A list's head leads with its glyph (the lobby's section heads). */
+.lobby .lobby-join__section-icon {
+    width: 12px;
+    height: 12px;
+    margin-right: 7px;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.8);
+}
+
+.lobby .lobby-join__section-title {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.lobby .lobby-join__section-count {
+    margin-left: 8px;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby .lobby-join__hint {
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby .lobby-join__empty {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: normal;
+}
+
+/* A notice: news in the info colour (only Assistant is open), the job you picked filling in warn. Its state as an
+   area: the soft fill, with the colour on its edge. */
 .lobby .lobby-join__notice {
-    flex-direction: row; align-items: center; padding: 10px 12px; margin-bottom: 12px; flex-shrink: 0;
-    border-width: 1px; border-radius: 2px; border-color: rgba(61, 96, 137, 0.4); background-color: rgba(61, 96, 137, 0.15);
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 8px 10px;
+    flex-shrink: 0;
+    border-width: var(--ui-hairline);
+    border-left-width: 3px;
+    border-color: var(--ui-info);
+    background-color: var(--ui-info-soft);
 }
-.lobby .lobby-join__notice .lobby__icon { margin-right: 10px; -unity-background-image-tint-color: #a9c4da; }
-.lobby .lobby-join__notice-text { flex-grow: 1; flex-shrink: 1; font-size: 13px; color: var(--lb-text); white-space: normal; }
-.lobby .lobby-join__notice--warning { border-color: rgba(230, 173, 83, 0.4); background-color: rgba(230, 173, 83, 0.12); }
-.lobby .lobby-join__notice--warning .lobby__icon { -unity-background-image-tint-color: var(--lb-amber); }
-.lobby .lobby-join__notice--hidden { display: none; }
 
-.lobby .lobby-join__job-list { flex-grow: 1; flex-shrink: 1; min-height: 0; }
-.lobby .lobby-join__job-item { margin-bottom: 6px; flex-shrink: 0; }
+.lobby .lobby-join__notice .lobby__icon {
+    margin-right: 10px;
+    -unity-background-image-tint-color: var(--ui-info);
+}
+
+.lobby .lobby-join__notice-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: normal;
+}
+
+.lobby .lobby-join__notice--warning {
+    border-color: var(--ui-warn);
+    background-color: var(--ui-warn-soft);
+}
+
+.lobby .lobby-join__notice--warning .lobby__icon {
+    -unity-background-image-tint-color: var(--ui-warn);
+}
+
+.lobby .lobby-join__notice--hidden {
+    display: none;
+}
+
+.lobby .lobby-join__job-list {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.lobby .lobby-join__job-item {
+    margin-bottom: 4px;
+    flex-shrink: 0;
+}
+
+/* A job: a tint. Picked, it takes the white outline (the active hand's line); the ring fills. */
 .lobby .lobby-join__job {
-    flex-direction: row; align-items: center; height: 52px; padding: 0 14px; flex-shrink: 0;
-    background-color: var(--lb-panel); border-width: 1px; border-color: var(--lb-border-subtle); border-radius: 2px;
+    flex-direction: row;
+    align-items: center;
+    height: 46px;
+    margin: 0;
+    padding: 0 12px;
+    flex-shrink: 0;
+    background-color: var(--ui-editor-button);
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 0;
+    color: var(--ui-text);
+    transition-property: background-color, border-color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
-.lobby .lobby-join__job:hover { background-color: var(--lb-hover); }
-.lobby .lobby-join__job:focus { border-color: var(--lb-border-strong); }
-.lobby .lobby-join__job-item--on .lobby-join__job { background-color: rgba(197, 79, 48, 0.15); border-color: var(--lb-rust); }
+
+.lobby .lobby-join__job:hover,
+.lobby .lobby-join__job:active,
+.lobby .lobby-join__job:hover:active {
+    background-color: var(--ui-editor-button-hover);
+    border-color: rgba(0, 0, 0, 0);
+    color: var(--ui-text);
+}
+
+/* A wide row: a small press, so it doesn't jump. */
+.lobby .lobby-join__job:active,
+.lobby .lobby-join__job:hover:active {
+    scale: 0.985 0.985;
+}
+
+.lobby .lobby-join__job-item--on .lobby-join__job,
+.lobby .lobby-join__job-item--on .lobby-join__job:hover,
+.lobby .lobby-join__job-item--on .lobby-join__job:active,
+.lobby .lobby-join__job-item--on .lobby-join__job:hover:active {
+    border-color: var(--ui-line-active);
+}
+
 .lobby .lobby-join__ring {
-    width: 16px; height: 16px; margin-right: 12px; flex-shrink: 0; align-items: center; justify-content: center;
-    border-width: 1px; border-color: var(--lb-text-2); border-radius: 8px;
+    width: 14px;
+    height: 14px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: rgba(255, 255, 255, 0.35);
+    border-radius: 7px;
+    transition-property: border-color;
+    transition-duration: 0.12s;
 }
-.lobby .lobby-join__ring-dot { width: 8px; height: 8px; border-radius: 4px; }
-.lobby .lobby-join__job-item--on .lobby-join__ring { border-color: var(--lb-text); }
-.lobby .lobby-join__job-item--on .lobby-join__ring-dot { background-color: var(--lb-text); }
+
+/* The dot pops in when the job is picked. */
+.lobby .lobby-join__ring-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    scale: 0 0;
+    transition-property: scale, background-color;
+    transition-duration: 0.22s, 0.12s;
+    transition-timing-function: ease-out-back, ease-out-cubic;
+}
+
+.lobby .lobby-join__job-item--on .lobby-join__ring-dot {
+    scale: 1 1;
+}
+
+/* Hover shows the job's department before you pick it: the ring and the glyph cell take its colour. */
+.lobby .lobby-join__job:hover .lobby-join__ring {
+    border-color: var(--dept);
+}
+
+.lobby .lobby-join__job-item--on .lobby-join__ring {
+    border-color: var(--ui-text);
+}
+
+.lobby .lobby-join__job-item--on .lobby-join__ring-dot {
+    background-color: var(--ui-text);
+}
+
+/* The job's glyph in a storage cell outlined in its department's colour (the map editor's category coding). */
 .lobby .lobby-join__job-frame {
-    width: 32px; height: 32px; margin-right: 12px; flex-shrink: 0; align-items: center; justify-content: center;
-    border-width: 1px; border-radius: 2px; border-color: var(--lb-border); background-color: var(--lb-inset);
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: var(--dept);
+    border-radius: 4.5px; /* 15 % */
+    background-color: rgba(0, 0, 0, 0.35);
+    transition-property: background-color;
+    transition-duration: 0.12s;
 }
-.lobby .lobby-join__job-frame .lobby__icon { width: 24px; height: 24px; }
-.lobby .lobby-join__job-frame--command { background-color: rgba(143, 180, 242, 0.15); border-color: rgba(143, 180, 242, 0.4); }
-.lobby .lobby-join__job-frame--security { background-color: rgba(242, 145, 168, 0.15); border-color: rgba(242, 145, 168, 0.4); }
-.lobby .lobby-join__job-frame--engineering { background-color: rgba(236, 211, 94, 0.15); border-color: rgba(236, 211, 94, 0.4); }
-.lobby .lobby-join__job-frame--medical { background-color: rgba(98, 208, 214, 0.15); border-color: rgba(98, 208, 214, 0.4); }
-.lobby .lobby-join__job-frame--science { background-color: rgba(207, 157, 240, 0.15); border-color: rgba(207, 157, 240, 0.4); }
-.lobby .lobby-join__job-frame--cargo { background-color: rgba(201, 162, 124, 0.15); border-color: rgba(201, 162, 124, 0.4); }
-.lobby .lobby-join__job-frame--service { background-color: rgba(142, 219, 156, 0.15); border-color: rgba(142, 219, 156, 0.4); }
-.lobby .lobby-join__job-frame--civilian { background-color: rgba(221, 215, 203, 0.15); border-color: rgba(221, 215, 203, 0.4); }
-.lobby .lobby-join__job-text { flex-shrink: 1; }
-.lobby .lobby-join__job-name { font-size: 15px; -unity-font-style: bold; color: var(--lb-text); }
-.lobby .lobby-join__job-dept { font-size: 12px; margin-top: 1px; color: var(--lb-text-2); }
-.lobby .lobby-join__job-count { font-size: 13px; color: var(--lb-text); }
-.lobby .lobby-join__job-count-word { margin-left: 6px; font-size: 12px; color: var(--lb-text-2); }
+
+.lobby .lobby-join__job:hover .lobby-join__job-frame,
+.lobby .lobby-join__job-item--on .lobby-join__job-frame {
+    background-color: var(--dept-soft);
+}
+
+.lobby .lobby-join__job-frame .lobby__icon {
+    width: 18px;
+    height: 18px;
+    transition-property: scale;
+    transition-duration: 0.24s;
+    transition-timing-function: ease-out-back;
+}
+
+.lobby .lobby-join__job:hover .lobby-join__job-frame .lobby__icon {
+    scale: 1.12 1.12;
+}
+
+.lobby .lobby-join__job-text {
+    flex-shrink: 1;
+}
+
+.lobby .lobby-join__job-name {
+    font-size: 13px;
+    color: var(--ui-text);
+}
+
+.lobby .lobby-join__job-dept {
+    margin-top: 5px;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 9px;
+}
+
+/* The bible's .lb-dept-text, held here as well: a department's name in its colour. */
+.lobby .lobby-join__job-dept.lb-dept-text {
+    color: var(--dept);
+}
+
+.lobby .lobby-join__job-count {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
+    font-size: 12px;
+    color: var(--ui-text);
+}
+
+.lobby .lobby-join__job-count-word {
+    margin-left: 6px;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
 .lobby .lobby-join__description {
-    margin: 4px 0 0 44px; padding: 10px 12px; font-size: 13px; color: var(--lb-text); white-space: normal;
-    background-color: var(--lb-inset); border-width: 1px; border-color: var(--lb-border); border-radius: 2px;
+    margin-top: 2px;
+    padding: 8px 12px 9px 38px;
+    background-color: rgba(255, 255, 255, 0.035);
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.75);
+    white-space: normal;
 }
 
-/* ---- Joining as, and Join ---- */
+/* ── Joining as ── */
 .lobby .lobby-join__as {
-    flex-direction: row; align-items: center; flex-shrink: 0; margin-top: 12px; padding: 10px 12px;
-    background-color: var(--lb-inset); border-width: 1px; border-color: var(--lb-border-subtle); border-radius: 2px;
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    margin-top: 8px;
+    padding: 6px 8px;
+    background-color: var(--ui-editor-button);
 }
+
 .lobby .lobby-join__portrait-frame {
-    width: 36px; height: 48px; margin-right: 12px; flex-shrink: 0; overflow: hidden;
-    border-width: 1px; border-color: var(--lb-border); background-color: var(--lb-panel);
+    width: 28px;
+    height: 38px;
+    margin-right: 10px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-editor-cell-edge);
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.6);
 }
-.lobby .lobby-join__portrait { flex-grow: 1; -unity-background-scale-mode: scale-and-crop; }
-.lobby .lobby-join__as-text { flex-grow: 1; flex-shrink: 1; }
-.lobby .lobby-join__character { margin-top: 2px; font-size: 14px; -unity-font-style: bold; color: var(--lb-text); }
+
+/* The character's live render fills the cell (the bible draws a silhouette where it goes). */
+.lobby .lobby-join__portrait {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.lobby .lobby-join__as-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.lobby .lobby-join__as-text > .lobby__eyebrow {
+    font-size: 9px;
+}
+
+.lobby .lobby-join__character {
+    margin-top: 5px;
+    font-size: 12.5px;
+}
+
+/* Change: a secondary action, a raised tint with a faint edge. */
 .lobby .lobby-join__change {
-    flex-direction: row; align-items: center; height: 32px; padding: 0 12px; flex-shrink: 0;
-    background-color: var(--lb-chrome); border-width: 1px; border-color: var(--lb-chrome); border-radius: 4px;
+    flex-direction: row;
+    align-items: center;
+    height: 28px;
+    margin: 0;
+    padding: 0 10px;
+    flex-shrink: 0;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.1);
+    border-radius: 0;
+    background-color: var(--ui-editor-button);
+    color: var(--ui-text);
+    transition-property: background-color, border-color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
-.lobby .lobby-join__change:hover { background-color: var(--lb-hover); }
-.lobby .lobby-join__change:focus { border-color: var(--lb-border-strong); }
-.lobby-join__change .lobby__icon { margin-right: 8px; -unity-background-image-tint-color: var(--lb-text); }
-.lobby .lobby-join__change-label { height: 16px; font-size: 18px; letter-spacing: 1.44px; -unity-text-align: middle-left; }
 
+.lobby .lobby-join__change:hover,
+.lobby .lobby-join__change:active,
+.lobby .lobby-join__change:hover:active {
+    background-color: var(--ui-editor-button-hover);
+    border-color: var(--ui-editor-cell-edge-hover);
+    color: var(--ui-text);
+}
+
+.lobby .lobby-join__change:active,
+.lobby .lobby-join__change:hover:active {
+    background-color: var(--ui-editor-button-pressed);
+    scale: 0.95 0.95;
+}
+
+.lobby .lobby-join__change .lobby__icon {
+    width: 13px;
+    height: 13px;
+    margin-right: 8px;
+    -unity-background-image-tint-color: var(--ui-text);
+}
+
+.lobby .lobby-join__change-label {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+    color: var(--ui-text);
+}
+
+/* ── Join: the white plate, as Ready ── */
 .lobby .lobby-join__confirm {
-    flex-direction: row; align-items: center; height: 56px; margin-top: 12px; padding: 0 16px; flex-shrink: 0;
-    background-color: var(--lb-rust); border-radius: 4px;
+    flex-direction: row;
+    align-items: center;
+    height: 52px;
+    margin: 8px 0 0 0;
+    padding: 0 14px;
+    flex-shrink: 0;
+    border-width: 0;
+    border-radius: 0;
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+    /* A new pick fades Join into the job's department colour (0.25 s); hover and press stay quick. */
+    transition-property: background-color, opacity, scale, translate;
+    transition-duration: 0.25s, 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
-.lobby .lobby-join__confirm:hover, .lobby .lobby-join__confirm:focus { background-color: var(--lb-rust-hover); }
-.lobby .lobby-join__confirm:active { background-color: var(--lb-rust-active); }
-.lobby .lobby-join__confirm:disabled { opacity: 1; background-color: var(--lb-inset); }
-.lobby .lobby-join__confirm-text { flex-grow: 1; }
-/* A 16px box holds Gurajada's capitals, as on the Ready button (its line box is about twice the font size). */
-.lobby .lobby-join__confirm-title { height: 16px; font-size: 20px; letter-spacing: 1.6px; color: var(--lb-on-accent); -unity-text-align: middle-left; }
-.lobby .lobby-join__confirm-subtitle { margin-top: 6px; font-size: 12px; color: var(--lb-on-accent); }
-.lobby .lobby-join__confirm-key { color: var(--lb-on-accent); border-color: rgba(255, 255, 255, 0.35); }
-.lobby-join__confirm:disabled .lobby-join__confirm-title, .lobby-join__confirm:disabled .lobby-join__confirm-subtitle,
-.lobby-join__confirm:disabled .lobby-join__confirm-key { color: var(--lb-disabled); }
 
-/* ---- Crew manifest ---- */
-.lobby .lobby-join__manifest-section { flex-grow: 1; flex-shrink: 1; min-width: 0; padding: 20px 24px; }
-.lobby .lobby-join__manifest-scroll { flex-grow: 1; flex-shrink: 1; min-height: 0; }
-.lobby .lobby-join__manifest { flex-direction: row; align-items: flex-start; }
-.lobby .lobby-join__column { flex-grow: 1; flex-basis: 0; min-width: 0; }
-.lobby .lobby-join__column--left { margin-right: 12px; }
-.lobby .lobby-join__group { margin-bottom: 10px; flex-shrink: 0; border-width: 1px; border-color: var(--lb-border-subtle); border-radius: 2px; }
+/* The white plate can't get whiter: its hover is a faint ok wash (joining the round). */
+.lobby .lobby-join__confirm:hover {
+    background-color: rgb(236, 251, 241);
+    color: var(--ui-text-on-light);
+}
+
+.lobby .lobby-join__confirm:active,
+.lobby .lobby-join__confirm:hover:active {
+    background-color: rgb(207, 207, 204);
+    color: var(--ui-text-on-light);
+    scale: 0.98 0.98;
+}
+
+.lobby .lobby-join__confirm-text {
+    flex-grow: 1;
+    transition-property: translate;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out-cubic;
+}
+
+/* Hover, white or in a department's colour: it lifts a pixel and its text nudges along, as Ready does (a coloured
+   plate can't change its hue on hover without losing what the colour says). */
+.lobby .lobby-join__confirm:hover {
+    translate: 0 -1px;
+}
+
+.lobby .lobby-join__confirm:hover .lobby-join__confirm-text {
+    translate: 3px 0;
+}
+
+.lobby .lobby-join__confirm:active,
+.lobby .lobby-join__confirm:hover:active,
+.lobby .lobby-join__confirm:disabled,
+.lobby .lobby-join__confirm:disabled:hover {
+    translate: 0 0;
+}
+
+.lobby .lobby-join__confirm:disabled:hover .lobby-join__confirm-text {
+    translate: 0 0;
+}
+
+.lobby .lobby-join__confirm-title {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 16px;
+    color: var(--ui-text-on-light);
+}
+
+.lobby .lobby-join__confirm-subtitle {
+    margin-top: 7px;
+    font-size: 10.5px;
+    color: rgba(13, 13, 13, 0.6);
+}
+
+.lobby .lobby-join__confirm .lobby__keycap {
+    background-color: rgba(0, 0, 0, 0.12);
+    color: rgba(13, 13, 13, 0.7);
+}
+
+/* ── The crew manifest: departments as tinted groups, two columns ── */
+.lobby .lobby-join__manifest-section {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    padding: 4px 20px 20px 0;
+}
+
+.lobby .lobby-join__manifest-scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.lobby .lobby-join__manifest {
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.lobby .lobby-join__column {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+}
+
+.lobby .lobby-join__column--left {
+    margin-right: 8px;
+}
+
+/* Facts, not actions: inset wells (darker than the card, a faint engraved edge) where the jobs on the left are
+   raised tints. */
+.lobby .lobby-join__group {
+    margin-bottom: 6px;
+    flex-shrink: 0;
+    background-color: rgba(0, 0, 0, 0.55);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.07);
+}
+
 .lobby .lobby-join__group-head {
-    flex-direction: row; align-items: center; height: 36px; padding: 0 12px; background-color: var(--lb-chrome);
-}
-.lobby .lobby-join__group-icon { width: 18px; height: 18px; margin-right: 8px; }
-.lobby .lobby-join__group-name { height: 16px; font-size: 18px; letter-spacing: 1.44px; -unity-text-align: middle-left; }
-.lobby .lobby-join__group-count { font-size: 12px; color: var(--lb-text-2); }
-.lobby .lobby-join__crew {
-    flex-direction: row; justify-content: space-between; padding: 7px 12px;
-    border-top-width: 1px; border-top-color: var(--lb-border-subtle);
-}
-.lobby .lobby-join__crew-name { font-size: 13px; color: var(--lb-text); flex-shrink: 1; overflow: hidden; text-overflow: ellipsis; }
-.lobby .lobby-join__crew-job { margin-left: 12px; font-size: 13px; color: var(--lb-text-2); flex-shrink: 0; }
-.lobby .lobby-join__crew-missing {
-    padding: 7px 12px; font-size: 13px; color: var(--lb-text-2); -unity-font-style: italic;
-    border-top-width: 1px; border-top-color: var(--lb-border-subtle);
+    flex-direction: row;
+    align-items: center;
+    height: 30px;
+    padding: 0 10px;
 }
 
-/* ---- 1366 x 768 (Decision 19) ---- */
-.lobby--compact .lobby-join__jobs { width: 440px; padding: 16px; }
-.lobby--compact .lobby-join__manifest-section { padding: 16px; }
-.lobby--compact .lobby-join__hint { display: none; }
+.lobby .lobby-join__group-head .lobby-join__group-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+}
+
+.lobby .lobby-join__group-name {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+}
+
+.lobby .lobby-join__group-count {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby .lobby-join__crew {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 6px 10px;
+    border-top-width: 1px;
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.lobby .lobby-join__crew-name {
+    flex-shrink: 1;
+    font-size: 11.5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.lobby .lobby-join__crew-job {
+    margin-left: 12px;
+    flex-shrink: 0;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* A gap a latejoiner could fill ("No Doctor aboard"): news, so the info colour, as an area (its soft fill). */
+.lobby .lobby-join__crew-missing {
+    padding: 6px 10px;
+    border-top-width: 1px;
+    border-color: rgba(255, 255, 255, 0.06);
+    background-color: var(--ui-info-soft);
+    font-size: 11px;
+    color: var(--ui-info);
+}
+
+/* ── Colour coding ──
+ * A job: its department's edge; picked, the whole outline and the ring in that colour; Join fills with it. */
+.lobby .lobby-join__job,
+.lobby .lobby-join__job:hover,
+.lobby .lobby-join__job:active,
+.lobby .lobby-join__job:hover:active {
+    border-left-width: 3px;
+    border-left-color: var(--dept);
+}
+
+/* Picked: the department as an area too (its soft fill), the row and its description one card. */
+.lobby .lobby-join__job-item--on .lobby-join__job,
+.lobby .lobby-join__job-item--on .lobby-join__job:hover,
+.lobby .lobby-join__job-item--on .lobby-join__job:active,
+.lobby .lobby-join__job-item--on .lobby-join__job:hover:active {
+    border-color: var(--dept);
+    background-color: var(--dept-soft);
+}
+
+.lobby .lobby-join__job-item--on .lobby-join__ring {
+    border-color: var(--dept);
+}
+
+.lobby .lobby-join__job-item--on .lobby-join__ring-dot {
+    background-color: var(--dept);
+}
+
+.lobby .lobby-join__description {
+    border-left-width: 3px;
+    border-color: var(--dept);
+    background-color: var(--dept-soft);
+}
+
+.lobby .lobby-join__confirm.lobby-join__confirm--dept,
+.lobby .lobby-join__confirm.lobby-join__confirm--dept:hover,
+.lobby .lobby-join__confirm.lobby-join__confirm--dept:active,
+.lobby .lobby-join__confirm.lobby-join__confirm--dept:hover:active {
+    background-color: var(--dept);
+    color: var(--ui-text-on-light);
+}
+
+.lobby .lobby-join__confirm.lobby-join__confirm--dept:active,
+.lobby .lobby-join__confirm.lobby-join__confirm--dept:hover:active {
+    opacity: 0.85;
+}
+
+/* The manifest: each department's group carries its edge, glyph and name. */
+.lobby .lobby-join__group {
+    border-left-width: 3px;
+    border-left-color: var(--dept);
+}
+
+.lobby .lobby-join__group-name {
+    color: var(--dept);
+}
+
+/* ── Join off: nothing picked, or waiting for the spawn after a press. It fades, over the department's fill too
+ * (the bible's --disabled; here the Button's :disabled, after the colour coding so it wins). ── */
+.lobby .lobby-join__confirm:disabled,
+.lobby .lobby-join__confirm:disabled:hover,
+.lobby .lobby-join__confirm.lobby-join__confirm--dept:disabled,
+.lobby .lobby-join__confirm.lobby-join__confirm--dept:disabled:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+    color: var(--ui-menu-tab-text);
+    opacity: 1;
+}
+
+.lobby .lobby-join__confirm:disabled .lobby-join__confirm-title,
+.lobby .lobby-join__confirm:disabled .lobby-join__confirm-subtitle,
+.lobby .lobby-join__confirm:disabled .lobby__keycap {
+    color: var(--ui-menu-tab-text);
+}
+
+.lobby .lobby-join__confirm:disabled .lobby__keycap {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* ── Motion ──
+ * The card scales in (ui-enter--scale) over the fading backdrop (Lobby.uss); the jobs and crew groups stagger in. A
+ * picked job's description unfolds down from its row rather than rising into it. */
+.lobby .lobby-join__description.ui-enter {
+    translate: 0 -6px;
+}
+
+.lobby .lobby-join__description.ui-enter.ui-enter--in {
+    translate: 0 0;
+}

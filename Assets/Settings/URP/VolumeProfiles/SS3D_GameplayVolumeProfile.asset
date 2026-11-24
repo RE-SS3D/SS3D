@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70afe9e12c7a7ed47911bb608a23a8ff, type: 3}
   m_Name: SplitToning
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.SplitToning
-  active: 0
+  active: 1
   shadows:
     m_OverrideState: 0
     m_Value: {r: 0.5, g: 0.4316038, b: 0.4964051, a: 1}
@@ -102,10 +102,10 @@ MonoBehaviour:
   active: 1
   postExposure:
     m_OverrideState: 1
-    m_Value: 0.93
+    m_Value: 0
   contrast:
     m_OverrideState: 1
-    m_Value: -16
+    m_Value: -23
   colorFilter:
     m_OverrideState: 1
     m_Value: {r: 1, g: 0.9481132, b: 0.9772477, a: 1}
@@ -127,19 +127,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b2db86121404754db890f4c8dfe81b2, type: 3}
   m_Name: Bloom
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.Bloom
-  active: 1
+  active: 0
   skipIterations:
     m_OverrideState: 1
     m_Value: 1
   threshold:
     m_OverrideState: 1
-    m_Value: 0.4
+    m_Value: 1
   intensity:
     m_OverrideState: 1
-    m_Value: 0.5
+    m_Value: 2
   scatter:
     m_OverrideState: 1
-    m_Value: 0.55
+    m_Value: 0.164
   clamp:
     m_OverrideState: 1
     m_Value: 2.2

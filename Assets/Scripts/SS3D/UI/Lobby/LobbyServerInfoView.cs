@@ -9,6 +9,7 @@ namespace SS3D.UI.Lobby
     /// <summary>
     /// The lobby's Server Info tab (lobby.md §8): banner art, message of the day, the server's map, mode, build and
     /// uptime, and the client build's change log grouped by release. Built once; the setters change text in place.
+    /// In the narrow panel it is one column that scrolls as a whole (<c>server-info-scroll</c>), as the UI bible draws it.
     /// </summary>
     public sealed class LobbyServerInfoView
     {
@@ -33,6 +34,14 @@ namespace SS3D.UI.Lobby
         {
             Root = LobbyUi.Box("lobby-info");
             Root.name = "server-info";
+            ScrollView scroll = new(ScrollViewMode.Vertical)
+            {
+                name = "server-info-scroll",
+                horizontalScrollerVisibility = ScrollerVisibility.Hidden,
+            };
+            scroll.AddToClassList("lobby-info__scroll");
+            scroll.contentContainer.AddToClassList("lobby-info__content");
+            Root.Add(scroll);
 
             VisualElement left = LobbyUi.Box("lobby-info__left");
             _banner = LobbyUi.Box("lobby-info__banner");
@@ -44,23 +53,23 @@ namespace SS3D.UI.Lobby
                 if (Mathf.Abs(_banner.resolvedStyle.height - height) > 0.5f) _banner.style.height = height;
             });
             left.Add(_banner);
-            left.Add(LobbyUi.Text("MESSAGE OF THE DAY", "lobby__eyebrow"));
+            left.Add(LobbyUi.SectionHead("Message of the day", "speakerphone"));
             ScrollView motdScroll = new(ScrollViewMode.Vertical) { horizontalScrollerVisibility = ScrollerVisibility.Hidden };
             motdScroll.AddToClassList("lobby-info__motd-scroll");
             _motd = LobbyUi.Text("", "lobby-info__motd");
             _motd.name = "server-info-motd";
             motdScroll.Add(_motd);
             left.Add(motdScroll);
-            Root.Add(left);
+            scroll.Add(left);
 
             VisualElement right = LobbyUi.Box("lobby-info__right");
-            right.Add(LobbyUi.Text("SERVER", "lobby__eyebrow"));
+            right.Add(LobbyUi.SectionHead("Server", "server"));
             _map = AddRow(right, "Map", "server-info-map", false);
             _mode = AddRow(right, "Mode", "server-info-mode", false);
             _build = AddRow(right, "Build", "server-info-build", true);
             _uptime = AddRow(right, "Uptime", "server-info-uptime", true);
             right.Add(BuildChangelog());
-            Root.Add(right);
+            scroll.Add(right);
         }
 
         private static Label AddRow(VisualElement parent, string key, string name, bool mono)
@@ -119,8 +128,8 @@ namespace SS3D.UI.Lobby
             column.style.flexShrink = 1;
             column.style.minHeight = 0;
 
-            VisualElement header = LobbyUi.Box("lobby-info__links");
-            header.Add(LobbyUi.Text("CHANGE LOG", "lobby__eyebrow"));
+            // The head's rule runs up to the "All releases" link at its end.
+            VisualElement header = LobbyUi.SectionHead("Change log", "document", "lobby-info__links");
             if (info.ReleasesUrl is { } releases) header.Add(Link("All releases", releases, "changelog-releases-link"));
             column.Add(header);
 

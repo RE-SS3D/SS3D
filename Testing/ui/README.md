@@ -125,13 +125,19 @@ output a build writes. Reverting an edit makes an old build current again. A bui
 `UniversalRenderPipelineGlobalSettings.asset` (`m_RuntimeSettings`); the stamp is taken after
 the build so this does not leave it stale.
 
-Two editor behaviours the tooling works around:
+Three editor behaviours the tooling works around:
 
 - The MCP `editor/state` resource reports `ready_for_tools: false` with `stale_status` while an
   idle editor is fine. The driver asks the editor directly (`isCompiling`, `isUpdating`,
   Play Mode) through `execute_code`.
 - An idle, unfocused editor can leave `EditorApplication.delayCall` unprocessed indefinitely while
   `EditorApplication.update` keeps ticking. Automation schedules one-shot `update` callbacks.
+- The Test Runner reports a run finished a few editor ticks before it restores the open scenes, and the
+  restore throws ("This cannot be used during play mode") if Play has started by then, leaving the editor on
+  the tests' scene. `TestRunPlayModeGuard` (`Assets/Scripts/SS3D/Editor/Automation/`) holds any Play
+  request made while a test job is active and starts Play once the job ends; PlayMode test runs are let
+  through. A `[TestRunPlayModeGuard] Play Mode held` console warning means it did; cancel the test run to
+  start Play sooner.
 
 ### PlayMode step
 

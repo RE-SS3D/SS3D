@@ -2,18 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SS3D.Systems.Tile.Validation;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace SS3D.Systems.Tile.MapEditor.UI
 {
     public sealed partial class MapEditorView
     {
-        private VisualElement _mapCheckColumn;
+        private VisualElement _mapCheckHost;
         private VisualElement _mapCheck;
+        private Button _checkButton;
+        private VisualElement _checkAlert;
+        private bool _mapCheckShown;
         private readonly HashSet<string> _ignoredWarnings = new();
         private string _issueFilter = "all";
         private string _expandedIssue;
-        private bool _checkCollapsed;
         private int _renderedValidationRevision = -1;
         private int _renderedValidationContext = -1;
         private bool _renderedValidationStale;
@@ -22,15 +25,59 @@ namespace SS3D.Systems.Tile.MapEditor.UI
         /// <summary>Show in palette: search for the issue's <see cref="MapValidationIssue.EntryKey"/>.</summary>
         public event Action<string> ValidationShowInPaletteRequested;
 
-        private void BuildMapCheck(VisualElement column)
+        /// <summary>
+        /// Map Check's cell at the foot of the view tools: a warning glyph, and a dot in the worst severity's colour (red
+        /// with errors, amber with warnings only, none when the map is clear). It opens Map Check beside the view tools.
+        /// </summary>
+        private void BuildMapCheckButton(VisualElement region)
         {
-            _mapCheckColumn = column;
+            VisualElement strip = CreateToolbarStrip();
+            _checkButton = CreateIconButton(_icons?.Warning, null, () => TogglePopover(CheckPopover));
+            _checkButton.name = "map-check-btn";
+            _checkAlert = new VisualElement { pickingMode = PickingMode.Ignore };
+            _checkAlert.AddToClassList("map-editor-icon-btn__alert");
+            _checkButton.Add(_checkAlert);
+            VisualElement wrap = MapEditorChrome.WithHint(_checkButton, "Map check", MapEditorPopoverSide.Right);
+            _popoverAnchors[CheckPopover] = wrap;
+            strip.Add(wrap);
+            region.Add(strip);
+        }
+
+        /// <summary>
+        /// Map Check lives in the popover layer and stays in the tree while closed, so validation keeps it current and the
+        /// warning cell's dot stays right.
+        /// </summary>
+        private void BuildMapCheck(VisualElement layer)
+        {
+            _mapCheckHost = new VisualElement { name = "map-check-popover", pickingMode = PickingMode.Position };
+            _mapCheckHost.AddToClassList("map-editor-popover");
+            _mapCheckHost.AddToClassList("map-editor-popover--check");
+            _mapCheckHost.style.display = DisplayStyle.None;
             _mapCheck = new VisualElement { name = "map-check", pickingMode = PickingMode.Position };
+            _mapCheck.AddToClassList("map-editor-popover-window");
             _mapCheck.AddToClassList("map-check");
-            // The header is rebuilt on every refresh, so the drag lives on the panel and matches the header by class.
-            _mapCheck.AddManipulator(new PanelDragManipulator(_mapCheck,
-                pressed => pressed.ClassListContains("map-check__header")));
-            column.Add(_mapCheck);
+            _mapCheckHost.Add(_mapCheck);
+            // The header is rebuilt on every refresh, so the drag lives on the host and matches the header by class.
+            _mapCheckHost.AddManipulator(new PanelDragManipulator(_mapCheckHost,
+                pressed => pressed.ClassListContains("map-check__header"), default, offset =>
+                {
+                    _popoverOffsets[CheckPopover] = offset;
+                    MapEditorPopoverPlacement.ShowCaret(_mapCheckHost, offset == Vector2.zero);
+                }));
+            layer.Add(_mapCheckHost);
+        }
+
+        /// <summary>Opens or closes Map Check beside its cell.</summary>
+        private void ShowMapCheck(bool open)
+        {
+            if (_mapCheckHost == null)
+                return;
+
+            _mapCheckHost.style.display = open ? DisplayStyle.Flex : DisplayStyle.None;
+            _checkButton?.EnableInClassList("map-editor-icon-btn--active", open);
+            if (open && !_mapCheckShown)
+                PlacePopover(_mapCheckHost, CheckPopover);
+            _mapCheckShown = open;
         }
 
         private void RefreshMapCheck(bool force = false)
@@ -54,27 +101,21 @@ namespace SS3D.Systems.Tile.MapEditor.UI
             // Issues start closed: a long list is read by title, and one opens on click.
 
             _mapCheck.Clear();
-            _mapCheck.EnableInClassList("map-check--collapsed", _checkCollapsed);
             VisualElement header = CheckElement("map-check__header");
-            if (!_checkCollapsed)
-                header.Add(CheckLabel("MAP CHECK", "map-check__title"));
+            header.Add(CheckLabel("Map Check", "map-check__title"));
             if (errors > 0)
-                header.Add(CheckLabel(_checkCollapsed ? errors.ToString() : $"{errors} {(errors == 1 ? "Error" : "Errors")}", "map-check__badge map-check__danger"));
+                header.Add(CheckLabel($"{errors} {(errors == 1 ? "Error" : "Errors")}", "map-check__badge map-check__danger"));
             if (warnings > 0)
                 header.Add(CheckLabel(warnings.ToString(), "map-check__badge map-check__warning"));
             if (live.Length == 0)
                 header.Add(_vm.ValidationStale || !_vm.ValidationChecked
                     ? CheckLabel("Checking", "map-check__badge")
                     : CheckLabel("Clear", "map-check__badge map-check__success"));
-            header.Add(CreateHeaderIconButton(_checkCollapsed ? _icons?.PanelCollapse : _icons?.PanelExpand,
-                _checkCollapsed ? "Expand Map Check" : "Collapse Map Check", () =>
-                {
-                    _checkCollapsed = !_checkCollapsed;
-                    RefreshMapCheck(true);
-                }));
+            header.Add(MapEditorChrome.CloseButton(ClosePopover));
             _mapCheck.Add(header);
-            if (_checkCollapsed)
-                return;
+            // The warning cell's dot: red with errors, amber with warnings only, none when the map is clear.
+            _checkAlert?.EnableInClassList("map-check__dot--danger", errors > 0);
+            _checkAlert?.EnableInClassList("map-check__dot--warning", errors == 0 && warnings > 0);
 
             VisualElement filters = CheckElement("map-check__filters");
             AddIssueFilter(filters, "all", "All", live.Length);
@@ -132,12 +173,16 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                 RefreshMapCheck(true);
             }) { name = "map-check-toggle-" + issue.Id, tooltip = open ? "Collapse issue" : "Expand issue" };
             toggle.AddToClassList("map-check__issue-toggle");
-            toggle.Add(CheckLabel("!", issue.IsWarning ? "map-check__warning" : "map-check__danger"));
+            // A severity dot, the title, and the category under it.
+            VisualElement dot = CheckElement("map-check__dot");
+            dot.AddToClassList(issue.IsWarning ? "map-check__dot--warning" : "map-check__dot--danger");
+            dot.pickingMode = PickingMode.Ignore;
+            toggle.Add(dot);
             VisualElement heading = CheckElement("map-check__heading");
+            heading.pickingMode = PickingMode.Ignore;
             heading.Add(CheckLabel(issue.Title, "map-check__issue-title"));
-            heading.Add(CheckLabel(issue.Category.ToUpperInvariant(), "map-check__category"));
+            heading.Add(CheckLabel(issue.Category.ToLowerInvariant(), "map-check__category"));
             toggle.Add(heading);
-            toggle.Add(CreateIconElement(open ? _icons?.PanelExpand : _icons?.PanelCollapse));
             row.Add(toggle);
             if (open)
             {

@@ -292,7 +292,7 @@ namespace SS3D.Editor.Automation
                     Require(CountLabel() == "0/1 ready", "Nobody is ready yet");
                     Require(SubSystems.Get<SS3D.Systems.Tile.TileSubSystem>().CurrentMap.ChunkCount == 0, "Lobby boots without station chunks");
                     Require(Rounds().CurrentStationLoadState == StationLoadState.NotLoaded
-                        && Shell().Q<Label>("lobby-header-map").text == "No map", "Lobby reports no map loaded");
+                        && Shell().Q<Label>("server-info-map").text == "No map loaded", "Lobby reports no map loaded");
                     CreateValidationStation(valid: false);
                     _savedName = CharacterName();
                 },
@@ -304,10 +304,10 @@ namespace SS3D.Editor.Automation
                 Until = () => Shell().Q<Button>("server-start")?.enabledInHierarchy == true,
                 Verify = () =>
                 {
-                    Require(!Shell().Q<DropdownField>("server-map").choices.Contains("Current station")
-                        && Shell().Q<DropdownField>("server-map").choices.Contains(Shell().Q<DropdownField>("server-map").value), "Map selector contains actual saved templates only");
-                    Require(Shell().Q<DropdownField>("server-map").enabledInHierarchy, "Map can be changed before the first start");
-                    Require(Shell().Q<DropdownField>("server-mode").choices.SequenceEqual(new string[] { "Secret", "Extended", "Nuclear Emergency" }), "Only implemented modes are offered");
+                    Require(!Shell().Q<SS3D.UI.Shell.UiSelect>("server-map").Choices.Contains("Current station")
+                        && Shell().Q<SS3D.UI.Shell.UiSelect>("server-map").Choices.Contains(Shell().Q<SS3D.UI.Shell.UiSelect>("server-map").value), "Map selector contains actual saved templates only");
+                    Require(Shell().Q<SS3D.UI.Shell.UiSelect>("server-map").enabledInHierarchy, "Map can be changed before the first start");
+                    Require(Shell().Q<SS3D.UI.Shell.UiSelect>("server-mode").Choices.SequenceEqual(new string[] { "Secret", "Extended", "Nuclear Emergency" }), "Only implemented modes are offered");
                     Require(Shell().Q<Label>("server-ready-ratio").text == "0/1", "Admin ready ratio is live");
                     Require(!Shell().Q<Button>("server-force").enabledInHierarchy && !Shell().Q<Button>("server-extend").enabledInHierarchy
                         && !Shell().Q<Button>("server-cancel").enabledInHierarchy, "Countdown actions disabled while waiting");
@@ -350,7 +350,7 @@ namespace SS3D.Editor.Automation
             new Step
             {
                 Name = "Select Extended mode",
-                Enter = () => Shell().Q<DropdownField>("server-mode").value = "Extended",
+                Enter = () => Shell().Q<SS3D.UI.Shell.UiSelect>("server-mode").value = "Extended",
                 Until = () => Settings().Current.Mode == "Extended",
             },
             new Step
@@ -378,9 +378,9 @@ namespace SS3D.Editor.Automation
             new Step
             {
                 Name = "Select a real saved station",
-                Enter = () => Shell().Q<DropdownField>("server-map").value = _validationStation,
+                Enter = () => Shell().Q<SS3D.UI.Shell.UiSelect>("server-map").value = _validationStation,
                 Until = () => Settings().Current.Map == _validationStation && Settings().AdminSettings.Map == _validationStation,
-                Verify = () => Require(Shell().Q<DropdownField>("server-map").choices.Contains(_validationStation), "Selected map is a saved template offered by the server"),
+                Verify = () => Require(Shell().Q<SS3D.UI.Shell.UiSelect>("server-map").Choices.Contains(_validationStation), "Selected map is a saved template offered by the server"),
             },
             new Step
             {
@@ -429,7 +429,7 @@ namespace SS3D.Editor.Automation
                 Until = () => Rounds().CurrentRoundState == RoundState.WarmingUp && Shell().Q<Button>("server-extend").enabledInHierarchy,
                 Verify = () =>
                 {
-                    Require(!Shell().Q<DropdownField>("server-map").enabledInHierarchy && !Shell().Q<Button>("server-start").enabledInHierarchy,
+                    Require(!Shell().Q<SS3D.UI.Shell.UiSelect>("server-map").enabledInHierarchy && !Shell().Q<Button>("server-start").enabledInHierarchy,
                         "Configuration and duplicate start disabled during countdown");
                     Require(_sawStationLoading, "Start Round showed a live loading indicator");
                     Require(Rounds().CurrentStationLoadState == StationLoadState.Ready
@@ -462,7 +462,7 @@ namespace SS3D.Editor.Automation
                     Require(SubSystems.Get<SS3D.Systems.Persistence.PersistenceSubSystem>().SaveStationTemplate(_alternateStation, false), "Created temporary alternate map fixture");
                     Settings().CmdReadServerSettings();
                 },
-                Until = () => Shell().Q<DropdownField>("server-map").choices.Contains(_alternateStation),
+                Until = () => Shell().Q<SS3D.UI.Shell.UiSelect>("server-map").Choices.Contains(_alternateStation),
             },
             new Step
             {
@@ -470,7 +470,7 @@ namespace SS3D.Editor.Automation
                 Enter = () =>
                 {
                     _previousStationEpoch = SubSystems.Get<SS3D.Systems.WorldReadiness.WorldReadinessSubSystem>().Epoch;
-                    Shell().Q<DropdownField>("server-map").value = _alternateStation;
+                    Shell().Q<SS3D.UI.Shell.UiSelect>("server-map").value = _alternateStation;
                 },
                 Until = () => Settings().Current.Map == _alternateStation,
                 Verify = () => Require(Rounds().StationName == _validationStation, "Changing selection does not silently replace the loaded station"),
@@ -703,7 +703,7 @@ namespace SS3D.Editor.Automation
                 Name = "Open the character window before round start",
                 Enter = () => Click(Shell().Q<Button>("lobby-character")),
                 Until = () => Visible(Window()) && !Visible(Shell()),
-                Verify = () => Require(Window().Q<Label>("charwin-status-label").text == "Saved", "The window opens Saved"),
+                Verify = () => Require(Window().Q<Label>("charwin-status-label").text == "saved", "The window opens Saved"),
             },
             new Step
             {
@@ -732,16 +732,23 @@ namespace SS3D.Editor.Automation
             },
             new Step
             {
-                Name = "Window: name and body",
+                // Each pane shows only while its tab is open.
+                Name = "Window: name and body, then Skin & eyes",
                 Enter = () =>
                 {
                     Window().Q<TextField>("charwin-name").value = PilotCharacterName;
                     Window().Q<Slider>("body-height").value = PilotHeight;
                     Window().Q<Slider>("body-fat").value = PilotFat;
-                    Click(Swatch("charwin-skin", 5));
+                    Click(Window().Q<Button>("charwin-tab-skin"));
                 },
+                Until = () => Swatch("charwin-skin", 5)?.worldBound.width > 0,
+            },
+            new Step
+            {
+                Name = "Window: skin tone",
+                Enter = () => Click(Swatch("charwin-skin", 5)),
                 Until = () => SwatchSelectedAndLaidOut("charwin-skin", 5)
-                    && Window().Q<Label>("charwin-status-label").text == "Unsaved changes",
+                    && Window().Q<Label>("charwin-status-label").text == "unsaved changes",
             },
             new Step
             {
@@ -751,9 +758,21 @@ namespace SS3D.Editor.Automation
             },
             new Step
             {
+                Name = "Window: Hair tab",
+                Enter = () => Click(Window().Q<Button>("charwin-tab-hair")),
+                Until = () => Tile("charwin-hair-styles", 1)?.worldBound.width > 0,
+            },
+            new Step
+            {
                 Name = "Window: first hair style",
                 Enter = () => Click(Tile("charwin-hair-styles", 1)),
                 Until = () => Tile("charwin-hair-styles", 1).ClassListContains("charwin-look__tile--selected"),
+            },
+            new Step
+            {
+                Name = "Window: back to Skin & eyes",
+                Enter = () => Click(Window().Q<Button>("charwin-tab-skin")),
+                Until = () => Window().Q("eyebrows-humaneyebrowsbold")?.worldBound.width > 0,
             },
             new Step
             {
@@ -790,7 +809,7 @@ namespace SS3D.Editor.Automation
             {
                 Name = "Save character",
                 Enter = () => Click(Window().Q<Button>("charwin-save")),
-                Until = () => Window().Q<Label>("charwin-status-label").text == "Saved",
+                Until = () => Window().Q<Label>("charwin-status-label").text == "saved",
                 Verify = () =>
                 {
                     CharacterProfileStore.Profile profile = new CharacterProfileStore(CharacterProfileStore.DefaultPath).Load();

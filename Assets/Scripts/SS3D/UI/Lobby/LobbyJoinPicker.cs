@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using SS3D.Systems.IdAccess;
 using SS3D.Systems.Roles;
+using SS3D.UI.Shell;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -22,9 +23,11 @@ namespace SS3D.UI.Lobby
         private readonly LobbyJoinModel _model = new();
         private readonly LobbyAssetCatalog _catalog;
         private readonly VisualElement _root;
+        private readonly VisualElement _card;
         private readonly Label _roundTime;
         private readonly Label _openCount;
         private readonly VisualElement _notice;
+        private readonly VisualElement _noticeIcon;
         private readonly Label _noticeText;
         private readonly ScrollView _jobList;
         private readonly VisualElement _portrait;
@@ -39,8 +42,14 @@ namespace SS3D.UI.Lobby
         private IReadOnlyList<CrewManifestEntry> _crew = Array.Empty<CrewManifestEntry>();
         private string _jobsSignature;
         private string _manifestSignature;
+        /// <summary>The department class on Join (the picked job's), so a new pick swaps it.</summary>
+        private string _confirmDepartment;
         private bool _joining;
         private IVisualElementScheduledItem _joinRetry;
+        /// <summary>The job whose description last eased in; a new pick eases the next one in, a repaint doesn't.</summary>
+        private string _shownSelection;
+        /// <summary>The notice as last painted; it slides in when it appears or changes kind.</summary>
+        private JoinNoticeKind _shownNotice;
 
         /// <summary>Join pressed with this job; the server re-checks the slot (Decision 11).</summary>
         public event Action<string> JoinRequested;
@@ -51,9 +60,11 @@ namespace SS3D.UI.Lobby
         {
             _root = root;
             _catalog = catalog;
+            _card = root.Q("lobby-join-card");
             _roundTime = root.Q<Label>("lobby-join-round-time");
             _openCount = root.Q<Label>("lobby-join-open-count");
             _notice = root.Q("lobby-join-notice");
+            _noticeIcon = _notice.Q(className: "lobby__icon");
             _noticeText = root.Q<Label>("lobby-join-notice-text");
             _jobList = root.Q<ScrollView>("lobby-join-job-list");
             _portrait = root.Q("lobby-join-portrait");
@@ -92,6 +103,13 @@ namespace SS3D.UI.Lobby
             _root.AddToClassList("lobby-join--open");
             _root.BringToFront();
             Paint();
+            // The backdrop fades (Lobby.uss keeps it in place), the card pops in, then the jobs and the crew groups
+            // follow one after another. Only here: the host's repaint and a rebuild on a count change don't replay it.
+            UiMotion.Enter(_root);
+            _card.AddToClassList("ui-enter--scale");
+            UiMotion.Enter(_card);
+            UiMotion.Stagger(_jobList, 30, 90);
+            foreach (VisualElement column in _manifest.Children()) UiMotion.Stagger(column, 35, 140, 8);
             _root.schedule.Execute(() => _confirm.Focus()).ExecuteLater(1);
         }
 
@@ -188,6 +206,8 @@ namespace SS3D.UI.Lobby
             string dept = LobbyView.DepartmentClass(department);
             VisualElement item = LobbyUi.Box("lobby-join__job-item");
             item.name = "lobby-join-job-" + name;
+            // The department's colour (--dept) for the row's edge, its outline and ring when picked, and its description.
+            if (dept != null) item.AddToClassList(dept);
 
             Button row = new(() => Pick(name)) { name = "lobby-join-job" };
             row.AddToClassList("lobby-join__job");
@@ -195,12 +215,12 @@ namespace SS3D.UI.Lobby
             ring.Add(LobbyUi.Box("lobby-join__ring-dot"));
             row.Add(ring);
             VisualElement frame = LobbyUi.Box("lobby-join__job-frame");
-            if (dept != null) frame.AddToClassList("lobby-join__job-frame--" + department.ToString().ToLowerInvariant());
+            if (dept != null) frame.AddToClassList(dept);
             frame.Add(CharacterJobsTab.JobIcon(_catalog, name, department));
             row.Add(frame);
             VisualElement text = LobbyUi.Box("lobby-join__job-text");
             text.Add(LobbyUi.Text(name, "lobby-join__job-name"));
-            Label departmentLabel = LobbyUi.Text(department == Department.None ? "Other" : department.ToString(), "lobby-join__job-dept");
+            Label departmentLabel = LobbyUi.Text(department == Department.None ? "Other" : department.ToString(), "lobby-join__job-dept", "lb-dept-text");
             if (dept != null) departmentLabel.AddToClassList(dept);
             text.Add(departmentLabel);
             row.Add(text);
@@ -251,6 +271,8 @@ namespace SS3D.UI.Lobby
             string dept = LobbyView.DepartmentClass(department);
             VisualElement box = LobbyUi.Box("lobby-join__group");
             box.name = "lobby-join-dept-" + key;
+            // The department's colour (--dept) for the group's edge, glyph and name.
+            if (dept != null) box.AddToClassList(dept);
             VisualElement head = LobbyUi.Box("lobby-join__group-head");
             VisualElement icon = LobbyUi.Icon("dept-" + (department == Department.None ? "civilian" : key));
             icon.AddToClassList("lobby-join__group-icon");
@@ -285,19 +307,38 @@ namespace SS3D.UI.Lobby
         private void Refresh()
         {
             // Only the chosen job shows its description; hover doesn't (owner feedback: rows jumped under the pointer).
+            // A new pick unfolds it (LobbyJoin.uss); the repaint and a rebuild keep it still.
+            bool picked = _model.Selected != _shownSelection;
             foreach ((string job, VisualElement item) in _jobs)
             {
                 bool on = job == _model.Selected;
                 item.EnableInClassList("lobby-join__job-item--on", on);
                 Label description = item.Q<Label>("lobby-join-description");
                 description.style.display = on && description.text.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+                if (on && picked) UiMotion.Enter(description);
             }
 
+            _shownSelection = _model.Selected;
             _openCount.text = _model.OpenCountText;
             JoinNoticeKind notice = _model.Notice;
             _noticeText.text = _model.NoticeText;
             _notice.EnableInClassList("lobby-join__notice--hidden", notice == JoinNoticeKind.None);
+            // A notice that appears, or turns from news to a warning, slides in.
+            if (notice != _shownNotice && notice != JoinNoticeKind.None) UiMotion.Enter(_notice);
+            _shownNotice = notice;
             _notice.EnableInClassList("lobby-join__notice--warning", notice == JoinNoticeKind.ChosenFilled);
+            _noticeIcon?.EnableInClassList("lobby__icon--info", notice != JoinNoticeKind.ChosenFilled);
+            _noticeIcon?.EnableInClassList("lobby__icon--warning", notice == JoinNoticeKind.ChosenFilled);
+            // Join fills with the picked job's department colour (no department: it stays the white plate).
+            string confirmDepartment = _model.Selected == null ? null : LobbyView.DepartmentClass(_model.DepartmentOf(_model.Selected));
+            if (confirmDepartment != _confirmDepartment)
+            {
+                if (_confirmDepartment != null) _confirm.RemoveFromClassList(_confirmDepartment);
+                if (confirmDepartment != null) _confirm.AddToClassList(confirmDepartment);
+                _confirmDepartment = confirmDepartment;
+            }
+
+            _confirm.EnableInClassList("lobby-join__confirm--dept", confirmDepartment != null);
             _confirmTitle.text = _model.JoinTitle.ToUpperInvariant();
             _confirm.SetEnabled(_model.Selected != null && !_joining);
         }

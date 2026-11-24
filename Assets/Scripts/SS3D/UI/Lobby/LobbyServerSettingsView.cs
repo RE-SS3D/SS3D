@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Rounds;
+using SS3D.UI.Shell;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -21,6 +22,9 @@ namespace SS3D.UI.Lobby
         private readonly Dictionary<ServerSetting, (string Value, float Expires)> _pendingServerText = new();
         private readonly HashSet<VisualElement> _editingFields = new();
         private readonly VisualElement _form;
+        private VisualElement _card;
+        /// <summary>The card's tone as last painted; null before the first. A change flashes the card.</summary>
+        private LobbyTone? _toneShown;
 
         private ServerSettings _settings = ServerSettings.Default;
         private string[] _maps = Array.Empty<string>();
@@ -52,7 +56,9 @@ namespace SS3D.UI.Lobby
 
         private void Build()
         {
-            VisualElement card = LobbyUi.Box("lobby-admin__card");
+            // Coded like the sidebar's round: its tone's soft fill and edge (Lobby.uss), set in Refresh.
+            VisualElement card = LobbyUi.Box("lobby-admin__card", "lb-tone--neutral");
+            _card = card;
             card.Add(LobbyUi.Titling("Round state", "lobby-admin__card-heading"));
             VisualElement body = LobbyUi.Box("lobby-admin__card-body");
             VisualElement state = new();
@@ -72,28 +78,31 @@ namespace SS3D.UI.Lobby
             card.Add(body);
             _form.Add(card);
 
-            _form.Add(LobbyUi.Titling("Round controls", "lobby-admin__section-title"));
+            _form.Add(LobbyUi.SectionHead("Round controls", "play", "lobby-admin__section-head"));
             VisualElement controls = LobbyUi.Box("lobby-admin__controls");
-            AddRoundAction(controls, "Start Round", "server-start", RoundAdminAction.Start, true);
-            AddRoundAction(controls, "Force Start", "server-force", RoundAdminAction.ForceStart);
+            // By consequence: Start is the call to action, forcing or holding warn, stopping danger.
+            AddRoundAction(controls, "Start Round", "server-start", RoundAdminAction.Start, "start");
+            AddRoundAction(controls, "Force Start", "server-force", RoundAdminAction.ForceStart, "warn");
             // Only offered after a start found the map unplayable (creative-mode §8's block, with a way back into the editor).
             AddRoundAction(controls, "Edit Map Anyway", "server-edit-anyway", RoundAdminAction.EditMapAnyway);
             AddRoundAction(controls, "Extend Timer", "server-extend", RoundAdminAction.ExtendTimer);
-            AddRoundAction(controls, "Cancel Countdown", "server-cancel", RoundAdminAction.CancelCountdown);
-            AddRoundAction(controls, "Stop Round", "server-stop", RoundAdminAction.Stop);
+            AddRoundAction(controls, "Cancel Countdown", "server-cancel", RoundAdminAction.CancelCountdown, "warn");
+            AddRoundAction(controls, "Stop Round", "server-stop", RoundAdminAction.Stop, "danger");
             // The 30 s round-end summary: hold it for a discussion, resume to return everyone to the lobby.
-            AddRoundAction(controls, "Hold Summary", "server-hold-end", RoundAdminAction.HoldEnd);
+            AddRoundAction(controls, "Hold Summary", "server-hold-end", RoundAdminAction.HoldEnd, "warn");
             AddRoundAction(controls, "Resume Summary", "server-resume-end", RoundAdminAction.ResumeEnd);
             _form.Add(controls);
 
-            _form.Add(LobbyUi.Titling("Server info", "lobby-admin__section-title"));
+            _form.Add(LobbyUi.SectionHead("Server info", "speakerphone", "lobby-admin__section-head"));
             AddServerText("Server Name", "server-name", ServerSetting.ServerName, ServerInfoText.MaxNameLength, false,
                 value => _settings.ServerName = value);
             AddServerText("Message of the Day", "server-motd", ServerSetting.Motd, ServerInfoText.MaxMotdLength, true,
                 value => _settings.Motd = value);
 
-            _form.Add(LobbyUi.Titling("Map and mode", "lobby-admin__section-title"));
-            DropdownField map = new("Map") { name = "server-map" };
+            _form.Add(LobbyUi.SectionHead("Map and mode", "map", "lobby-admin__section-head"));
+            // UiSelects, not DropdownFields: the lobby's root is scaled (UiReferenceScale), which breaks a
+            // DropdownField's list.
+            UiSelect map = new("Map") { name = "server-map" };
             map.AddToClassList("lobby-admin__select");
             map.RegisterValueChangedCallback(e =>
             {
@@ -105,8 +114,8 @@ namespace SS3D.UI.Lobby
             Label mapStatus = LobbyUi.Text("", "lobby-admin__map-load");
             mapStatus.name = "server-map-load-status";
             _form.Add(mapStatus);
-            DropdownField mode = new("Game Mode", new List<string> { "Secret", "Extended", "Nuclear Emergency" }, 0)
-                { name = "server-mode" };
+            UiSelect mode = new("Game Mode") { name = "server-mode", Choices = new List<string> { "Secret", "Extended", "Nuclear Emergency" } };
+            mode.SetValueWithoutNotify("Secret");
             mode.AddToClassList("lobby-admin__select");
             mode.RegisterValueChangedCallback(e =>
             {
@@ -126,7 +135,7 @@ namespace SS3D.UI.Lobby
 
             // Only rules with a consumer in the game (lobby.md §8): Random Events, Friendly Fire and Respawn come back
             // when their systems exist.
-            _form.Add(LobbyUi.Titling("Round rules", "lobby-admin__section-title"));
+            _form.Add(LobbyUi.SectionHead("Round rules", "adjustments", "lobby-admin__section-head"));
             Toggle late = Rule("Allow Late Join", "server-late-join", "");
             late.RegisterValueChangedCallback(e => { _settings.AllowLateJoin = e.newValue; Save(ServerSetting.AllowLateJoin); });
             _form.Add(late);
@@ -178,12 +187,13 @@ namespace SS3D.UI.Lobby
             Changed?.Invoke(field, _settings);
         }
 
-        private void AddRoundAction(VisualElement parent, string text, string name, RoundAdminAction action, bool primary = false)
+        /// <param name="look">"start", "warn" or "danger" for lobby-admin__button--&lt;look&gt;; null for a plain button.</param>
+        private void AddRoundAction(VisualElement parent, string text, string name, RoundAdminAction action, string look = null)
         {
             Button button = new(() => RoundAdminRequested?.Invoke(action)) { name = name, text = text.ToUpperInvariant() };
             button.AddToClassList("lobby-admin__button");
             button.AddToClassList("lb-titling");
-            if (primary) button.AddToClassList("lobby-admin__button--start");
+            if (look != null) button.AddToClassList("lobby-admin__button--" + look);
             parent.Add(button);
         }
 
@@ -193,6 +203,7 @@ namespace SS3D.UI.Lobby
             column.Add(LobbyUi.Text(label, "lobby-admin__number-label"));
             IntegerField input = new() { name = name, isDelayed = true };
             input.AddToClassList("lb-mono");
+            LobbyUi.EditorInput(input);
             input.RegisterValueChangedCallback(e => { update(e.newValue); Save(field); });
             LobbyUi.HoldTextEntry(input, _textEntry);
             TrackEditing(input);
@@ -220,7 +231,7 @@ namespace SS3D.UI.Lobby
                 {
                     if (e.keyCode is KeyCode.Return or KeyCode.KeypadEnter) input.Blur();
                 }, TrickleDown.TrickleDown);
-            LobbyUi.DarkInput(input);
+            LobbyUi.EditorInput(input);
             LobbyUi.HoldTextEntry(input, _textEntry);
             TrackEditing(input);
             _form.Add(input);
@@ -291,6 +302,7 @@ namespace SS3D.UI.Lobby
             else if (round == RoundState.Ending) detail = RoundSummaryModel.Countdown(_session.EndSecondsLeft, _session.EndHeld, shortForm: true);
             _form.Q<Label>("server-round-detail").text = detail;
             _form.Q<Label>("server-ready-ratio").text = $"{_ready}/{_online}";
+            PaintTone(LobbySidebarModel.Round(_session, _session.AutoStartSecondsLeft).Tone);
 
             Button start = _form.Q<Button>("server-start");
             start.style.display = idle ? DisplayStyle.Flex : DisplayStyle.None;
@@ -318,11 +330,11 @@ namespace SS3D.UI.Lobby
             resumeEnd.style.display = ending && _session.EndHeld ? DisplayStyle.Flex : DisplayStyle.None;
             resumeEnd.SetEnabled(ending && _session.EndHeld);
 
-            DropdownField map = _form.Q<DropdownField>("server-map");
-            map.choices = _maps.ToList();
+            UiSelect map = _form.Q<UiSelect>("server-map");
+            map.Choices = _maps.ToList();
             map.SetValueWithoutNotify(_settings.Map ?? "");
             map.SetEnabled(idle && _hasSettings);
-            DropdownField mode = _form.Q<DropdownField>("server-mode");
+            UiSelect mode = _form.Q<UiSelect>("server-mode");
             mode.SetValueWithoutNotify(_settings.Mode);
             mode.SetEnabled(idle && _hasSettings);
 
@@ -348,6 +360,20 @@ namespace SS3D.UI.Lobby
             late.SetEnabled(idle && _hasSettings);
             _form.Q<Label>("server-settings-status").text = _status;
             UpdateMapStatus(_form.Q<Label>("server-map-load-status"));
+        }
+
+        /// <summary>
+        /// The card takes the round's tone, as the sidebar's round does (info counting down, warn loading or ending, ok
+        /// in progress), and flashes once when it changes.
+        /// </summary>
+        private void PaintTone(LobbyTone tone)
+        {
+            _card.EnableInClassList("lb-tone--neutral", tone == LobbyTone.Neutral);
+            _card.EnableInClassList("lb-tone--info", tone == LobbyTone.Info);
+            _card.EnableInClassList("lb-tone--warning", tone == LobbyTone.Warning);
+            _card.EnableInClassList("lb-tone--live", tone == LobbyTone.Live);
+            if (_toneShown.HasValue && _toneShown.Value != tone) UiMotion.Flash(_card, 220);
+            _toneShown = tone;
         }
 
         private void SetNumber(string name, int value, bool idle)

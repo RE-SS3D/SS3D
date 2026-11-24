@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SS3D.Systems.IdAccess;
+using SS3D.UI.Shell;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -24,6 +25,8 @@ namespace SS3D.UI.Lobby
         private readonly List<VisualElement> _rows = new();
         private VisualElement _anchor;
         private bool _below;
+        private bool _above;
+        private bool _belowEnd;
         private string _confirmId;
 
         public event Action<string> SelectRequested;
@@ -47,6 +50,9 @@ namespace SS3D.UI.Lobby
             Root.pickingMode = PickingMode.Position;
 
             VisualElement head = LobbyUi.Box("switcher__head");
+            VisualElement headIcon = LobbyUi.Icon("users");
+            headIcon.AddToClassList("switcher__head-icon");
+            head.Add(headIcon);
             head.Add(LobbyUi.Titling("Characters", "switcher__title"));
             _count = LobbyUi.Mono("", "switcher__count");
             head.Add(_count);
@@ -109,6 +115,11 @@ namespace SS3D.UI.Lobby
             Root.BringToFront();
             Refresh();
             Place();
+            // The plate pops from the side of its anchor (Place sets the origin) and the rows follow one after another.
+            // Only on opening: the host's Refresh after a roster change or a new portrait doesn't replay it.
+            Root.AddToClassList("ui-enter--scale");
+            UiMotion.Enter(Root);
+            UiMotion.Stagger(_list, 28, 50, 10);
             Root.schedule.Execute(FocusSelected).ExecuteLater(1);
         }
 
@@ -117,6 +128,8 @@ namespace SS3D.UI.Lobby
             if (!IsOpen) return;
             _confirmId = null;
             Root.RemoveFromClassList("switcher--open");
+            _above = false;
+            _belowEnd = false;
             Closed?.Invoke();
         }
 
@@ -124,6 +137,38 @@ namespace SS3D.UI.Lobby
         {
             if (IsOpen) Close();
             else Open(anchor, below);
+        }
+
+        /// <summary>
+        /// Opens above <paramref name="anchor"/>, centred on it: the lobby's Switch character under the character stage
+        /// (the UI bible's layout B), near the screen's bottom edge.
+        /// </summary>
+        public void ToggleAbove(VisualElement anchor)
+        {
+            if (IsOpen)
+            {
+                Close();
+                return;
+            }
+
+            _above = true;
+            Open(anchor, false);
+        }
+
+        /// <summary>
+        /// Opens under <paramref name="anchor"/>, its right edge on the anchor's: the character window's dropdown, at the
+        /// end of its title line.
+        /// </summary>
+        public void ToggleBelowEnd(VisualElement anchor)
+        {
+            if (IsOpen)
+            {
+                Close();
+                return;
+            }
+
+            _belowEnd = true;
+            Open(anchor, true);
         }
 
         /// <summary>Rebuilds the rows from the roster (after a change, or a new portrait).</summary>
@@ -152,6 +197,8 @@ namespace SS3D.UI.Lobby
             if (!_roster.CanDelete || _roster.Find(id) == null) return;
             _confirmId = id;
             Refresh();
+            // The question slides in under its row (a later Refresh keeps it still).
+            UiMotion.Enter(Root.Q("character-switcher-confirm"));
             Root.schedule.Execute(() => Root.Q<Button>("character-switcher-cancel")?.Focus()).ExecuteLater(1);
         }
 
@@ -194,10 +241,25 @@ namespace SS3D.UI.Lobby
             string job = character.Preferences?.HighJob;
             if (job != null)
             {
+                string dept = LobbyView.DepartmentClass(_departmentOf(job));
+                if (dept != null)
+                {
+                    VisualElement swatch = LobbyUi.Box("lb-swatch");
+                    swatch.AddToClassList(dept);
+                    swatch.pickingMode = PickingMode.Ignore;
+                    high.Add(swatch);
+                }
+
                 high.Add(LobbyUi.Text("High:", "switcher__high-prefix"));
                 Label jobLabel = LobbyUi.Text(job, "switcher__high-job");
-                string dept = LobbyView.DepartmentClass(_departmentOf(job));
-                if (dept != null) jobLabel.AddToClassList(dept);
+                if (dept != null)
+                {
+                    jobLabel.AddToClassList(dept);
+                    jobLabel.AddToClassList("lb-dept-text");
+                    // The row's left edge in the High job's department colour (the UI bible's colour coding).
+                    row.AddToClassList("switcher__row--dept");
+                    row.AddToClassList(dept);
+                }
                 high.Add(jobLabel);
             }
             else
@@ -347,10 +409,27 @@ namespace SS3D.UI.Lobby
             Rect anchor = Root.parent.WorldToLocal(_anchor.worldBound);
             Rect host = Root.parent.contentRect;
             float height = Root.resolvedStyle.height;
+            float width = float.IsNaN(Root.resolvedStyle.width) ? 440f : Root.resolvedStyle.width;
             float left = _below ? anchor.xMin - 48f : anchor.xMax + 8f;
             float top = _below ? anchor.yMax + 4f : anchor.yMax + 85f - (float.IsNaN(height) ? 0f : height);
+            // The opening pop grows out of the side that faces the anchor.
+            Vector2 origin = _below ? new Vector2(15f, 0f) : new Vector2(0f, 100f);
+            if (_above)
+            {
+                left = anchor.center.x - width / 2f;
+                top = anchor.yMin - 14f - (float.IsNaN(height) ? 0f : height);
+                origin = new Vector2(50f, 100f);
+            }
+            else if (_belowEnd)
+            {
+                left = anchor.xMax - width;
+                origin = new Vector2(100f, 0f);
+            }
+
+            Root.style.transformOrigin = new TransformOrigin(Length.Percent(origin.x), Length.Percent(origin.y), 0f);
+
             if (!float.IsNaN(height) && top + height > host.height - 8f) top = host.height - 8f - height;
-            Root.style.left = Mathf.Max(8f, Mathf.Min(left, host.width - 448f));
+            Root.style.left = Mathf.Max(8f, Mathf.Min(left, host.width - width - 8f));
             Root.style.top = Mathf.Max(8f, top);
         }
     }

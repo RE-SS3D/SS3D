@@ -1,39 +1,92 @@
-/*
- * Lobby shell (lobby effort Phase 4), to the "SS3D Lobby & Character window" canvas. Tokens: LobbyTokens.uss.
- * UI Toolkit has no gap, box-shadow or text decoration: spacing is margins, depth is surface tone and 1px borders,
- * and the held timer's strike is its own element. LobbyView switches .lobby--compact on below 1600 px of panel width
- * (the 1366 x 768 layout, Decision 19).
- */
-@import url("LobbyTokens.uss");
+@import url("../Tokens/ui-tokens.uss");
+@import url("../Tokens/ui-controls.uss");
 @import url("CharacterSwitcher.uss");
 @import url("LobbyJoin.uss");
 
-.lobby {
-    position: absolute; left: 0; top: 0; right: 0; bottom: 0;
-    background-color: rgba(0, 0, 0, 0);
-}
-.lobby Label { margin: 0; padding: 0; }
-.lobby Button { margin: 0; padding: 0; border-width: 0; border-radius: 0; background-color: rgba(0, 0, 0, 0); color: var(--lb-text); -unity-font-style: normal; -unity-text-align: middle-left; }
-.lobby .lobby-chat__channel-button, .lobby .lobby-admin__button, .lobby .lobby__switch-toggle { -unity-text-align: middle-center; }
-.lobby__veil { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(6, 7, 9, 0.45); }
-.lobby__grow { flex-grow: 1; }
-.lobby__row { flex-direction: row; align-items: center; }
-.lobby__eyebrow { font-size: 11px; letter-spacing: 1.32px; color: var(--lb-text-2); -unity-font-style: bold; }
+/*
+ * Lobby shell, drawn with the UI bible's parts (Documents/plans/assets/ui-bible, "lobby" tab, layout B; its
+ * components.css lobby section is this sheet, converted to USS): a narrow sidebar flush with the screen's left edge,
+ * the character you play on a stage in the middle, the panel as a floating plate on the right. Colour coding: the
+ * round's state (--tone), departments (--dept), chat channels (--chan) and admin (warn).
+ * Sizes are the bible's reference px: LobbyView lays .lobby out at 1200 × 675 and scales it to the screen
+ * (UiReferenceScale), times the player's UI scale. Labels are Disket Mono Bold, which draws only capitals; text is
+ * Kode Mono.
+ * The character window (CharacterWindow.uss) imports this sheet for its tokens, controls, icons and prompt.
+ * Buttons keep the runtime theme's .unity-button class; the root sets the theme's button and field colours to this
+ * look, and every Button class here sets its own background for :hover and :active too.
+ */
 
-/* Icons: white sprites, tinted per use. */
-.lobby__icon { width: 16px; height: 16px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; -unity-background-image-tint-color: var(--lb-text-2); }
+.lobby {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
+    /* The baked fonts are static font assets, which only the standard text generator draws. */
+    -unity-text-generator: standard;
+    font-size: 12px;
+    color: var(--ui-text);
+    /* The runtime theme's buttons and fields, in this look: no grey plates; near-black fields. */
+    --unity-colors-button-background: rgba(0, 0, 0, 0);
+    --unity-colors-button-background-hover: rgba(0, 0, 0, 0);
+    --unity-colors-button-background-pressed: rgba(0, 0, 0, 0);
+    --unity-colors-button-border: rgba(0, 0, 0, 0);
+    --unity-colors-button-text: rgb(242, 242, 240);
+    --unity-colors-input_field-background: rgba(0, 0, 0, 0.9);
+    --unity-colors-input_field-border: rgba(0, 0, 0, 0);
+    --unity-colors-input_field-border-hover: rgba(0, 0, 0, 0);
+    --unity-colors-input_field-border-focus: rgba(255, 255, 255, 0.5);
+    --unity-cursor-color: rgb(242, 242, 240);
+    --unity-selection-color: rgba(255, 255, 255, 0.25);
+}
+
+.lobby Label {
+    margin: 0;
+    padding: 0;
+}
+
+.lobby Button {
+    margin: 0;
+    padding: 0;
+    border-width: 0;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--ui-text);
+    -unity-text-align: middle-left;
+}
+
+.lobby .unity-disabled {
+    opacity: 1;
+}
+
+/* The classes the views still add for type: Disket for titles, Kode for figures. One class, so any part's own rule
+   (two classes, in this sheet or the imported ones) decides instead. */
+.lb-titling {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+}
+
+.lb-mono {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
+}
+
+/* ── Icons: white sprites tinted per use ── */
 .lobby__icon--lock { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/LockClosed.png"); }
 .lobby__icon--chevron-right { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/ChevronRight.png"); }
-.lobby__icon--chevron-down { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/ChevronDown.png"); width: 14px; height: 14px; }
+.lobby__icon--chevron-down { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/ChevronDown.png"); }
+.lobby__icon--chevron-up { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/ChevronUp.png"); }
+.lobby__icon--chevron-left { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/ChevronLeft.png"); }
 .lobby__icon--users { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Users.png"); }
 .lobby__icon--check { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Check.png"); }
 .lobby__icon--ghost { background-image: url("project://database/Assets/Art/Icons/External/lorc/ghost.svg"); }
 .lobby__icon--music { background-image: url("project://database/Assets/Art/Icons/Heroicons/Solid/MusicNote.png"); }
+.lobby__icon--next { background-image: url("project://database/Assets/Art/Icons/Heroicons/Solid/FastForward.png"); }
 .lobby__icon--bug { background-image: url("project://database/Assets/Art/Icons/External/lorc/long-antennae-bug.svg"); }
 .lobby__icon--logout { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Logout.png"); }
-.lobby__icon--external { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/ExternalLink.png"); width: 12px; height: 12px; }
-.lobby__icon--send { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/PaperAirplane.png"); width: 14px; height: 14px; }
-.lobby__icon--chevron-left { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/ChevronLeft.png"); width: 14px; height: 14px; }
+.lobby__icon--external { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/ExternalLink.png"); }
+.lobby__icon--send { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/PaperAirplane.png"); }
 .lobby__icon--refresh { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Refresh.png"); }
 .lobby__icon--duplicate { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Duplicate.png"); }
 .lobby__icon--trash { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Trash.png"); }
@@ -43,6 +96,16 @@
 .lobby__icon--warning { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Exclamation.png"); }
 .lobby__icon--user { background-image: url("project://database/Assets/Art/Icons/Heroicons/Solid/User.png"); }
 .lobby__icon--sparkles { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Sparkles.png"); }
+/* Section heads (LobbyUi.SectionHead, the sidebar's round, the Join picker's lists). */
+.lobby__icon--clock { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Clock.png"); }
+.lobby__icon--server { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Server.png"); }
+.lobby__icon--speakerphone { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Speakerphone.png"); }
+.lobby__icon--document { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/DocumentText.png"); }
+.lobby__icon--play { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Play.png"); }
+.lobby__icon--map { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Map.png"); }
+.lobby__icon--adjustments { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Adjustments.png"); }
+.lobby__icon--briefcase { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/Briefcase.png"); }
+.lobby__icon--user-group { background-image: url("project://database/Assets/Art/Icons/Heroicons/Outline/UserGroup.png"); }
 /* Department symbols (game-icons.net, CC BY 3.0; see Art/Icons/External/license.txt), tinted per department. */
 .lobby__icon--dept-command { background-image: url("project://database/Assets/Art/Icons/External/delapouite/captain-hat-profile.svg"); }
 .lobby__icon--dept-security { background-image: url("project://database/Assets/Art/Icons/External/delapouite/police-target.svg"); }
@@ -53,397 +116,2811 @@
 .lobby__icon--dept-service { background-image: url("project://database/Assets/Art/Icons/External/lorc/beer-stein.svg"); }
 .lobby__icon--dept-civilian { background-image: url("project://database/Assets/Art/Icons/External/delapouite/bed.svg"); }
 
-.lobby .lobby__dot { width: 6px; height: 6px; border-radius: 3px; margin-right: 6px; background-color: var(--lb-text-2); }
-.lobby .lobby__dot--live { background-color: var(--lb-green); }
-.lobby .lobby__dot--warning { background-color: var(--lb-amber); }
-.lobby__status { font-size: 12px; color: var(--lb-text-2); }
-.lobby__status--live { color: var(--lb-green); }
-.lobby__status--warning { color: var(--lb-amber); }
-
-.lobby .lobby__keycap {
-    font-size: 11px; color: var(--lb-text-2); padding: 1px 5px; margin-left: 8px;
-    border-width: 1px; border-color: var(--lb-border); border-radius: 2px;
-}
-
-/* ---- Sidebar ---- */
-.lobby__sidebar {
-    position: absolute; left: 0; top: 0; bottom: 0; width: 400px;
-    background-color: var(--lb-sidebar); border-right-width: 1px; border-right-color: var(--lb-border);
-}
-.lobby .lobby__wordmark-block {
-    padding: 24px 24px 16px; align-items: center; flex-shrink: 0;
-    border-bottom-width: 1px; border-bottom-color: var(--lb-border-subtle);
-}
-.lobby__wordmark {
-    width: 216px; height: 101px;
-    background-image: url("project://database/Assets/Art/Textures/UI/Logos/SS3DLogo.png");
+.lobby .lobby__icon {
     -unity-background-scale-mode: scale-to-fit;
 }
-.lobby .lobby__section { padding: 24px; flex-shrink: 0; border-bottom-width: 1px; border-bottom-color: var(--lb-border-subtle); }
-/* The canvas has no divider under Ready / Observe; .lobby .lobby__section would otherwise draw one. */
-.lobby .lobby__entry { border-bottom-width: 0; }
 
-.lobby .lobby__round-caption { font-size: 13px; color: var(--lb-text-2); margin-top: 10px; }
-.lobby__round--waiting .lobby__round-caption { font-size: 17px; color: var(--lb-text); -unity-font-style: bold; }
-.lobby .lobby__timer-wrap { margin-top: 8px; align-self: flex-start; }
-.lobby__timer { font-size: 48px; color: var(--lb-text); letter-spacing: 1px; }
-.lobby__timer-strike { position: absolute; left: 0; right: 0; top: 50%; height: 2px; background-color: var(--lb-disabled); display: none; }
-.lobby__timer-wrap--held .lobby__timer { color: var(--lb-disabled); }
-.lobby__timer-wrap--held .lobby__timer-strike { display: flex; }
-.lobby .lobby__note { margin-top: 10px; align-items: flex-start; }
-.lobby .lobby__note-icon { width: 12px; height: 12px; margin: 2px 6px 0 0; }
-.lobby__note-text { flex-shrink: 1; flex-grow: 1; font-size: 12px; color: var(--lb-text-2); white-space: normal; }
-.lobby__note--warning .lobby__note-text { color: var(--lb-amber); }
-.lobby__note--warning .lobby__note-icon { -unity-background-image-tint-color: var(--lb-amber); }
-.lobby .lobby__map-load { margin-top: 8px; font-size: 12px; color: var(--lb-text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lobby .lobby__map-load--loading { color: var(--lb-amber); }
-.lobby .lobby__map-load--failed { color: var(--lb-red-text); }
+/* A department's name in its colour: on a Label with the department class, or under one (lb-dept-text). */
+.lobby .lb-dept-text {
+    color: var(--dept);
+}
 
-/* Character card: the whole card opens the character window. */
+.lobby Label.lb-dept--command,
+.lobby Label.lb-dept--security,
+.lobby Label.lb-dept--engineering,
+.lobby Label.lb-dept--medical,
+.lobby Label.lb-dept--science,
+.lobby Label.lb-dept--cargo,
+.lobby Label.lb-dept--service,
+.lobby Label.lb-dept--civilian {
+    color: var(--dept);
+}
+
+/* ── Thin scrollers: the map editor's ── */
+.lobby .unity-scroller--vertical {
+    width: 6px;
+    min-width: 6px;
+    max-width: 6px;
+    margin-left: 2px;
+}
+
+.lobby .unity-scroller__low-button,
+.lobby .unity-scroller__high-button {
+    display: none;
+}
+
+.lobby .unity-scroller--vertical .unity-scroller__slider {
+    width: 6px;
+    min-width: 6px;
+    margin: 0;
+}
+
+.lobby .unity-scroller--vertical .unity-base-slider__tracker {
+    width: 6px;
+    left: 0;
+    border-width: 0;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.lobby .unity-scroller--vertical .unity-base-slider__dragger {
+    width: 6px;
+    left: 0;
+    margin-left: 0;
+    border-width: 0;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+.lobby .unity-scroller--vertical .unity-base-slider__dragger:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.lobby .unity-scroller--vertical .unity-base-slider__dragger-border {
+    display: none;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * Lobby: Lobby.uss (with LobbyJoin.uss and CharacterSwitcher.uss) redrawn in the main menu's look
+ * ══════════════════════════════════════════════════════════════════════════
+ * Class names are the shipped sheets' (LobbyView, the tab views, LobbyJoinPicker, CharacterSwitcher and
+ * RoundSummaryView build the same trees), so the port is a USS rewrite plus the few C# changes the bible tab marks.
+ *
+ * The sidebar plate sits exactly where the main menu's does, so the column stays put from menu to lobby. Ready (or Join)
+ * is the white plate, the screen's call to action; once you're ready it trades the white for the ok outline. The
+ * panel's tabs are the menu's tab plates in a row (white when open); Settings keeps the editor's sub-tabs under them.
+ * Colour for state only (the round, Ready, map load, admin lines, the round's result) and for departments, which are
+ * identity: a department's colour is its glyph, its outline and its name, never a fill. */
+
+/* Behind the lobby the live station shows through, blurred (lobby.md §8). Here a station render stands in for it. */
+
+.lobby .lobby__veil {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4); /* the bible's 0.3 is over a blurred render; the live station is sharp */
+}
+
+.lobby .lobby__text {
+    margin: 0;
+    padding: 0;
+}
+
+.lobby .lobby__grow {
+    flex-grow: 1;
+}
+
+.lobby .lobby__row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.lobby .lobby__eyebrow {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+}
+
+/* An eyebrow led by a glyph (the sidebar's Round). */
+.lobby .lobby__eyebrow-icon {
+    width: 11px;
+    height: 11px;
+    margin-right: 6px;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.55);
+}
+
+/* A section's head (LobbyUi.SectionHead; the Join picker's lists in UXML): a glyph, the Disket title and a hairline to
+   the end of the line, so a section reads as one before its first row. */
+.lobby .lobby__section-head {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    height: 16px;
+    margin-bottom: 8px;
+}
+
+.lobby .lobby__section-head-icon {
+    width: 12px;
+    height: 12px;
+    margin-right: 7px;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.8);
+}
+
+.lobby .lobby__section-head-title {
+    flex-shrink: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.72);
+    white-space: nowrap;
+}
+
+.lobby .lobby__section-head-rule {
+    flex-grow: 1;
+    height: 1px;
+    margin-left: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Glyphs: white sprites tinted per use. Web-only: a mask filled with the element's colour, so one rule tints it.
+   USS: background-image plus -unity-background-image-tint-color. */
+
+.lobby .lobby__icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.6);
+}
+
+/* A department sets --dept; whatever shows it reads var(--dept) (USS custom properties inherit the same way). */
+
+.lb-dept--command {
+    --dept: var(--ui-dept-command);
+}
+
+.lb-dept--security {
+    --dept: var(--ui-dept-security);
+}
+
+.lb-dept--engineering {
+    --dept: var(--ui-dept-engineering);
+}
+
+.lb-dept--medical {
+    --dept: var(--ui-dept-medical);
+}
+
+.lb-dept--science {
+    --dept: var(--ui-dept-science);
+}
+
+.lb-dept--cargo {
+    --dept: var(--ui-dept-cargo);
+}
+
+.lb-dept--service {
+    --dept: var(--ui-dept-service);
+}
+
+.lb-dept--civilian {
+    --dept: var(--ui-dept-civilian);
+}
+
+/* A department as an area (--dept-soft): the picked job, the character's stage, the switcher's selected row. USS
+   can't take an alpha from var(--dept), so each is spelled out at the soft tokens' strength (a little over, since
+   here the department is the subject); keep the colours in step with ui-tokens' --ui-dept-*. The character window's
+   High job row uses it too. */
+.lb-dept--command { --dept-soft: rgba(112, 160, 255, 0.065); }
+.lb-dept--security { --dept-soft: rgba(255, 104, 136, 0.065); }
+.lb-dept--engineering { --dept-soft: rgba(255, 204, 60, 0.058); }
+.lb-dept--medical { --dept-soft: rgba(56, 214, 222, 0.058); }
+.lb-dept--science { --dept-soft: rgba(190, 124, 255, 0.065); }
+.lb-dept--cargo { --dept-soft: rgba(222, 156, 96, 0.065); }
+.lb-dept--service { --dept-soft: rgba(104, 224, 136, 0.058); }
+.lb-dept--civilian { --dept-soft: rgba(226, 218, 198, 0.052); }
+
+.lobby .lobby__text.lb-dept-text {
+    color: var(--dept);
+}
+
+.lobby .lobby__icon.lb-tint {
+    -unity-background-image-tint-color: var(--dept);
+}
+
+.lb-swatch {
+    width: 8px;
+    height: 8px;
+    margin-right: 6px;
+    border-radius: 1.2px;
+    background-color: var(--dept);
+}
+
+.lobby .lobby__dot {
+    width: 8px;
+    height: 8px;
+    margin-right: 8px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.lobby .lobby__dot--live {
+    background-color: var(--ui-ok);
+}
+
+.lobby .lobby__dot--warning {
+    background-color: var(--ui-warn);
+}
+
+.lobby .lobby__status {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.lobby .lobby__status--live {
+    color: var(--ui-ok);
+}
+
+.lobby .lobby__status--warning {
+    color: var(--ui-warn);
+}
+
+/* A key name: the map editor's chip. */
+
+.lobby .lobby__keycap {
+    height: 16px;
+    padding: 0 4px;
+    margin-left: 8px;
+    justify-content: center;
+    border-radius: 2.4px;
+    background-color: rgba(0, 0, 0, 0.45);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* ── Plates ── */
+
+.lobby .lobby__sidebar,
+.lobby .lobby__main {
+    position: absolute;
+    background-color: var(--ui-editor-panel);
+    border-color: var(--ui-panel-edge);
+}
+
+/* The sidebar runs the screen's full height from its left edge, as the shipped lobby's, with an edge on its right
+   only. It has no corner, so in UXML the ScrollView can be the sidebar itself. */
+
+.lobby .lobby__sidebar {
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 360px;
+    padding: 0 24px 16px 24px;
+    border-right-width: var(--ui-hairline);
+}
+
+.lobby .lobby__main {
+    left: 376px;
+    top: 16px;
+    right: 16px;
+    bottom: 16px;
+    border-width: var(--ui-hairline);
+    border-radius: var(--ui-panel-radius);
+}
+
+/* ── Sidebar ── */
+
+/* The logo sits above a rule that crosses the whole sidebar, as the shipped lobby's. */
+
+.lobby .lobby__wordmark-block {
+    align-items: center;
+    margin: 0 -24px 4px -24px;
+    padding: 18px 0 16px 0;
+    border-bottom-width: 1px;
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.lobby .lobby__wordmark {
+    width: 188px;
+    height: 88px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.lobby .lobby__section {
+    margin-top: 12px;
+}
+
+/* The round: its state as an area (--tone-soft, the tone's soft fill; a plain tint while nothing runs), the big
+   readout and a note. A change of state flashes it (UiMotion.Flash, .ui-flash below) and the new colour settles in. */
+
+.lobby .lobby__round {
+    padding: 12px 14px;
+    background-color: var(--tone-soft);
+    transition-property: background-color, border-color;
+    transition-duration: 0.5s, 0.5s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic;
+}
+
+.lobby .lobby__round.ui-flash {
+    background-color: var(--tone-flash);
+    transition-duration: 0.06s, 0.06s;
+}
+
+.lobby .lobby__round-caption {
+    margin-top: 10px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* No readout (waiting for players, or for an admin): the caption is the headline. */
+
+.lobby .lobby__round--waiting .lobby__round-caption {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 15px;
+    color: var(--ui-text);
+}
+
+.lobby .lobby__timer-wrap {
+    position: relative;
+    margin-top: 6px;
+    align-self: flex-start;
+}
+
+.lobby .lobby__timer {
+    font-size: 36px;
+    letter-spacing: 1px;
+}
+
+.lobby .lobby__timer-strike {
+    position: absolute;
+    left: -2px;
+    right: -2px;
+    top: 50%;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.45);
+    display: none;
+}
+
+.lobby .lobby__timer-wrap--held .lobby__timer {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.lobby .lobby__timer-wrap--held .lobby__timer-strike {
+    display: flex;
+}
+
+.lobby .lobby__note {
+    margin-top: 10px;
+    align-items: flex-start;
+}
+
+.lobby .lobby__note-icon {
+    width: 12px;
+    height: 12px;
+    margin: 0 6px 0 0;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby .lobby__note-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* A warning note is a notice: the warn soft fill with its edge, so the held countdown reads as an area, not a line. */
+.lobby .lobby__note--warning {
+    padding: 6px 8px 6px 6px;
+    border-left-width: 2px;
+    border-color: var(--ui-warn);
+    background-color: var(--ui-warn-soft);
+}
+
+.lobby .lobby__note--warning .lobby__note-text {
+    color: var(--ui-warn);
+}
+
+.lobby .lobby__note--warning .lobby__note-icon {
+    -unity-background-image-tint-color: var(--ui-warn);
+}
+
+/* Square on purpose: overflow: hidden with rounded corners renders white on Linux. */
+.lobby .lobby__map-load {
+    margin-top: 8px;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lobby .lobby__map-load--loading {
+    padding: 5px 8px 5px 6px;
+    border-left-width: 2px;
+    border-color: var(--ui-warn);
+    background-color: var(--ui-warn-soft);
+    color: var(--ui-warn);
+}
+
+.lobby .lobby__map-load--failed {
+    padding: 5px 8px 5px 6px;
+    border-left-width: 2px;
+    border-color: var(--ui-danger);
+    background-color: var(--ui-danger-soft);
+    color: var(--ui-danger);
+}
+
+/* The character: the whole card opens the character window. */
+
+/* A lighter plate than the round and the rows, with a faint edge (the shipped lobby's inset card). */
+
 .lobby .lobby__card {
-    flex-direction: row; align-items: stretch; padding: 12px;
-    background-color: var(--lb-inset); border-width: 1px; border-color: var(--lb-border-subtle); border-radius: 4px;
+    flex-direction: row;
+    padding: 7px;
+    background-color: rgba(255, 255, 255, 0.13);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.16);
+    transition-property: background-color;
+    transition-duration: 0.09s;
 }
-.lobby .lobby__card:hover { background-color: var(--lb-hover); border-color: var(--lb-border); }
-.lobby .lobby__card:focus { border-color: var(--lb-border-strong); }
+
+.lobby .lobby__card:hover,
+.lobby .lobby__card:hover:active {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+.lobby .lobby__card:active,
+.lobby .lobby__card:hover:active {
+    background-color: rgba(255, 255, 255, 0.23);
+}
+
+/* The preview: a viewport with a storage cell's outline. In game the character's render texture fills it. */
+
 .lobby .lobby__preview-frame {
-    width: 124px; height: 211px; flex-shrink: 0; margin-right: 16px;
-    border-width: 1px; border-color: var(--lb-border); background-color: var(--lb-panel);
+    width: 64px;
+    height: 104px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-editor-cell-edge);
+    border-radius: 4px;
 }
-.lobby__preview-image { flex-grow: 1; -unity-background-scale-mode: scale-and-crop; }
-.lobby__card-text { flex-grow: 1; flex-shrink: 1; min-width: 0; }
-.lobby .lobby__character-name { margin-top: 6px; font-size: 18px; -unity-font-style: bold; color: var(--lb-text); white-space: normal; }
-.lobby .lobby__high { margin-top: 6px; flex-wrap: wrap; }
-.lobby .lobby__high-swatch { width: 8px; height: 8px; margin-right: 6px; }
-.lobby .lobby__high-prefix { font-size: 13px; color: var(--lb-text-2); margin-right: 4px; }
-.lobby__high-job { font-size: 13px; }
-.lobby__card-edit-label { font-size: 18px; letter-spacing: 1.44px; flex-shrink: 1; white-space: normal; }
-.lobby__card-edit .lobby__icon { margin-left: 4px; -unity-background-image-tint-color: var(--lb-text); width: 14px; height: 14px; }
+
+.lobby .lobby__preview-image {
+    width: 40px;
+    height: 72px;
+}
+
+.lobby .lobby__card-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    padding-top: 4px;
+}
+
+.lobby .lobby__character-name {
+    margin-top: 6px;
+    font-size: 14px;
+}
+
+.lobby .lobby__high {
+    margin-top: 8px;
+}
+
+.lobby .lobby__high-prefix {
+    margin-right: 4px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby .lobby__high-job {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.lobby .lobby__card-edit {
+    margin-bottom: 2px;
+}
+
+.lobby .lobby__card-edit-label {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.lobby .lobby__card-edit .lobby__icon {
+    width: 12px;
+    height: 12px;
+    margin-left: 4px;
+}
+
+.lobby .lobby__card:hover .lobby__card-edit-label {
+    color: var(--ui-text);
+}
+
+/* Switch character: a row that opens the switcher beside it. Open, it is the white plate with the notch at the
+   popover, the main menu's "where you are". */
 
 .lobby .lobby__switch {
-    flex-direction: row; align-items: center; height: 36px; margin-top: 8px; padding: 0 12px;
-    background-color: var(--lb-chrome); border-radius: 4px;
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    height: 32px;
+    margin-top: 4px;
+    padding: 0 10px 0 12px;
+    background-color: var(--ui-editor-button);
+    transition-property: background-color, color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
-.lobby .lobby__switch:hover { background-color: var(--lb-inset); }
-.lobby__switch .lobby__icon--users { margin-right: 8px; }
-.lobby__switch-label { font-size: 18px; letter-spacing: 1.44px; }
-.lobby .lobby__switch-count { font-size: 12px; color: var(--lb-text-2); margin-right: 6px; }
 
-/* Ready / Join: the most prominent control on screen. */
-.lobby .lobby__ready {
-    flex-direction: row; align-items: center; height: 72px; padding: 0 16px; border-radius: 4px;
-    background-color: var(--lb-rust);
+.lobby .lobby__switch:hover,
+.lobby .lobby__switch:hover:active {
+    background-color: var(--ui-editor-button-hover);
 }
-.lobby .lobby__ready:hover { background-color: var(--lb-rust-hover); }
-.lobby .lobby__ready:active { background-color: var(--lb-rust-active); }
-.lobby__ready-text { flex-grow: 1; }
-/*
- * Gurajada's line box is about twice its size (~39px at 20px) with the capitals near its top, so a plain label makes
- * the text block too tall and pushes the subtitle to the button's bottom edge. A 16px box with the text centred in
- * it holds just the capitals, as the canvas's line-height: 1 does.
- */
-.lobby .lobby__ready-title { height: 16px; font-size: 20px; letter-spacing: 1.6px; color: var(--lb-on-accent); -unity-text-align: middle-left; }
-.lobby .lobby__ready-subtitle { font-size: 12px; margin-top: 6px; color: var(--lb-on-accent); }
-.lobby .lobby__ready-check { display: none; width: 18px; height: 18px; margin-right: 12px; -unity-background-image-tint-color: var(--lb-on-light); }
-.lobby .lobby__ready--confirmed { background-color: var(--lb-green); }
-.lobby .lobby__ready--confirmed:hover { background-color: var(--lb-green-hover); }
-.lobby__ready--confirmed .lobby__ready-check { display: flex; }
-.lobby__ready--confirmed .lobby__ready-title, .lobby__ready--confirmed .lobby__ready-subtitle { color: var(--lb-on-light); }
-.lobby .lobby__ready:disabled { background-color: var(--lb-inset); opacity: 1; }
-.lobby__ready:disabled .lobby__ready-title, .lobby__ready:disabled .lobby__ready-subtitle { color: var(--lb-disabled); }
-.lobby .lobby__entry-note { margin-top: 8px; display: none; }
-.lobby .lobby__entry-note--shown { display: flex; }
+
+.lobby .lobby__switch:active,
+.lobby .lobby__switch:hover:active {
+    background-color: var(--ui-editor-button-pressed);
+    scale: 0.97 0.97;
+}
+
+.lobby .lobby__switch .lobby__icon {
+    margin-right: 8px;
+}
+
+.lobby .lobby__switch-label {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 11px;
+}
+
+.lobby .lobby__switch-count {
+    margin-right: 8px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby .lobby__switch .lobby__icon--chevron {
+    width: 12px;
+    height: 12px;
+    margin-right: 0;
+}
+
+.lobby .lobby__switch--open,
+.lobby .lobby__switch--open:hover,
+.lobby .lobby__switch--open:hover:active {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+.lobby .lobby__switch--open .lobby__icon {
+    -unity-background-image-tint-color: var(--ui-text-on-light);
+}
+
+.lobby .lobby__switch--open .lobby__switch-count {
+    color: rgba(13, 13, 13, 0.6);
+}
+
+.lobby .lobby__switch-tip {
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    margin-top: -6px;
+    rotate: 45deg;
+    background-color: var(--ui-menu-selected);
+    display: none;
+}
+
+.lobby .lobby__switch--open .lobby__switch-tip {
+    display: flex;
+}
+
+/* Ready / Join: the screen's call to action, the white plate. */
+
+.lobby .lobby__entry {
+    margin-top: 12px;
+}
+
+.lobby .lobby__ready {
+    flex-direction: row;
+    align-items: center;
+    min-height: 56px;
+    padding: 9px 14px;
+    background-color: var(--ui-menu-selected);
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    color: var(--ui-text-on-light);
+    /* Ready to ok plate is a change of meaning: it eases (0.2 s) where a hover snaps (0.12 s). */
+    transition-property: background-color, border-color, color, scale, translate;
+    transition-duration: 0.2s, 0.12s, 0.2s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic, ease-out-cubic, ease-out-cubic;
+}
+
+/* Hover: the white plate can't get whiter, so it previews where it leads (ready is the ok plate): the ok colour on
+   its edge and a faint green wash; it lifts a pixel and its text nudges along. */
+.lobby .lobby__ready:hover {
+    background-color: rgb(236, 251, 241);
+    border-color: var(--ui-ok);
+    translate: 0 -1px;
+}
+
+.lobby .lobby__ready:active,
+.lobby .lobby__ready:hover:active {
+    background-color: rgb(207, 207, 204);
+    scale: 0.97 0.97;
+    translate: 0 0;
+}
+
+.lobby .lobby__ready-text {
+    transition-property: translate;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out-cubic;
+}
+
+.lobby .lobby__ready:hover .lobby__ready-text {
+    translate: 3px 0;
+}
+
+.lobby .lobby__ready-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.lobby .lobby__ready-title {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 17px;
+}
+
+.lobby .lobby__ready-subtitle {
+    margin-top: 6px;
+    font-size: 11px;
+    color: rgba(13, 13, 13, 0.6);
+}
+
+.lobby .lobby__ready-check {
+    width: 18px;
+    height: 18px;
+    margin-right: 12px;
+    -unity-background-image-tint-color: var(--ui-ok);
+    display: none;
+}
+
+/* Ready: done, so no longer the call to action. A tint with the ok outline and a check; a click cancels. */
+
+.lobby .lobby__ready--confirmed,
+.lobby .lobby__ready--confirmed:hover,
+.lobby .lobby__ready--confirmed:hover:active {
+    background-color: var(--ui-editor-button);
+    border-color: var(--ui-ok);
+    color: var(--ui-text);
+}
+
+.lobby .lobby__ready--confirmed:hover,
+.lobby .lobby__ready--confirmed:hover:active {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.lobby .lobby__ready--confirmed .lobby__ready-check {
+    display: flex;
+}
+
+.lobby .lobby__ready--confirmed .lobby__ready-subtitle {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* USS :disabled. The plate fades, as the main menu's rows without a name. */
+
+.lobby .lobby__ready--disabled,
+.lobby .lobby__ready--disabled:hover,
+.lobby .lobby__ready--disabled:hover:active {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-color: rgba(0, 0, 0, 0);
+    color: var(--ui-menu-tab-text);
+    translate: 0 0;
+}
+
+.lobby .lobby__ready--disabled:hover .lobby__ready-text {
+    translate: 0 0;
+}
+
+.lobby .lobby__ready--disabled .lobby__ready-subtitle {
+    color: var(--ui-menu-tab-text);
+}
+
+.lobby .lobby__entry-note {
+    margin-top: 8px;
+    display: none;
+}
+
+.lobby .lobby__entry-note--shown {
+    display: flex;
+}
 
 .lobby .lobby__observe {
-    flex-direction: row; align-items: center; height: 48px; margin-top: 8px; padding: 0 16px; border-radius: 4px;
-    background-color: var(--lb-chrome);
+    flex-direction: row;
+    align-items: center;
+    height: 48px;
+    margin-top: 4px;
+    padding: 0 14px;
+    /* A secondary action: a raised tint with a faint edge (the primary is the white plate, quiet buttons have neither). */
+    background-color: var(--ui-editor-button);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.1);
+    transition-property: background-color, border-color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
-.lobby .lobby__observe:hover { background-color: var(--lb-inset); }
-.lobby .lobby__observe:active { background-color: var(--lb-rust-active); }
-.lobby .lobby__observe-icon { width: 18px; height: 18px; margin-right: 10px; -unity-background-image-tint-color: var(--lb-text); }
-.lobby .lobby__observe-title { font-size: 20px; letter-spacing: 1.6px; margin-right: 10px; }
-.lobby__observe-subtitle { font-size: 12px; color: var(--lb-text-2); flex-shrink: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lobby .lobby__observe:disabled { opacity: 1; background-color: var(--lb-inset); }
-.lobby__observe:disabled .lobby__observe-title, .lobby__observe:disabled .lobby__observe-subtitle { color: var(--lb-disabled); }
-.lobby__observe:disabled .lobby__observe-icon { -unity-background-image-tint-color: var(--lb-disabled); }
 
-/* Focus shows as the hover fill, not an outline: a clicked button keeps focus, and the canvas has no ring. */
-.lobby .lobby__ready:focus { background-color: var(--lb-rust-hover); }
-.lobby .lobby__ready--confirmed:focus { background-color: var(--lb-green-hover); }
-.lobby .lobby__observe:focus, .lobby .lobby__switch:focus { background-color: var(--lb-inset); }
-
-/* Quiet buttons: Next, Report a bug, Quit, Back to round. */
-.lobby .lobby__quiet-button {
-    flex-direction: row; align-items: center; height: 32px; padding: 0 8px; border-radius: 2px;
-    border-width: 1px; border-color: rgba(0, 0, 0, 0); color: var(--lb-text-2);
+.lobby .lobby__observe:hover,
+.lobby .lobby__observe:hover:active {
+    background-color: var(--ui-editor-button-hover);
+    border-color: var(--ui-editor-cell-edge-hover);
 }
-.lobby .lobby__quiet-button:hover { background-color: var(--lb-inset); color: var(--lb-text); }
-.lobby .lobby__quiet-button:focus { border-color: var(--lb-border-strong); }
+
+.lobby .lobby__observe:active,
+.lobby .lobby__observe:hover:active {
+    background-color: var(--ui-editor-button-pressed);
+    scale: 0.97 0.97;
+}
+
+.lobby .lobby__observe-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 12px;
+    -unity-background-image-tint-color: var(--ui-text);
+    transition-property: translate;
+    transition-duration: 0.24s;
+    transition-timing-function: ease-out-back;
+}
+
+/* The ghost lifts off as the pointer arrives. */
+.lobby .lobby__observe:hover .lobby__observe-icon {
+    translate: 0 -2px;
+}
+
+.lobby .lobby__observe-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.lobby .lobby__observe-title {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 13px;
+}
+
+.lobby .lobby__observe-subtitle {
+    margin-top: 6px;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lobby .lobby__observe--disabled,
+.lobby .lobby__observe--disabled:hover,
+.lobby .lobby__observe--disabled:hover:active {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.04);
+}
+
+.lobby .lobby__observe--disabled .lobby__observe-title,
+.lobby .lobby__observe--disabled .lobby__observe-subtitle {
+    color: var(--ui-menu-tab-text);
+}
+
+.lobby .lobby__observe--disabled .lobby__observe-icon {
+    -unity-background-image-tint-color: var(--ui-menu-tab-text);
+}
+
+.lobby .lobby__spacer {
+    flex-grow: 1;
+    min-height: 12px;
+}
+
+/* ── Music: the main menu's row ── */
 
 .lobby .lobby__music {
-    flex-direction: row; align-items: center; padding: 10px 24px; flex-shrink: 0;
-    border-top-width: 1px; border-top-color: var(--lb-border-subtle);
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 0;
 }
-.lobby .lobby__music-toggle {
-    width: 32px; height: 32px; flex-shrink: 0; align-items: center; justify-content: center; margin-right: 10px;
-    background-color: var(--lb-chrome); border-radius: 2px;
+
+.lobby .lobby__music-toggle,
+.lobby .lobby__music-next {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-editor-cell-edge);
+    border-radius: 4.2px;
+    transition-property: border-color, background-color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
-.lobby .lobby__music-toggle:hover { background-color: var(--lb-inset); }
-.lobby__music-toggle .lobby__icon { -unity-background-image-tint-color: #e6e6e6; }
-.lobby__music--off .lobby__music-toggle .lobby__icon { -unity-background-image-tint-color: var(--lb-disabled); }
-.lobby__music-text { flex-grow: 1; flex-shrink: 1; min-width: 0; }
-.lobby .lobby__music-title { font-size: 12px; margin-top: 2px; color: var(--lb-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lobby__music--off .lobby__music-title { color: var(--lb-text-2); }
-.lobby .lobby__music-next { font-size: 16px; letter-spacing: 1.28px; flex-shrink: 0; margin-right: 8px; }
-.lobby .lobby__slider { width: 88px; flex-shrink: 0; margin: 0; }
-.lobby__slider .unity-base-slider__input { height: 20px; }
-.lobby__slider .unity-base-slider__tracker { height: 4px; margin-top: -2px; border-width: 0; border-radius: 0; background-color: var(--lb-border); }
-.lobby__slider .unity-base-slider__dragger { width: 10px; height: 18px; margin-top: -9px; border-width: 1px; border-color: var(--lb-void); border-radius: 1px; background-color: var(--lb-text); }
-.lobby__slider .unity-base-slider__dragger-border { display: none; }
+
+.lobby .lobby__music-toggle:hover,
+.lobby .lobby__music-next:hover,
+.lobby .lobby__music-toggle:hover:active,
+.lobby .lobby__music-next:hover:active {
+    border-color: var(--ui-editor-cell-edge-hover);
+    background-color: var(--ui-editor-button);
+}
+
+.lobby .lobby__music-toggle:active,
+.lobby .lobby__music-next:active,
+.lobby .lobby__music-toggle:hover:active,
+.lobby .lobby__music-next:hover:active {
+    scale: 0.92 0.92;
+}
+
+/* Next track: the glyph steps forward as the pointer arrives. */
+.lobby .lobby__music-next .lobby__icon {
+    transition-property: translate;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out-back;
+}
+
+.lobby .lobby__music-next:hover .lobby__icon {
+    translate: 2px 0;
+}
+
+.lobby .lobby__music-toggle--on,
+.lobby .lobby__music-toggle--on:hover,
+.lobby .lobby__music-toggle--on:hover:active {
+    border-color: var(--ui-line-active);
+}
+
+.lobby .lobby__music-toggle .lobby__icon {
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.48);
+}
+
+.lobby .lobby__music-toggle--on .lobby__icon,
+.lobby .lobby__music-next .lobby__icon {
+    -unity-background-image-tint-color: var(--ui-text);
+}
+
+.lobby .lobby__music-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    margin: 0 10px;
+}
+
+.lobby .lobby__music-text > .lobby__eyebrow {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby .lobby__music-title {
+    margin-top: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lobby .lobby__music--off .lobby__music-title {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby .lobby__music--off .lobby__music-volume {
+    opacity: 0.4;
+}
+
+/* ── Footer: two quiet buttons ── */
 
 .lobby .lobby__footer {
-    flex-direction: row; justify-content: space-between; align-items: center; padding: 16px; flex-shrink: 0;
-    border-top-width: 1px; border-top-color: var(--lb-border-subtle);
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 -8px;
+    padding: 2px 0 12px 0;
 }
-.lobby__footer-button .lobby__icon { margin-right: 8px; }
-.lobby__footer-label { font-size: 18px; letter-spacing: 1.44px; }
-.lobby .lobby__quit--armed { background-color: var(--lb-red-bg); border-color: var(--lb-red); color: var(--lb-red-text); }
-.lobby .lobby__quit--armed:hover { background-color: var(--lb-red-bg); color: var(--lb-red-text); }
-.lobby__quit--armed .lobby__icon { -unity-background-image-tint-color: var(--lb-red-text); }
 
-/* ---- Main panel ---- */
-.lobby__main {
-    position: absolute; left: 424px; top: 24px; right: 24px; bottom: 24px;
-    background-color: var(--lb-panel); border-width: 1px; border-color: var(--lb-border); border-radius: 4px;
+.lobby .lobby__quiet-button {
+    flex-direction: row;
+    align-items: center;
+    height: 28px;
+    padding: 0 8px;
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    color: rgba(255, 255, 255, 0.6);
+    transition-property: background-color, border-color, color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
+
+.lobby .lobby__quiet-button:hover,
+.lobby .lobby__quiet-button:hover:active {
+    background-color: var(--ui-editor-button);
+    color: var(--ui-text);
+}
+
+.lobby .lobby__quiet-button:active,
+.lobby .lobby__quiet-button:hover:active {
+    background-color: var(--ui-editor-button-pressed);
+    scale: 0.97 0.97;
+}
+
+.lobby .lobby__footer-button .lobby__icon {
+    margin-right: 8px;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.6);
+    transition-property: translate, -unity-background-image-tint-color;
+    transition-duration: 0.2s, 0.12s;
+    transition-timing-function: ease-out-back, ease-out-cubic;
+}
+
+.lobby .lobby__footer-button:hover .lobby__icon {
+    translate: 2px 0;
+    -unity-background-image-tint-color: var(--ui-text);
+}
+
+/* Quit says where it leads before it's armed: the danger colour on its glyph. */
+.lobby .lobby__quit:hover .lobby__icon {
+    -unity-background-image-tint-color: var(--ui-danger);
+}
+
+.lobby .lobby__footer-label {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+}
+
+/* Quit, armed: one more click leaves (the danger outline, as Remove on the main menu). */
+
+.lobby .lobby__quit--armed,
+.lobby .lobby__quit--armed:hover,
+.lobby .lobby__quit--armed:hover:active {
+    border-color: var(--ui-danger);
+    background-color: var(--ui-danger-soft);
+    color: rgb(250, 160, 150);
+}
+
+.lobby .lobby__quit--armed .lobby__icon {
+    -unity-background-image-tint-color: var(--ui-danger);
+}
+
+/* ── The panel: header, tabs, content ── */
+
 .lobby .lobby__header {
-    flex-direction: row; align-items: center; height: 60px; padding: 0 20px; flex-shrink: 0;
-    background-color: var(--lb-chrome); border-top-left-radius: 3px; border-top-right-radius: 3px;
+    flex-direction: row;
+    align-items: center;
+    height: 54px;
+    padding: 0 12px 0 20px;
 }
-.lobby .lobby__server-name { font-size: 20px; letter-spacing: 1.6px; margin-right: 24px; white-space: nowrap; flex-shrink: 0; }
-.lobby__header-meta { flex-direction: row; align-items: center; flex-shrink: 1; overflow: hidden; }
-.lobby .lobby__meta-key { font-size: 12px; color: var(--lb-text-2); margin-right: 6px; }
-.lobby__meta-value { font-size: 13px; color: var(--lb-text); white-space: nowrap; }
-.lobby .lobby__meta-sep { width: 1px; height: 14px; margin: 0 16px; background-color: var(--lb-border); }
-.lobby__back { height: 36px; display: none; }
-.lobby__back--shown { display: flex; }
-.lobby__back-label { font-size: 20px; letter-spacing: 1.6px; color: var(--lb-text); }
 
-.lobby .lobby__tabs { flex-direction: row; align-items: stretch; flex-shrink: 0; padding: 0 12px; background-color: var(--lb-chrome); }
+.lobby .lobby__server-name {
+    margin-right: 18px;
+    flex-shrink: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 17px;
+    white-space: nowrap;
+}
+
+/* The server's glyph leads its name, in a small cell (the map editor's storage cell). */
+.lobby .lobby__server-cell {
+    width: 22px;
+    height: 22px;
+    margin-right: 9px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-width: 1px;
+    border-color: var(--ui-editor-cell-edge);
+    border-radius: 3.3px;
+    background-color: rgba(0, 0, 0, 0.35);
+}
+
+.lobby .lobby__server-cell .lobby__icon {
+    width: 12px;
+    height: 12px;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.85);
+}
+
+.lobby .lobby__header-meta {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.lobby .lobby__meta-key {
+    margin-right: 6px;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby .lobby__meta-value {
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.lobby .lobby__meta-sep {
+    width: 1px;
+    height: 12px;
+    margin: 0 12px;
+    flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.lobby .lobby__header-meta > .lobby__dot {
+    margin-right: 6px;
+}
+
+.lobby .lobby__back {
+    flex-shrink: 0;
+    display: none;
+}
+
+.lobby .lobby__back--shown {
+    display: flex;
+}
+
+.lobby .lobby__back-label {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 11px;
+}
+
+/* Tabs: the menu's tab plates in a row over a hairline. The open one is the white plate; the others stay off the
+   plate (faint text, no fill) until hovered, so the open tab is the only plate in the row. */
+
+.lobby .lobby__tabs {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 0 12px 6px 20px;
+    border-bottom-width: 1px;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
 .lobby .lobby__tab {
-    flex-direction: row; align-items: center; height: 40px; margin: 4px 2px 0 0; padding: 0 18px;
-    border-top-left-radius: 2px; border-top-right-radius: 2px;
-    font-size: 18px; letter-spacing: 1.44px; color: var(--lb-text-2);
+    flex-direction: row;
+    align-items: center;
+    height: 30px;
+    margin-right: 4px;
+    padding: 0 12px;
+    background-color: rgba(255, 255, 255, 0);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+    white-space: nowrap;
+    transition-property: background-color, color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic;
 }
-.lobby .lobby__tab:hover { color: var(--lb-text); background-color: var(--lb-inset); }
-.lobby .lobby__tab--active, .lobby .lobby__tab--active:hover { color: var(--lb-text); background-color: var(--lb-panel); }
-/* No outline (the canvas has none, and a clicked tab keeps focus); keyboard focus shows as white text. */
-.lobby .lobby__tab:focus { color: var(--lb-text); }
-.lobby__tab:focus .lobby__tab-label { color: var(--lb-text); }
-.lobby .lobby__tab--hidden { display: none; }
-.lobby__tab-label { font-size: 18px; letter-spacing: 1.44px; color: var(--lb-text-2); }
-.lobby__tab--active .lobby__tab-label, .lobby__tab:hover .lobby__tab-label { color: var(--lb-text); }
+
+.lobby .lobby__tab:hover,
+.lobby .lobby__tab:hover:active {
+    background-color: var(--ui-editor-button);
+    color: var(--ui-text);
+}
+
+.lobby .lobby__tab:active,
+.lobby .lobby__tab:hover:active {
+    scale: 0.96 0.96;
+}
+
+.lobby .lobby__tab--active,
+.lobby .lobby__tab--active:hover,
+.lobby .lobby__tab--active:hover:active {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+.lobby .lobby__tab--hidden {
+    display: none;
+}
+
 .lobby .lobby__tab-badge {
-    margin-left: 8px; padding: 1px 4px; font-size: 9px; color: var(--lb-amber);
-    border-width: 1px; border-color: var(--lb-amber); border-radius: 2px;
+    height: 14px;
+    margin-left: 8px;
+    padding: 0 4px;
+    justify-content: center;
+    border-radius: 2.1px;
+    background-color: rgba(0, 0, 0, 0.45);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 8px;
+    color: rgba(255, 255, 255, 0.7);
 }
-.lobby .lobby__admin { flex-direction: row; align-items: center; padding-right: 16px; }
-.lobby .lobby__admin--hidden { display: none; }
-.lobby .lobby__admin-label { font-size: 13px; color: var(--lb-text-2); margin-right: 8px; }
+
+.lobby .lobby__tab--active .lobby__tab-badge {
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.lobby .lobby__admin {
+    flex-direction: row;
+    align-items: center;
+}
+
+.lobby .lobby__admin-label {
+    margin-right: 8px;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* A switch: a dark track, white when on, the knob a storage cell's corner. */
+
 .lobby .lobby__switch-toggle {
-    width: 36px; height: 20px; flex-shrink: 0; border-width: 1px; border-color: var(--lb-border); border-radius: 2px;
-    background-color: var(--lb-void);
+    position: relative;
+    width: 30px;
+    height: 16px;
+    flex-shrink: 0;
+    border-radius: 2.4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-editor-cell-edge);
+    transition-property: background-color, border-color;
+    transition-duration: 0.16s, 0.16s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic;
 }
-.lobby .lobby__switch-toggle:hover { border-color: var(--lb-border-strong); background-color: var(--lb-void); }
-.lobby__switch-knob { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 1px; background-color: var(--lb-text-2); }
-.lobby .lobby__switch-toggle--on, .lobby .lobby__switch-toggle--on:hover { background-color: var(--lb-green); border-color: var(--lb-green); }
-.lobby__switch-toggle--on .lobby__switch-knob { left: 18px; background-color: var(--lb-on-light); }
 
-.lobby__tab-content { flex-grow: 1; min-height: 0; }
+.lobby .lobby__switch-toggle:hover,
+.lobby .lobby__switch-toggle:hover:active {
+    border-color: var(--ui-editor-cell-edge-hover);
+}
 
-/* Scrollers in every tab. */
-.lobby .unity-scroller--vertical { width: 8px; min-width: 8px; max-width: 8px; }
-.lobby .unity-scroller__low-button, .lobby .unity-scroller__high-button { display: none; }
-.lobby .unity-scroller__slider { margin: 0; }
-.lobby .unity-scroller__slider .unity-base-slider__tracker { border-width: 0; border-radius: 3px; background-color: var(--lb-panel); }
-.lobby .unity-scroller__slider .unity-base-slider__dragger { border-width: 0; border-radius: 3px; background-color: var(--lb-hover); }
+/* The knob slides across (with a small overshoot) rather than jumping. */
+.lobby .lobby__switch-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 1.2px;
+    background-color: rgba(255, 255, 255, 0.55);
+    transition-property: left, background-color;
+    transition-duration: 0.2s, 0.16s;
+    transition-timing-function: ease-out-back, ease-out-cubic;
+}
 
-/* ---- Server Info ---- */
-.lobby .lobby-info { flex-grow: 1; flex-direction: row; padding: 24px; min-height: 0; }
-.lobby .lobby-info__left { flex-grow: 1; flex-shrink: 1; min-width: 0; padding-right: 24px; }
-.lobby .lobby-info__banner { flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; margin-bottom: 24px; }
+.lobby .lobby__switch-toggle--on,
+.lobby .lobby__switch-toggle--on:hover,
+.lobby .lobby__switch-toggle--on:hover:active {
+    background-color: var(--ui-menu-selected);
+    border-color: var(--ui-menu-selected);
+}
+
+.lobby .lobby__switch-toggle--on .lobby__switch-knob {
+    left: 16px;
+    background-color: var(--ui-text-on-light);
+}
+
+.lobby .lobby__tab-content {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+/* ── Server Info ── */
+
+.lobby .lobby-info {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-direction: row;
+    min-height: 0;
+    padding: 16px 20px 20px 20px;
+}
+
+/* The tab's scroll view; its content holds the two halves (one column in the narrow panel, below). */
+.lobby .lobby-info__scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.lobby .lobby-info__content {
+    flex-direction: row;
+}
+
+.lobby .lobby-info__left {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    margin-right: 20px;
+}
+
+/* Decoration only, framed in its own art: fitted, never cropped. C# sets the height from the width (1920 × 750). */
+
+.lobby .lobby-info__motd-scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    margin-top: 8px;
+}
+
+.lobby .lobby-info__motd {
+    max-width: 520px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: normal;
+}
+
+.lobby .lobby-info__right {
+    width: 300px;
+    flex-shrink: 0;
+}
+
+.lobby .lobby-info__right > .lobby__eyebrow {
+    margin-bottom: 8px;
+}
+
+/* The message of the day under its head; the head's rule stands in for the eyebrow's gap. */
+.lobby .lobby-info__left > .lobby__section-head {
+    margin-bottom: 0;
+}
+
+/* Facts, not actions: inset wells (darker than the plate) where buttons are raised tints. */
+.lobby .lobby-info__kv {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 30px;
+    margin-bottom: 2px;
+    padding: 0 10px;
+    flex-shrink: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+    border-left-width: 2px;
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.lobby .lobby-info__key {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby .lobby-info__value {
+    font-size: 12px;
+}
+
+.lobby .lobby-info__section-gap {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    margin-top: 18px;
+}
+
+.lobby .lobby-info__links {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+/* "All releases" ends the change log's head, after its rule. */
+.lobby .lobby-info__links > .lobby-info__link {
+    margin-left: 10px;
+    flex-shrink: 0;
+}
+
+.lobby .lobby-info__log {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.lobby .lobby-info__release {
+    padding: 10px 0;
+    flex-shrink: 0;
+    border-bottom-width: 1px;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.lobby .lobby-info__release-head {
+    flex-direction: row;
+    align-items: center;
+}
+
+.lobby .lobby-info__release-version {
+    margin-right: 10px;
+    font-size: 12px;
+}
+
+.lobby .lobby-info__release-date {
+    flex-grow: 1;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Links read as links: the info colour on hover (news, and where it leads), the arrow stepping out. */
+.lobby .lobby-info__link {
+    flex-direction: row;
+    align-items: center;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.6);
+    transition-property: color;
+    transition-duration: 0.12s;
+}
+
+.lobby .lobby-info__link:hover,
+.lobby .lobby-info__link:hover:active {
+    color: var(--ui-info);
+}
+
+.lobby .lobby-info__link .lobby__icon {
+    width: 10px;
+    height: 10px;
+    margin-left: 5px;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.6);
+    transition-property: translate, -unity-background-image-tint-color;
+    transition-duration: 0.2s, 0.12s;
+    transition-timing-function: ease-out-back, ease-out-cubic;
+}
+
+.lobby .lobby-info__link:hover .lobby__icon {
+    translate: 1px -1px;
+    -unity-background-image-tint-color: var(--ui-info);
+}
+
+.lobby .lobby-info__entry {
+    flex-direction: row;
+    align-items: flex-start;
+    margin-top: 7px;
+}
+
+.lobby .lobby-info__bullet {
+    width: 4px;
+    height: 4px;
+    margin: 5px 10px 0 2px;
+    flex-shrink: 0;
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.35);
+    transition-property: background-color, scale;
+    transition-duration: 0.12s, 0.2s;
+    transition-timing-function: ease-out-cubic, ease-out-back;
+}
+
+.lobby .lobby-info__entry-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.78);
+    transition-property: color;
+    transition-duration: 0.12s;
+}
+
+.lobby .lobby-info__entry--link:hover .lobby-info__entry-text {
+    color: var(--ui-text);
+}
+
+.lobby .lobby-info__entry--link:hover .lobby-info__bullet {
+    background-color: var(--ui-info);
+    scale: 1.5 1.5;
+}
+
+.lobby .lobby-info__entry--link:hover .lobby-info__entry-ref {
+    color: var(--ui-info);
+}
+
+.lobby .lobby-info__entry-ref {
+    margin-left: 8px;
+    flex-shrink: 0;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+/* ── Chat: a near-black log and composer, the editor's search ── */
+
+.lobby .lobby-chat {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    padding: 16px 20px 16px 20px;
+}
+
+.lobby .lobby-chat__log {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    padding: 10px 14px;
+    background-color: var(--ui-editor-search);
+}
+
+.lobby .lobby-chat__line {
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 3px 0;
+}
+
+/* Admin lines are an area in the admin colour (warn's soft fill), so they stand out of the scroll. */
+.lobby .lobby-chat__line--admin {
+    margin: 1px -6px;
+    padding: 3px 6px 3px 4px;
+    border-left-width: 2px;
+    border-color: var(--ui-warn);
+    background-color: var(--ui-warn-soft);
+}
+
+.lobby .lobby-chat__time {
+    width: 44px;
+    flex-shrink: 0;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.lobby .lobby-chat__channel {
+    width: 46px;
+    flex-shrink: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby .lobby-chat__channel--admin,
+.lobby .lobby-chat__name--admin {
+    color: var(--ui-warn);
+}
+
+.lobby .lobby-chat__body {
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.lobby .lobby-chat__name {
+    margin-right: 6px;
+    font-size: 12px;
+}
+
+.lobby .lobby-chat__text {
+    flex-shrink: 1;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.lobby .lobby-chat__system {
+    flex-shrink: 1;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby .lobby-chat__composer {
+    flex-direction: row;
+    align-items: stretch;
+    height: 32px;
+    margin-top: 8px;
+    flex-shrink: 0;
+}
+
+/* Channels: the settings' segmented control. */
+
+.lobby .lobby-chat__channel-button {
+    min-width: 52px;
+    margin-right: 2px;
+    padding: 0 10px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+    transition-property: background-color, color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic;
+}
+
+/* Hover shows where a line would go: the channel's own colour (--chan). */
+.lobby .lobby-chat__channel-button:hover,
+.lobby .lobby-chat__channel-button:hover:active {
+    color: var(--chan);
+}
+
+.lobby .lobby-chat__channel-button:active,
+.lobby .lobby-chat__channel-button:hover:active {
+    scale: 0.95 0.95;
+}
+
+.lobby .lobby-chat__channel-button--active,
+.lobby .lobby-chat__channel-button--active:hover,
+.lobby .lobby-chat__channel-button--active:hover:active {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+.lobby .lobby-chat__send {
+    flex-direction: row;
+    align-items: center;
+    padding: 0 12px;
+    background-color: var(--ui-editor-button);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.1);
+    transition-property: background-color, border-color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic;
+}
+
+.lobby .lobby-chat__send:hover,
+.lobby .lobby-chat__send:hover:active {
+    background-color: var(--ui-editor-button-hover);
+    border-color: var(--ui-editor-cell-edge-hover);
+}
+
+.lobby .lobby-chat__send:active,
+.lobby .lobby-chat__send:hover:active {
+    background-color: var(--ui-editor-button-pressed);
+    scale: 0.95 0.95;
+}
+
+.lobby .lobby-chat__send .lobby__icon {
+    width: 13px;
+    height: 13px;
+    margin-right: 8px;
+    -unity-background-image-tint-color: var(--ui-text);
+    transition-property: translate, rotate;
+    transition-duration: 0.24s, 0.24s;
+    transition-timing-function: ease-out-back, ease-out-back;
+}
+
+/* The paper plane leans into the send. */
+.lobby .lobby-chat__send:hover .lobby__icon {
+    translate: 2px -1px;
+    rotate: 12deg;
+}
+
+.lobby .lobby-chat__send-label {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 11px;
+}
+
+.lobby .lobby-chat__hint {
+    margin-top: 8px;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+/* ── Settings: PlayerSettingsPanel without its header; its sub-tabs sit under the lobby's tab plates ── */
+
+.lobby .lobby__settings-host {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    padding-top: 8px;
+}
+
+/* ── Server Settings (admin) ── */
+
+.lobby .lobby-admin__scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.lobby .lobby-admin {
+    max-width: 600px;
+    padding: 16px 20px 20px 20px;
+    flex-shrink: 0;
+}
+
+/* The round's card, coded like the sidebar's round (LobbyServerSettingsView sets its lb-tone--*): the tone's soft
+   fill and edge, a flash when the state changes. */
+.lobby .lobby-admin__card {
+    padding: 12px 14px;
+    flex-shrink: 0;
+    background-color: var(--tone-soft);
+    transition-property: background-color, border-color;
+    transition-duration: 0.5s, 0.5s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic;
+}
+
+.lobby .lobby-admin__card.ui-flash {
+    background-color: var(--tone-flash);
+    transition-duration: 0.06s, 0.06s;
+}
+
+.lobby .lobby-admin__card-heading {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.lobby .lobby-admin__card-body {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 10px;
+}
+
+.lobby .lobby-admin__round-state {
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 16px;
+}
+
+.lobby .lobby-admin__round-detail {
+    margin-top: 7px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.lobby .lobby-admin__ready-label {
+    -unity-text-align: middle-right;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby .lobby-admin__ready-ratio {
+    margin-top: 5px;
+    -unity-text-align: middle-right;
+    font-size: 20px;
+}
+
+/* Section titles: the settings' group titles. Now section heads (LobbyUi.SectionHead) with a glyph and a rule. */
+
+.lobby .lobby-admin__section-title {
+    margin: 18px 0 8px 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby .lobby-admin__section-head {
+    margin: 20px 0 9px 0;
+}
+
+.lobby .lobby-admin__controls {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+/* The main menu's button: a tint with a Disket label, Start the white primary. */
+
+.lobby .lobby-admin__button {
+    height: 30px;
+    margin: 0 4px 4px 0;
+    padding: 0 12px;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--ui-editor-button);
+    border-width: var(--ui-hairline);
+    border-color: rgba(0, 0, 0, 0);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 11px;
+    white-space: nowrap;
+    transition-property: background-color;
+    transition-duration: 0.09s;
+}
+
+.lobby .lobby-admin__button:hover,
+.lobby .lobby-admin__button:hover:active {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.lobby .lobby-admin__button:active,
+.lobby .lobby-admin__button:hover:active {
+    background-color: var(--ui-editor-button-pressed);
+}
+
+.lobby .lobby-admin__button--start,
+.lobby .lobby-admin__button--start:hover,
+.lobby .lobby-admin__button--start:hover:active {
+    background-color: var(--ui-menu-selected);
+    color: var(--ui-text-on-light);
+}
+
+/* The white plate can't get whiter: its hover is a faint wash of where it leads (start: ok). */
+.lobby .lobby-admin__button--start:hover,
+.lobby .lobby-admin__button--start:hover:active {
+    background-color: rgb(236, 251, 241);
+}
+
+.lobby .lobby-admin__button--danger {
+    border-color: var(--ui-danger);
+}
+
+.lobby .lobby-admin__button--danger:hover,
+.lobby .lobby-admin__button--danger:hover:active {
+    background-color: rgba(235, 98, 82, 0.2);
+}
+
+.lobby .lobby-admin__button--disabled,
+.lobby .lobby-admin__button--disabled:hover,
+.lobby .lobby-admin__button--disabled:hover:active {
+    background-color: rgba(255, 255, 255, 0.03);
+    color: var(--ui-menu-tab-text);
+}
+
+/* A field: a Disket label over the editor's near-black input. */
+
+.lobby .lobby-admin__text,
+.lobby .lobby-admin__select,
+.lobby .lobby-admin__number {
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.lobby .lobby-admin__map-load {
+    margin: -4px 0 10px 0;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Loading and failed are notices (the soft fill with its edge); ready is a plain ok line. */
+.lobby .lobby-admin__map-load--loading {
+    padding: 6px 8px 6px 7px;
+    border-left-width: 2px;
+    border-color: var(--ui-warn);
+    background-color: var(--ui-warn-soft);
+    color: var(--ui-warn);
+}
+
+.lobby .lobby-admin__map-load--ready {
+    color: var(--ui-ok);
+}
+
+.lobby .lobby-admin__map-load--failed {
+    padding: 6px 8px 6px 7px;
+    border-left-width: 2px;
+    border-color: var(--ui-danger);
+    background-color: var(--ui-danger-soft);
+    color: var(--ui-danger);
+}
+
+.lobby .lobby-admin__numbers {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-right: -8px;
+}
+
+.lobby .lobby-admin__number {
+    width: 33.33%;
+    padding-right: 8px;
+}
+
+/* A rule: a storage cell as the box, white with a dark check when on. */
+
+.lobby .lobby-admin__toggle-text {
+    flex-grow: 1;
+    font-size: 12px;
+}
+
+.lobby .lobby-admin__toggle-reason {
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby .lobby-admin__status {
+    margin-top: 12px;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Unsaved-map Stop prompt: the main menu's dialog ── */
+
+.lobby .lobby-prompt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+.lobby .lobby-prompt__card {
+    width: 460px;
+    padding: 16px;
+    background-color: var(--ui-float);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
+}
+
+.lobby .lobby-prompt__title {
+    margin-bottom: 12px;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 16px;
+}
+
+.lobby .lobby-prompt__text {
+    margin-bottom: 12px;
+    font-size: 11.5px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.lobby .lobby-prompt__error {
+    margin-bottom: 8px;
+    font-size: 11px;
+    color: var(--ui-danger);
+}
+
+.lobby .lobby-prompt__buttons {
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: 4px;
+}
+
+.lobby .lobby-prompt__buttons > .lobby-admin__button {
+    margin: 0 0 0 4px;
+}
+
+/* ── Lobby: colour coding ──
+ * As the map editor codes tools and categories, the lobby codes four things, with the shipped lobby's colours:
+ *   departments  --dept (ui-tokens' --ui-dept-* pastels): a 3 px left edge on whatever belongs to one (a job, a crew group, a
+ *                character by its High job, a roster line), its glyph and its name. A picked job outlines in it and
+ *                Join fills with it
+ *   the round    --tone: info while it counts down, warn loading, starting, held or over, ok in progress. The round
+ *                section's left edge, its dot and word, the header's round, the admin card
+ *   chat         --chan: OOC white, LOOC info, admin warn. The line's tag, the chosen channel's plate, the field's edge
+ *   admin        warn: the Admin badge, the switch when on, admin names and lines
+ * Ready, once ready, is the ok plate. The call to action (Ready up, Join, Start Round) stays the white plate. */
+
+/* --tone is the state's colour (an edge, a dot, a word); --tone-soft the state as an area (the round card), a plain
+   tint while nothing runs; --tone-flash the card's brief flash when the state changes (UiMotion.Flash): about twice
+   the soft fill, a pulse rather than a solid block (UI Toolkit's linear blending makes a fifth of a hue read as paint). */
+.lb-tone--neutral {
+    --tone: rgba(255, 255, 255, 0.3);
+    --tone-soft: var(--ui-editor-button);
+    --tone-flash: rgba(255, 255, 255, 0.09);
+}
+
+.lb-tone--info {
+    --tone: var(--ui-info);
+    --tone-soft: var(--ui-info-soft);
+    --tone-flash: rgba(86, 178, 255, 0.12);
+}
+
+.lb-tone--warning {
+    --tone: var(--ui-warn);
+    --tone-soft: var(--ui-warn-soft);
+    --tone-flash: rgba(255, 188, 64, 0.11);
+}
+
+.lb-tone--live {
+    --tone: var(--ui-ok);
+    --tone-soft: var(--ui-ok-soft);
+    --tone-flash: rgba(92, 214, 122, 0.11);
+}
+
+.lobby .lobby__dot--info {
+    background-color: var(--ui-info);
+}
+
+.lobby .lobby__status--info {
+    color: var(--ui-info);
+}
+
+/* The round: its state as the section's left edge (the map editor's mode-tab edge). */
+
+.lobby .lobby__round,
+.lobby .lobby-admin__card {
+    padding-left: 11px;
+    border-left-width: 3px;
+    border-color: var(--tone);
+}
+
+/* Ready: done is the ok plate, dark text and check (the shipped lobby's green). */
+
+.lobby .lobby__ready--confirmed,
+.lobby .lobby__ready--confirmed:hover,
+.lobby .lobby__ready--confirmed:hover:active {
+    background-color: var(--ui-ok);
+    border-color: var(--ui-ok);
+    color: var(--ui-text-on-light);
+}
+
+.lobby .lobby__ready--confirmed:hover,
+.lobby .lobby__ready--confirmed:hover:active {
+    background-color: rgb(132, 230, 156);
+    border-color: rgb(132, 230, 156);
+}
+
+.lobby .lobby__ready--confirmed .lobby__ready-check {
+    -unity-background-image-tint-color: var(--ui-text-on-light);
+}
+
+.lobby .lobby__ready--confirmed .lobby__ready-subtitle {
+    color: rgba(13, 13, 13, 0.65);
+}
+
+/* Departments: the character by its High job. */
+
+.lobby .lobby__card--dept {
+    padding-left: 5px;
+    border-left-width: 3px;
+    border-left-color: var(--dept);
+}
+
+/* A job: its department's edge; picked, the whole outline and the ring in that colour; Join fills with it. */
+
+/* The manifest: each department's group carries its edge, glyph and name. */
+
+/* The last round's roster: a line's edge and job in its department; an operative's edge in danger. */
+
+/* Chat: each channel's colour on its tag, its plate when chosen, and the field's edge while it's chosen. */
+
+.lobby .lobby-chat__channel--ooc,
+.lobby .lobby-chat__channel-button--ooc,
+.lobby .lobby-chat__composer--ooc {
+    --chan: var(--ui-menu-selected);
+}
+
+.lobby .lobby-chat__channel--looc,
+.lobby .lobby-chat__channel-button--looc,
+.lobby .lobby-chat__composer--looc {
+    --chan: var(--ui-info);
+}
+
+.lobby .lobby-chat__channel--admin,
+.lobby .lobby-chat__channel-button--admin,
+.lobby .lobby-chat__composer--admin {
+    --chan: var(--ui-warn);
+}
+
+.lobby .lobby-chat__channel {
+    color: var(--chan);
+}
+
+.lobby .lobby-chat__channel--ooc {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.lobby .lobby-chat__channel-button--active,
+.lobby .lobby-chat__channel-button--active:hover,
+.lobby .lobby-chat__channel-button--active:hover:active {
+    background-color: var(--chan);
+}
+
+/* Admin: amber, as the shipped lobby's badge. */
+
+.lobby .lobby__tab-badge {
+    border-width: 1px;
+    border-color: var(--ui-warn);
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--ui-warn);
+}
+
+.lobby .lobby__tab--active .lobby__tab-badge {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.lobby .lobby__switch-toggle--on,
+.lobby .lobby__switch-toggle--on:hover,
+.lobby .lobby__switch-toggle--on:hover:active {
+    background-color: var(--ui-warn);
+    border-color: var(--ui-warn);
+}
+
+/* Round controls by consequence: forcing or holding in warn, stopping in danger. */
+
+.lobby .lobby-admin__button--warn {
+    border-color: var(--ui-warn);
+}
+
+.lobby .lobby-admin__button--warn:hover,
+.lobby .lobby-admin__button--warn:hover:active {
+    background-color: rgba(238, 186, 78, 0.18);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Lobby, layout B: the character stage (an alternative to the layout above)
+   A narrow sidebar, the character you play large in the middle (about 47 % of the width), the panel narrow on
+   the right. The character card leaves the sidebar: its name, High job, Switch character and Edit character
+   frame the model. Settings, Last Round and Server Settings need the room, so the panel widens over the stage
+   while they're open.
+   ══════════════════════════════════════════════════════════════════════ */
+
+.lobby--stage .lobby__sidebar {
+    width: 264px;
+    padding: 0 18px 12px 18px;
+}
+
+.lobby--stage .lobby__wordmark-block {
+    margin: 0 -18px 4px -18px;
+    padding: 16px 0 14px 0;
+}
+
+.lobby--stage .lobby__wordmark {
+    width: 150px;
+    height: 70px;
+}
+
+.lobby--stage .lobby__music-volume {
+    width: 48px;
+}
+
+/* Observe's reason wraps rather than cuts off; the footer's two buttons stack. */
+
+.lobby--stage .lobby__observe {
+    height: auto;
+    min-height: 48px;
+    padding: 9px 14px;
+}
+
+.lobby--stage .lobby__observe-subtitle {
+    white-space: normal;
+}
+
+.lobby--stage .lobby__footer {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-bottom: 8px;
+}
+
+.lobby--stage .lobby__main {
+    left: auto;
+    width: 360px;
+}
+
+.lobby--stage .lobby__main--wide {
+    left: 280px;
+    width: auto;
+}
+
+/* The stage: between the plates, over the station. */
+
+.lobby .lobby__stage {
+    position: absolute;
+    left: 264px;
+    right: 376px;
+    top: 0;
+    bottom: 0;
+    align-items: center;
+    padding: 16px 0 12px 0;
+}
+
+.lobby .lobby__stage--neutral {
+    --dept: rgba(255, 255, 255, 0.5);
+    --dept-soft: rgba(255, 255, 255, 0);
+}
+
+.lobby .lobby__stage--covered {
+    visibility: hidden;
+}
+
+/* Who you play: a plate over the model, the High job's department on its glyph, word, the bar under it and a soft
+   wash over the plate (the department as an area: the character is the subject here). LobbyView eases the plate in
+   when the character or its High job changes. */
+
+.lobby .lobby__stage-plate {
+    position: relative;
+    align-items: center;
+    padding: 8px 18px 10px 18px;
+    background-color: var(--ui-editor-panel);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
+}
+
+/* Inside the plate's 2 px edge, so its corners follow the plate's (no overflow: hidden with a radius). */
+.lobby .lobby__stage-wash {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 7.55px;
+    background-color: var(--dept-soft);
+    transition-property: background-color;
+    transition-duration: 0.4s;
+    transition-timing-function: ease-out-cubic;
+}
+
+.lobby .lobby__stage-plate > .lobby__eyebrow {
+    font-size: 9px;
+}
+
+.lobby .lobby__stage-name {
+    margin-top: 5px;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 18px;
+    white-space: nowrap;
+}
+
+.lobby .lobby__stage-high {
+    margin-top: 6px;
+}
+
+.lobby .lobby__stage-dept-icon {
+    width: 13px;
+    height: 13px;
+    margin-right: 6px;
+}
+
+.lobby .lobby__stage-accent {
+    position: absolute;
+    left: 50%;
+    bottom: -2px;
+    width: 72px;
+    height: 3px;
+    margin-left: -36px;
+    background-color: var(--dept);
+    transition-property: background-color;
+    transition-duration: 0.4s;
+    transition-timing-function: ease-out-cubic;
+}
+
+/* The model: the booth's render texture, fitted and standing on the bottom edge; clicking it opens the character
+   window, as the card did. A floor glow in the department's colour, and a contact shadow, ground it. */
+
+.lobby .lobby__stage-figure {
+    position: relative;
+    flex-grow: 1;
+    flex-shrink: 1;
+    align-self: stretch;
+    min-height: 0;
+    margin: 6px 0 6px 0;
+}
+
+.lobby .lobby__stage-model {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 8px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* The floor glow breathes in the department's colour: LobbyView toggles .ui-pulse--on every 1.8 s (UiMotion.Pulse) and
+   the transition eases between the two looks. A department change fades the colour across. */
+.lobby .lobby__stage-floor {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 300px;
+    height: 46px;
+    margin-left: -150px;
+    border-radius: 50%;
+    background-color: var(--dept);
+    opacity: 0.2;
+    scale: 0.94 1;
+    transition-property: opacity, scale, background-color;
+    transition-duration: 1.8s, 1.8s, 0.4s;
+    transition-timing-function: ease-in-out-sine, ease-in-out-sine, ease-out-cubic;
+}
+
+.lobby .lobby__stage-floor.ui-pulse--on {
+    opacity: 0.32;
+    scale: 1.04 1;
+}
+
+/* A ring on the floor: the pad the character stands on, its edge in the department's colour. */
+.lobby .lobby__stage-ring {
+    position: absolute;
+    left: 50%;
+    bottom: 7px;
+    width: 216px;
+    height: 30px;
+    margin-left: -108px;
+    border-radius: 50%;
+    border-width: var(--ui-hairline);
+    border-color: var(--dept);
+    opacity: 0.4;
+    transition-property: opacity, border-color, scale;
+    transition-duration: 0.24s, 0.4s, 0.3s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-back;
+}
+
+/* Hovered, the stage answers at once: the glow up, the ring brighter and a touch wider. */
+.lobby .lobby__stage-figure:hover .lobby__stage-floor {
+    opacity: 0.44;
+    scale: 1.04 1;
+    transition-duration: 0.24s, 0.24s, 0.4s;
+}
+
+.lobby .lobby__stage-figure:hover .lobby__stage-ring {
+    opacity: 0.85;
+    scale: 1.05 1.05;
+}
+
+.lobby .lobby__stage-shadow {
+    position: absolute;
+    left: 50%;
+    bottom: 11px;
+    width: 176px;
+    height: 22px;
+    margin-left: -88px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Under the model: Switch character (its popover opens above it, the notch pointing up) and Edit character. */
+
+.lobby .lobby__stage-bar {
+    flex-direction: row;
+    align-items: center;
+    padding: 3px;
+    background-color: var(--ui-editor-panel);
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-panel-edge);
+    border-radius: var(--ui-panel-radius);
+}
+
+.lobby .lobby__stage-bar .lobby__switch {
+    width: 202px;
+    height: 26px;
+    margin-top: 0;
+    padding: 0 8px 0 9px;
+}
+
+.lobby .lobby__stage-bar .lobby__icon {
+    width: 12px;
+    height: 12px;
+}
+
+.lobby .lobby__stage-bar .lobby__switch .lobby__icon {
+    margin-right: 6px;
+}
+
+.lobby .lobby__stage-bar .lobby__switch-label,
+.lobby .lobby__stage-bar .lobby__switch-count {
+    font-size: 10px;
+}
+
+.lobby .lobby__stage-bar .lobby__switch .lobby__icon--chevron {
+    width: 10px;
+    height: 10px;
+    margin-right: 0;
+}
+
+.lobby--stage .lobby__switch-tip {
+    right: auto;
+    left: 50%;
+    top: -6px;
+    margin: 0 0 0 -6px;
+}
+
+.lobby .lobby__stage-edit {
+    flex-direction: row;
+    align-items: center;
+    height: 26px;
+    margin-left: 3px;
+    padding: 0 8px 0 10px;
+    background-color: var(--ui-editor-button);
+    transition-property: background-color, scale;
+    transition-duration: 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic;
+}
+
+.lobby .lobby__stage-edit:hover,
+.lobby .lobby__stage-edit:hover:active {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.lobby .lobby__stage-edit:active,
+.lobby .lobby__stage-edit:hover:active {
+    background-color: var(--ui-editor-button-pressed);
+    scale: 0.97 0.97;
+}
+
+.lobby .lobby__stage-edit .lobby__icon {
+    width: 10px;
+    height: 10px;
+    margin-left: 4px;
+    transition-property: translate;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out-back;
+}
+
+/* The chevron steps toward the window it opens. */
+.lobby .lobby__stage-edit:hover .lobby__icon {
+    translate: 2px 0;
+}
+
+.lobby .lobby__stage-edit:hover .lobby__card-edit-label {
+    color: var(--ui-text);
+}
+
+/* The narrow panel: name and Back on one line, players, round and the admin switch on the next; short tab names. */
+
+.lobby .lobby__header--stacked {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    padding: 12px 12px 10px 16px;
+}
+
+.lobby .lobby__header-row {
+    flex-direction: row;
+    align-items: center;
+    min-height: 26px;
+}
+
+.lobby .lobby__header--stacked .lobby__server-name {
+    margin-right: 8px;
+    font-size: 15px;
+}
+
+.lobby--stage .lobby__tabs {
+    padding: 0 12px 0 16px;
+}
+
+.lobby--stage .lobby__tab {
+    margin-right: 3px;
+    padding: 0 9px;
+    font-size: 11px;
+}
+
+/* Server Info in one column: banner, message of the day, server, change log, scrolling together (server-info-scroll).
+   Every part keeps its full height; the scroll view's content is the column. */
+
+.lobby--stage .lobby-info {
+    flex-direction: column;
+    padding: 14px 8px 16px 16px;
+}
+
+.lobby--stage .lobby-info__content {
+    flex-direction: column;
+    padding-right: 8px;
+}
+
+.lobby--stage .lobby-info__left {
+    flex-grow: 0;
+    flex-shrink: 0;
+    margin-right: 0;
+}
+
+.lobby--stage .lobby-info__banner {
+    height: 128px;
+    margin-bottom: 12px;
+}
+
+.lobby--stage .lobby-info__motd-scroll,
+.lobby--stage .lobby-info__section-gap,
+.lobby--stage .lobby-info__log {
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.lobby--stage .lobby-info__right {
+    width: auto;
+    flex-shrink: 0;
+    margin-top: 18px;
+}
+
+/* Chat: the channels over the field, so the field keeps the panel's width. */
+
+.lobby--stage .lobby-chat {
+    padding: 14px 16px 14px 16px;
+}
+
+.lobby .lobby-chat__composer--stacked {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+}
+
+.lobby .lobby-chat__composer-row {
+    flex-direction: row;
+    height: 26px;
+}
+
+.lobby .lobby-chat__composer-row--field {
+    height: 32px;
+    margin-top: 4px;
+}
+
+/* ══ UI Toolkit fields and the shipped-only parts the bible draws as HTML ══ */
+
+/* The character figure is a Button: never a plate. */
+.lobby .lobby__stage-figure,
+.lobby .lobby__stage-figure:hover,
+.lobby .lobby__stage-figure:active,
+.lobby .lobby__stage-figure:hover:active {
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+}
+
+/* Ready and Observe while they can't be pressed (USS :disabled, as the C# --disabled classes). */
+.lobby .lobby__ready:disabled,
+.lobby .lobby__ready:disabled:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-color: rgba(0, 0, 0, 0);
+    translate: 0 0;
+}
+
+.lobby .lobby__ready:disabled .lobby__ready-title,
+.lobby .lobby__ready:disabled .lobby__ready-subtitle {
+    color: var(--ui-menu-tab-text);
+}
+
+.lobby .lobby__observe:disabled,
+.lobby .lobby__observe:disabled:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Music volume: the menu slider (UITK Slider's tracker and dragger). */
+.lobby .lobby__music-volume {
+    width: 72px;
+    height: 16px;
+    min-height: 16px;
+    margin: 0 0 0 10px;
+    padding: 0;
+    flex-shrink: 0;
+    align-self: center;
+}
+
+.lobby--stage .lobby__music-volume {
+    width: 48px;
+}
+
+.lobby .lobby__music-volume > .unity-base-slider__input {
+    height: 16px;
+    min-height: 16px;
+    margin: 0;
+    padding: 0;
+}
+
+.lobby .lobby__music-volume .unity-base-slider__drag-container {
+    height: 16px;
+    margin: 0;
+    padding: 0;
+}
+
+.lobby .lobby__music-volume .unity-base-slider__tracker {
+    top: 4px;
+    height: 8px;
+    margin: 0;
+    border-width: 0;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+.lobby .lobby__music-volume .unity-base-slider__dragger {
+    position: absolute;
+    top: 1px;
+    width: 22px;
+    height: 14px;
+    margin: 0;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.24);
+    border-radius: 3px;
+    background-color: rgba(42, 38, 40, 0.96);
+}
+
+.lobby .lobby__music-volume:hover .unity-base-slider__dragger {
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.lobby .lobby__music-volume .unity-base-slider__dragger-border {
+    display: none;
+}
+
+.lobby .lobby__music--off .lobby__music-volume {
+    opacity: 0.4;
+}
+
+/* Server Info's banner art, one per server (LobbyServerInfoView picks it). Fitted, never cropped. */
+.lobby .lobby-info__banner {
+    height: 176px;
+    flex-shrink: 0;
+    margin-bottom: 16px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.lobby--stage .lobby-info__banner {
+    height: 128px;
+    margin-bottom: 12px;
+}
+
 .lobby-info__banner--1 { background-image: url("project://database/Assets/Art/Textures/Lobby/Banners/LobbyBannerChase.png"); }
 .lobby-info__banner--2 { background-image: url("project://database/Assets/Art/Textures/Lobby/Banners/LobbyBannerBreach.png"); }
 .lobby-info__banner--3 { background-image: url("project://database/Assets/Art/Textures/Lobby/Banners/LobbyBannerCarp.png"); }
 .lobby-info__banner--4 { background-image: url("project://database/Assets/Art/Textures/Lobby/Banners/LobbyBannerSpacewalk.png"); }
 .lobby-info__banner--5 { background-image: url("project://database/Assets/Art/Textures/Lobby/Banners/LobbyBannerStation.png"); }
-.lobby-info__motd-scroll { flex-grow: 1; flex-shrink: 1; min-height: 0; }
-.lobby .lobby-info__motd { max-width: 568px; font-size: 15px; color: var(--lb-text); white-space: normal; margin-top: 12px; }
-.lobby .lobby-info__right {
-    width: 480px; flex-shrink: 0; padding-left: 24px;
-    border-left-width: 1px; border-left-color: var(--lb-border-subtle);
-}
-.lobby-info__kv {
-    flex-direction: row; justify-content: space-between; align-items: center; height: 36px; flex-shrink: 0;
-    border-bottom-width: 1px; border-bottom-color: var(--lb-border-subtle);
-}
-.lobby-info__key { font-size: 13px; color: var(--lb-text-2); }
-.lobby-info__value { font-size: 13px; color: var(--lb-text); }
-.lobby .lobby-info__section-gap { margin-top: 36px; }
-.lobby .lobby-info__links { flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.lobby .lobby-info__log { flex-grow: 1; flex-shrink: 1; min-height: 0; margin-top: 8px; }
-.lobby .lobby-info__release { padding: 12px 0; border-bottom-width: 1px; border-bottom-color: var(--lb-border-subtle); flex-shrink: 0; }
-.lobby-info__release-head { flex-direction: row; align-items: center; }
-.lobby .lobby-info__release-version { font-size: 13px; color: var(--lb-text); margin-right: 10px; }
-.lobby-info__release-date { font-size: 13px; color: var(--lb-text-2); flex-grow: 1; }
-.lobby-info__link { flex-direction: row; align-items: center; font-size: 12px; color: var(--lb-text-2); }
-.lobby-info__link:hover { color: var(--lb-text); }
-.lobby-info__link .lobby__icon { margin-left: 6px; }
-.lobby .lobby-info__entry { flex-direction: row; align-items: flex-start; margin-top: 6px; padding-left: 4px; }
-.lobby-info__entry--link:hover .lobby-info__entry-text { color: var(--lb-text); }
-.lobby .lobby-info__bullet { width: 4px; height: 4px; border-radius: 2px; margin: 7px 10px 0 4px; flex-shrink: 0; background-color: var(--lb-text-2); }
-.lobby-info__entry-text { flex-grow: 1; flex-shrink: 1; font-size: 13px; color: #d8d8d8; white-space: normal; }
-.lobby .lobby-info__entry-ref { font-size: 11px; color: var(--lb-text-2); margin-left: 8px; flex-shrink: 0; }
-.lobby .lobby-info__empty { font-size: 13px; color: var(--lb-text-2); margin-top: 8px; white-space: normal; }
 
-/* ---- Chat ---- */
-.lobby .lobby-chat { flex-grow: 1; padding: 20px 24px 16px; min-height: 0; }
-.lobby-chat__log {
-    flex-grow: 1; min-height: 0; background-color: var(--lb-inset);
-    border-width: 1px; border-color: var(--lb-border-subtle);
+.lobby .lobby-info__empty,
+.lobby .lobby-chat__empty {
+    margin-top: 8px;
+    font-size: 11.5px;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: normal;
 }
-/* Descendant, not child: Unity 6 nests the viewport in a content-and-scroller container. */
-.lobby .lobby-chat__log .unity-scroll-view__content-container { padding: 12px 16px; }
-.lobby .lobby-chat__line { flex-direction: row; align-items: flex-start; padding: 4px 0; }
-.lobby .lobby-chat__time { width: 48px; flex-shrink: 0; font-size: 12px; color: var(--lb-text-2); margin-top: 2px; }
-.lobby .lobby-chat__channel { width: 64px; flex-shrink: 0; font-size: 11px; -unity-font-style: bold; letter-spacing: 0.66px; color: var(--lb-text-2); margin-top: 2px; }
-.lobby .lobby-chat__channel--looc { color: var(--lb-blue-text); }
-.lobby .lobby-chat__channel--admin { color: var(--lb-amber); }
-.lobby-chat__body { flex-grow: 1; flex-shrink: 1; flex-direction: row; flex-wrap: wrap; }
-.lobby .lobby-chat__name { font-size: 14px; -unity-font-style: bold; color: var(--lb-text); margin-right: 6px; }
-.lobby .lobby-chat__name--admin { color: var(--lb-amber); }
-.lobby-chat__text { flex-shrink: 1; font-size: 14px; color: var(--lb-text); white-space: normal; }
-.lobby-chat__system { font-size: 13px; color: var(--lb-text-2); white-space: normal; flex-shrink: 1; }
-.lobby-chat__empty { font-size: 13px; color: var(--lb-text-2); }
-.lobby .lobby-chat__composer { flex-direction: row; align-items: stretch; height: 40px; margin-top: 12px; flex-shrink: 0; }
-.lobby .lobby-chat__channel-button {
-    height: 40px; padding: 0 12px; margin-right: 4px; border-radius: 2px;
-    background-color: var(--lb-chrome); font-size: 20px; letter-spacing: 1.6px; color: var(--lb-text);
-}
-.lobby .lobby-chat__channel-button:hover { background-color: var(--lb-inset); }
-.lobby .lobby-chat__channel-button--active, .lobby .lobby-chat__channel-button--active:hover { background-color: var(--lb-rust); color: var(--lb-on-accent); }
-.lobby .lobby-chat__input { flex-grow: 1; margin: 0 8px 0 4px; }
-.lobby-chat__input > .unity-text-field__input, .lobby-chat__input > .unity-base-text-field__input {
-    margin: 0; padding: 0 12px; height: 40px; border-width: 1px; border-color: var(--lb-border); border-radius: 0;
-    background-color: var(--lb-inset); color: var(--lb-text); font-size: 14px;
-}
-.lobby-chat__input:focus > .unity-text-field__input, .lobby-chat__input:focus > .unity-base-text-field__input { border-color: var(--lb-border-strong); }
-.lobby-chat__input .unity-base-text-field__input--placeholder { color: var(--lb-disabled); }
-.lobby .lobby-chat__send {
-    flex-direction: row; align-items: center; height: 40px; padding: 0 14px; border-radius: 2px;
-    background-color: var(--lb-chrome);
-}
-.lobby .lobby-chat__send:hover { background-color: var(--lb-inset); }
-.lobby-chat__send .lobby__icon { margin-right: 8px; -unity-background-image-tint-color: var(--lb-text); }
-.lobby-chat__send-label { font-size: 20px; letter-spacing: 1.6px; }
-.lobby .lobby-chat__hint { margin-top: 10px; font-size: 12px; color: var(--lb-text-2); }
 
-/* ---- Settings and Last Round: their content gets the whole panel under the tab bar. ---- */
-.lobby__settings-host { flex-grow: 1; min-height: 0; }
-.lobby .round-end--tab { flex-grow: 1; }
+.lobby .lobby__settings-host {
+    flex-grow: 1;
+    min-height: 0;
+}
 
-/* ---- Server Settings (admin) ---- */
-.lobby-admin__scroll { flex-grow: 1; min-height: 0; }
-.lobby .lobby-admin__scroll .unity-scroll-view__content-container { padding: 20px 24px; }
-.lobby-admin { max-width: 640px; flex-shrink: 0; }
-.lobby .lobby-admin__card { background-color: var(--lb-inset); border-width: 1px; border-color: var(--lb-border-subtle); border-radius: 4px; margin-bottom: 22px; flex-shrink: 0; }
-.lobby .lobby-admin__card-heading {
-    height: 40px; padding: 0 14px; -unity-text-align: middle-left; background-color: var(--lb-chrome);
-    border-bottom-width: 1px; border-bottom-color: var(--lb-border); font-size: 20px; letter-spacing: 1.6px;
+.lobby .round-end--tab {
+    flex-grow: 1;
 }
-.lobby .lobby-admin__card-body { flex-direction: row; justify-content: space-between; align-items: center; padding: 12px 14px; }
-.lobby-admin__round-state { font-size: 24px; letter-spacing: 1.92px; color: var(--lb-text); }
-.lobby .lobby-admin__round-detail { font-size: 14px; color: var(--lb-text-2); margin-top: 4px; }
-.lobby-admin__ready-label { font-size: 11px; color: var(--lb-text-2); -unity-text-align: middle-right; -unity-font-style: bold; letter-spacing: 1.32px; }
-.lobby-admin__ready-ratio { font-size: 24px; color: var(--lb-text); -unity-text-align: middle-right; }
-.lobby .lobby-admin__section-title { margin: 0 0 10px; font-size: 20px; letter-spacing: 1.6px; color: var(--lb-text-2); }
-.lobby .lobby-admin__controls { flex-direction: row; flex-wrap: wrap; margin-bottom: 14px; }
-.lobby .lobby-admin__button {
-    height: 36px; padding: 0 14px; margin: 0 8px 8px 0; border-radius: 4px; font-size: 18px; letter-spacing: 1.44px;
-    background-color: var(--lb-chrome); color: var(--lb-text);
-}
-.lobby .lobby-admin__button:hover { background-color: var(--lb-hover); }
-.lobby .lobby-admin__button--start { background-color: var(--lb-rust); color: var(--lb-on-accent); }
-.lobby .lobby-admin__button--start:hover { background-color: var(--lb-rust-hover); }
-.lobby .lobby-admin__button:disabled { opacity: 0.4; }
-.lobby .lobby-admin__text { flex-shrink: 0; flex-direction: column; align-items: stretch; margin: 0 0 12px; }
-.lobby-admin__text > .unity-base-field__label { min-width: 0; height: 18px; margin: 0 0 6px; padding: 0; font-size: 12px; color: var(--lb-text-2); }
-.lobby-admin__text > .unity-base-field__input {
-    min-height: 36px; padding: 8px 10px; border-width: 1px; border-color: var(--lb-border); border-radius: 0;
-    background-color: var(--lb-inset); color: var(--lb-text); font-size: 14px;
-}
-.lobby-admin__text--multiline > .unity-base-field__input { min-height: 96px; white-space: normal; -unity-text-align: upper-left; }
-.lobby .lobby-admin__select { flex-shrink: 0; flex-direction: column; align-items: stretch; margin: 0 0 12px; }
-.lobby-admin__select > .unity-base-field__label { min-width: 0; height: 18px; margin: 0 0 6px; padding: 0; font-size: 12px; color: var(--lb-text-2); }
-.lobby-admin__select > .unity-base-field__input {
-    height: 36px; padding: 0 10px; border-width: 1px; border-color: var(--lb-border); border-radius: 0;
-    background-color: var(--lb-inset); color: var(--lb-text); font-size: 14px;
-}
-.lobby-admin__select .unity-base-popup-field__arrow { -unity-background-image-tint-color: var(--lb-text-2); }
-.lobby .lobby-admin__numbers { flex-direction: row; flex-wrap: wrap; margin: 4px 0 10px; flex-shrink: 0; }
-.lobby .lobby-admin__number { width: 30%; min-width: 150px; margin: 0 12px 12px 0; }
-.lobby-admin__number > Label { height: 18px; margin: 0 0 6px; font-size: 12px; color: var(--lb-text-2); }
-.lobby-admin__number .unity-base-field { margin: 0; }
-.lobby-admin__number .unity-base-field__input {
-    min-height: 36px; padding: 8px 10px; border-width: 1px; border-color: var(--lb-border); border-radius: 0;
-    background-color: var(--lb-inset); color: var(--lb-text); font-size: 15px;
-}
-.lobby .lobby-admin__toggle { min-height: 32px; flex-shrink: 0; margin: 0; }
-.lobby-admin__toggle .unity-base-field__input { flex-grow: 1; justify-content: flex-start; background-color: rgba(0, 0, 0, 0); }
-.lobby-admin__toggle .unity-toggle__checkmark {
-    width: 16px; height: 16px; margin-right: 10px; border-width: 1px; border-color: var(--lb-border-strong);
-    border-radius: 2px; background-color: var(--lb-inset);
-}
-.lobby-admin__toggle:checked .unity-toggle__checkmark { background-color: var(--lb-rust); border-color: var(--lb-rust); }
-.lobby-admin__toggle .unity-toggle__text { margin-left: 0; font-size: 14px; color: var(--lb-text); }
-.lobby .lobby-admin__status { margin-top: 12px; font-size: 12px; color: var(--lb-text-2); white-space: normal; }
-.lobby .lobby-admin__map-load { margin: -6px 0 12px; font-size: 12px; color: var(--lb-text-2); white-space: normal; }
-.lobby .lobby-admin__map-load--loading { color: var(--lb-amber); }
-.lobby .lobby-admin__map-load--ready { color: var(--lb-green); }
-.lobby .lobby-admin__map-load--failed { color: var(--lb-red-text); }
 
-/* ---- Unsaved-map Stop prompt ---- */
-.lobby-prompt {
-    position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center;
-    background-color: rgba(0, 0, 0, 0.6);
+/* Chat's field: the editor's near-black search; the channel's colour on its left edge. */
+.lobby .lobby-chat__input {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 0 6px 0 0;
+    padding: 0;
 }
-.lobby .lobby-prompt__card {
-    width: 520px; padding: 20px; background-color: var(--lb-panel);
-    border-width: 1px; border-color: var(--lb-border); border-radius: 4px;
-}
-.lobby .lobby-prompt__title { font-size: 22px; letter-spacing: 1.76px; margin-bottom: 10px; }
-.lobby .lobby-prompt__text { font-size: 14px; color: var(--lb-text); white-space: normal; margin-bottom: 12px; }
-.lobby .lobby-prompt__error { font-size: 13px; color: var(--lb-red-text); white-space: normal; margin-bottom: 8px; }
-.lobby-prompt__buttons { flex-direction: row; flex-wrap: wrap; }
 
-/* ---- 1366 x 768 (Decision 19): sidebar 320, preview 80 x 136, gutters 12, timer 36. ---- */
-.lobby--compact .lobby__sidebar { width: 320px; }
-.lobby--compact .lobby__main { left: 332px; top: 12px; right: 12px; bottom: 12px; }
-.lobby--compact .lobby__wordmark-block { padding: 12px 16px 8px; }
-.lobby--compact .lobby__wordmark { width: 160px; height: 75px; }
-.lobby--compact .lobby__section { padding: 14px 16px; }
-.lobby--compact .lobby__timer { font-size: 36px; }
-.lobby--compact .lobby__preview-frame { width: 80px; height: 136px; margin-right: 12px; }
-.lobby--compact .lobby__ready { height: 60px; }
-.lobby--compact .lobby__observe { height: 44px; }
-.lobby--compact .lobby__music { padding: 8px 16px; }
-.lobby--compact .lobby__footer { padding: 10px 8px; }
-.lobby--compact .lobby__footer-label { font-size: 16px; }
-.lobby--compact .lobby__header { height: 48px; padding: 0 14px; }
-.lobby--compact .lobby__server-name { font-size: 18px; margin-right: 16px; }
-.lobby--compact .lobby__meta-sep { margin: 0 10px; }
-.lobby--compact .lobby__tab { padding: 0 12px; font-size: 16px; }
-.lobby--compact .lobby-info { padding: 16px; }
-.lobby--compact .lobby-info__right { width: 360px; padding-left: 16px; }
-.lobby--compact .lobby-info__left { padding-right: 16px; }
-.lobby--compact .lobby-chat { padding: 12px 16px; }
+.lobby .lobby-chat__input > .unity-base-text-field__input {
+    margin: 0;
+    padding: 0 10px;
+    border-width: 1px;
+    border-left-width: 3px;
+    border-radius: 0;
+    border-color: rgba(0, 0, 0, 0);
+    border-left-color: var(--chan);
+    background-color: rgba(0, 0, 0, 0.9);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
+    font-size: 12px;
+    color: var(--ui-text);
+    -unity-text-align: middle-left;
+}
+
+.lobby .lobby-chat__input:focus > .unity-base-text-field__input,
+.lobby .lobby-chat__input > .unity-base-text-field__input:focus {
+    border-color: var(--ui-editor-cell-edge-hover);
+    border-left-color: var(--chan);
+}
+
+.lobby .lobby-chat__input .unity-base-text-field__input--placeholder {
+    color: var(--ui-text-faint);
+}
+
+/* Server Settings: UITK fields with a Disket label over the editor's near-black input. */
+.lobby .lobby-admin__text,
+.lobby .lobby-admin__select {
+    flex-direction: column;
+    align-items: stretch;
+    margin: 0 0 10px 0;
+    flex-shrink: 0;
+}
+
+.lobby .lobby-admin__text > .unity-base-field__label,
+.lobby .lobby-admin__select .ui-select__label,
+.lobby .lobby-admin__number-label {
+    min-width: 0;
+    height: auto;
+    margin: 0 0 6px 0;
+    padding: 0;
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/DisketMonoBoldSDF.asset");
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.lobby .lobby-admin__text > .unity-base-text-field__input,
+.lobby .lobby-admin__number .unity-base-text-field__input {
+    min-height: 30px;
+    margin: 0;
+    padding: 0 10px;
+    border-width: 1px;
+    border-radius: 0;
+    border-color: rgba(0, 0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.9);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/KodeMonoSDF.asset");
+    font-size: 12px;
+    color: var(--ui-text);
+}
+
+.lobby .lobby-admin__text:focus > .unity-base-text-field__input,
+.lobby .lobby-admin__text > .unity-base-text-field__input:focus,
+.lobby .lobby-admin__number .unity-base-text-field__input:focus {
+    border-color: var(--ui-editor-cell-edge-hover);
+}
+
+.lobby .lobby-admin__text--multiline > .unity-base-text-field__input {
+    min-height: 76px;
+    padding: 8px 10px;
+    white-space: normal;
+    -unity-text-align: upper-left;
+}
+
+.lobby .lobby-admin__number .unity-base-field {
+    margin: 0;
+}
+
+.lobby .lobby-admin__select .ui-select__field {
+    height: 30px;
+}
+
+/* A rule: a storage cell as the box, white with a dark check when on. */
+.lobby .lobby-admin__toggle {
+    flex-direction: row;
+    align-items: center;
+    min-height: 30px;
+    margin: 0 0 2px 0;
+    padding: 0 10px;
+    background-color: var(--ui-editor-button);
+    transition-property: background-color;
+    transition-duration: 0.12s;
+}
+
+.lobby .lobby-admin__toggle:hover {
+    background-color: var(--ui-editor-button-hover);
+}
+
+.lobby .lobby-admin__toggle .unity-base-field__input {
+    flex-grow: 1;
+    justify-content: flex-start;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.lobby .lobby-admin__toggle .unity-toggle__checkmark {
+    width: 16px;
+    height: 16px;
+    margin: 0 10px 0 0;
+    border-width: var(--ui-hairline);
+    border-color: var(--ui-editor-cell-edge);
+    border-radius: 2.4px;
+    background-color: rgba(0, 0, 0, 0.45);
+    -unity-background-image-tint-color: var(--ui-text-on-light);
+    transition-property: background-color, border-color, scale;
+    transition-duration: 0.14s, 0.14s, 0.2s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-back;
+}
+
+.lobby .lobby-admin__toggle:hover .unity-toggle__checkmark {
+    border-color: var(--ui-editor-cell-edge-hover);
+}
+
+.lobby .lobby-admin__toggle:checked .unity-toggle__checkmark {
+    border-color: var(--ui-menu-selected);
+    background-color: var(--ui-menu-selected);
+}
+
+.lobby .lobby-admin__toggle:active .unity-toggle__checkmark {
+    scale: 0.85 0.85;
+}
+
+.lobby .lobby-admin__toggle .unity-toggle__text {
+    margin: 0;
+    font-size: 12px;
+    color: var(--ui-text);
+}
+
+.lobby .lobby-admin__toggle:disabled .unity-toggle__text {
+    color: var(--ui-menu-tab-text);
+}
+
+.lobby .lobby-admin__button:disabled {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-color: rgba(0, 0, 0, 0);
+    color: var(--ui-menu-tab-text);
+}
+
+/* The admin badge and hidden switch (the shell's admin toggle). */
+.lobby .lobby__admin--hidden {
+    display: none;
+}
+
+/* The logo (the bible sets it from script). */
+.lobby .lobby__wordmark {
+    background-image: url("project://database/Assets/Art/Textures/UI/Logos/SS3DLogo.png");
+}
+
+/* UI Toolkit labels don't wrap unless told: the lines that can run long. */
+.lobby .lobby__note-text,
+.lobby .lobby__ready-subtitle,
+.lobby .lobby__round-caption,
+.lobby .lobby-info__entry-text,
+.lobby .lobby-info__motd,
+.lobby .lobby-chat__text,
+.lobby .lobby-chat__system,
+.lobby .lobby-admin__status,
+.lobby .lobby-admin__map-load,
+.lobby .lobby-prompt__text,
+.lobby .lobby-prompt__error,
+.lobby .lobby-chat__hint {
+    white-space: normal;
+}
+
+.lobby .lobby-info__entry-text {
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.lobby .lobby-info__entry-ref {
+    flex-shrink: 0;
+}
+
+/* The booth's frame keeps room under the feet: drop the model so they stand on the contact shadow. */
+.lobby .lobby__stage-model {
+    bottom: -8px;
+}
+
+/* ══ Motion and feedback (UiMotion; the vocabulary is ui-controls.uss's "Motion") ══
+ * Entrances play on a real change only, never on the 200 ms repaint: a tab switched (the content slides in from the
+ * side of the tab it came from), the character or its High job changed (the plate pops, the model rises), Ready
+ * confirmed (the check pops), the Join picker or the switcher opened, a new chat line. The round card flashes when the
+ * round's state changes. Two loops: the stage's floor glow breathes, and Ready breathes while a countdown runs and you
+ * aren't ready. .ui-enter's transition list and an element's own replace each other (whichever rule is more specific
+ * wins), so entrances go on containers and rows without transitions of their own, never on a Button with hover
+ * transitions; where a row has both, its sheet combines the two (CharacterSwitcher.uss). */
+
+/* Ready, breathing (LobbyView: lobby__ready--pulsing while it runs, ui-pulse--on toggled every 0.7 s): the round's
+   colour (--tone, from the lb-tone--* class LobbyView puts on the button) on its edge and as a pale wash, easing
+   over the half period; hover and press keep their quick look. */
+.lb-tone--info {
+    --tone-wash: rgb(222, 238, 255);
+}
+
+.lb-tone--warning {
+    --tone-wash: rgb(255, 241, 214);
+}
+
+.lb-tone--live,
+.lb-tone--neutral {
+    --tone-wash: rgb(255, 255, 255);
+}
+
+.lobby .lobby__ready--pulsing {
+    transition-duration: 0.7s, 0.7s, 0.2s, 0.12s, 0.12s;
+    transition-timing-function: ease-in-out-sine, ease-in-out-sine, ease-out-cubic, ease-out-cubic, ease-out-cubic;
+}
+
+.lobby .lobby__ready--pulsing.ui-pulse--on {
+    background-color: var(--tone-wash);
+    border-color: var(--tone);
+}
+
+.lobby .lobby__ready--pulsing:hover:active {
+    background-color: rgb(207, 207, 204);
+}
+
+/* Hovered, it stops breathing and shows its hover: a pointer on it wins over the pulse. */
+.lobby .lobby__ready--pulsing:hover,
+.lobby .lobby__ready--pulsing.ui-pulse--on:hover {
+    background-color: rgb(236, 251, 241);
+    border-color: var(--ui-ok);
+}
+
+/* Ready confirmed: the check pops in (LobbyView enters it when you ready up). */
+.lobby .lobby__ready-check.ui-enter {
+    translate: 0 0;
+    scale: 0.3 0.3;
+}
+
+.lobby .lobby__ready-check.ui-enter.ui-enter--in {
+    scale: 1 1;
+}
+
+/* A dimmed backdrop only fades: its card does the moving (the Join picker's card scales in, as the Stop prompt's). */
+.lobby .lobby-join.ui-enter,
+.lobby #map-stop-prompt.ui-enter {
+    translate: 0 0;
+    scale: 1 1;
+}
+
+/* Server Settings' and the Stop prompt's buttons. Scoped: the character window shares .lobby-admin__button and keeps
+   its own look. Eased, pressed, and Force / Cancel / Hold (warn) and Stop / Discard (danger) say their consequence on
+   hover in their colour. */
+.lobby .lobby-admin .lobby-admin__button,
+.lobby #map-stop-prompt .lobby-admin__button {
+    transition-property: background-color, border-color, color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic, ease-out-cubic, ease-out-cubic;
+}
+
+.lobby .lobby-admin .lobby-admin__button:active,
+.lobby .lobby-admin .lobby-admin__button:hover:active,
+.lobby #map-stop-prompt .lobby-admin__button:active,
+.lobby #map-stop-prompt .lobby-admin__button:hover:active {
+    scale: 0.96 0.96;
+}
+
+.lobby .lobby-admin .lobby-admin__button--warn:hover,
+.lobby .lobby-admin .lobby-admin__button--warn:hover:active {
+    background-color: rgba(255, 188, 64, 0.16);
+    color: var(--ui-warn);
+}
+
+.lobby .lobby-admin .lobby-admin__button--danger:hover,
+.lobby .lobby-admin .lobby-admin__button--danger:hover:active,
+.lobby #map-stop-prompt .lobby-admin__button--danger:hover,
+.lobby #map-stop-prompt .lobby-admin__button--danger:hover:active {
+    background-color: rgba(242, 88, 74, 0.18);
+    color: rgb(250, 160, 150);
+}
+
+/* Off stays off: no colour on a disabled control. */
+.lobby .lobby-admin .lobby-admin__button:disabled {
+    background-color: rgba(255, 255, 255, 0.03);
+    color: var(--ui-menu-tab-text);
+    scale: 1 1;
+}

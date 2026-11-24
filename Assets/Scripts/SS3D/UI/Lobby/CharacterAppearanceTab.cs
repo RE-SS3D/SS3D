@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using SS3D.Systems.Entities.Character;
 using SS3D.Systems.Inputs;
+using SS3D.UI.Shell;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -17,20 +17,27 @@ namespace SS3D.UI.Lobby
     }
 
     /// <summary>
-    /// The character window's Appearance tab (lobby.md §6, lobby effort Phase 5): the name with Randomize name and its
-    /// error line; six body sliders; skin and eye swatches; Hair, Facial hair and Eyebrows grids, each with a colour
-    /// row; and Randomize appearance. It edits <see cref="CharacterWindowModel.Working"/>.
+    /// The character window's appearance (lobby.md §6, lobby effort Phase 5), as five panes of the UI bible's centre
+    /// column: Profile (the name with Randomize name and its error line, the window's job outfit preview, Randomize
+    /// appearance), Body (six sliders), Skin &amp; eyes (skin and eye swatches, eyebrow styles and colour), Hair and Facial
+    /// hair (a colour row and a grid of styles). Each label sits over its control. It edits
+    /// <see cref="CharacterWindowModel.Working"/>.
     /// </summary>
     public sealed class CharacterAppearanceTab
     {
         private static readonly System.Text.RegularExpressions.Regex WordBoundary = new("([a-z])([A-Z0-9])");
+
+        /// <summary>A style grid's tiles pop in this far apart the first time it shows, after the pane has started to.</summary>
+        private const long TileStepMs = 25;
+        private const long TileFirstMs = 70;
 
         private readonly CharacterWindowModel _model;
         private readonly LobbyAssetCatalog _catalog;
         private readonly InputTextEntryScope _textEntry;
         private readonly Func<string> _randomName;
         private readonly Action<SavedCharacter> _randomizeLook;
-        private readonly ScrollView _scroll;
+        private readonly VisualElement _outfit;
+        private readonly Dictionary<string, Label> _styleNames = new();
         private TextField _name;
         private VisualElement _error;
         private Label _errorText;
@@ -39,22 +46,32 @@ namespace SS3D.UI.Lobby
 
         /// <param name="randomName">A new random name (Randomize name).</param>
         /// <param name="randomizeLook">Re-rolls the look of the draft it's given (Randomize appearance).</param>
+        /// <param name="outfit">The window's job outfit preview control, shown on the Profile pane.</param>
         public CharacterAppearanceTab(CharacterWindowModel model, LobbyAssetCatalog catalog, InputTextEntryScope textEntry,
-            Func<string> randomName, Action<SavedCharacter> randomizeLook)
+            Func<string> randomName, Action<SavedCharacter> randomizeLook, VisualElement outfit)
         {
             _model = model;
             _catalog = catalog;
             _textEntry = textEntry;
             _randomName = randomName;
             _randomizeLook = randomizeLook;
-            Root = LobbyUi.Box("charwin-tab");
-            Root.name = "charwin-appearance";
-            _scroll = new ScrollView(ScrollViewMode.Vertical);
-            _scroll.AddToClassList("charwin-tab__scroll");
-            Root.Add(_scroll);
+            _outfit = outfit;
+            Profile = Pane("profile");
+            Body = Pane("body");
+            Skin = Pane("skin");
+            Hair = Pane("hair");
+            Beard = Pane("beard");
         }
 
-        public VisualElement Root { get; }
+        public VisualElement Profile { get; }
+
+        public VisualElement Body { get; }
+
+        public VisualElement Skin { get; }
+
+        public VisualElement Hair { get; }
+
+        public VisualElement Beard { get; }
 
         /// <summary>The name field; the window focuses it when it opens.</summary>
         public TextField NameField => _name;
@@ -64,44 +81,48 @@ namespace SS3D.UI.Lobby
         {
             // A focused field removed by the rebuild gets no FocusOut.
             _textEntry.Exit();
-            _scroll.Clear();
+            foreach (VisualElement pane in new VisualElement[] { Profile, Body, Skin, Hair, Beard }) pane.Clear();
+            _styleNames.Clear();
             SavedCharacter draft = _model.Working;
             if (draft == null) return;
 
-            VisualElement top = LobbyUi.Box("charwin-look__top");
-            top.Add(LobbyUi.Text("Everything here is visible to other players.", "charwin-tab__intro"));
-            top.Add(ActionButton("charwin-randomize-look", "sparkles", "Randomize appearance", () =>
-            {
-                _randomizeLook(_model.Working);
-                Rebuild();
-                Changed?.Invoke(CharacterLookChange.Body);
-                Changed?.Invoke(CharacterLookChange.Look);
-            }));
-            _scroll.Add(top);
-
-            VisualElement columns = LobbyUi.Box("charwin-look__columns");
-            VisualElement left = LobbyUi.Box("charwin-look__left");
-            VisualElement right = LobbyUi.Box("charwin-look__right");
-            columns.Add(left);
-            columns.Add(right);
-            _scroll.Add(columns);
-
-            left.Add(BuildName(draft));
-            left.Add(BuildBody(draft));
-            right.Add(BuildStyle(draft));
+            BuildProfile(draft);
+            BuildBody(draft);
+            BuildSkin(draft);
+            BuildHair(draft);
+            BuildBeard(draft);
             ShowNameError();
         }
 
-        // ---- Name ----
-
-        private VisualElement BuildName(SavedCharacter draft)
+        /// <summary>A plain column, not a scroll area: the style grids are wider than it, as in the bible, and would be clipped.</summary>
+        private static VisualElement Pane(string key)
         {
-            VisualElement section = LobbyUi.Box("charwin-look__section");
-            section.Add(LobbyUi.Text("NAME", "charwin-tab__eyebrow"));
-            section.Add(LobbyUi.Text("Name", "charwin-tab__label"));
-            VisualElement row = LobbyUi.Box("charwin-look__name-row");
+            VisualElement pane = LobbyUi.Box("charwin__pane");
+            pane.name = "charwin-pane-" + key;
+            return pane;
+        }
+
+        /// <summary>A label centred over its control, as the reference, between two hairlines that mark the section.</summary>
+        private static VisualElement Field(string label, string extraClass = null)
+        {
+            VisualElement field = LobbyUi.Box("charwin__field");
+            if (extraClass != null) field.AddToClassList(extraClass);
+            VisualElement head = LobbyUi.Box("charwin__label-row");
+            head.pickingMode = PickingMode.Ignore;
+            head.Add(LobbyUi.Box("charwin__label-line"));
+            head.Add(LobbyUi.Text(label, "charwin__label"));
+            head.Add(LobbyUi.Box("charwin__label-line"));
+            field.Add(head);
+            return field;
+        }
+
+        // ---- Profile ----
+
+        private void BuildProfile(SavedCharacter draft)
+        {
+            VisualElement name = Field("name", "charwin__field--tight");
             _name = new TextField { name = "charwin-name", value = draft.Name, maxLength = 40 };
-            _name.AddToClassList("charwin-look__name");
+            _name.AddToClassList("charwin__text-field");
             _name.textEdition.placeholder = "First Last";
             _name.RegisterValueChangedCallback(e =>
             {
@@ -110,18 +131,39 @@ namespace SS3D.UI.Lobby
                 Changed?.Invoke(CharacterLookChange.Name);
             });
             LobbyUi.HoldTextEntry(_name, _textEntry);
-            LobbyUi.DarkInput(_name);
-            row.Add(_name);
-            row.Add(ActionButton("charwin-randomize-name", "sparkles", "Randomize name", () => _name.value = _randomName()));
-            section.Add(row);
+            LobbyUi.MenuInput(_name);
+            name.Add(_name);
+            Profile.Add(name);
 
             _error = LobbyUi.Box("charwin-look__error");
             _error.name = "charwin-name-error";
             _error.Add(LobbyUi.Icon("warning"));
             _errorText = LobbyUi.Text("", "charwin-look__error-text");
             _error.Add(_errorText);
-            section.Add(_error);
-            return section;
+            Profile.Add(_error);
+
+            Button randomName = SmallButton("charwin-randomize-name", "randomize name", () => _name.value = _randomName());
+            randomName.AddToClassList("charwin__small--under");
+            Profile.Add(randomName);
+
+            if (_outfit != null)
+            {
+                VisualElement outfit = Field("job outfit preview");
+                outfit.Add(_outfit);
+                Profile.Add(outfit);
+            }
+
+            Profile.Add(LobbyUi.Box("charwin__divider"));
+            VisualElement rest = Field("everything else");
+            rest.Add(SmallButton("charwin-randomize-look", "randomize appearance", () =>
+            {
+                _randomizeLook(_model.Working);
+                Rebuild();
+                Changed?.Invoke(CharacterLookChange.Body);
+                Changed?.Invoke(CharacterLookChange.Look);
+            }));
+            Profile.Add(rest);
+            Profile.Add(LobbyUi.Text("Everything here is visible to other players.", "charwin__note"));
         }
 
         /// <summary>Repaints the name's error line (the only state not rebuilt per edit).</summary>
@@ -131,93 +173,94 @@ namespace SS3D.UI.Lobby
         {
             if (_error == null) return;
             string text = CharacterNameRules.Describe(_model.NameError);
+            bool appearing = text.Length > 0 && _error.ClassListContains("charwin-look__error--hidden");
             _errorText.text = text;
             _error.EnableInClassList("charwin-look__error--hidden", text.Length == 0);
             _name.EnableInClassList("charwin-look__name--error", text.Length > 0);
+            if (appearing) CharacterWindowView.Enter(_error);
         }
 
         // ---- Body ----
 
-        private VisualElement BuildBody(SavedCharacter draft)
+        private void BuildBody(SavedCharacter draft)
         {
-            VisualElement section = LobbyUi.Box("charwin-look__section");
-            section.Add(LobbyUi.Text("BODY", "charwin-tab__eyebrow"));
-            VisualElement grid = LobbyUi.Box("charwin-look__sliders");
-            for (int i = 0; i < CharacterBodySliders.All.Length; i++)
+            foreach (CharacterBodySlider def in CharacterBodySliders.All)
             {
-                grid.Add(BuildSlider(CharacterBodySliders.All[i], i % 2 == 1, draft));
+                VisualElement field = Field(def.Label.ToLowerInvariant());
+                Slider slider = new(0f, 1f)
+                {
+                    name = "body-" + def.Key,
+                    value = draft.GetMorph(def.Key, def.DefaultValue),
+                    tooltip = def.Label,
+                    fill = true,
+                };
+                slider.AddToClassList("charwin__slider");
+                string key = def.Key;
+                slider.RegisterValueChangedCallback(e =>
+                {
+                    _model.Working.SetMorph(key, e.newValue);
+                    Changed?.Invoke(CharacterLookChange.Body);
+                });
+                field.Add(slider);
+                Body.Add(field);
             }
-
-            section.Add(grid);
-            section.Add(LobbyUi.Text("Skin tone", "charwin-tab__label"));
-            section.Add(Swatches("charwin-skin", Palette(_catalog != null ? _catalog.SkinColors : null), draft.SkinColorIndex, index =>
-            {
-                _model.Working.SkinColorIndex = index;
-                return CharacterLookChange.Look;
-            }));
-            section.Add(LobbyUi.Text("Eye colour", "charwin-tab__label"));
-            section.Add(Swatches("charwin-eyes", Palette(_catalog != null ? _catalog.EyeColors : null), draft.EyeColorIndex, index =>
-            {
-                _model.Working.EyeColorIndex = index;
-                return CharacterLookChange.Look;
-            }));
-            return section;
         }
 
-        private VisualElement BuildSlider(CharacterBodySlider def, bool rightColumn, SavedCharacter draft)
+        // ---- Skin & eyes ----
+
+        private void BuildSkin(SavedCharacter draft)
         {
-            VisualElement cell = LobbyUi.Box("charwin-look__slider-cell");
-            cell.EnableInClassList("charwin-look__slider-cell--right", rightColumn);
-            VisualElement head = LobbyUi.Box("charwin-look__slider-head");
-            head.Add(LobbyUi.Text(def.Label, "charwin-look__slider-label"));
-            float value = draft.GetMorph(def.Key, def.DefaultValue);
-            Label shown = LobbyUi.Mono(Percent(value), "charwin-look__slider-value");
-            head.Add(shown);
-            cell.Add(head);
+            VisualElement skin = Field("skin tone");
+            skin.Add(Swatches("charwin-skin", Palette(_catalog != null ? _catalog.SkinColors : null), draft.SkinColorIndex,
+                index => _model.Working.SkinColorIndex = index));
+            Skin.Add(skin);
 
-            Slider slider = new(0f, 1f) { name = "body-" + def.Key, value = value, tooltip = def.Label };
-            slider.AddToClassList("lobby__slider");
-            slider.AddToClassList("charwin-look__slider");
-            string key = def.Key;
-            slider.RegisterValueChangedCallback(e =>
-            {
-                _model.Working.SetMorph(key, e.newValue);
-                shown.text = Percent(e.newValue);
-                Changed?.Invoke(CharacterLookChange.Body);
-            });
-            cell.Add(slider);
-            return cell;
+            VisualElement eyes = Field("eye colour");
+            eyes.Add(Swatches("charwin-eyes", Palette(_catalog != null ? _catalog.EyeColors : null), draft.EyeColorIndex,
+                index => _model.Working.EyeColorIndex = index));
+            Skin.Add(eyes);
+
+            VisualElement brows = Field("eyebrows", "charwin__field--styles");
+            Label browName = StyleName("eyebrows");
+            brows.Add(EyebrowTiles(draft));
+            brows.Add(browName);
+            Skin.Add(brows);
+
+            VisualElement browColour = Field("eyebrow colour", "charwin__field--tight");
+            browColour.Add(Swatches("charwin-eyebrow-colour", HairPalette, draft.EyebrowColorIndex,
+                index => _model.Working.EyebrowColorIndex = index));
+            Skin.Add(browColour);
         }
 
-        private static string Percent(float value) => Mathf.RoundToInt(value * 100f).ToString(CultureInfo.InvariantCulture);
+        // ---- Hair and facial hair ----
 
-        // ---- Style ----
-
-        private VisualElement BuildStyle(SavedCharacter draft)
+        private void BuildHair(SavedCharacter draft)
         {
-            VisualElement section = LobbyUi.Box("charwin-look__section");
-            section.Add(LobbyUi.Text("STYLE", "charwin-tab__eyebrow"));
-            Color[] hairColors = Palette(_catalog != null ? _catalog.HairColors : null);
-
-            section.Add(LobbyUi.Text("Hair", "charwin-tab__label"));
-            section.Add(StyleTiles("hair", _catalog != null ? _catalog.HairStyles : null, draft.HairStyleIndex, index =>
-            {
-                _model.Working.HairStyleIndex = index;
-            }));
-            section.Add(ColourRow("charwin-hair-colour", hairColors, draft.HairColorIndex, index => _model.Working.HairColorIndex = index));
-
-            section.Add(LobbyUi.Text("Facial hair", "charwin-tab__label"));
-            section.Add(StyleTiles("beard", _catalog != null ? _catalog.BeardStyles : null, draft.BeardStyleIndex, index =>
-            {
-                _model.Working.BeardStyleIndex = index;
-            }));
-            section.Add(ColourRow("charwin-beard-colour", hairColors, draft.BeardColorIndex, index => _model.Working.BeardColorIndex = index));
-
-            section.Add(LobbyUi.Text("Eyebrows", "charwin-tab__label"));
-            section.Add(EyebrowTiles(draft));
-            section.Add(ColourRow("charwin-eyebrow-colour", hairColors, draft.EyebrowColorIndex, index => _model.Working.EyebrowColorIndex = index));
-            return section;
+            VisualElement colour = Field("colour");
+            colour.Add(Swatches("charwin-hair-colour", HairPalette, draft.HairColorIndex, index => _model.Working.HairColorIndex = index));
+            Hair.Add(colour);
+            VisualElement style = Field("style", "charwin__field--tight");
+            Label name = StyleName("hair");
+            style.Add(StyleTiles("hair", _catalog != null ? _catalog.HairStyles : null, draft.HairStyleIndex,
+                index => _model.Working.HairStyleIndex = index));
+            style.Add(name);
+            Hair.Add(style);
         }
+
+        private void BuildBeard(SavedCharacter draft)
+        {
+            VisualElement colour = Field("colour");
+            colour.Add(Swatches("charwin-beard-colour", HairPalette, draft.BeardColorIndex, index => _model.Working.BeardColorIndex = index));
+            Beard.Add(colour);
+            VisualElement style = Field("style", "charwin__field--tight");
+            Label name = StyleName("beard");
+            style.Add(StyleTiles("beard", _catalog != null ? _catalog.BeardStyles : null, draft.BeardStyleIndex,
+                index => _model.Working.BeardStyleIndex = index));
+            style.Add(name);
+            Beard.Add(style);
+        }
+
+        private Color[] HairPalette => Palette(_catalog != null ? _catalog.HairColors : null);
 
         /// <summary>A catalog palette as an array; empty without a catalog.</summary>
         private static Color[] Palette(IReadOnlyList<Color> colors)
@@ -227,49 +270,113 @@ namespace SS3D.UI.Lobby
             return palette;
         }
 
-        /// <summary>Hair or facial hair: index 0 is None.</summary>
-        private VisualElement StyleTiles(string kind, IReadOnlyList<LobbyNamedPrefab> styles, int selected, Action<int> select)
+        /// <summary>Under a grid: the picked style's name. Made before the grid, which names its picked tile.</summary>
+        private Label StyleName(string kind)
         {
-            VisualElement tiles = LobbyUi.Box("charwin-look__tiles");
-            tiles.name = "charwin-" + kind + "-styles";
+            Label label = LobbyUi.Text("", "charwin__style-name");
+            label.name = "charwin-" + kind + "-style-name";
+            _styleNames[kind] = label;
+            return label;
+        }
+
+        private void ShowStyleName(string kind, string name)
+        {
+            if (_styleNames.TryGetValue(kind, out Label label)) label.text = name.ToLowerInvariant();
+        }
+
+        /// <summary>The reference's style tiles, three across, in a scroll area; the tiles are its children.</summary>
+        private static ScrollView Grid(string kind, bool shortGrid)
+        {
+            ScrollView grid = new(ScrollViewMode.Vertical) { name = "charwin-" + kind + "-styles" };
+            grid.AddToClassList("charwin__styles");
+            grid.EnableInClassList("charwin__styles--short", shortGrid);
+            grid.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+            grid.contentContainer.AddToClassList("charwin__styles-content");
+            StaggerOnShow(grid);
+            return grid;
+        }
+
+        /// <summary>
+        /// The tiles are built in UiMotion's hidden look (<see cref="Tile"/>): the first time the grid is laid out (its
+        /// tab opened, or rebuilt while open), they pop in one after another.
+        /// </summary>
+        private static void StaggerOnShow(ScrollView grid)
+        {
+            void OnShown(GeometryChangedEvent evt)
+            {
+                if (evt.newRect.height <= 0f) return;
+                grid.UnregisterCallback<GeometryChangedEvent>(OnShown);
+                CharacterWindowView.Stagger(grid, TileStepMs, TileFirstMs, CharacterWindowView.EnterScaled);
+            }
+
+            grid.RegisterCallback<GeometryChangedEvent>(OnShown);
+        }
+
+        /// <summary>Hair or facial hair: index 0 is None.</summary>
+        private ScrollView StyleTiles(string kind, IReadOnlyList<LobbyNamedPrefab> styles, int selected, Action<int> select)
+        {
+            ScrollView tiles = Grid(kind, false);
             int count = styles?.Count ?? 1;
             for (int i = 0; i < count; i++)
             {
                 int index = i;
                 string label = i == 0 || styles == null ? "None" : DisplayName(NameOf(styles[i]));
                 string id = i == 0 || styles == null ? "none" : styles[i].Id;
-                tiles.Add(Tile(kind + "-" + i, label, Thumbnail(kind, id), i == 0, i == selected, () => select(index)));
+                if (i == selected) ShowStyleName(kind, label);
+                Button tile = Tile(kind, kind + "-" + i, label, Thumbnail(kind, id), i == selected, () => select(index));
+                tiles.Add(tile);
+                if (i == selected) ScrollToOnShow(tiles, tile);
             }
 
             return tiles;
         }
 
-        private VisualElement EyebrowTiles(SavedCharacter draft)
+        private ScrollView EyebrowTiles(SavedCharacter draft)
         {
-            VisualElement tiles = LobbyUi.Box("charwin-look__tiles");
-            tiles.name = "charwin-eyebrow-styles";
+            ScrollView tiles = Grid("eyebrow", true);
             string current = CharacterAppearance.NormalizeEyebrowStyle(draft.Eyebrows);
-            tiles.Add(Tile("eyebrows-none", "None", Thumbnail("eyebrows", "none"), true, current == "none", () => _model.Working.Eyebrows = "none"));
+            if (current == "none") ShowStyleName("eyebrows", "None");
+            tiles.Add(Tile("eyebrows", "eyebrows-none", "None", Thumbnail("eyebrows", "none"), current == "none",
+                () => _model.Working.Eyebrows = "none"));
             if (_catalog == null || _catalog.EyebrowStyles == null) return tiles;
             foreach (LobbyNamedPrefab style in _catalog.EyebrowStyles)
             {
                 string id = CharacterAppearance.NormalizeEyebrowStyle(style.Id);
-                tiles.Add(Tile("eyebrows-" + id, DisplayName(NameOf(style)), Thumbnail("eyebrows", id), false, current == id, () => _model.Working.Eyebrows = id));
+                string label = DisplayName(NameOf(style));
+                if (current == id) ShowStyleName("eyebrows", label);
+                tiles.Add(Tile("eyebrows", "eyebrows-" + id, label, Thumbnail("eyebrows", id), current == id,
+                    () => _model.Working.Eyebrows = id));
             }
 
             return tiles;
+        }
+
+        /// <summary>The grid is built hidden (its tab closed): once it is first laid out, bring the picked style into view.</summary>
+        private static void ScrollToOnShow(ScrollView grid, VisualElement picked)
+        {
+            void OnShown(GeometryChangedEvent evt)
+            {
+                if (evt.newRect.height <= 0f) return;
+                grid.UnregisterCallback<GeometryChangedEvent>(OnShown);
+                grid.schedule.Execute(() => grid.ScrollTo(picked));
+            }
+
+            grid.RegisterCallback<GeometryChangedEvent>(OnShown);
         }
 
         /// <summary>The baked head render for a style, or null (the tile then shows a generic head).</summary>
         private Sprite Thumbnail(string kind, string id) =>
             _catalog != null && _catalog.TryGetStyleThumbnail(kind, id, out Sprite sprite) ? sprite : null;
 
-        private Button Tile(string name, string label, Sprite thumbnail, bool none, bool selected, Action select)
+        private Button Tile(string kind, string name, string label, Sprite thumbnail, bool selected, Action select)
         {
             Button tile = new() { name = name, tooltip = label };
             tile.AddToClassList("charwin-look__tile");
-            tile.EnableInClassList("charwin-look__tile--none", none && thumbnail == null);
             tile.EnableInClassList("charwin-look__tile--selected", selected);
+            // Hidden until its grid first shows (StaggerOnShow), so it never flashes in before it pops in.
+            tile.AddToClassList(CharacterWindowView.MotionClass);
+            tile.AddToClassList(CharacterWindowView.EnterScaled);
+            tile.AddToClassList(UiMotion.EnterClass);
             if (thumbnail != null)
             {
                 VisualElement image = LobbyUi.Box("charwin-look__tile-thumb");
@@ -284,29 +391,22 @@ namespace SS3D.UI.Lobby
                 tile.Add(icon);
             }
 
-            tile.Add(LobbyUi.Text(label, "charwin-look__tile-label"));
+            // The picked tile's corner badge; CharacterWindow.uss pops it in with charwin-look__tile--selected.
+            VisualElement check = LobbyUi.Icon("check");
+            check.AddToClassList("charwin-look__tile-check");
+            tile.Add(check);
+
             tile.clicked += () =>
             {
                 select();
                 MarkSelected(tile, "charwin-look__tile--selected");
+                ShowStyleName(kind, label);
                 Changed?.Invoke(CharacterLookChange.Look);
             };
             return tile;
         }
 
-        private VisualElement ColourRow(string name, Color[] colors, int selected, Action<int> select)
-        {
-            VisualElement row = LobbyUi.Box("charwin-look__colour-row");
-            row.Add(LobbyUi.Text("Colour", "charwin-look__colour-label"));
-            row.Add(Swatches(name, colors, selected, index =>
-            {
-                select(index);
-                return CharacterLookChange.Look;
-            }));
-            return row;
-        }
-
-        private VisualElement Swatches(string name, Color[] colors, int selected, Func<int, CharacterLookChange> select)
+        private VisualElement Swatches(string name, Color[] colors, int selected, Action<int> select)
         {
             VisualElement row = LobbyUi.Box("charwin-look__swatches");
             row.name = name;
@@ -319,9 +419,9 @@ namespace SS3D.UI.Lobby
                 swatch.style.backgroundColor = colors[i];
                 swatch.clicked += () =>
                 {
-                    CharacterLookChange change = select(index);
+                    select(index);
                     MarkSelected(swatch, "charwin-look__swatch--selected");
-                    Changed?.Invoke(change);
+                    Changed?.Invoke(CharacterLookChange.Look);
                 };
                 row.Add(swatch);
             }
@@ -337,12 +437,10 @@ namespace SS3D.UI.Lobby
             }
         }
 
-        private static Button ActionButton(string name, string icon, string label, Action onClick)
+        private static Button SmallButton(string name, string label, Action onClick)
         {
-            Button button = new(onClick) { name = name };
-            button.AddToClassList("charwin__action");
-            button.Add(LobbyUi.Icon(icon));
-            button.Add(LobbyUi.Titling(label, "charwin__action-label"));
+            Button button = new(onClick) { name = name, text = label };
+            button.AddToClassList("charwin__small");
             return button;
         }
 

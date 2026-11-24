@@ -46,7 +46,9 @@ The shell's own catalog (`UiShellAssetPaths` / `UiShellAssetCatalog`), the lobby
 - `Assets/Scripts/SS3D/UI/Shell/UiShellSubSystem.cs` — `TryGetLayer(UiLayer, out VisualElement)` (preferred) / `GetLayer`
 - `Assets/Scripts/SS3D/UI/Shell/UiLayer.cs`, `IUiSurface.cs` — layer enum; surface contract implemented by the radial, armed, examine and lobby views
 - `Assets/Scripts/SS3D/UI/Shell/Catalog/UiAssetCatalogBase.cs`, `UiCatalogRuntimeLoader.cs` — shared catalog base
-- `Assets/Scripts/SS3D/UI/Shell/Animation/PanelAnimator.cs` — shared panel animation
+- `Assets/Scripts/SS3D/UI/Shell/Animation/PanelAnimator.cs` — shared panel animation: a DOTween open/close with a completion callback (the radial menu)
+- `Assets/Scripts/SS3D/UI/Shell/UiMotion.cs` + the "Motion" section of `Tokens/ui-controls.uss` — the menu screens' motion on USS transitions: `Enter` (`.ui-enter` then `.ui-enter--in` a frame later, with `--left` / `--right` / `--scale` variants), `Stagger`, `Pulse` (toggles `.ui-pulse--on`), `Flash`. Durations: 0.12 s hover or press, 0.24 s an element easing in, 0.35 s a panel. Used by the main menu, Settings, the lobby and the character window
+- `Assets/Scripts/SS3D/UI/Shell/UiReferenceScale.cs`, `UiSelect.cs` — the bible-reference layout scale and the in-panel select (no `DropdownField` under a scaled root)
 - `Assets/Scripts/SS3D/UI/Shell/Binding/UiBinderBase.cs` — scaffolded binder base with no consumers yet
 - Tokens: `Assets/Content/Systems/UI/Tokens/`, `Assets/Content/Systems/UI/MachineInterface/Tokens/`
 - `Assets/Scripts/SS3D/Systems/BugReports/BugReportSubSystem.cs` (host: entry points, capture, send/save), `BugReportView.cs` (presentation), `BugReportModel.cs` (frozen context, metadata rows), `BugReportBundle.cs` (local zip, issue link)

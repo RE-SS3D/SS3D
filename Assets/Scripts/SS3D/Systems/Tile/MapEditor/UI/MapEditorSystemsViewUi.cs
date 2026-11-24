@@ -7,8 +7,8 @@ using UnityEngine.UIElements;
 namespace SS3D.Systems.Tile.MapEditor.UI
 {
     /// <summary>
-    /// Systems view chrome (creative-mode §4): the Atmos / Power toolbar toggle with the sim bar and collapsible legend under
-    /// it in the right column, and beside the left toolbar the trace panel with its world label (<see cref="MapEditorSystemsTracePanel"/>; Documents/architecture/systems/map-editor-systems-views.md, Drawing).
+    /// Systems view chrome (creative-mode §4): the Atmos / Power toggles in the view tools (top left), the sim bar and
+    /// collapsible legend under the camera column (top right), and beside the view tools the trace panel with its world label (<see cref="MapEditorSystemsTracePanel"/>; Documents/architecture/systems/map-editor-systems-views.md, Drawing).
     /// </summary>
     public sealed partial class MapEditorView
     {
@@ -56,11 +56,13 @@ namespace SS3D.Systems.Tile.MapEditor.UI
         /// <summary>Every frame while open: the trace panel and its world label follow the client's trace.</summary>
         public void UpdateSystemsTrace(MapEditorSystemsViewClient client, Camera camera) => _systemsTrace.Update(client, _root, camera);
 
-        private void AddSystemsViewToggle(VisualElement toolbar)
+        /// <summary>The Atmos and Power toggles: their own panel in the view tools.</summary>
+        private void AddSystemsViewToggle(VisualElement region)
         {
-            AddSeparator(toolbar, vertical: true);
-            AddSystemsViewButton(toolbar, SystemsViewKind.Atmos, MapEditorSubcategory.GasPipes, "Atmos view");
-            AddSystemsViewButton(toolbar, SystemsViewKind.Power, MapEditorSubcategory.Cables, "Power view");
+            VisualElement strip = CreateToolbarStrip();
+            AddSystemsViewButton(strip, SystemsViewKind.Atmos, MapEditorSubcategory.GasPipes, "Atmos view");
+            AddSystemsViewButton(strip, SystemsViewKind.Power, MapEditorSubcategory.Cables, "Power view");
+            region.Add(strip);
         }
 
         private void AddSystemsViewButton(VisualElement toolbar, SystemsViewKind view, MapEditorSubcategory iconOf, string hint)
@@ -70,7 +72,7 @@ namespace SS3D.Systems.Tile.MapEditor.UI
                 () => SystemsViewSelected?.Invoke(_vm.ActiveSystemsView == view ? SystemsViewKind.Off : view));
             button.name = $"systems-view-{view.ToString().ToLowerInvariant()}";
             _systemsViewButtons[view] = button;
-            toolbar.Add(WrapWithHoverHint(button, hint, opensLeft: true));
+            toolbar.Add(MapEditorChrome.WithHint(button, hint, MapEditorPopoverSide.Right));
         }
 
         private void BuildSystemsLegend(VisualElement column)
