@@ -6,7 +6,6 @@ using SS3D.Application;
 using SS3D.Core;
 using SS3D.Networking;
 using SS3D.Networking.Settings;
-using SS3D.Rendering.URP;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Screens;
 using SS3D.Systems.Vision;
@@ -174,15 +173,13 @@ namespace SS3D.Editor.Automation
         /// </summary>
         public static string SetLineOfSight(bool enabled)
         {
-            if (SubSystems.TryGet(out VisionSubSystem vision))
+            // VisionSubSystem owns the vision state (2026-11_fov-rework D6); without it there is no mask to switch.
+            if (!SubSystems.TryGet(out VisionSubSystem vision))
             {
-                vision.SetSuppressed(!enabled);
-            }
-            else
-            {
-                VisionRenderContext.Suppressed = !enabled;
+                return "No vision subsystem yet; line of sight unchanged.";
             }
 
+            vision.SetSuppressed(!enabled);
             return enabled ? "Line of sight on." : "Line of sight off.";
         }
 
@@ -343,14 +340,11 @@ namespace SS3D.Editor.Automation
 
         private static void ReleaseRuntime()
         {
-            // VisionRenderContext is static and outlives Play Mode; a suppressed flag left set hides FOV next session.
+            // The suppression lives on VisionSubSystem, which Play exit destroys; clear it in case the round outlives this.
             if (SubSystems.TryGet(out VisionSubSystem vision))
             {
                 vision.SetSuppressed(false);
             }
-
-            VisionRenderContext.Suppressed = false;
-            VisionRenderContext.Enabled = false;
         }
 
         private static void RestoreEditorSettings()

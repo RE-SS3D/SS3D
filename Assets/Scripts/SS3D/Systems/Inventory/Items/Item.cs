@@ -12,6 +12,7 @@ using SS3D.Data.Persistence;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
+using SS3D.Rendering.URP;
 using SS3D.Systems.Atmospherics;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Interactions;
@@ -574,8 +575,8 @@ namespace SS3D.Systems.Inventory.Items
                 // FishNet's host view range also writes Renderer.enabled: an item cached as visible at spawn
                 // came back on inside its locker or medkit when the host walked into range. It never touches
                 // forceRenderingOff, so that is what keeps a stored item hidden (TileUnderfloorVisibility does
-                // the same for cover-hidden tiles).
-                childRenderer.forceRenderingOff = !visible;
+                // the same for cover-hidden tiles). RendererHiding keeps the field of view from clearing it.
+                RendererHiding.Set(childRenderer, RendererHiding.Reason.Stored, !visible);
             }
 
             if (!visible)
@@ -604,7 +605,7 @@ namespace SS3D.Systems.Inventory.Items
         {
             // TODO: Make this handle multiple renderers
             Renderer component = GetComponent<Renderer>();
-            return component != null && component.enabled && !component.forceRenderingOff;
+            return component != null && component.enabled && !RendererHiding.IsHidden(component, RendererHiding.Reason.Stored);
         }
 
         public virtual IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)

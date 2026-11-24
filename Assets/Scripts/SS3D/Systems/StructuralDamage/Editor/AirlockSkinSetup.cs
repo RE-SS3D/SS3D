@@ -125,6 +125,8 @@ namespace SS3D.Systems.StructuralDamage.Editor
                 }
             }
 
+            // The rebuilt prefabs lose their sight boxes; glass skins must stay without (2026-11_fov-rework D3).
+            SS3D.Systems.Tile.Editor.VisionOccluderRecipe.SetupAll();
             DB.SaveAssets();
         }
 

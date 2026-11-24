@@ -11,8 +11,9 @@ namespace SS3D.Systems.Tile.Editor
     /// <summary>
     /// Tier-B recipe for sight blockers (2026-11_fov-rework D3). Every wall-type tile that blocks sight gets
     /// a <see cref="VisionOccluder"/>: a centre block and four arms on the <see cref="VisionOccluder.LayerName"/>
-    /// layer, as thick as its straight mesh at <see cref="VisionOccluder.EyeHeight"/>. Every door leaf gets a
-    /// box the size of its mesh. Removes the old inactive <c>*ViewObstacle</c> children. Idempotent; run from
+    /// layer, as thick as its straight mesh at <see cref="VisionOccluder.EyeHeight"/>. Every leaf of a door that
+    /// blocks sight gets a box the size of its mesh, or of its <c>Blocker</c> box when the leaf is a skinned model
+    /// (the external airlock); glass doors (<see cref="TileObjectSo.blocksVision"/> off) get none. Removes the old inactive <c>*ViewObstacle</c> children. Idempotent; run from
     /// <b>SS3D → Rendering → Run Content Prefab Recipes</b>. Lives in the Systems assembly so the audit test can
     /// read <see cref="Drift"/>.
     /// </summary>
@@ -35,8 +36,11 @@ namespace SS3D.Systems.Tile.Editor
             int changed = 0;
             foreach (string path in WallPrefabPaths().Blocking)
                 changed += Apply(path, SetupWall) ? 1 : 0;
-            foreach (string path in DoorPrefabPaths())
+            (List<string> blockingDoors, List<string> glassDoors) = DoorPrefabPaths();
+            foreach (string path in blockingDoors)
                 changed += Apply(path, SetupDoor) ? 1 : 0;
+            foreach (string path in glassDoors)
+                changed += Apply(path, RemoveDoorOccluders) ? 1 : 0;
 
             AssetDatabase.SaveAssets();
             return changed;
@@ -60,10 +64,18 @@ namespace SS3D.Systems.Tile.Editor
                     drift.Add($"{path}: sees through (window or blocksVision off) but has sight occluders");
             }
 
-            foreach (string path in DoorPrefabPaths())
+            (List<string> blockingDoors, List<string> glassDoors) = DoorPrefabPaths();
+            foreach (string path in blockingDoors)
             {
                 GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
                 drift.AddRange(DoorDrift(prefab).Select(problem => $"{path}: {problem}"));
+            }
+
+            foreach (string path in glassDoors)
+            {
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                if (DoorHolders(prefab).Any())
+                    drift.Add($"{path}: sees through (blocksVision off) but has sight occluders");
             }
 
             return drift;
@@ -110,8 +122,21 @@ namespace SS3D.Systems.Tile.Editor
             return (blocking, seeThrough);
         }
 
-        private static IEnumerable<string> DoorPrefabPaths() =>
-            Tiles(TileObjectGenericType.Door).Select(PrefabPath).Where(path => path != null).Distinct();
+        private static (List<string> Blocking, List<string> SeeThrough) DoorPrefabPaths()
+        {
+            List<string> blocking = new();
+            List<string> seeThrough = new();
+            foreach (TileObjectSo tile in Tiles(TileObjectGenericType.Door))
+            {
+                string path = PrefabPath(tile);
+                if (path == null || blocking.Contains(path) || seeThrough.Contains(path))
+                    continue;
+
+                (tile.blocksVision ? blocking : seeThrough).Add(path);
+            }
+
+            return (blocking, seeThrough);
+        }
 
         private static IEnumerable<TileObjectSo> Tiles(TileObjectGenericType type) =>
             AssetDatabase.FindAssets("t:TileObjectSo", new[] { TileRoot })
@@ -308,11 +333,23 @@ namespace SS3D.Systems.Tile.Editor
             return changed;
         }
 
+        private static bool RemoveDoorOccluders(GameObject root)
+        {
+            List<Transform> holders = DoorHolders(root).ToList();
+            foreach (Transform holder in holders)
+                Object.DestroyImmediate(holder.gameObject);
+
+            return holders.Count > 0;
+        }
+
+        private static IEnumerable<Transform> DoorHolders(GameObject root) =>
+            root.GetComponentsInChildren<Transform>(true).Where(t => t.name == HolderName);
+
         private static IEnumerable<string> DoorDrift(GameObject root)
         {
             List<(Transform Leaf, Bounds Bounds)> leaves = Leaves(root).ToList();
             if (leaves.Count == 0)
-                yield return "no door leaves (a non-trigger box with a mesh under the root)";
+                yield return $"no door leaves (a non-trigger box with a mesh under the root, or a {BlockerName} box)";
 
             foreach ((Transform leaf, Bounds bounds) in leaves)
             {
@@ -335,9 +372,19 @@ namespace SS3D.Systems.Tile.Editor
             return BoxDrift(holder, bounds.center, bounds.size, true);
         }
 
-        /// <summary>Door leaves: direct children with a solid box and a mesh, i.e. what slides open.</summary>
+        /// <summary>
+        /// Door leaves: direct children with a solid box and a mesh, i.e. what slides open, and any solid
+        /// <see cref="BlockerName"/> box, which stands in for a skinned leaf and rides its bone (the external airlock).
+        /// </summary>
         private static IEnumerable<(Transform Leaf, Bounds Bounds)> Leaves(GameObject root)
         {
+            foreach (Transform blocker in root.GetComponentsInChildren<Transform>(true).Where(t => t.name == BlockerName))
+            {
+                BoxCollider box = blocker.GetComponent<BoxCollider>();
+                if (box != null && !box.isTrigger && blocker.gameObject.layer == 0)
+                    yield return (blocker, new Bounds(box.center, box.size));
+            }
+
             foreach (Transform child in root.transform)
             {
                 if (child.name == HolderName || child.gameObject.layer != 0)
@@ -402,6 +449,7 @@ namespace SS3D.Systems.Tile.Editor
         }
 
         private const string HolderName = VisionOccluder.HolderName;
+        private const string BlockerName = "Blocker";
     }
 }
 #endif
