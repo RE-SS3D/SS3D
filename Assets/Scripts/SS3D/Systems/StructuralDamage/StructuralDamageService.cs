@@ -12,6 +12,20 @@ namespace SS3D.Systems.StructuralDamage
         private readonly ITileQueryService _query;
         private readonly IConstructionService _construction;
 
+        /// <summary>
+        /// Structures blasts have destroyed since the last <see cref="TakeBlastDestroyedCount"/>. A big blast breaks
+        /// hundreds, and a log line each cost tens of milliseconds (the editor takes a stack trace per line), so the
+        /// blast logs one summary instead.
+        /// </summary>
+        private int _blastDestroyed;
+
+        public int TakeBlastDestroyedCount()
+        {
+            int count = _blastDestroyed;
+            _blastDestroyed = 0;
+            return count;
+        }
+
         public StructuralDamageService(ITileQueryService query, IConstructionService construction)
         {
             _query = query;
@@ -85,9 +99,17 @@ namespace SS3D.Systems.StructuralDamage
                         tiles.ServerNotifyStructuralImpact(breakPoint, Vector3.zero, material, StructuralImpactCue.Break);
                 }
 
-                Log.Information(nameof(StructuralDamageService),
-                    "Structural Destroyed at {coord} via {source} (force {force})",
-                    Logs.Generic, coord, source, force);
+                if (source == StructuralDamageSource.Blast)
+                {
+                    _blastDestroyed++;
+                }
+                else
+                {
+                    Log.Information(nameof(StructuralDamageService),
+                        "Structural Destroyed at {coord} via {source} (force {force})",
+                        Logs.Generic, coord, source, force);
+                }
+
                 return true;
             }
 

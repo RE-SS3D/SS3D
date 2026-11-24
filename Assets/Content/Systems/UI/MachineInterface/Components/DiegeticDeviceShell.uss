@@ -183,3 +183,7 @@
 .diegetic-device-shell--meter {
     width: var(--ss3d-diegetic-width-meter);
 }
+
+.diegetic-device-shell--health-scanner {
+    width: var(--ss3d-diegetic-width-health-scanner);
+}

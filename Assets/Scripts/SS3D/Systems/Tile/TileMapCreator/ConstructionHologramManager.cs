@@ -80,14 +80,65 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [SerializeField]
         private MapEditorSubSystem _mapEditor;
 
+        // Room tool (MapEditorTool.Room): walls on the drag's border, floor inside.
+        private bool _roomMode;
+        private readonly ConstructionRoomTool _room = new();
+        private readonly ConstructionDragFeedback _drag = new();
+        private readonly ConstructionAutoFacing _facing = new();
+
+        /// <summary>The cursor badge with the drag's size after it ("Steel Floor · 7 × 5 · 35 tiles").</summary>
+        public string WithDragReadout(string label) => _drag.LabelWith(label);
+
+        private bool AutoSubfloor => _mapEditor == null || _mapEditor.AutoSubfloor;
+
+        // Ctrl held while building: erase what the open sub-tab places, as the Delete tool does, keeping the held object.
+        private bool _erasing;
+        public bool IsErasing => _erasing;
+        private bool IsDeleting => _mapEditor != null && (_mapEditor.IsDeleting || _erasing);
+
+        /// <summary>Ctrl flips between building and erasing between gestures; a drag keeps the mode it started in.</summary>
+        private void UpdateEraseModifier()
+        {
+            Keyboard keyboard = Keyboard.current;
+            bool held = keyboard != null && !InputInterface.IsCapturingText
+                        && _mapEditor.CurrentTool is MapEditorTool.Edit or MapEditorTool.Room
+                        && (keyboard.ctrlKey.isPressed || keyboard.leftCommandKey.isPressed || keyboard.rightCommandKey.isPressed);
+            if (held == _erasing || _isDragging || _placePressActive)
+                return;
+
+            _erasing = held;
+            ResetHologramsToCursor();
+            if (!held)
+                _mapEditor.RestoreDefaultPlacementHint();
+        }
+
         public void ClearSelection()
         {
             CancelPlacementGesture(resetHolograms: false);
+            _roomMode = false;
+            _facing.Reset();
             _selectedObject = null;
             _selectedFloorDecal = null;
             _selectedMarkerAssetName = null;
             _deleteGhostAssetName = null;
             DestroyHolograms();
+        }
+
+        /// <summary>Room tool: a drag lays walls on the rectangle's border and floor inside; the cursor carries a wall.</summary>
+        public void EnterRoomMode(TileObjectSo wall, TileObjectSo floor)
+        {
+            CancelPlacementGesture(resetHolograms: false);
+            _roomMode = true;
+            _facing.Reset();
+            _room.SetParts(wall, floor);
+            _selectedObject = wall;
+            _selectedFloorDecal = null;
+            _selectedMarkerAssetName = null;
+            _deleteGhostAssetName = null;
+            _isPlacingItem = false;
+            DestroyHolograms();
+            if (wall != null)
+                CreateHologram(wall.PrefabAsset, GetPlacementPoint());
         }
 
         /// <summary>
@@ -96,6 +147,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void EnterDeleteMode()
         {
             CancelPlacementGesture(resetHolograms: false);
+            _roomMode = false;
+            _facing.Reset();
             _selectedObject = null;
             _selectedFloorDecal = null;
             _selectedMarkerAssetName = null;
@@ -108,7 +161,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <summary>Re-resolve delete targets after subcategory / rotation changes.</summary>
         public void RefreshDeletePreview()
         {
-            if (_mapEditor == null || !_mapEditor.IsDeleting)
+            if (!IsDeleting)
                 return;
 
             RefreshDeleteCursorHologram(GetPlacementPoint(forceTileSnap: true));
@@ -117,6 +170,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void SetSelectedObject(GenericObjectSo genericObjectSo)
         {
             CancelPlacementGesture(resetHolograms: false);
+            _roomMode = false;
+            _facing.Reset();
             _selectedFloorDecal = null;
             _selectedMarkerAssetName = null;
             _deleteGhostAssetName = null;
@@ -145,6 +200,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
 
             _selectedObject = genericObjectSo;
+            _facing.Reset();
             DestroyHolograms();
             _hasDragEndTile = false;
         }
@@ -160,7 +216,26 @@ namespace SS3D.Systems.Tile.TileMapCreator
             if (!snapToTile)
                 return GetItemPlacementPoint(camera);
 
+            if (IsPlacingWallMount())
+                return _facing.AimWallMount(camera, SubSystems.Get<TileSubSystem>()?.CurrentMap);
+
             return TileHelper.GetPointedPosition(snapToTile, camera);
+        }
+
+        private bool IsPlacingWallMount() =>
+            !_roomMode
+            && _selectedObject is TileObjectSo { layer: TileLayer.WallMountHigh or TileLayer.WallMountLow }
+            && !IsDeleting;
+
+        /// <summary>Turns the cursor ghost the way <see cref="ConstructionAutoFacing"/> works out; returns whether it turned.</summary>
+        private bool ApplyAutoFacing(ConstructionHologram hologram, Vector3 position)
+        {
+            if (_roomMode || _selectedObject is not TileObjectSo tile || IsDeleting
+                || !_facing.Apply(hologram, position, tile, IsPlacingWallMount(), SubSystems.Get<TileSubSystem>()?.CurrentMap))
+                return false;
+
+            _lastRegisteredDirection = hologram.Direction;
+            return true;
         }
 
         /// <summary>
@@ -196,6 +271,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         public void SetSelectedFloorDecal(FloorDecalDefinition definition)
         {
+            CancelPlacementGesture(resetHolograms: false);
+            _roomMode = false;
             _selectedFloorDecal = definition;
             _selectedObject = null;
             _selectedMarkerAssetName = null;
@@ -206,6 +283,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         public void SetSelectedMarker(string markerAssetName)
         {
+            CancelPlacementGesture(resetHolograms: false);
+            _roomMode = false;
             _selectedMarkerAssetName = markerAssetName;
             _selectedObject = null;
             _selectedFloorDecal = null;
@@ -251,15 +330,16 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            if (_mapEditor == null || !_mapEditor.IsActive || _mapEditor.IsRoomCategory || !IsActiveTool(_mapEditor.CurrentTool))
+            if (_mapEditor == null || !_mapEditor.IsActive || _mapEditor.IsRoomCategory || _mapEditor.IsFloorPaintCategory
+                || !IsActiveTool(_mapEditor.CurrentTool))
             {
                 if (_placePressActive || _isDragging)
                     CancelPlacementGesture(resetHolograms: _selectedObject != null || _selectedFloorDecal != null ||
                         _selectedMarkerAssetName != null ||
-                        (_mapEditor != null && _mapEditor.IsDeleting));
+                        IsDeleting);
                 // Non-construct tools (Select/Dropper/Move) used to leave the last ghost frozen in-world
                 // because this path returned without tearing holograms down.
-                if (_holograms.Count > 0)
+                if (_holograms.Count > 0 || _room.HasGhosts)
                     DestroyHolograms();
                 return;
             }
@@ -270,6 +350,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
 
             ActivateGhosts();
+            _room.KeepActive();
+
+            UpdateEraseModifier();
 
             // Always resolve LMB up/down first — orbit used to early-return before this and
             // leave _placePressActive stuck so placement never worked again.
@@ -289,18 +372,20 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             bool hasPlacementSelection = _selectedObject != null || _selectedFloorDecal != null ||
                                          _selectedMarkerAssetName != null;
-            bool deleteMode = _mapEditor != null && _mapEditor.IsDeleting;
+            bool deleteMode = IsDeleting;
 
             // Move hologram, that sticks to the mouse. Currently it exists only if player is not dragging.
             if (_holograms.Count == 1 && !_isDragging)
             {
-                _holograms.First().TargetPosition = position;
-                if (cursorTile != ToTile(_lastSnappedPosition) || (_isPlacingItem && _itemPointBlocked != _lastItemPointBlocked))
+                ConstructionHologram cursor = _holograms[0];
+                cursor.TargetPosition = position;
+                bool turned = !deleteMode && ApplyAutoFacing(cursor, position);
+                if (turned || cursorTile != ToTile(_lastSnappedPosition) || (_isPlacingItem && _itemPointBlocked != _lastItemPointBlocked))
                 {
                     if (deleteMode)
                         RefreshDeleteCursorHologram(position);
                     else
-                        RefreshHologram(_holograms.First());
+                        RefreshHologram(cursor);
                 }
             }
             else if (deleteMode && _holograms.Count == 0 && !_isDragging)
@@ -309,7 +394,16 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
 
             bool squareDrag = _controls.SquareDrag.IsPressed();
-            if (_isDragging && (hasPlacementSelection || deleteMode) &&
+            if (_isDragging && _roomMode && !deleteMode)
+            {
+                if (!_hasDragEndTile || cursorTile != _lastDragEndTile)
+                {
+                    _lastDragEndTile = cursorTile;
+                    _hasDragEndTile = true;
+                    SyncRoomHolograms();
+                }
+            }
+            else if (_isDragging && (hasPlacementSelection || deleteMode) &&
                 (!_hasDragEndTile || cursorTile != _lastDragEndTile || squareDrag != _lastSquareDrag))
             {
                 _lastDragEndTile = cursorTile;
@@ -317,7 +411,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 _lastSquareDrag = squareDrag;
 
                 // Shift (Square Drag): filled rectangle. Default drag: Bresenham line.
-                if (squareDrag)
+                _drag.TooBig = squareDrag
+                    && MapEditorPlacementRules.RectangleCellCount(_dragStartTile, cursorTile) > MapEditorPlacementRules.MaxDragCells;
+                if (_drag.TooBig)
+                    _dragTileBuffer.Clear();
+                else if (squareDrag)
                     FillSquareDrag(cursorTile, _dragTileBuffer);
                 else
                     FillLineDrag(cursorTile, _dragTileBuffer);
@@ -334,19 +432,19 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// selected asset (see <see cref="IMapEditorHost.IsDeleting"/>).
         /// </summary>
         private static bool IsActiveTool(MapEditorTool tool) =>
-            tool is MapEditorTool.Edit or MapEditorTool.Delete;
+            tool is MapEditorTool.Edit or MapEditorTool.Delete or MapEditorTool.Room;
 
         private static Vector2Int ToTile(Vector3 world) =>
             new(Mathf.RoundToInt(world.x), Mathf.RoundToInt(world.z));
 
         /// <summary>
         /// Grow/shrink the active hologram list to match drag tiles without per-step Instantiate/Destroy.
-        /// Validity uses local <see cref="IConstructionService.TryPreviewTile"/> (same as the cursor ghost);
-        /// hover toasts stay off during drag to avoid spam.
+        /// Validity uses local <see cref="MapEditorPlacementRules.Plan"/> (same as the cursor ghost); hover toasts stay off
+        /// during drag, and the hint bar counts the cells that can't be placed instead.
         /// </summary>
         private void SyncDragHolograms(List<Vector3> tiles)
         {
-            bool deleteMode = _mapEditor != null && _mapEditor.IsDeleting;
+            bool deleteMode = IsDeleting;
 
             while (_holograms.Count < tiles.Count)
             {
@@ -361,6 +459,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 ReturnHologram(extra);
             }
 
+            int blocked = 0;
+            string firstReason = null;
             for (int i = 0; i < tiles.Count; i++)
             {
                 ConstructionHologram hologram = _holograms[i];
@@ -372,10 +472,40 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 }
 
                 if (deleteMode)
+                {
                     hologram.ChangeHologramColor(ConstructionMode.Delete);
-                else
-                    RefreshHologram(hologram, reportHoverFeedback: false);
+                    continue;
+                }
+
+                string reason = RefreshHologram(hologram, reportHoverFeedback: false);
+                if (!string.IsNullOrEmpty(reason))
+                {
+                    blocked++;
+                    firstReason ??= reason;
+                }
             }
+
+            if (_drag.TooBig)
+            {
+                _drag.ShowTooBig(_mapEditor);
+                return;
+            }
+
+            _drag.Show(_mapEditor,
+                _lastSquareDrag
+                    ? MapEditorPlacementRules.RectangleReadout(_dragStartTile, _lastDragEndTile)
+                    : tiles.Count == 1 ? "1 tile" : $"{tiles.Count} tiles",
+                blocked > 0 ? $"{blocked} of {tiles.Count} can't go here: {firstReason}" : null);
+        }
+
+        /// <summary>Lays the room tool's ghosts over the dragged rectangle; the cursor's wall ghost gives way to them.</summary>
+        private void SyncRoomHolograms()
+        {
+            for (int i = _holograms.Count - 1; i >= 0; i--)
+                _holograms[i].Destroy();
+            _holograms.Clear();
+            _room.Preview(SubSystems.Get<TileSubSystem>()?.CurrentMap, _dragStartTile, _lastDragEndTile, AutoSubfloor,
+                part => CreateHologram(part.PrefabAsset, Vector3.zero, addToActive: false, asset: part), _drag, _mapEditor);
         }
 
         private ConstructionHologram RentHologram()
@@ -388,19 +518,20 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 return pooled;
             }
 
+            if (IsDeleting)
+                return IsSpawnDeleteMode()
+                    ? CreateMarkerHologram(Vector3.zero, addToActive: false)
+                    : CreateDeleteMarkerHologram(Vector3.zero, addToActive: false);
+
             if (_selectedFloorDecal != null)
                 return CreateFloorDecalHologram(Vector3.zero, addToActive: false);
 
             if (_selectedMarkerAssetName != null)
                 return CreateMarkerHologram(Vector3.zero, addToActive: false);
 
-            if (_selectedObject != null)
-                return CreateHologram(_selectedObject.PrefabAsset, Vector3.zero, addToActive: false);
-
-            if (IsSpawnDeleteMode())
-                return CreateMarkerHologram(Vector3.zero, addToActive: false);
-
-            return CreateDeleteMarkerHologram(Vector3.zero, addToActive: false);
+            return _selectedObject != null
+                ? CreateHologram(_selectedObject.PrefabAsset, Vector3.zero, addToActive: false)
+                : CreateDeleteMarkerHologram(Vector3.zero, addToActive: false);
         }
 
         private void ReturnHologram(ConstructionHologram hologram)
@@ -430,6 +561,26 @@ namespace SS3D.Systems.Tile.TileMapCreator
             bool pressed = mouse.leftButton.isPressed;
             bool justPressed = mouse.leftButton.wasPressedThisFrame;
             bool justReleased = mouse.leftButton.wasReleasedThisFrame;
+
+            // Right click or Esc cancels a drag; right click with no drag puts down what the cursor holds (Esc doesn't:
+            // it also opens the game menu).
+            bool rightClick = mouse.rightButton.wasPressedThisFrame;
+            bool escape = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame
+                                                   && !InputInterface.IsCapturingText;
+            if (rightClick || escape)
+            {
+                if (_placePressActive || _isDragging)
+                {
+                    CancelPlacementGesture(resetHolograms: true);
+                    return;
+                }
+
+                if (rightClick && !overUi && !IsDeleting)
+                {
+                    _mapEditor.DropHeldObject();
+                    return;
+                }
+            }
 
             // Missed-release recovery (orbit / focus loss / UI flicker skipped wasReleasedThisFrame).
             if (_placePressActive && !pressed && !justReleased)
@@ -481,13 +632,17 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _pressStartedOverUi = false;
             _hasDragEndTile = false;
             _lastSquareDrag = false;
+            bool tooBig = _drag.TooBig;
+            _drag.Clear(_mapEditor);
 
-            if (commit)
+            if (commit && !tooBig)
             {
                 PerformPlaceOrDelete();
                 return;
             }
 
+            if (commit)
+                _mapEditor.ShowLocalToast(ConstructionDragFeedback.TooBigMessage);
             ResetHologramsToCursor();
         }
 
@@ -498,13 +653,15 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _pressStartedOverUi = false;
             _hasDragEndTile = false;
             _lastSquareDrag = false;
+            _erasing = false;
+            _drag.Clear(_mapEditor);
             if (resetHolograms)
                 ResetHologramsToCursor();
         }
 
         private void ResetHologramsToCursor()
         {
-            if (_mapEditor != null && _mapEditor.IsDeleting)
+            if (IsDeleting)
             {
                 DestroyHolograms();
                 _deleteGhostAssetName = null;
@@ -550,7 +707,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             if (_holograms.Count > 0)
                 _lastRegisteredDirection = _holograms.First().Direction;
 
-            if (_mapEditor != null && _mapEditor.IsDeleting)
+            if (IsDeleting)
             {
                 RefreshDeleteCursorHologram(GetPlacementPoint(forceTileSnap: true));
                 _mapEditor.SetPlacementHint(
@@ -582,38 +739,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         public ConstructionHologram CreateMarkerHologram(Vector3 position, bool addToActive = true)
         {
-            var root = new GameObject("MarkerHologram");
-            root.transform.position = position + Vector3.up * 0.15f;
-
-            GameObject stem = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            stem.transform.SetParent(root.transform, false);
-            stem.transform.localScale = new Vector3(0.08f, 0.45f, 0.08f);
-            stem.transform.localPosition = Vector3.up * 0.45f;
-            UnityEngine.Object.Destroy(stem.GetComponent<Collider>());
-
-            GameObject head = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            head.transform.SetParent(root.transform, false);
-            head.transform.localScale = Vector3.one * 0.28f;
-            head.transform.localPosition = Vector3.up * 0.95f;
-            UnityEngine.Object.Destroy(head.GetComponent<Collider>());
-
-            Color color;
-            if (MapEditorGasMarkerCatalog.TryDecode(_selectedMarkerAssetName, out GasMarkerKind gasKind))
-            {
-                color = MapEditorGasMarkerCatalog.PinColor(gasKind);
-                color.a = 0.7f;
-            }
-            else
-            {
-                color = MapEditorSpawnCatalog.TryDecode(_selectedMarkerAssetName, out SpawnPointKind kind, out _, out _)
-                        && kind == SpawnPointKind.Antagonist
-                    ? new Color(1f, 0.35f, 0.25f, 0.7f)
-                    : new Color(0.25f, 0.75f, 1f, 0.7f);
-            }
-
-            ApplyHologramColor(stem, color);
-            ApplyHologramColor(head, color);
-
+            GameObject root = ConstructionMarkerGhost.Create(position, _selectedMarkerAssetName);
             ConstructionHologram hologram = new(root, position, _lastRegisteredDirection, 0f);
             if (addToActive)
                 _holograms.Add(hologram);
@@ -621,38 +747,25 @@ namespace SS3D.Systems.Tile.TileMapCreator
             return hologram;
         }
 
-        private static void ApplyHologramColor(GameObject go, Color color)
-        {
-            var renderer = go.GetComponent<MeshRenderer>();
-            if (renderer == null)
-                return;
-
-            Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
-            if (shader == null)
-                shader = Shader.Find("Unlit/Color");
-            if (shader == null)
-                shader = Shader.Find("Sprites/Default");
-
-            Material material = new(shader);
-            material.color = color;
-            renderer.sharedMaterial = material;
-        }
-
         /// <summary>
         /// Instantiate in the correct position and rotation a single hologram.
         /// </summary>
         /// <param name="addToActive">False when renting into the drag pool path (caller adds).</param>
-        public ConstructionHologram CreateHologram(ObjectAssetReference prefabAsset, Vector3 position, bool addToActive = true)
+        /// <param name="asset">What the ghost shows when not the held object (the room's floor); the caller colours it.</param>
+        public ConstructionHologram CreateHologram(ObjectAssetReference prefabAsset, Vector3 position, bool addToActive = true,
+            GenericObjectSo asset = null)
         {
+            // Not ??: it skips Unity's null check for destroyed objects (UNT0007, an error under the project ruleset).
+            GenericObjectSo shown = asset != null ? asset : _selectedObject;
             GameObject prefab = Assets.Get<GameObject>(prefabAsset);
             GameObject tileObject = Instantiate(prefab);
-            float placementYOffset = _selectedObject is TileObjectSo tileObjectSo
+            float placementYOffset = shown is TileObjectSo tileObjectSo
                 ? tileObjectSo.placementYOffset
                 : 0f;
 
             // PlacedTileObject.Create overwrites the prefab root rotation with yaw only. Match it, or a
             // prefab with an authored root rotation (APC: 180°) previews on the opposite wall face.
-            if (_selectedObject is TileObjectSo)
+            if (shown is TileObjectSo)
                 tileObject.transform.localRotation = Quaternion.identity;
 
             ConstructionHologram hologram = new(tileObject, position, _lastRegisteredDirection, placementYOffset);
@@ -660,7 +773,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
             tileObject.transform.position = hologram.TargetPosition + new Vector3(0, placementYOffset + 0.1f, 0);
             if (addToActive)
                 _holograms.Add(hologram);
-            RefreshHologram(hologram, reportHoverFeedback: addToActive);
+            if (asset == null)
+                RefreshHologram(hologram, reportHoverFeedback: addToActive);
             return hologram;
         }
 
@@ -675,6 +789,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
             _holograms.Clear();
             ClearHologramPool();
+            _room.Clear();
         }
 
         /// <summary>
@@ -687,19 +802,17 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private void PerformPlaceOrDelete()
         {
-            if (!_mapEditor.IsDeleting)
-            {
-                PlaceOnHolograms();
-            }
-            else
-            {
+            if (IsDeleting)
                 DeleteOnHolograms();
-            }
+            else if (_roomMode)
+                _room.Submit(SubSystems.Get<TileSubSystem>()?.CurrentMap, _dragStartTile, _lastDragEndTile, AutoSubfloor, _mapEditor);
+            else
+                PlaceOnHolograms();
 
             DestroyHolograms();
             _deleteGhostAssetName = null;
 
-            if (_mapEditor.IsDeleting)
+            if (IsDeleting)
             {
                 EnsureDeleteCursorHologram(GetPlacementPoint(forceTileSnap: true));
                 return;
@@ -812,13 +925,17 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     return;
                 }
 
-                if (_selectedObject is TileObjectSo tileObjectSo && tileSystem.Construction != null)
+                if (_selectedObject is TileObjectSo tileObjectSo && tileSystem.CurrentMap != null)
                 {
-                    PreviewResult preview = tileSystem.Construction.TryPreviewTile(
-                        tileObjectSo, position, direction, isReplacing);
-                    if (!preview.CanBuild)
+                    PlacementPlan plan = MapEditorPlacementRules.Plan(
+                        tileSystem.CurrentMap, tileObjectSo, position, direction, isReplacing, AutoSubfloor);
+
+                    if (plan.Outcome == PlacementOutcome.AlreadyThere) // dragging over it again is no mistake
+                        return;
+
+                    if (!plan.CanPlace)
                     {
-                        NoteSkip(preview.PrimaryMessage);
+                        NoteSkip(plan.PrimaryMessage);
                         return;
                     }
 
@@ -828,7 +945,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
                         AssetName = _selectedObject.NameString,
                         Position = position,
                         Direction = direction,
-                        ReplaceExisting = isReplacing,
+                        ReplaceExisting = plan.Replace,
+                        AutoSubfloor = AutoSubfloor,
                     });
                     return;
                 }
@@ -868,7 +986,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 _mapEditor.ShowLocalToast(FormatSkippedPlacementToast(skipped, commands.Count, skipMessages));
         }
 
-        private static string FormatSkippedPlacementToast(int skipped, int placed, List<string> skipMessages)
+        internal static string FormatSkippedPlacementToast(int skipped, int placed, List<string> skipMessages)
         {
             if (skipMessages.Count == 0)
                 return skipped == 1 ? "Cannot place here" : $"Skipped {skipped} tiles";
@@ -1021,35 +1139,27 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         /// <summary>
         /// Update material of holograms based build (or anything else) mode and holograms position.
-        /// Uses local <see cref="IConstructionService.TryPreviewTile"/> — never ServerRpc per ghost;
+        /// Checks locally with <see cref="MapEditorPlacementRules.Plan"/> — never ServerRpc per ghost;
         /// drag used to spam RpcSendCanBuild and hitch so hard the path looked frozen.
         /// </summary>
-        private void RefreshHologram(ConstructionHologram hologram, bool reportHoverFeedback)
+        /// <returns>Why the ghost can't be placed, or null when it can.</returns>
+        private string RefreshHologram(ConstructionHologram hologram, bool reportHoverFeedback)
         {
-            if (_mapEditor != null && _mapEditor.IsDeleting)
+            if (IsDeleting)
             {
                 hologram.ChangeHologramColor(ConstructionMode.Delete);
-                return;
+                return null;
             }
 
-            if (_selectedFloorDecal != null)
+            if (_selectedFloorDecal != null || _selectedMarkerAssetName != null)
             {
                 TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
                 bool canPlace = HasPlenumAt(tileSystem?.CurrentMap, hologram.TargetPosition);
+                string reason = canPlace ? null : BuildFailMessages.Format(BuildFailReason.MissingOrInvalidPlenum);
                 hologram.ChangeHologramColor(canPlace ? ConstructionMode.Valid : ConstructionMode.Invalid);
                 if (reportHoverFeedback)
-                    ReportInvalidHover(canPlace ? null : BuildFailMessages.Format(BuildFailReason.MissingOrInvalidPlenum));
-                return;
-            }
-
-            if (_selectedMarkerAssetName != null)
-            {
-                TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
-                bool canPlace = HasPlenumAt(tileSystem?.CurrentMap, hologram.TargetPosition);
-                hologram.ChangeHologramColor(canPlace ? ConstructionMode.Valid : ConstructionMode.Invalid);
-                if (reportHoverFeedback)
-                    ReportInvalidHover(canPlace ? null : BuildFailMessages.Format(BuildFailReason.MissingOrInvalidPlenum));
-                return;
+                    ReportInvalidHover(reason);
+                return reason;
             }
 
             if (_isPlacingItem)
@@ -1057,28 +1167,24 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 hologram.ChangeHologramColor(_itemPointBlocked ? ConstructionMode.Invalid : ConstructionMode.Valid);
                 if (reportHoverFeedback)
                     ReportInvalidHover(_itemPointBlocked ? ItemOnWallMessage : null);
-                return;
+                return _itemPointBlocked ? ItemOnWallMessage : null;
             }
 
-            if (_selectedObject is not TileObjectSo tileObjectSo)
+            TileMap map = SubSystems.Get<TileSubSystem>()?.CurrentMap;
+            if (_selectedObject is not TileObjectSo tileObjectSo || map == null)
             {
                 hologram.ChangeHologramColor(ConstructionMode.Valid);
-                return;
-            }
-
-            TileSubSystem constructionTiles = SubSystems.Get<TileSubSystem>();
-            if (constructionTiles?.Construction == null)
-            {
-                hologram.ChangeHologramColor(ConstructionMode.Valid);
-                return;
+                return null;
             }
 
             bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
-            PreviewResult preview = constructionTiles.Construction
-                .TryPreviewTile(tileObjectSo, hologram.TargetPosition, hologram.Direction, isReplacing);
-            hologram.ChangeHologramColor(preview.CanBuild ? ConstructionMode.Valid : ConstructionMode.Invalid);
+            PlacementPlan plan = MapEditorPlacementRules.Plan(
+                map, tileObjectSo, hologram.TargetPosition, hologram.Direction, isReplacing, AutoSubfloor);
+            string failure = plan.Outcome == PlacementOutcome.Blocked ? plan.PrimaryMessage : null;
+            hologram.ChangeHologramColor(failure == null ? ConstructionMode.Valid : ConstructionMode.Invalid);
             if (reportHoverFeedback)
-                ReportInvalidHover(preview.CanBuild ? null : preview.PrimaryMessage);
+                ReportInvalidHover(failure);
+            return failure;
         }
 
         private void ReportInvalidHover(string message)
@@ -1232,7 +1338,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         private bool IsItemDeleteMode() =>
             _mapEditor != null
-            && _mapEditor.IsDeleting
+            && IsDeleting
             && MapEditorDeleteTargeting.ScopeOf(_mapEditor.CurrentSubcategory) == MapEditorDeleteScope.ItemUnderCursor;
 
         private void RefreshItemDeleteCursor()
@@ -1275,7 +1381,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private const string SpawnPinDeleteGhost = "spawn-point";
 
         private bool IsSpawnDeleteMode() =>
-            _mapEditor != null && _mapEditor.IsDeleting
+            IsDeleting
             && MapEditorDeleteTargeting.ScopeOf(_mapEditor.CurrentSubcategory) is MapEditorDeleteScope.SpawnPoint or MapEditorDeleteScope.GasMarker;
 
         private void ResetDeleteGhostToSpawnPin(Vector3 position)
@@ -1301,7 +1407,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             Direction dir = _holograms.Count > 0 ? _holograms[0].Direction : _lastRegisteredDirection;
             _lastRegisteredDirection = dir;
             DestroyHolograms();
-            CreateHologram(asset.PrefabAsset, position);
+            CreateHologram(asset.PrefabAsset, position, asset: asset);
             if (_holograms.Count > 0)
                 _holograms[0].ChangeHologramColor(ConstructionMode.Delete);
 

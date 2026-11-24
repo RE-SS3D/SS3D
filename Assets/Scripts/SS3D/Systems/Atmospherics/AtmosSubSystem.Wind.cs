@@ -12,6 +12,8 @@ namespace SS3D.Systems.Atmospherics
         {
             foreach (Ragdoll body in Ragdoll.WindBodies)
             {
+                // Wind a body already felt fades by itself within AtmosWind.HoldSeconds.
+                if (AtmosWind.BodiesIgnoreWind) break;
                 if (body == null || !body.IsServer) continue;
                 body.ServerApplyWind(AtmosWind.SampleAt(_simulation, body.WindSamplePosition));
             }

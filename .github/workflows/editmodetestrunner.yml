@@ -4,6 +4,8 @@
 # forks get no secrets and never run on the self-hosted runner: their run posts a notice instead,
 # and a maintainer who has read the change runs it with
 #   gh workflow run editmodetestrunner.yml --ref develop -f pr=<number>
+# trusted-pr-editmode.yml makes that dispatch automatically when the fork PR's author has write
+# access here. A dispatched run reports the "EditMode (dispatched)" commit status on the PR head.
 #
 # Runs on the self-hosted runner (labels self-hosted/linux/x64/unity); dispatch with runner=github
 # for GitHub-hosted ubuntu-latest. See
@@ -42,11 +44,13 @@ on:
         default: ""
 concurrency:
   # One group per PR, so a new push cancels the older run. An edit that is not a base change gets a
-  # group of its own, so it cannot cancel a real run before its jobs are skipped.
+  # group of its own, so it cannot cancel a real run before its jobs are skipped. A `pr` dispatch joins
+  # its PR's group: dispatches share github.ref (develop), and in one group a newer pending run cancels
+  # the older pending one, so several dispatched PRs would otherwise drop all but the last.
   group: >-
-    run-tests-${{ github.event.pull_request.number || github.ref }}${{
+    run-tests-${{ github.event.pull_request.number || inputs.pr || github.ref }}${{
     github.event.action == 'edited' && !github.event.changes.base && format('-edit-{0}', github.run_id) || '' }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || inputs.pr != '' }}
 jobs:
   pick_runner:
     name: Pick runner
@@ -121,7 +125,7 @@ jobs:
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          msg="PRs from forks get no Unity license and never run on the self-hosted runner. After reading the change, a maintainer runs EditMode with: gh workflow run editmodetestrunner.yml --ref develop -f pr=${PR_NUMBER}"
+          msg="PRs from forks get no Unity license and never run on the self-hosted runner. If the author has write access here, EditMode is dispatched automatically (trusted-pr-editmode.yml) and reports as the 'EditMode (dispatched)' status. Otherwise a maintainer reads the change and runs it with: gh workflow run editmodetestrunner.yml --ref develop -f pr=${PR_NUMBER}"
           echo "::notice::$msg"
           echo "$msg" >> "$GITHUB_STEP_SUMMARY"
 
@@ -138,6 +142,8 @@ jobs:
       checks: write
       # The nightly opens or closes its failure issue.
       issues: write
+      # A `pr` dispatch reports its result on the PR head as a commit status.
+      statuses: write
     runs-on: ${{ fromJSON(needs.pick_runner.outputs.runs_on) }}
     environment:
       name: unity_tests
@@ -157,6 +163,18 @@ jobs:
           # A maintainer's dispatch with -f pr=<number> tests that PR's head instead.
           ref: ${{ inputs.pr && format('refs/pull/{0}/head', inputs.pr) || github.event.pull_request.head.sha || github.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+      - name: Report the dispatched run on the PR head
+        id: pr-head
+        if: inputs.pr != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          sha=$(git rev-parse HEAD)
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          gh api -X POST "repos/${{ github.repository }}/statuses/$sha" -f state=pending \
+            -f context="EditMode (dispatched)" -f description="EditMode running" -f target_url="$RUN_URL" > /dev/null
       - name: Restore Unity Library stash
         if: needs.pick_runner.outputs.self_hosted == 'true'
         run: |
@@ -269,6 +287,20 @@ jobs:
         with:
           name: Test results
           path: artifacts
+      - name: Report the result on the PR head
+        if: always() && steps.pr-head.outputs.sha != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SHA: ${{ steps.pr-head.outputs.sha }}
+        run: |
+          case "${{ job.status }}" in
+            success) state=success; description="EditMode passed" ;;
+            cancelled) state=error; description="EditMode cancelled (superseded or stopped)" ;;
+            *) state=failure; description="EditMode failed: see the run's Test results" ;;
+          esac
+          gh api -X POST "repos/${{ github.repository }}/statuses/$SHA" -f state="$state" \
+            -f context="EditMode (dispatched)" -f description="$description" -f target_url="$RUN_URL" > /dev/null
       - name: Open or close the nightly failure issue (D9)
         if: github.event_name == 'schedule' && (success() || failure())
         env:

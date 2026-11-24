@@ -80,6 +80,7 @@ sound *for a given listener*, which the server's "play clip X at position P" RPC
   `AudioSourceOcclusion` state (cutoff, volume scale, occlusion flag) persists across unrelated clips
   unless reset. `AudioSubSystem.RpcPlayAudioSource` must call `PrepareForPlayback(volume)` before every
   `Play()` — skipping this leaves a newly played sound inheriting the previous clip's muffle.
+- **A long clip follows the air while it plays:** `AudioSourceOcclusion` rescales every frame from `ListenerAir`, so a room venting under a 3–5 s blast swallowed the boom. A blast calls `HoldStartAir()` on its source (`StructuralAudioPresenter.OnBlast`), and the clip keeps the air it started in. `PrepareForPlayback` clears the hold, so the pooled source's next clip hears the vacuum.
 - **`AmbienceHandler` is legacy — do not wire new features onto it.** No `AreaSubSystem` awareness, no
   power gating; `AmbienceSubSystem` (Phase 2) replaces it wholesale rather than extending its
   `_air`/`_windiness` fields.

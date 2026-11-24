@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Health.Interactions
 {
-    public sealed class SplintItemExtension : MonoBehaviour, IInteractionSourceExtension
+    public sealed class SplintItemExtension : MonoBehaviour, IInteractionSourceExtension, IZoneTargetedTreatment
     {
         private static readonly SplintInteraction Interaction = new();
 

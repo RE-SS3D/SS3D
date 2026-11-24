@@ -82,7 +82,7 @@ Cheap checks that stop the debt regrowing while it is paid down, plus fixes for 
   - `interactions-runtime.md:177`: "thin router" → name the hand-action scheduling it now owns.
   - `tile.md:48`, `:71`: "admin-gated" is true only off the sandbox. Say: admin, or any non-Restricted player on `-sandbox` (sandbox-server §5). `-openbuild` goes in P1.11.
   - `ui-shell.md`: add the Map Editor and `FpsCounterView` to the not-migrated table.
-  - `FORK_STATUS.md:544` (since replaced by [MERGE_GUIDE.md](../MERGE_GUIDE.md)): "ECS world" → Burst jobs on native buffers.
+  - `FORK_STATUS.md:544` (since replaced by [merge guide](../archive/architecture/2026-11_merge-guide.md)): "ECS world" → Burst jobs on native buffers.
 - **Tests:** G1–G5 are tier 1. `validate.sh --steps compile,editmode`.
 - **Done when:** G1–G4 run in the EditMode CI job, and the D1 statements match code.
 

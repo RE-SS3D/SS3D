@@ -83,6 +83,11 @@ namespace SS3D.Systems.StructuralDamage.Editor
             mapItem.PrefabAsset = reference;
             EditorUtility.SetDirty(mapItem);
             Material palette = DB.LoadAssetAtPath<Material>("Assets/Content/WorldObjects/World/Materials/Palette.mat");
+            Material emission = DB.LoadAssetAtPath<Material>("Assets/Content/WorldObjects/World/Materials/PaletteEmission.mat");
+            // The model's submeshes follow its Blender materials; the glowing ones take the emissive palette.
+            Material[] materials = DB.LoadAssetAtPath<GameObject>(ExplosivePrefabSetup.Art + name + ".fbx")
+                .GetComponentInChildren<MeshRenderer>(true).sharedMaterials
+                .Select(m => m != null && m.name.Contains("Emission") ? emission : palette).ToArray();
             GameObject root = PrefabUtility.LoadPrefabContents(prefabPath);
             try
             {
@@ -91,7 +96,7 @@ namespace SS3D.Systems.StructuralDamage.Editor
                 foreach (Transform child in root.transform.Cast<Transform>().ToArray())
                     if (child.name != "Attachment" && child.name != "Lamp") Object.DestroyImmediate(child.gameObject);
                 root.GetComponent<MeshFilter>().sharedMesh = mesh;
-                root.GetComponent<MeshRenderer>().sharedMaterials = Enumerable.Repeat(palette, mesh.subMeshCount).ToArray();
+                root.GetComponent<MeshRenderer>().sharedMaterials = materials;
                 BoxCollider collider = root.GetComponent<BoxCollider>();
                 collider.center = mesh.bounds.center;
                 collider.size = mesh.bounds.size;
@@ -139,7 +144,7 @@ namespace SS3D.Systems.StructuralDamage.Editor
             return light;
         }
 
-        private static void WireExamine(GameObject root, string name, string title, string description)
+        internal static void WireExamine(GameObject root, string name, string title, string description)
         {
             StringTableCollection collection = LocalizationEditorSettings.GetStringTableCollection("Examine");
             StringTable table = (StringTable)collection.GetTable(new LocaleIdentifier("en"));

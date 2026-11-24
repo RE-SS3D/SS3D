@@ -104,15 +104,24 @@ namespace SS3D.Systems.StructuralDamage
             if (AudioSourceOcclusion.TryGetListenerPosition(out Vector3 listener)
                 && IsDistantBlast(Vector3.Distance(listener, epicenter)))
             {
-                PlayClip(StructuralAudioTrackIds.BlastFar, epicenter, volume * BlastFarVolume,
-                    BlastFarMinRange, BlastFarMaxRange, 1f);
+                HoldStartAir(PlayClip(smallSound ? StructuralAudioTrackIds.BlastSmallFar : StructuralAudioTrackIds.BlastFar,
+                    epicenter, volume * BlastFarVolume, BlastFarMinRange, BlastFarMaxRange, 1f));
                 return;
             }
 
-            if (smallSound)
-                PlayClip(StructuralAudioTrackIds.BlastSmall, epicenter, volume, 5f, 45f, 1f);
-            else
-                PlayClip(StructuralAudioTrackIds.BlastNear[0], epicenter, volume, BlastNearMinRange, BlastNearMaxRange, 1f);
+            HoldStartAir(smallSound
+                ? Play(StructuralAudioTrackIds.BlastSmall, epicenter, volume, 5f, 45f)
+                : Play(StructuralAudioTrackIds.BlastNear, epicenter, volume, BlastNearMinRange, BlastNearMaxRange));
+        }
+
+        /// <summary>
+        /// A blast's breach empties the room within a second or two, while its clip runs 3-5 s. The boom keeps the
+        /// air it started in, so the venting doesn't swallow it.
+        /// </summary>
+        private static void HoldStartAir(AudioSource source)
+        {
+            if (source != null && source.TryGetComponent(out AudioSourceOcclusion occlusion))
+                occlusion.HoldStartAir();
         }
 
         private void Update()
@@ -131,21 +140,21 @@ namespace SS3D.Systems.StructuralDamage
             }
         }
 
-        private static void Play(string[] clips, Vector3 position, float volume, float minRange, float maxRange,
+        private static AudioSource Play(string[] clips, Vector3 position, float volume, float minRange, float maxRange,
             float basePitch = 1f)
         {
-            if (clips.Length > 0)
-                PlayClip(clips[Random.Range(0, clips.Length)], position, volume, minRange, maxRange, basePitch);
+            return clips.Length > 0
+                ? PlayClip(clips[Random.Range(0, clips.Length)], position, volume, minRange, maxRange, basePitch)
+                : null;
         }
 
-        private static void PlayClip(string clipId, Vector3 position, float volume, float minRange, float maxRange,
+        private static AudioSource PlayClip(string clipId, Vector3 position, float volume, float minRange, float maxRange,
             float basePitch)
         {
-            if (SubSystems.TryGet(out AudioSubSystem audio))
-            {
-                audio.PlayAudioSourceLocal(AudioType.Sfx, clipId, position, null, false, volume,
-                    basePitch * Random.Range(0.92f, 1.08f), minRange, maxRange);
-            }
+            return SubSystems.TryGet(out AudioSubSystem audio)
+                ? audio.PlayAudioSourceLocal(AudioType.Sfx, clipId, position, null, false, volume,
+                    basePitch * Random.Range(0.92f, 1.08f), minRange, maxRange)
+                : null;
         }
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Health.Interactions
 {
-    public sealed class BurnDressingItemExtension : MonoBehaviour, IInteractionSourceExtension
+    public sealed class BurnDressingItemExtension : MonoBehaviour, IInteractionSourceExtension, IZoneTargetedTreatment
     {
         private static readonly BurnDressingInteraction Interaction = new();
 

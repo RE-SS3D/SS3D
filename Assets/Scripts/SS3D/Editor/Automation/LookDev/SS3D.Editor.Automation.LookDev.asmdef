@@ -1,0 +1,19 @@
+{
+    "name": "SS3D.Editor.Automation.LookDev",
+    "rootNamespace": "SS3D.Editor.Automation",
+    "references": [
+        "SS3D.Application",
+        "SS3D.Core",
+        "SS3D.Networking",
+        "SS3D.Systems",
+        "SS3D.Rendering.URP",
+        "Coimbra",
+        "FishNet.Runtime",
+        "Unity.RenderPipelines.Core.Runtime",
+        "SS3D.Editor.Automation"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "autoReferenced": false
+}

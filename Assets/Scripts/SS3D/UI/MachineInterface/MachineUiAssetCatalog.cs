@@ -127,6 +127,24 @@ namespace SS3D.UI.MachineInterface
         [SerializeField]
         private StyleSheet[] _meterComponentStyles;
 
+        [SerializeField]
+        private VisualTreeAsset _operativeUplinkTemplate;
+
+        [SerializeField]
+        private StyleSheet _operativeUplinkTemplateStyle;
+
+        [SerializeField]
+        private StyleSheet[] _operativeUplinkComponentStyles;
+
+        [SerializeField]
+        private VisualTreeAsset _healthScannerTemplate;
+
+        [SerializeField]
+        private StyleSheet _healthScannerTemplateStyle;
+
+        [SerializeField]
+        private StyleSheet[] _healthScannerComponentStyles;
+
         public PanelSettings PanelSettings => _panelSettings;
         public StyleSheet MachineWindowStyle => _machineWindowStyle;
         public StyleSheet Ss3dTokensStyle => _ss3dTokensStyle;
@@ -170,6 +188,12 @@ namespace SS3D.UI.MachineInterface
                 MeterTemplate = _meterTemplate,
                 MeterTemplateStyle = _meterTemplateStyle,
                 MeterComponentStyles = _meterComponentStyles,
+                OperativeUplinkTemplate = _operativeUplinkTemplate,
+                OperativeUplinkTemplateStyle = _operativeUplinkTemplateStyle,
+                OperativeUplinkComponentStyles = _operativeUplinkComponentStyles,
+                HealthScannerTemplate = _healthScannerTemplate,
+                HealthScannerTemplateStyle = _healthScannerTemplateStyle,
+                HealthScannerComponentStyles = _healthScannerComponentStyles,
             };
         }
 
@@ -247,7 +271,13 @@ namespace SS3D.UI.MachineInterface
             StyleSheet[] mixerComponentStyles,
             VisualTreeAsset meterTemplate,
             StyleSheet meterTemplateStyle,
-            StyleSheet[] meterComponentStyles)
+            StyleSheet[] meterComponentStyles,
+            VisualTreeAsset operativeUplinkTemplate,
+            StyleSheet operativeUplinkTemplateStyle,
+            StyleSheet[] operativeUplinkComponentStyles,
+            VisualTreeAsset healthScannerTemplate,
+            StyleSheet healthScannerTemplateStyle,
+            StyleSheet[] healthScannerComponentStyles)
         {
             _panelSettings = panelSettings;
             _machineWindowStyle = machineWindowStyle;
@@ -287,6 +317,12 @@ namespace SS3D.UI.MachineInterface
             _meterTemplate = meterTemplate;
             _meterTemplateStyle = meterTemplateStyle;
             _meterComponentStyles = meterComponentStyles;
+            _operativeUplinkTemplate = operativeUplinkTemplate;
+            _operativeUplinkTemplateStyle = operativeUplinkTemplateStyle;
+            _operativeUplinkComponentStyles = operativeUplinkComponentStyles;
+            _healthScannerTemplate = healthScannerTemplate;
+            _healthScannerTemplateStyle = healthScannerTemplateStyle;
+            _healthScannerComponentStyles = healthScannerComponentStyles;
         }
 #endif
     }

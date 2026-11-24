@@ -1,0 +1,95 @@
+// Separable bilateral blur over CORTAO occlusion, run twice (horizontal, then
+// vertical) after CORTAO's sparse filter. CORTAO leaves its noise for TAA to
+// resolve; the station look wants soft AO even without TAA (the player's AA
+// setting may be SMAA/FXAA/off, and the Scene view never has TAA).
+//
+// Edge-aware through the packed depth/normal buffer: samples off the centre
+// pixel's tangent plane (plane distance relative to depth) or with a different
+// normal are rejected, so occlusion does not bleed across silhouettes or from
+// a wall onto the floor beside it, while a floor seen at a grazing angle still
+// blurs along its own plane.
+#pragma kernel CortaoBlur
+
+#define CORTAO_HLSL 1
+#include "Assets/Scripts/External/CORTAO/CORTAOBase.hlsl"
+
+Texture2D<float> _CortaoPackedData;
+Texture2D<float> _CortaoOcclusionInput;
+RWTexture2D<float> _CortaoOcclusionOutput;
+
+uint _CortaoPackedResolution;
+float4 _CortaoUnprojectParams;
+float4 _CortaoBlurDirection; // xy = (1, 0) or (0, 1); float so it is set like any vector
+int _CortaoBlurRadius;
+float _CortaoBlurDepthSensitivity;
+float _CortaoBlurNormalPower;
+
+float3 CortaoBlurViewPosition(int2 pixel, float linearDepth, float2 inverseResolution)
+{
+    float2 texCoords = (float2(pixel) + 0.5) * inverseResolution;
+    float2 direction = texCoords * _CortaoUnprojectParams.xy + _CortaoUnprojectParams.zw;
+    return float3(direction, -1.0) * linearDepth;
+}
+
+[numthreads(8, 8, 1)]
+void CortaoBlur(uint3 dispatchId : SV_DispatchThreadID)
+{
+    uint2 resolution = cortao_getResolution(_CortaoPackedResolution);
+    if (dispatchId.x >= resolution.x || dispatchId.y >= resolution.y)
+    {
+        return;
+    }
+
+    int2 center = int2(dispatchId.xy);
+    float centerOcclusion = _CortaoOcclusionInput.Load(int3(center, 0));
+    uint centerPacked = asuint(_CortaoPackedData.Load(int3(center, 0)));
+    if (centerPacked == 0u || _CortaoBlurRadius <= 0)
+    {
+        // Sky, or blur disabled.
+        _CortaoOcclusionOutput[center] = centerOcclusion;
+        return;
+    }
+
+    float2 inverseResolution = 1.0 / float2(resolution);
+    float centerDepth = cortao_unpackDepth(centerPacked);
+    float3 centerNormal = float3(cortao_decodeNormal(centerPacked));
+    float3 centerPosition = CortaoBlurViewPosition(center, centerDepth, inverseResolution);
+    float inverseCenterDepth = 1.0 / centerDepth;
+
+    float sigma = max(float(_CortaoBlurRadius) * 0.5, 0.5);
+    float gaussianScale = -0.5 / (sigma * sigma);
+    int2 maxCoords = int2(resolution) - 1;
+
+    float occlusionSum = centerOcclusion;
+    float weightSum = 1.0;
+
+    [loop]
+    for (int offset = -_CortaoBlurRadius; offset <= _CortaoBlurRadius; offset++)
+    {
+        if (offset == 0)
+        {
+            continue;
+        }
+
+        int2 coords = clamp(center + int2(_CortaoBlurDirection.xy) * offset, int2(0, 0), maxCoords);
+        uint packed = asuint(_CortaoPackedData.Load(int3(coords, 0)));
+        if (packed == 0u)
+        {
+            continue;
+        }
+
+        float depth = cortao_unpackDepth(packed);
+        float3 normal = float3(cortao_decodeNormal(packed));
+        float3 position = CortaoBlurViewPosition(coords, depth, inverseResolution);
+
+        float planeDistance = abs(dot(position - centerPosition, centerNormal)) * inverseCenterDepth;
+        float weight = exp(gaussianScale * float(offset * offset));
+        weight *= exp2(-planeDistance * _CortaoBlurDepthSensitivity);
+        weight *= pow(saturate(dot(normal, centerNormal)), _CortaoBlurNormalPower);
+
+        occlusionSum += _CortaoOcclusionInput.Load(int3(coords, 0)) * weight;
+        weightSum += weight;
+    }
+
+    _CortaoOcclusionOutput[center] = occlusionSum / weightSum;
+}

@@ -31,7 +31,10 @@ namespace SS3D.Tests.AssetAudit
             // 2026-11-14: +266 over 2200. About 202 lines are earlier drift (2402 before this change); about 64 are the
             // systems view hub partial, which map-editor-systems-views (Code split) puts on the hub. Its logic lives in
             // SystemsViewPublisher and MapEditorSystemsViewClient.
-            { "MapEditorSubSystem", 2466 },
+            // 2026-11-18: +295 over 2466. About 222 lines are earlier drift (2688 before this change); 73 are the map
+            // editor build-mode conveniences' tool wiring (room tool, right-click drop, palette pick to Construct, Auto
+            // Subfloor). Their logic lives in MapEditorPlacementRules, ConstructionRoomTool and ConstructionAutoFacing.
+            { "MapEditorSubSystem", 2761 },
             { "MapEditorView", 2072 },
             { "InteractionController", 1663 },
             { "MainHudSubSystem", 1628 },

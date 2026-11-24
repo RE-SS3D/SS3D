@@ -12,6 +12,7 @@ namespace SS3D.Systems.Selection
     public class Selectable : Actor, SelectionPickContext.ISelectionPickSource
     {
         static readonly int SelectionColorId = Shader.PropertyToID("_SelectionColor");
+        static MaterialPropertyBlock s_materialBlockScratch;
 
         Color32 _selectionColor;
         readonly List<MeshFilter> _meshFilters = new();
@@ -72,7 +73,7 @@ namespace SS3D.Systems.Selection
             {
                 MeshRenderer renderer = _meshRenderers[i];
                 MeshFilter filter = _meshFilters[i];
-                if (renderer == null || filter == null || !renderer.enabled || !renderer.gameObject.activeInHierarchy)
+                if (renderer == null || filter == null || !renderer.enabled || renderer.forceRenderingOff || !renderer.gameObject.activeInHierarchy)
                     continue;
 
                 if (IsExcludedFromPick(renderer))
@@ -119,7 +120,7 @@ namespace SS3D.Systems.Selection
             for (int i = 0; i < _skinnedRenderers.Count; i++)
             {
                 SkinnedMeshRenderer renderer = _skinnedRenderers[i];
-                if (renderer == null || !renderer.enabled || !renderer.gameObject.activeInHierarchy)
+                if (renderer == null || !renderer.enabled || renderer.forceRenderingOff || !renderer.gameObject.activeInHierarchy)
                     continue;
 
                 if (IsExcludedFromPick(renderer))
@@ -134,6 +135,7 @@ namespace SS3D.Systems.Selection
                 int submeshCount = renderer.sharedMesh != null
                     ? Mathf.Min(renderer.sharedMesh.subMeshCount, Mathf.Max(1, renderer.sharedMaterials.Length))
                     : Mathf.Max(1, renderer.sharedMaterials.Length);
+                SyncSkinnedSelectionColor(renderer, _selectionColor, submeshCount);
                 for (int submesh = 0; submesh < submeshCount; submesh++)
                 {
                     buffer.Add(new SelectionPickContext.PickDraw
@@ -194,6 +196,35 @@ namespace SS3D.Systems.Selection
             renderer.GetPropertyBlock(block);
             block.SetColor(SelectionColorId, color);
             renderer.SetPropertyBlock(block);
+        }
+
+        /// <summary>
+        /// A per-material property block replaces the renderer-wide one for its material, so a skinned mesh whose
+        /// material another system drives per material (power emission through <c>EmissiveMaterialSlots</c>) lost
+        /// the renderer-wide selection colour and drew black in the pick pass. Copies the colour into every
+        /// per-material block that exists; materials without one still read the renderer-wide block.
+        /// </summary>
+        public static void SyncSkinnedSelectionColor(Renderer renderer, Color32 color, int materialCount)
+        {
+            s_materialBlockScratch ??= new MaterialPropertyBlock();
+            Color wanted = color;
+            for (int i = 0; i < materialCount; i++)
+            {
+                renderer.GetPropertyBlock(s_materialBlockScratch, i);
+                if (s_materialBlockScratch.isEmpty
+                    || (s_materialBlockScratch.HasColor(SelectionColorId) && SameColor(s_materialBlockScratch.GetColor(SelectionColorId), color)))
+                    continue;
+
+                s_materialBlockScratch.SetColor(SelectionColorId, wanted);
+                renderer.SetPropertyBlock(s_materialBlockScratch, i);
+            }
+        }
+
+        // Picks match by exact Color32; a block hands the colour back as floats that need not round-trip exactly.
+        static bool SameColor(Color stored, Color32 wanted)
+        {
+            Color32 rounded = stored;
+            return rounded.r == wanted.r && rounded.g == wanted.g && rounded.b == wanted.b && rounded.a == wanted.a;
         }
 
         static void ClearSelectionColorFromBlock(Renderer renderer)

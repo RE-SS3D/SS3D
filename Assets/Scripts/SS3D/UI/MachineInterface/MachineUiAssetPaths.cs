@@ -94,6 +94,42 @@ namespace SS3D.UI.MachineInterface
         public const string MeterTemplateStyle =
             "Assets/Content/Systems/UI/MachineInterface/Templates/GasMeterInterface.uss";
 
+        public const string OperativeUplinkTemplate =
+            "Assets/Content/Systems/UI/MachineInterface/Templates/OperativeUplinkInterface.uxml";
+
+        public const string OperativeUplinkTemplateStyle =
+            "Assets/Content/Systems/UI/MachineInterface/Templates/OperativeUplinkInterface.uss";
+
+        public static readonly string[] OperativeUplinkComponentStyles =
+        {
+            "Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss",
+            "Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss",
+            "Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss",
+            "Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss",
+            "Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss",
+            "Assets/Content/Systems/UI/MachineInterface/Components/InventorySlot.uss",
+            "Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss",
+        };
+
+        public const string HealthScannerTemplate =
+            "Assets/Content/Systems/UI/MachineInterface/Templates/HealthScannerInterface.uxml";
+
+        public const string HealthScannerTemplateStyle =
+            "Assets/Content/Systems/UI/MachineInterface/Templates/HealthScannerInterface.uss";
+
+        public static readonly string[] HealthScannerComponentStyles =
+        {
+            "Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss",
+            "Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss",
+            "Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss",
+            "Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss",
+            "Assets/Content/Systems/UI/MachineInterface/Components/GlanceableStatusChip.uss",
+            "Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss",
+            "Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss",
+            "Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss",
+            "Assets/Content/Systems/UI/MachineInterface/Components/HealthScanDoll.uss",
+        };
+
         public static readonly string[] ApcComponentStyles =
         {
             "Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss",

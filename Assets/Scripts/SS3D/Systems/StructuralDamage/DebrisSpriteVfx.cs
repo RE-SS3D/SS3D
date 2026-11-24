@@ -1,6 +1,7 @@
 using SS3D.Rendering.URP;
 using SS3D.Systems.Atmospherics.Visualization;
 using SS3D.Systems.Tile;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -106,9 +107,18 @@ namespace SS3D.Systems.StructuralDamage
             Burst(point, Vector3.up, kind, count, 2.6f, kind == DebrisKind.Glass ? 0.12f : 0.15f, 180f);
         }
 
+        /// <summary>Fragment cap per debris kind for one blast; Unity drops further emits once it is full.</summary>
+        public const int MaxBlastParticles = 1500;
+
+        private static readonly Dictionary<(int Blast, DebrisKind Kind), ParticleSystem> BlastEmitters = new();
+        private static readonly List<(int, DebrisKind)> DeadEmitters = new();
+
         /// <summary>
         /// Emits <paramref name="count"/> fragments along <paramref name="direction"/> inside a cone of
         /// <paramref name="spread"/> degrees; 180 or more is a full sphere. Returns null without a graphics device.
+        /// Debris from a fresh blast (<see cref="BlastDebrisPush"/>) is thrown away from the epicenter instead, into
+        /// one shared emitter per blast and kind: a big blast breaks hundreds of tiles, and an emitter each cost
+        /// about 50 ms to create plus a wind pass per emitter every frame.
         /// </summary>
         public static ParticleSystem Burst(Vector3 origin, Vector3 direction, DebrisKind kind, int count, float speed,
             float size, float spread = 55f, float lifetime = 2.4f, int firstSprite = 0)
@@ -116,26 +126,24 @@ namespace SS3D.Systems.StructuralDamage
             if (count <= 0 || !EnsureMaterial())
                 return null;
 
-            GameObject emitter = new($"{kind} debris");
-            emitter.SetActive(false);
+            if (BlastDebrisPush.TryGetPush(origin, out Vector3 thrown, out float thrownSpeed, out int blast))
+            {
+                return EmitIntoBlast(blast, origin, thrown, kind, count, Mathf.Max(speed, thrownSpeed), size,
+                    Mathf.Min(spread, BlastDebrisPush.Spread), Mathf.Max(lifetime, 2.4f));
+            }
+
+            ParticleSystem particles = CreateEmitter($"{kind} debris", kind, count, speed, firstSprite);
+            GameObject emitter = particles.gameObject;
             Quaternion rotation = direction.sqrMagnitude > 0.0001f ? Quaternion.LookRotation(direction) : Quaternion.identity;
             emitter.transform.SetPositionAndRotation(origin, rotation);
-            ParticleSystem particles = emitter.AddComponent<ParticleSystem>();
 
             var main = particles.main;
-            main.playOnAwake = false;
-            main.loop = false;
             main.duration = 0.05f;
             main.startLifetime = new ParticleSystem.MinMaxCurve(lifetime * 0.7f, lifetime);
             main.startSpeed = new ParticleSystem.MinMaxCurve(speed * 0.4f, speed);
             size *= SizeScale;
             main.startSize = new ParticleSystem.MinMaxCurve(size * 0.6f, size);
             main.startRotation = new ParticleSystem.MinMaxCurve(-Mathf.PI, Mathf.PI);
-            main.startColor = Color.white;
-            main.gravityModifier = 1f;
-            main.simulationSpace = ParticleSystemSimulationSpace.World;
-            main.maxParticles = count;
-            main.stopAction = ParticleSystemStopAction.Destroy;
 
             var emission = particles.emission;
             emission.rateOverTime = 0f;
@@ -153,6 +161,84 @@ namespace SS3D.Systems.StructuralDamage
                 shape.angle = spread;
                 shape.radius = 0.04f;
             }
+
+            emitter.SetActive(true);
+            particles.Play();
+            return particles;
+        }
+
+        private static ParticleSystem EmitIntoBlast(int blast, Vector3 origin, Vector3 direction, DebrisKind kind,
+            int count, float speed, float size, float spread, float lifetime)
+        {
+            if (!BlastEmitters.TryGetValue((blast, kind), out ParticleSystem particles) || particles == null)
+            {
+                PruneBlastEmitters();
+                particles = CreateEmitter($"{kind} blast debris", kind, MaxBlastParticles, BlastDebrisPush.MaxSpeed, 0);
+                var main = particles.main;
+                // Only breaks inside the push window join it; it destroys itself once the last fragment fades.
+                main.duration = BlastDebrisPush.Window + 0.1f;
+                var emission = particles.emission;
+                emission.enabled = false;
+                var shape = particles.shape;
+                shape.enabled = false;
+                particles.gameObject.SetActive(true);
+                particles.Play();
+                BlastEmitters[(blast, kind)] = particles;
+            }
+
+            Quaternion rotation = Quaternion.LookRotation(direction);
+            float cosSpread = Mathf.Cos(Mathf.Clamp(spread, 0f, 180f) * Mathf.Deg2Rad);
+            size *= SizeScale;
+            for (int i = 0; i < count; i++)
+            {
+                // Uniform over the cone's spherical cap.
+                float z = Random.Range(cosSpread, 1f);
+                float phi = Random.Range(0f, 2f * Mathf.PI);
+                float ring = Mathf.Sqrt(1f - z * z);
+                Vector3 local = new(ring * Mathf.Cos(phi), ring * Mathf.Sin(phi), z);
+                particles.Emit(new ParticleSystem.EmitParams
+                {
+                    position = origin + Random.insideUnitSphere * 0.12f,
+                    velocity = rotation * local * (speed * Random.Range(0.4f, 1f)),
+                    startSize = size * Random.Range(0.6f, 1f),
+                    startLifetime = lifetime * Random.Range(0.7f, 1f),
+                    rotation = Random.Range(-180f, 180f),
+                    startColor = Color.white,
+                }, 1);
+            }
+
+            return particles;
+        }
+
+        private static void PruneBlastEmitters()
+        {
+            DeadEmitters.Clear();
+            foreach (var pair in BlastEmitters)
+                if (pair.Value == null)
+                    DeadEmitters.Add(pair.Key);
+            foreach (var key in DeadEmitters)
+                BlastEmitters.Remove(key);
+        }
+
+        /// <summary>
+        /// An inactive emitter with everything a debris burst shares: sprites from <paramref name="kind"/>'s row
+        /// from <paramref name="firstSprite"/>, spin, bounces, fade and wind. The caller sets the launch and plays it.
+        /// </summary>
+        private static ParticleSystem CreateEmitter(string name, DebrisKind kind, int maxParticles, float spinSpeed,
+            int firstSprite)
+        {
+            GameObject emitter = new(name);
+            emitter.SetActive(false);
+            ParticleSystem particles = emitter.AddComponent<ParticleSystem>();
+
+            var main = particles.main;
+            main.playOnAwake = false;
+            main.loop = false;
+            main.startColor = Color.white;
+            main.gravityModifier = 1f;
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+            main.maxParticles = maxParticles;
+            main.stopAction = ParticleSystemStopAction.Destroy;
 
             // One random sprite per particle from this kind's row, held for its whole life.
             var sheet = particles.textureSheetAnimation;
@@ -172,7 +258,7 @@ namespace SS3D.Systems.StructuralDamage
             // Spin scales with speed, so a fragment stops turning once it settles on the floor.
             var spin = particles.rotationBySpeed;
             spin.enabled = true;
-            spin.range = new Vector2(0f, speed);
+            spin.range = new Vector2(0f, spinSpeed);
             spin.z = new ParticleSystem.MinMaxCurve(12f, AnimationCurve.Linear(0f, 0f, 1f, -1f),
                 AnimationCurve.Linear(0f, 0f, 1f, 1f));
 
@@ -203,8 +289,6 @@ namespace SS3D.Systems.StructuralDamage
 
             // Wind is followed per fragment every frame: a breach's own debris spawns before its air starts moving.
             emitter.AddComponent<DebrisWindCarrier>();
-            emitter.SetActive(true);
-            particles.Play();
             return particles;
         }
 

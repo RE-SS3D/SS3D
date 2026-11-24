@@ -25,6 +25,7 @@ namespace SS3D.Systems.Audio.Editor
             { "SyndicateMiniBomb", ItemCollisionMaterial.Metal },
             { "SyndicateBomb", ItemCollisionMaterial.Metal },
             { "SyndicateBombBeacon", ItemCollisionMaterial.Plastic },
+            { "OperativeUplink", ItemCollisionMaterial.Plastic },
             { "FlashlightBlue", ItemCollisionMaterial.Metal },
             { "FloorTile", ItemCollisionMaterial.Metal },
             { "FloorTileGreyDark", ItemCollisionMaterial.Metal },

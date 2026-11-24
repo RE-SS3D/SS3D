@@ -53,9 +53,9 @@ Material:
     - _Lumin: 0
     - _MaxLight: 1
     - _MinLight: 0
-    - _Offset: 0.35
+    - _Offset: 0
     - _RampStrength: 0
-    - _Segmented: 1
+    - _Segmented: 0
     - _ShnIntense: 0
     - _ShnOverlap: 0
     - _ShnRange: 0.45

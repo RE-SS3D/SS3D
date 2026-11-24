@@ -94,17 +94,29 @@ namespace SS3D.Systems.StructuralDamage
             "ad24268af0904c68851b7d487c65fdae", // MetalThud3
         };
 
-        public const string BlastSmall = "a583ecd799d040728b40947e8e4287d1"; // MinibombExplosion
+        /// <summary>A small blast (minibomb), heard from close by. One is picked at random per blast.</summary>
+        public static readonly string[] BlastSmall =
+        {
+            "a583ecd799d040728b40947e8e4287d1", // MinibombExplosion (SS14 explosion_small1)
+            "a320b9fb4ed255f388a483ffff0c5ad6", // ExplosionSmall2
+            "3a5984a0303a4ec9d96d5b1ace85452e", // ExplosionSmall3
+        };
 
-        /// <summary>The boom, heard from close by.</summary>
+        /// <summary>The boom, heard from close by. One is picked at random per blast.</summary>
         public static readonly string[] BlastNear =
         {
             "e5c9231c45bb4b72855d681a0f9460ff", // Explosion1
             "87cae4686f7544f0860cee2540184b44", // Explosion2
             "086672233efd437d804c137a3a8b91e8", // Explosion3
+            "e00666a785ce61efebb3b9ef5c73cf2e", // Explosion4
+            "48d53dbaa801ee2e2a58b85c940cac6c", // Explosion5
+            "96a94c7fb5eac356b85970cfa0acf5c6", // Explosion6
         };
 
         /// <summary>The rumble heard from far away instead of a quieter boom.</summary>
         public const string BlastFar = "bccf635606624ca2b67e997098b07098"; // ExplosionFar
+
+        /// <summary>The distant rumble of a small blast.</summary>
+        public const string BlastSmallFar = "88c2ffcafae7ab51bb740ba19bfe36a5"; // ExplosionSmallFar
     }
 }

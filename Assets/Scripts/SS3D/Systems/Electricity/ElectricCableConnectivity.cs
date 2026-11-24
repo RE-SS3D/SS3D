@@ -25,6 +25,38 @@ namespace SS3D.Systems.Electricity
             && tileObject.TryGetComponent(out IElectricDevice device)
             && ParticipatesInCableGrid(device);
 
+        // Rebuild-scoped caches (see BeginRebuildCache): each cable run is walked once, and its grid devices
+        // listed once, instead of once per grid device on it.
+        private static int _cacheDepth;
+        private static readonly Dictionary<Vector2Int, HashSet<Vector2Int>> RunByTile = new();
+        private static readonly Dictionary<HashSet<Vector2Int>, List<PlacedTileObject>> GridDevicesByRun = new();
+
+        /// <summary>
+        /// While the returned scope is open, cable runs and the grid devices on them are computed once and shared.
+        /// Only open it while the map cannot change, as in <c>ElectricitySubSystem.RebuildElectricGraph</c>: every grid
+        /// device used to flood-fill its whole run, which cost about 0.4 s per rebuild on a big station.
+        /// </summary>
+        public static RebuildCacheScope BeginRebuildCache()
+        {
+            _cacheDepth++;
+            return new RebuildCacheScope();
+        }
+
+        public readonly struct RebuildCacheScope : System.IDisposable
+        {
+            public void Dispose()
+            {
+                if (--_cacheDepth > 0)
+                {
+                    return;
+                }
+
+                _cacheDepth = 0;
+                RunByTile.Clear();
+                GridDevicesByRun.Clear();
+            }
+        }
+
         public static List<PlacedTileObject> GetCableLinkedDevices(PlacedTileObject deviceTile)
         {
             var linked = new List<PlacedTileObject>();
@@ -43,6 +75,35 @@ namespace SS3D.Systems.Electricity
 
             HashSet<Vector2Int> networkTiles = CollectCableNetworkTiles(map, deviceTile.WorldOrigin);
             networkTiles.Add(deviceTile.WorldOrigin);
+
+            if (_cacheDepth > 0 && RunByTile.ContainsKey(deviceTile.WorldOrigin))
+            {
+                if (!GridDevicesByRun.TryGetValue(networkTiles, out List<PlacedTileObject> onRun))
+                {
+                    onRun = CollectGridDevices(map, networkTiles, null);
+                    GridDevicesByRun[networkTiles] = onRun;
+                }
+
+                foreach (PlacedTileObject device in onRun)
+                {
+                    if (device != deviceTile)
+                    {
+                        linked.Add(device);
+                    }
+                }
+
+                return linked;
+            }
+
+            return CollectGridDevices(map, networkTiles, deviceTile);
+        }
+
+        /// <summary>The grid devices on <paramref name="networkTiles"/>, each once, except <paramref name="exclude"/>.</summary>
+        private static List<PlacedTileObject> CollectGridDevices(TileMap map, HashSet<Vector2Int> networkTiles,
+            PlacedTileObject exclude)
+        {
+            var linked = new List<PlacedTileObject>();
+            PlacedTileObject deviceTile = exclude;
 
             var seen = new HashSet<PlacedTileObject>();
             foreach (Vector2Int grid in networkTiles)
@@ -110,6 +171,11 @@ namespace SS3D.Systems.Electricity
 
         private static HashSet<Vector2Int> CollectCableNetworkTiles(TileMap map, Vector2Int originGrid)
         {
+            if (_cacheDepth > 0 && RunByTile.TryGetValue(originGrid, out HashSet<Vector2Int> cached))
+            {
+                return cached;
+            }
+
             var visited = new HashSet<Vector2Int>();
             var queue = new Queue<Vector2Int>();
 
@@ -119,6 +185,17 @@ namespace SS3D.Systems.Electricity
             {
                 Vector2Int grid = queue.Dequeue();
                 EnqueueCableNeighbours(map, grid, visited, queue);
+            }
+
+            // Cached only for a tile with a cable: then the run holds the origin too, so callers adding it change
+            // nothing, and every tile of the run shares the one set.
+            if (_cacheDepth > 0 && TryGetCableOnTile(map, originGrid, out _))
+            {
+                visited.Add(originGrid);
+                foreach (Vector2Int tile in visited)
+                {
+                    RunByTile[tile] = visited;
+                }
             }
 
             return visited;

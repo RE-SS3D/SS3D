@@ -21,7 +21,7 @@ Why Nuke Ops first: it builds the round spine (pillar 4) and puts the simulation
 
 What a round needs:
 
-- **Crew jobs**: Captain (vault access), Security (armed first response, stun baton), Engineer (defuse tools; patches hull holes, repairs and rebuilds walls, restores power), Doctor (bandage, stop bleeding, defibrillate), Assistant. Ops spawn geared with no uplink. The disk stays in the vault.
+- **Crew jobs**: Captain (vault access), Security (armed first response, stun baton), Engineer (defuse tools; patches hull holes, repairs and rebuilds walls, restores power), Doctor (bandage, stop bleeding, defibrillate), Assistant. Ops spawn with survival gear, tools and a sidearm, and buy their rifles, explosives and the squad's one Syndicate bomb on a telecrystal uplink. The disk stays in the vault.
 - **Identity** readable at a glance from outfit and examine ([combat.md](../design/combat.md) §6): ops wear a suit look the crew doesn't.
 - **Movement** that responds like a quick RPG: full speed and stop within about 0.1 s, animations blending at the same pace.
 - **Fights that end**: trauma puts a body down before it bleeds out — about half an M4 magazine downs an unarmored crew member, who can crawl, call for help and be patched up and helped back to their feet ([health.md](../design/health.md) §4).

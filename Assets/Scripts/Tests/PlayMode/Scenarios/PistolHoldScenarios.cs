@@ -37,7 +37,7 @@ namespace SS3D.Tests
             yield return WaitFor(() => body.Snapshot.PistolHold && IsUpperBodyIn(animator, PistolStanceAnimation.AimIdleState),
                 "Harm with a taser plays the pistol idle");
             yield return Hold(0.5f);
-            yield return new WaitForEndOfFrame();
+            yield return null;
             RangedWeaponItemExtension taser = gunHand.ItemInHand.GetComponent<RangedWeaponItemExtension>();
             taser.GetMuzzleWorldPose(out _, out Vector3 muzzleForward);
             float gripGap = HandGap(animator);
@@ -49,7 +49,7 @@ namespace SS3D.Tests
             Assert.IsTrue(offHand.Container.AddItem(items.SpawnItem(Taser, Body.transform.position, Quaternion.identity)), "A second item fills the off-hand");
             yield return WaitFor(() => body.Snapshot.OffHandBusy, "the snapshot carries the full off-hand");
             yield return Hold(0.5f);
-            yield return new WaitForEndOfFrame();
+            yield return null;
             float freeGap = HandGap(animator);
             Debug.Log($"[PistolHoldScenarios] off-hand gap {freeGap:F3} m");
             Assert.Greater(freeGap, 0.25f, "The full off-hand leaves the grip");

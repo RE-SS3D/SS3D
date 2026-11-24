@@ -1,0 +1,127 @@
+// CORTAO main pass: ray-traced occlusion against circular occluder proxies read
+// from the packed depth/normal buffer. One kernel per quality level, because the
+// sample count must be a compile-time constant for CORTAO's unrolled loop.
+#pragma kernel CortaoMainPassLow CORTAO_SAMPLE_COUNT=8
+#pragma kernel CortaoMainPassMedium CORTAO_SAMPLE_COUNT=12
+#pragma kernel CortaoMainPassHigh CORTAO_SAMPLE_COUNT=16
+
+#define CORTAO_HLSL 1
+#define CORTAO_PERSPECTIVE_PROJECTION 1
+#define CORTAO_RAY_COUNT 16
+#define CORTAO_OCCLUDER_LOOKUP_TABLE 1
+#include "Assets/Scripts/External/CORTAO/CORTAOMainPass.hlsl"
+#include "CortaoCommon.hlsl"
+
+// 24x24x16 occluder table for 16 rays (CortaoOccluderTable.cs), one uint per
+// texel, indexed by hand: SM5 has no integer texture sampling.
+#define CORTAO_TABLE_DIRECTIONS 24
+#define CORTAO_TABLE_RADII 16
+StructuredBuffer<uint> _CortaoOccluderTable;
+
+Texture2D<float> _CortaoPackedData;
+SamplerState sampler_PointClamp;
+RWTexture2D<float> _CortaoOcclusionOutput;
+
+uint _CortaoPackedResolution;
+uint _CortaoRandomSeed;
+float _CortaoNormalBias;
+float _CortaoRadius;
+float4 _CortaoUnprojectParams;
+float4 _CortaoProjectionParams;
+float _CortaoMaxApparentCircleRadiusCoefficient;
+float _CortaoMipBias;
+float _CortaoInverseMaxSlopeCompensation;
+float _CortaoBackfaceThreshold;
+float _CortaoBackfaceBoost;
+float _CortaoMaxMip;
+float _CortaoIntensity;
+
+uint cortao_samplePackedData(float2 texCoords, float mipmap)
+{
+    // CORTAO wants a border sampler returning 0 off-screen; Unity inline samplers
+    // have no border mode, so test the range here instead.
+    if (any(texCoords < 0.0) || any(texCoords > 1.0))
+    {
+        return 0u;
+    }
+
+    // Only the first _CortaoMipCount mips are filled; the texture has a full chain.
+    return asuint(_CortaoPackedData.SampleLevel(sampler_PointClamp, texCoords, min(mipmap, _CortaoMaxMip)));
+}
+
+float3 cortao_loadNormal(int2 pixelCoords)
+{
+    return CortaoLoadViewNormal(pixelCoords);
+}
+
+uint cortao_sampleOccluderLookupTable(float3 texCoords)
+{
+    int3 size = int3(CORTAO_TABLE_DIRECTIONS, CORTAO_TABLE_DIRECTIONS, CORTAO_TABLE_RADII);
+    int3 texel = clamp(int3(floor(texCoords * float3(size))), int3(0, 0, 0), size - 1);
+    return _CortaoOccluderTable[(texel.z * CORTAO_TABLE_DIRECTIONS + texel.y) * CORTAO_TABLE_DIRECTIONS + texel.x];
+}
+
+void cortao_writeResult(int2 pixelCoords, float occlusion, float3 bentNormal, float3x3 tangentSpaceTransform, uint rayBits)
+{
+    // CORTAO's suggested non-photorealistic intensity tweak.
+    _CortaoOcclusionOutput[pixelCoords] = pow(saturate(occlusion), _CortaoIntensity);
+}
+
+// From CORTAO's reference wrapper: reorders threads in the 16x16 group for cache coherence.
+uint2 CortaoDeinterleave(uint index)
+{
+    uint2 p = uint2(index, index) >> uint2(0, 1);
+    p &= 0x5555u;
+    p = (p ^ (p >> 1u)) & 0x3333u;
+    p = (p ^ (p >> 2u)) & 0x0f0fu;
+    p = (p ^ (p >> 4u)) & 0x00ffu;
+    return p;
+}
+
+void CortaoMainPassEntry(uint2 groupId, uint localIndex)
+{
+    uint2 pixelCoords = groupId * uint2(16, 16) + CortaoDeinterleave(localIndex);
+    uint2 resolution = cortao_getResolution(_CortaoPackedResolution);
+
+    // cortao_mainPass returns early on sky pixels without writing; default to unoccluded.
+    if (pixelCoords.x < resolution.x && pixelCoords.y < resolution.y)
+    {
+        _CortaoOcclusionOutput[pixelCoords] = 1.0;
+    }
+
+    CORTAOMainPassParameters parameters;
+    parameters.packedResolution = _CortaoPackedResolution;
+    parameters.randomSeed = _CortaoRandomSeed;
+    parameters.normalBias = _CortaoNormalBias;
+    parameters.radius = _CortaoRadius;
+    parameters.unprojectParams = _CortaoUnprojectParams;
+    parameters.projectionParams = _CortaoProjectionParams;
+    parameters.maxApparentCircleRadiusCoefficient = _CortaoMaxApparentCircleRadiusCoefficient;
+    parameters.mipBias = _CortaoMipBias;
+    parameters.inverseMaxSlopeCompensation = _CortaoInverseMaxSlopeCompensation;
+    parameters.backfaceThreshold = _CortaoBackfaceThreshold;
+    parameters.backfaceBoost = _CortaoBackfaceBoost;
+    parameters._padding0 = 0u;
+    parameters._padding1 = 0u;
+    parameters._padding2 = 0u;
+
+    cortao_mainPass(pixelCoords, parameters);
+}
+
+[numthreads(16, 16, 1)]
+void CortaoMainPassLow(uint3 groupId : SV_GroupID, uint localIndex : SV_GroupIndex)
+{
+    CortaoMainPassEntry(groupId.xy, localIndex);
+}
+
+[numthreads(16, 16, 1)]
+void CortaoMainPassMedium(uint3 groupId : SV_GroupID, uint localIndex : SV_GroupIndex)
+{
+    CortaoMainPassEntry(groupId.xy, localIndex);
+}
+
+[numthreads(16, 16, 1)]
+void CortaoMainPassHigh(uint3 groupId : SV_GroupID, uint localIndex : SV_GroupIndex)
+{
+    CortaoMainPassEntry(groupId.xy, localIndex);
+}

@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ExternalAirlockAnimator
+  m_Controller: {fileID: 9100000, guid: 43b3d57cceffaa5498e91901477ba8c9, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: f1a31e3d05ed92542ae4f12ab127f6d8, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: d291a2bc81b210bbab1e77f684a171be, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 2f15f2acf94fa4247840e6ccff2be97c, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 249abc3577473b13d8ade207b3e6bb9e, type: 2}

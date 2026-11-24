@@ -208,7 +208,67 @@ namespace SS3D.Systems.Tile
             }
 
             RpcSyncFloorDecals(chunks.ToArray());
+            SyncFloorPaintToClients();
         }
+
+        private bool _floorVisualsSyncQueued;
+
+        /// <summary>
+        /// Sends floor decals and paint once, at the end of this frame: a map editor stroke changes many tiles in one
+        /// gesture, and each change asks for a sync.
+        /// </summary>
+        [Server]
+        public void RequestFloorVisualsSync()
+        {
+            if (_floorVisualsSyncQueued)
+                return;
+
+            _floorVisualsSyncQueued = true;
+            FlushFloorVisualsSync().Forget();
+        }
+
+        private async UniTaskVoid FlushFloorVisualsSync()
+        {
+            await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
+            _floorVisualsSyncQueued = false;
+            if (IsServer)
+                SyncFloorDecalsToClients();
+        }
+
+        [Server]
+        private void SyncFloorPaintToClients()
+        {
+            var chunks = new List<SyncedFloorPaintChunk>();
+            foreach (TileChunk chunk in _currentMap.GetAllChunks())
+            {
+                ushort[] paint = chunk.CopyFloorPaint();
+                if (paint != null)
+                    chunks.Add(new SyncedFloorPaintChunk { chunkKey = _currentMap.GetKey(chunk.GetWorldPosition(0, 0)), floorPaint = paint });
+            }
+
+            RpcSyncFloorPaint(chunks.ToArray());
+        }
+
+        [ObserversRpc(BufferLast = true)]
+        private void RpcSyncFloorPaint(SyncedFloorPaintChunk[] chunks)
+        {
+            var list = new List<(Vector2Int chunkKey, ushort[] floorPaint)>(chunks?.Length ?? 0);
+            if (chunks != null)
+            {
+                foreach (SyncedFloorPaintChunk chunk in chunks)
+                    list.Add((chunk.chunkKey, chunk.floorPaint));
+            }
+
+            FloorPaintView.ReplaceChunks(list);
+        }
+
+        [Serializable]
+        private struct SyncedFloorPaintChunk
+        {
+            public Vector2Int chunkKey;
+            public ushort[] floorPaint;
+        }
+
 
         [ObserversRpc(BufferLast = true)]
         private void RpcSyncFloorDecals(SyncedFloorDecalChunk[] chunks)
@@ -232,18 +292,37 @@ namespace SS3D.Systems.Tile
         }
 
         /// <summary>
-        /// Server entry for blast detonation VFX. One-shot — do not BufferLast.
+        /// Server notice sent before a blast resolves, so the breaks that follow know where it came from and throw their
+        /// debris outward (<see cref="BlastDebrisPush"/>). One-shot — do not BufferLast.
         /// </summary>
         [Server]
-        public void ServerNotifyBlastDetonated(Vector3 worldPosition, float yield, bool smallSound = false)
+        public void ServerNotifyBlastStarted(Vector3 worldPosition, float reach)
         {
-            RpcBlastDetonated(worldPosition, yield, smallSound);
+            RpcBlastStarted(worldPosition, reach);
         }
 
         [ObserversRpc(RunLocally = true)]
-        private void RpcBlastDetonated(Vector3 worldPosition, float yield, bool smallSound)
+        private void RpcBlastStarted(Vector3 worldPosition, float reach)
         {
-            BlastVfxPresenter.Play(worldPosition, yield);
+            if (IsClient)
+                BlastDebrisPush.Begin(worldPosition, reach);
+        }
+
+        /// <summary>
+        /// Server entry for blast detonation VFX, after the blast resolved. <paramref name="flameTiles"/> are the tiles
+        /// it reached (<see cref="BlastFlameTiles.Pack"/>). One-shot — do not BufferLast.
+        /// </summary>
+        [Server]
+        public void ServerNotifyBlastDetonated(Vector3 worldPosition, float yield, bool smallSound = false,
+            byte[] flameTiles = null)
+        {
+            RpcBlastDetonated(worldPosition, yield, smallSound, flameTiles ?? Array.Empty<byte>());
+        }
+
+        [ObserversRpc(RunLocally = true)]
+        private void RpcBlastDetonated(Vector3 worldPosition, float yield, bool smallSound, byte[] flameTiles)
+        {
+            BlastVfxPresenter.Play(worldPosition, yield, flameTiles);
             if (IsClient && _structuralAudio != null)
                 _structuralAudio.OnBlast(worldPosition, yield, smallSound);
         }

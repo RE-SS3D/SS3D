@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Health.Interactions
 {
-    public sealed class OxygenTankItemExtension : MonoBehaviour, IInteractionSourceExtension
+    public sealed class OxygenTankItemExtension : MonoBehaviour, IInteractionSourceExtension, IZoneTargetedTreatment
     {
         private static readonly OxygenTreatmentInteraction Interaction = new();
 

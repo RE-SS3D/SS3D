@@ -153,7 +153,7 @@ a manual release check.
   self-hosted runner + `BuildBothForCi`. Prefer this (or `build_linux` + `run_smoke` on develop-release)
   when you need a smoke gate.
 - `editmodetestrunner.yml` — cheap PR/`develop` EditMode on the self-hosted runner (dispatch `runner: github`
-  for `ubuntu-latest`). PRs from forks only get a notice job; a maintainer runs them with `pr: <number>`. Prefer this (or `run_editmode: true` on develop-release) when you
+  for `ubuntu-latest`). PRs from forks only get a notice job; a maintainer runs them with `pr: <number>`, and `trusted-pr-editmode.yml` does that dispatch automatically when the author has write access here (status `EditMode (dispatched)` on the PR head). Prefer this (or `run_editmode: true` on develop-release) when you
   need an EditMode gate on a cut.
 - `main.yml` (Automated Build) — **removed**; Windows prereleases go through
   `develop-release.yml`. Upstream milestone/project YAML deleted (`23b75ad36`); ghost
@@ -206,6 +206,9 @@ a manual release check.
 - **An offline self-hosted runner queues jobs until it returns.** There is no online probe: `github.token`
   cannot list repo runners (HTTP 403). Dispatch with `runner: github` to build without it; job
   `timeout-minutes` does not cover queue wait.
+- **`updater-e2e.yml` needs two stable releases on this repository** (previous → latest). With fewer,
+  `Tools/updater/e2e-windows.ps1` skips with a notice. After the 2026 move its first real run is
+  v0.17.2 → the release after it.
 
 ## Out of scope
 

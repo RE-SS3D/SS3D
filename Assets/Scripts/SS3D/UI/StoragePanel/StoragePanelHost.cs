@@ -458,7 +458,7 @@ namespace SS3D.UI.StoragePanel
             }
 
             _pendingAnchors[container] = screenAnchor;
-            viewer.ShowContainerUI(container);
+            viewer.CmdShowContainerUI(container);
         }
 
         /// <summary>Glyph for the corner open button on container items; Main HUD hands over its catalog sprite.</summary>

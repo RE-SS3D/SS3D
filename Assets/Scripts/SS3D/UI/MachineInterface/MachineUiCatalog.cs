@@ -50,6 +50,13 @@ namespace SS3D.UI.MachineInterface
         public VisualTreeAsset MeterTemplate { get; init; }
         public StyleSheet MeterTemplateStyle { get; init; }
         public StyleSheet[] MeterComponentStyles { get; init; }
+
+        public VisualTreeAsset OperativeUplinkTemplate { get; init; }
+        public StyleSheet OperativeUplinkTemplateStyle { get; init; }
+        public StyleSheet[] OperativeUplinkComponentStyles { get; init; }
+        public VisualTreeAsset HealthScannerTemplate { get; init; }
+        public StyleSheet HealthScannerTemplateStyle { get; init; }
+        public StyleSheet[] HealthScannerComponentStyles { get; init; }
     }
 
     /// <summary>
@@ -167,6 +174,29 @@ namespace SS3D.UI.MachineInterface
                 ComponentStyles = assets.MeterComponentStyles,
                 ShellKind = MachineInterfaceShellKind.DiegeticDevice,
                 CreateBinder = root => new MeterInterfaceBinder(root),
+            });
+
+            if (assets.OperativeUplinkTemplate != null)
+            {
+                MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
+                {
+                    InterfaceId = MachineInterfaceIds.OperativeUplink,
+                    Template = assets.OperativeUplinkTemplate,
+                    TemplateStyle = assets.OperativeUplinkTemplateStyle,
+                    ComponentStyles = assets.OperativeUplinkComponentStyles,
+                    ShellKind = MachineInterfaceShellKind.DiegeticDevice,
+                    CreateBinder = root => new OperativeUplinkBinder(root),
+                });
+            }
+
+            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
+            {
+                InterfaceId = MachineInterfaceIds.HealthScanner,
+                Template = assets.HealthScannerTemplate,
+                TemplateStyle = assets.HealthScannerTemplateStyle,
+                ComponentStyles = assets.HealthScannerComponentStyles,
+                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
+                CreateBinder = root => new HealthScanBinder(root),
             });
         }
     }

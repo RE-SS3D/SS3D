@@ -16,12 +16,12 @@ do end to end. Each goal is split into **slices**, the smaller pieces that have 
 | Goal | What you'll be able to do | Progress |
 |------|---------------------------|----------|
 | [Test server](#test-server) | Download a release, click join, play with others on a live server | 7 of 8 done, 1 partial |
-| [Map authoring](#map-authoring) | Build your own station in a release build and hand it in | 11 of 12 done, 1 partial |
+| [Map authoring](#map-authoring) | Build your own station in a release build and hand it in | 11 of 14 done, 3 partial |
 | [Nuclear Operatives round](#nuclear-operatives-round) | Play a full Nuke Ops round from spawn to end screen | 11 of 15 done, 3 partial |
 | [Station round](#station-round) | Play a short, bare-bones SS13 shift with jobs and antagonists | 1 of 7 done, 2 partial |
 
-What already works, system by system, is listed in
-[the merge guide](Documents/MERGE_GUIDE.md#shipped-gameplay).
+What already works, system by system, is in the
+[coverage table](Documents/architecture/INDEX.md#coverage-table).
 
 ## Test server
 
@@ -58,6 +58,8 @@ What already works, system by system, is listed in
 | ✅ | A8 | Every object in the editor's palette sits in a tab named for where it goes, and search finds anything from any tab (objects are filed under their new tabs, search finds them from any tab, Furniture and Machines are split under headings, and an object's variants share one slot that V cycles) |
 | ✅ | A9 | A valve you open, a locker you lock or fill in the editor stays that way when the map is saved and loaded |
 | ✅ | A10 | Turn on the Atmos or Power view to see what every pipe and cable is connected to, click one to follow it with live numbers, and see what won't work before a round shows you: a red marker sits on each clear mistake, worded as Map Check words it. The Power view tints each room by the circuit that feeds it and shows which machines have power; Room air shows rooms filling, and an admin can pause and step the station to watch it tick by tick |
+| 🟡 | A11 | Building feels like a house builder: floors and walls bring their own subfloor, doors drop into walls, and a Room tool draws a walled, floored room in one drag (built, waiting for its first hand test) |
+| 🟡 | A12 | Paint department colours onto the floor square by square, the way a station marks its departments (built, waiting for its first hand test) |
 
 ## Nuclear Operatives round
 
