@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SS3D UI Bible</title>
+<!-- Kode Mono, on trial for small text and radial labels; web-only stand-in until a TTF is picked for Assets/. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+<link rel="stylesheet" href="bible.css">
+</head>
+<body>
+<div class="page">
+
+<nav class="nav" aria-label="Sections">
+    <div class="nav__brand">ui bible</div>
+    <div class="nav__tabs" role="tablist" aria-orientation="horizontal" aria-label="Sections">
+    <a href="#overview">overview</a>
+    <a href="#elements">all elements</a>
+    <a href="#states">states</a>
+    <div class="nav__group">Foundations</div>
+    <a href="#colour">colour</a>
+    <a href="#type">type</a>
+    <a href="#sizes">sizes</a>
+    <a href="#icons">icons</a>
+    <div class="nav__group">Components</div>
+    <a href="#slot">inventory slot</a>
+    <a href="#strip">hands + gear strip</a>
+    <a href="#equipment">equipment grid</a>
+    <a href="#storage">storage panel</a>
+    <a href="#pile">pile picker</a>
+    <a href="#search">search sheet</a>
+    <a href="#radial">radial menu</a>
+    <a href="#menu">menu controls</a>
+    <div class="nav__group">Screens</div>
+    <a href="#setup">character setup</a>
+    <a href="#editor">map editor</a>
+    <a href="#mainmenu">main menu</a>
+    <a href="#lobby">lobby</a>
+    <a href="#charwin">character</a>
+    <div class="nav__group">Porting</div>
+    <a href="#port">css → uss</a>
+    <a href="#questions">open questions</a>
+    </div>
+</nav>
+
+<main>
+
+<div class="banner banner--error" id="boot-error">Part of the page didn't start, so tabs or specimens may be missing. If this keeps happening, clear the bible's saved settings (reference nudges, last tab) and reload. <button type="button" class="chip-btn" data-reset-storage>clear saved settings and reload</button><pre data-errors></pre></div>
+<div class="banner" id="file-banner">Opened from disk: Chromium refuses to load the fonts over <code>file://</code>, so headings fall back to a system font. Run the <code>ui-bible</code> preview in the app, or from the repo root run <code>python Documents/plans/assets/ui-bible/serve.py</code> and open <code>localhost:8642/Documents/plans/assets/ui-bible/</code>.</div>
+
+<section id="overview">
+<header class="hero">
+    <h1>ui bible</h1>
+    <div class="hero__rule"></div>
+    <p class="lede">The look of SS3D's main UI, rebuilt in HTML/CSS from the reference screenshots so it can be tuned in a browser before it moves to UI Toolkit. Sprites and fonts are the real project files, loaded straight from <code>Assets/</code>. Sizes are UI Toolkit reference pixels, so a number here is the number that goes in the USS. Each specimen's <b>reference</b> strip shows its screenshot side by side, or under the UI as an overlay. Each section is a tab: pick one in the bar at the top, or step through them with the links at the bottom.</p>
+</header>
+
+    <h2>principles</h2>
+    <p class="sec-lede">What the reference screens agree on. Every component tab follows these rules.</p>
+    <div class="principles">
+        <div class="principle"><b>The world shows through</b><span>HUD surfaces are dark and translucent, never opaque. Wells, panels and sheets darken the floor by about half. The one exception is a surface that opens over other UI (a dropdown list, a popover, a tool hint): it's nearly opaque, or the text under it reads through.</span></div>
+        <div class="principle"><b>Active is a line, not a colour</b><span>The active hand's outline brightens.</span></div>
+        <div class="principle"><b>One slot, one line weight</b><span>Hands, gear, equipment and the search sheet are the same component. In the strip it's a grey fill with an outline; equipment keeps only a faint fill and the search sheet none (<i>frames</i>). Every outline is 2 px. Corners are a fixed share of each box, so a slot looks the same at any size: 15 % on gear slots and cells, 6/64 on hands and frames.</span></div>
+        <div class="principle"><b>White sprites, alpha for state</b><span>Every glyph is a white sprite. An item draws at full strength and an empty slot's hint at about half.</span></div>
+        <div class="principle"><b>Point back to the source</b><span>An open container's panel carries a caret aimed at the slot it came from, so nested containers read as a chain.</span></div>
+        <div class="principle"><b>One squared typeface</b><span>SquareDeal, lowercase, for titles, tabs and labels. The L / R marks need capitals, so they use Disket Mono. Kode Mono for the radial labels and the export code. The map editor, which has no reference, puts its labels in Disket Mono Bold and its text in Kode Mono (all on trial).</span></div>
+    </div>
+</section>
+
+<section id="elements">
+    <h2>all elements</h2>
+    <p class="sec-lede">Every base element on one page, empty: no items, glyphs or icons. The table under them is read straight off these elements, so the parts they share show where components could merge.</p>
+
+    <div class="spec">
+        <div class="spec__bar"><span class="spec__name">slots and cells</span><span class="spec__src">boxes that hold one thing</span><div class="spec__tools"></div></div>
+        <div class="spec__stage bd-floor"><div class="spec__zoom ui">
+            <div class="demo-row">
+                <div class="demo-item" id="el-slot"><div data-slot=""></div><div class="cap">.inventory-slot</div></div>
+                <div class="demo-item" id="el-wide">
+                    <div style="flex-direction:row"><div data-slot="wide|active|L"></div><div style="width:5px"></div><div data-slot="wide|R"></div></div>
+                    <div class="cap">--wide hands: --active L, R</div>
+                </div>
+                <div class="demo-item" id="el-frame"><div data-slot="frame"></div><div class="cap">--frame</div></div>
+                <div class="demo-item" id="el-frame-sm"><div data-slot="frame|sm"></div><div class="cap">--frame --sm</div></div>
+                <div class="demo-item" id="el-cell"><div class="storage-slot"></div><div class="cap">.storage-slot</div></div>
+            </div>
+        </div></div>
+    </div>
+
+    <div class="spec">
+        <div class="spec__bar"><span class="spec__name">surfaces</span><span class="spec__src">what slots and cells sit on</span><div class="spec__tools"></div></div>
+        <div class="spec__stage bd-floor"><div class="spec__zoom ui">
+            <div class="demo-row" style="align-items:flex-start">
+                <div class="demo-item" id="el-panel"><div data-storage="el-panel" data-cols="4" data-items=";;;;;;;"></div><div class="cap" style="margin-top:22px">.storage-panel, __caret</div></div>
+                <div class="demo-item" id="el-pile"><div data-build="pile" data-empty></div><div class="cap">.pile-picker</div></div>
+                <div class="demo-item" id="el-sheet"><div data-build="paperdoll" data-empty></div><div class="cap">.character-paperdoll</div></div>
+                <div class="demo-item" id="el-equipment">
+                    <div data-build="equipment" data-empty></div>
+                    <div class="cap">.equipment-grid</div>
+                </div>
+            </div>
+        </div></div>
+        <div class="spec__notes">The pocket is <code>--frameless</code>: no outline and a glyph a quarter smaller. On the equipment grid it has no fill either, and hovering lights the glyph; on the sheet it takes the sheet's hover. It keeps its glyph here (top right of the grid, right of the sheet's suit).</div>
+    </div>
+
+    <div class="spec">
+        <div class="spec__bar"><span class="spec__name">radial</span><span class="spec__src">disc, wedge, hub</span><div class="spec__tools"></div></div>
+        <div class="spec__stage bd-floor"><div class="spec__zoom ui">
+            <div class="demo-row"><div class="demo-item" id="el-radial"><div data-build="radial" data-empty></div><div class="cap">.radial-interaction-menu</div></div></div>
+        </div></div>
+    </div>
+
+    <div class="spec">
+        <div class="spec__bar"><span class="spec__name">menu controls</span><span class="spec__src">character setup and its kin</span><div class="spec__tools"></div></div>
+        <div class="spec__stage bd-menu"><div class="spec__zoom ui" style="zoom:calc(var(--spec-zoom) * 0.75)">
+            <div class="demo-row" style="align-items:flex-start">
+                <div class="demo-item" id="el-title" style="width:300px;margin-right:30px;align-items:stretch">
+                    <div class="screen-title">title</div>
+                    <div class="screen-rule" style="margin-top:8px"></div>
+                    <div class="cap">.screen-title, .screen-rule</div>
+                </div>
+                <div class="demo-item" id="el-tabs" style="margin-right:30px;align-items:flex-start">
+                    <div class="menu-tabs"><div class="menu-tab">tab</div><div class="menu-tab menu-tab--selected">selected</div><div class="menu-tab menu-tab--disabled">disabled</div></div>
+                    <div class="cap">.menu-tab</div>
+                </div>
+                <div class="demo-item" id="el-fields" style="width:248px;margin-right:30px;align-items:stretch">
+                    <div class="menu-field"><div class="menu-field__label">label</div><input class="menu-text-field" spellcheck="false"></div>
+                    <div class="menu-segmented" style="margin-bottom:26px"><div class="menu-segmented__option menu-segmented__option--selected">selected</div><div class="menu-segmented__option">option</div></div>
+                    <div class="menu-field"><div class="menu-dropdown"><div class="menu-dropdown__value">value</div><div class="menu-dropdown__arrow"></div></div></div>
+                    <div class="menu-field"><div class="menu-slider" data-value="0.5"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                    <div class="menu-field"><div class="menu-code"></div></div>
+                    <div class="screen-rule screen-rule--short"></div>
+                    <div class="cap">field, segmented, dropdown, slider, code, short rule</div>
+                </div>
+                <div class="demo-item" id="el-picks" style="margin-right:30px;align-items:flex-start">
+                    <div style="flex-direction:row;align-items:flex-start;margin-bottom:18px">
+                        <div class="style-tile"></div><div class="style-tile style-tile--selected"></div>
+                        <div class="menu-scroller" style="height:83px;margin-left:5px"><div class="menu-scroller__thumb"></div></div>
+                    </div>
+                    <div class="color-picker" style="--picker-hue:#ff7a1a">
+                        <div class="color-picker__ring"></div><div class="color-picker__tri"></div>
+                        <div class="color-picker__hue-mark" style="left:31%;top:92%"></div><div class="color-picker__mark" style="left:62%;top:52%"></div>
+                    </div>
+                    <div class="cap">style tile, scroller, colour picker</div>
+                </div>
+                <div class="demo-item" id="el-buttons" style="align-items:flex-end">
+                    <div class="menu-button" style="margin-bottom:18px"><div class="menu-button__tip"></div><div class="menu-button__text">button</div></div>
+                    <div class="menu-button menu-button--secondary" style="margin-bottom:18px"><div class="menu-button__tip"></div><div class="menu-button__text">secondary</div></div>
+                    <div class="preview-frame" style="width:200px;height:150px"><div class="preview-frame__viewport"></div></div>
+                    <div class="cap">.menu-button, .preview-frame</div>
+                </div>
+            </div>
+        </div></div>
+    </div>
+
+    <h3>what each one is made of</h3>
+    <p class="sec-lede">Size in reference px, fill, edge, corner radius and opacity. Each colour is named after the token that holds it; a plain colour that happens to equal a token gets that token's name too (pure black reads as <code>--ui-viewport</code>).</p>
+    <div class="parts-wrap"><table class="port parts" id="parts-table"></table></div>
+
+    <h3>where they could merge</h3>
+    <ol class="qs">
+        <li><b>One panel for the three surfaces.</b> The storage panel (24, 24, 24 at 0.55), the search sheet (30, 30, 30 at 0.53) and the pile plate (16, 20, 16 at 0.54) are the same dark see-through surface in three near-identical greys. Two carry the dark 2 px edge, and the corners are 9.55, 8 and 6. One panel with one fill token, the edge on or off, and one corner rule would cover all three: the storage panel's corner follows its cells (theirs plus the 4 px between them and its edge), and the sheet and plate could do the same.</li>
+        <li><b>One box for every slot and cell.</b> Gear slot, hand, frame, small frame, the sheet's frame, storage cell and pile cell are one box: a 2 px white outline at 0.38, 0.24, 0.16 or none, the grey fill on (gear, hands), faint (equipment) or off, at 88 × 64, 64, 45 or 37 px. Corners are two shares of the box: 15 % on gear slots and cells (9.6 at 64, 5.55 at 37), and the frame slot's 6/64 on hands and frames (6 at 64, 4.22 on the sheet). One slot with size, fill and line-strength variants covers them; storage cells and pile cells would become two of its sizes.</li>
+        <li><b>One flat plate for the menus.</b> Tab, segmented option, secondary button and style tile share <code>--ui-menu-tab</code> (black 0.46); text field, dropdown and export code share <code>--ui-menu-field</code> (black 0.48); the slider track is black 0.45. Tab, segmented option and primary button all turn <code>--ui-menu-selected</code> white when picked. That's one sharp-cornered plate with idle and selected, and the three blacks could be one.</li>
+        <li><b>Loose values.</b> The selected style tile's grey fill and edge (120 at 0.42, 205 at 0.75), the slider handle (42, 38, 40 at 0.96), the scroller (black 0.5) the 3 px corners on tiles, scroller and handle, and the sheet's 8 px and plate's 6 px corners are the values in the table without a token.</li>
+        <li><b>The radial stays its own.</b> Ring, wedge and hub share nothing with the rest: it's the only round HUD element and the only light HUD surface.</li>
+    </ol>
+</section>
+
+<section id="states">
+    <h2>states</h2>
+    <p class="sec-lede">Every element in each of its states, side by side. Hover, pressed and focus use the real rules (each <code>:hover</code>, <code>:active</code> and <code>:focus</code> rule gets a twin answering to <code>.is-hover</code>, <code>.is-pressed</code>, <code>.is-focus</code>), so they draw exactly like the live ones.</p>
+
+    <div class="spec">
+        <div class="spec__bar"><span class="spec__name">hud</span><span class="spec__src">slots, cells, radial</span><div class="spec__tools"></div></div>
+        <div class="spec__stage bd-floor"><div class="spec__zoom ui"><div data-states="hud"></div></div></div>
+    </div>
+
+    <div class="spec">
+        <div class="spec__bar"><span class="spec__name">menus</span><span class="spec__src">character setup controls</span><div class="spec__tools"></div></div>
+        <div class="spec__stage bd-menu"><div class="spec__zoom ui" style="zoom:calc(var(--spec-zoom) * 0.75)"><div data-states="menu"></div></div></div>
+    </div>
+
+    <div class="spec">
+        <div class="spec__bar"><span class="spec__name">map editor</span><span class="spec__src">tools, palette, tabs, switch, camera dial</span><div class="spec__tools"></div></div>
+        <div class="spec__stage bd-dark"><div class="spec__zoom ui"><div data-states="editor"></div></div></div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════ FOUNDATIONS ═══════════════════════════════ -->
+
+<section id="colour">
+    <h2>colour</h2>
+    <p class="sec-lede">Each chip draws the token over the floor (left) and over black (right), so the alpha is visible. Source: <code>tokens.css</code>.</p>
+    <div id="swatches"></div>
+</section>
+
+<section id="type">
+    <h2>type</h2>
+    <p class="sec-lede"><code>SquareDeal.ttf</code> is an exact match for the character-setup screens and already backs <code>.font-display</code> in <code>ss3d-typography.uss</code>. Body copy stays on <code>LiberationSans</code>. Disket Mono and Kode Mono are on trial; the rows below show them beside the old fonts at the same capital height. In the map editor, which has no reference, labels are Disket Mono Bold and text is Kode Mono. Switching is a token change: <code>--ui-font-label</code> (labels), <code>--ui-font-text</code> (text), or <code>--ui-font-mark</code> with the mark's size and top tokens.</p>
+    <div class="type-row"><div class="type-row__meta">title · 49 · SquareDeal<br>--ui-type-title</div><div class="type-row__sample" style="font:49px/1 'SquareDeal'">character setup</div></div>
+    <div class="type-row"><div class="type-row__meta">heading · 19 · SquareDeal<br>tabs, field labels, values</div><div class="type-row__sample" style="font:19px 'SquareDeal'">appearance · skintone · job outfit preview</div></div>
+    <div class="type-row"><div class="type-row__meta">button · 25 · SquareDeal</div><div class="type-row__sample" style="font:25px 'SquareDeal'">continue</div></div>
+    <div class="type-row"><div class="type-row__meta">label · 11 · SquareDeal<br>field captions, notes</div><div class="type-row__sample" style="font:11px 'SquareDeal'">export code for testing · render texture</div></div>
+    <div class="type-row"><div class="type-row__meta">hand mark · 9 px capitals<br>--ui-font-mark · --ui-type-mark</div><div class="type-row__sample"><span style="font-family:var(--ui-font-mark);font-size:calc(var(--ui-type-mark) * 3)">L R</span> <span style="font:11px 'LiberationSans';color:var(--pg-dim);margin-left:10px">the current pick, at 3×</span></div></div>
+    <div class="type-row"><div class="type-row__meta">hand mark candidates<br>at 3×, same capital height</div><div class="type-row__sample type-row__sample--cands"><span><span style="font:39px 'Disket Mono Bold'">L R</span><span style="font:11px 'LiberationSans';color:var(--pg-dim)">Disket Mono Bold</span></span><span><span style="font:39px 'Disket Mono'">L R</span><span style="font:11px 'LiberationSans';color:var(--pg-dim)">Disket Mono</span></span><span><span style="font:27px 'OdeToIdleGaming'">L R</span><span style="font:11px 'LiberationSans';color:var(--pg-dim)">OdeToIdleGaming</span></span></div></div>
+    <div class="type-row"><div class="type-row__meta">radial label · 11<br>--ui-font-text</div><div class="type-row__sample type-row__sample--cands"><span><span style="font-family:var(--ui-font-text);font-size:11px">Open · Turn on · Enter</span><span style="font:11px 'LiberationSans';color:var(--pg-dim)">Kode Mono, on trial</span></span><span><span style="font:11px 'LiberationSans'">Open · Turn on · Enter</span><span style="font:11px 'LiberationSans';color:var(--pg-dim)">LiberationSans, before</span></span></div></div>
+    <div class="type-row"><div class="type-row__meta">small · 14 · export code<br>--ui-font-text</div><div class="type-row__sample"><span style="font-family:var(--ui-font-text);font-size:14px">{"name":"","sex":0,"race":0,"skintone":0.36,"height":0.84,"fat":0.04,"hair":"#4b301d"}</span></div></div>
+    <div class="type-row"><div class="type-row__meta">map editor label · 8-12 · Disket Mono Bold<br>--ui-font-label · capitals only</div><div class="type-row__sample type-row__sample--cands"><span><span style="font-family:var(--ui-font-label);font-size:12px">layer view mode · map check</span><span style="font:11px 'LiberationSans';color:var(--pg-dim)">12: titles</span></span><span><span style="font-family:var(--ui-font-label);font-size:10px">upper · floors · auto subfloor</span><span style="font:11px 'LiberationSans';color:var(--pg-dim)">10: mode and sub-tabs, switches</span></span><span><span style="font-family:var(--ui-font-label);font-size:8px">grey dark</span><span style="font:11px 'LiberationSans';color:var(--pg-dim)">8: slot names; 9: badges</span></span></div></div>
+    <div class="type-row"><div class="type-row__meta">map editor text · 11 · Kode Mono<br>--ui-font-text</div><div class="type-row__sample"><span style="font-family:var(--ui-font-text);font-size:11px">drag places a line · air alarm at (14, 9) faces no room · 75°</span></div></div>
+    <p style="margin-top:14px;color:var(--pg-dim)">Sizes are reference px. On a 1920-wide screen they draw 1.6× larger, so 11 becomes about 18.</p>
+</section>
+
+<section id="sizes">
+    <h2>sizes</h2>
+    <p class="sec-lede">PanelSettings scales from 1200 × 800 and matches width, so a 1920 × 1080 screen is 1200 × 675 reference px. Shown here at 1:1 reference px.</p>
+    <div class="sizes" id="sizes-list"></div>
+</section>
+
+<section id="icons">
+    <h2>icons</h2>
+    <p class="sec-lede">Only the sprites this page draws, gathered from the specimens themselves, so the list can't drift from what's built. Click a tile to copy its project path. The 15 loose PNGs added under <code>Assets/Art/Graphics/UI/</code> are pixel-identical copies of <code>Assets/Art/Icons/Inventory/</code>. The bible points at the <code>Icons/</code> copies, which AGENTS.md names as the home for icons. <code>Card.png</code> is the one new glyph.</p>
+    <div id="icon-groups"></div>
+</section>
+
+<!-- ═══════════════════════════════ COMPONENTS ═══════════════════════════════ -->
+
+<section id="slot">
+    <h2>inventory slot</h2>
+    <p class="sec-lede">One component behind hands, gear, equipment and the search sheet, with one outline weight everywhere. Same class names as the shipped <code>InventorySlot.uss</code>, so the port is a restyle rather than a rebuild.</p>
+
+    <div class="spec">
+        <div class="spec__bar"><span class="spec__name">anatomy</span><span class="spec__src">every visible part is a child element: no pseudo-elements in USS</span><div class="spec__tools"></div></div>
+        <div class="spec__stage bd-floor" style="display:flex;align-items:center;justify-content:center;min-height:260px">
+            <div class="spec__zoom ui" style="zoom:3"><div data-slot="Rendered/Radio|wide|active|L"></div></div>
+        </div>
+    </div>
+
+    <div class="spec" data-cmp="frame">
+        <div class="spec__bar"><span class="spec__name">.inventory-slot--frame</span><span class="spec__src">the outline without the fill: equipment grid and search sheet</span><div class="spec__tools"></div></div>
+        <div class="spec__stage bd-dark"><div class="spec__zoom ui">
+            <div class="demo-row">
+                <div class="demo-item">
+                    <div style="flex-direction:row">
+                        <div data-slot="Rendered/CD|wide|active|L"></div>
+                        <div style="width:8px"></div>
+                        <div data-slot="Inventory/HandRight|wide|R"></div>
+                    </div>
+                    <div class="cap">wide hands, L active (equipment open)</div>
+                </div>
+                <div class="demo-item"><div data-slot="Inventory/BeepHead|frame"></div><div class="cap">empty</div></div>
+                <div class="demo-item"><div data-slot="Inventory/BeepPocket|frame|frameless"></div><div class="cap">--frameless</div></div>
+                <div class="demo-item"><div data-slot="Inventory/Eyes|frame|sm"></div><div class="cap">--sm</div></div>
+            </div>
+        </div></div>
+        <div class="spec__notes"><code>--sm</code> shrinks the box and its corner radius, never the 2 px outline. The pocket draws without a frame in both references, hence <code>--frameless</code>.</div>
+    </div>
+</section>
+
+<section id="strip">
+    <h2>hands + gear strip</h2>
+    <p class="sec-lede">Bottom centre, always on: ID and backpack, then the two hands, one even gap all along. Hands are always the wide slot, the one shown under <b>inventory slot</b>. Click a hand to make it active.</p>
+    <div class="spec" data-cmp="strip">
+        <div class="spec__bar"><span class="spec__name">.hands-gear-strip</span><span class="spec__src">HandsGearStrip.uss</span><div class="spec__tools"></div></div>
+        <div class="spec__stage bd-floor"><div class="spec__zoom ui">
+            <div class="hands-gear-strip">
+                <div class="hands-gear-strip__group">
+                    <div data-slot="UI/Card|glyph"></div>
+                    <div data-slot="Inventory/BeepBack|glyph"></div>
+                </div>
+                <div class="hands-gear-strip__group" data-hands>
+                    <div data-slot="Rendered/Radio|wide|active|L"></div>
+                    <div data-slot="Rendered/CD|wide|R"></div>
+                </div>
+            </div>
+        </div></div>
+        <div class="spec__notes">The ID card and backpack are rendered items in the references. There are no renders for them yet, so their line glyphs stand in at 78 %.</div>
+    </div>
+</section>
+
+<section id="equipment">
+    <h2>equipment grid</h2>
+    <p class="sec-lede">Your own worn slots, 3 × 4, opened on demand. The slots are frames: an outline over a faint fill, straight over the world.</p>
+    <div class="spec" data-cmp="equipment">
+        <div class="spec__bar"><span class="spec__name">.equipment-grid</span><span class="spec__src">EquipmentGrid.uss</span><div class="spec__tools"></div></div>
+        <div class="spec__stage bd-floor" style="padding:0;min-height:420px">
+            <div class="spec__zoom ui" style="min-height:262px">
+                <div style="position:relative;padding:18px" data-build="equipment"></div>
+            </div>
+        </div>
+        <div class="spec__notes">Row order follows the reference: back, head, pocket / eyes, mask, ears / uniform, suit, gloves / ID, shoes, belt. Every glyph draws at the same placeholder alpha, as in the reference.</div>
+    </div>
+</section>
+
+<section id="storage">
+    <h2>storage panel</h2>
+    <p class="sec-lede">One panel per open container, anchored above the slot it came from, with a caret pointing down at it. A container opened from inside a panel stacks another panel above, which makes the chain from the reference. Click a container (the toolbox in hand, or the one in the panel) to close or reopen its panel.</p>
+    <div class="spec" data-cmp="storage">
+        <div class="spec__bar"><span class="spec__name">.storage-panel</span><span class="spec__src">StoragePanel.uss</span><div class="spec__tools"></div></div>
+        <div class="spec__stage bd-floor"><div class="spec__zoom ui">
+            <div class="anchor-root" style="position:relative;width:300px;height:300px" id="storage-demo">
+                <div class="layer">
+                    <div data-storage="inner" data-cols="4" data-anchor="#demo-inner"
+                         data-items="; Rendered/ToolboxNote; Rendered/CD; ; ; ; ; "></div>
+                    <div data-storage="toolbox" data-cols="4" data-anchor="#demo-hand"
+                         data-items="Rendered/ToolboxNote id=demo-inner; Rendered/CD; ; ; ; ; ; "></div>
+                </div>
+                <div class="hands-gear-strip" style="position:absolute;left:0;right:0;bottom:0;justify-content:center">
+                    <!-- As in the reference: just the two wide hands, the box held in the left one. -->
+                    <div class="hands-gear-strip__group" data-hands>
+                        <div data-slot="Rendered/ToolboxNote|wide|L" id="demo-hand"></div>
+                        <div data-slot="Inventory/HandRight|wide|active|R"></div>
+                    </div>
+                </div>
+            </div>
+        </div></div>
+        <div class="spec__notes"><ul>
+            <li>Cells are outlines on the panel's own fill, with no fill of their own: 37 px, 2 px apart. The panel's own edge is darker than its fill. The darker squares behind some items in the reference are those items' renders, not the cell.</li>
+            <li>No header: the reference panels are bare grids.</li>
+            <li>Anchoring is plain maths: the source's centre becomes the caret's <code>left</code>. In C#, read the source's <code>worldBound</code> and set <code>style.left/top</code>.</li>
+        </ul></div>
+    </div>
+</section>
+
+<section id="pile">
+    <h2>pile picker</h2>
+    <p class="sec-lede">When several items share one floor spot, hovering the spot opens a 3 × 3 picker on the floor: a dark plate and nine items, with no outline on the cells. The reference pile is nine soda cans; there's no can render, so the CD stands in (here and in the storage panels).</p>
+    <div class="spec" data-cmp="pile">
+        <div class="spec__bar"><span class="spec__name">.pile-picker</span><span class="spec__src">new</span><div class="spec__tools"></div></div>
+        <div class="spec__stage bd-floor-green"><div class="spec__zoom ui"><div data-build="pile"></div></div></div>
+    </div>
+</section>
+
+<section id="search">
+    <h2>search sheet</h2>
+    <p class="sec-lede">Someone else's gear laid over their silhouette (<code>HarmBase.png</code> tinted black), placed where each item is worn. The same slot component as everywhere else, at <code>--sm</code>, with the same 2 px outline.</p>
+    <div class="spec" data-cmp="search">
+        <div class="spec__bar"><span class="spec__name">.character-paperdoll</span><span class="spec__src">Examine.uss</span><div class="spec__tools"></div></div>
+        <div class="spec__stage bd-floor"><div class="spec__zoom ui"><div data-build="paperdoll"></div></div></div>
+        <div class="spec__notes">Layout from the reference, seen from the front: eyes / head, mask, ears / uniform, suit, pocket / their right hand, belt, their left hand / gloves, ID, back / shoes.</div>
+    </div>
+</section>
+
+<section id="radial">
+    <h2>radial menu</h2>
+    <p class="sec-lede">The reference's three verbs on a six-direction wheel, 60° apart. Drawn in code, no sprites: the disc is a round element with a thick dark border, the hub a warm grey circle in its hole, and the wedge a 60° band built from two arcs. Move the pointer around the disc.</p>
+    <div class="spec" data-cmp="radial">
+        <div class="spec__bar"><span class="spec__name">.radial-interaction-menu</span><span class="spec__src">RadialInteractionMenu.uss</span><div class="spec__tools"></div></div>
+        <div class="spec__stage bd-floor"><div class="spec__zoom ui"><div data-build="radial"></div></div></div>
+        <div class="spec__notes"><ul>
+            <li>The disc and hub are plain USS (border, radius, colour). The wedge is the one part that needs code: an SVG path here, and <code>generateVisualContent</code> with Painter2D in Unity, using the same two arcs.</li>
+            <li><b>Enter</b> has no interaction icon. Heroicons' <code>Outline/Logout</code>, turned around, is the reference's glyph.</li>
+            <li>Icons and labels are smaller than the reference's: each icon is sized from its drawn area to look about 24 px, inside the same 32 px slot, and the labels are Kode Mono (on trial) at 11 px. Every verb's icon centre and label sit at the same spot in its block, and the block is centred on the band between hub and rim.</li>
+        </ul></div>
+    </div>
+</section>
+
+<section id="menu">
+    <h2>menu controls</h2>
+    <p class="sec-lede">The character-setup family: flat plates, white for selected, dark translucent for idle, SquareDeal throughout.</p>
+    <div class="spec">
+        <div class="spec__bar"><span class="spec__name">menu-tab · menu-segmented · menu-text-field · menu-dropdown · menu-slider · menu-button</span><div class="spec__tools"></div></div>
+        <div class="spec__stage bd-menu"><div class="spec__zoom ui" style="zoom:calc(var(--spec-zoom) * 0.75)">
+            <div class="demo-row" style="align-items:flex-start">
+                <div class="demo-item" style="margin-right:30px;align-items:flex-start">
+                    <div class="menu-tabs" data-tabs>
+                        <div class="menu-tab">settings</div>
+                        <div class="menu-tab menu-tab--selected">appearance</div>
+                        <div class="menu-tab">hair</div>
+                        <div class="menu-tab menu-tab--disabled">beard</div>
+                    </div>
+                    <div class="cap">tabs · idle, selected, disabled</div>
+                </div>
+                <div class="demo-item" style="width:270px;margin-right:30px;align-items:stretch">
+                    <div class="menu-field"><div class="menu-field__label">name</div><input class="menu-text-field" placeholder="Enter name" spellcheck="false"></div>
+                    <div class="menu-segmented" style="margin-bottom:18px"><div class="menu-segmented__option menu-segmented__option--selected">male</div><div class="menu-segmented__option">female</div></div>
+                    <div class="menu-field"><div class="menu-field__label">job outfit preview</div>
+                        <div class="menu-dropdown"><div class="menu-dropdown__value">naked</div><div class="menu-dropdown__arrow"></div>
+                            <div class="menu-dropdown__list"><div class="menu-dropdown__item">naked</div><div class="menu-dropdown__item">assistant</div><div class="menu-dropdown__item">engineer</div><div class="menu-dropdown__item">security</div></div></div></div>
+                    <div class="menu-field"><div class="menu-field__label">height</div><div class="menu-slider" data-value="0.72"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                    <div class="screen-rule screen-rule--short"></div>
+                </div>
+                <div class="demo-item" style="align-items:flex-end">
+                    <div class="menu-button" style="margin-bottom:18px"><div class="menu-button__tip"></div><div class="menu-button__text">continue</div></div>
+                    <div class="menu-button menu-button--secondary" style="margin-bottom:18px"><div class="menu-button__tip"></div><div class="menu-button__text">back</div></div>
+                    <div class="preview-frame" style="width:200px;height:150px"><div class="preview-frame__viewport"><div class="cs-dome"></div></div></div>
+                    <div class="cap">primary, secondary, preview frame</div>
+                </div>
+            </div>
+        </div></div>
+        <div class="spec__notes">The continue button's notch is a 12 px square rotated 45° behind the plate (<code>__tip</code>), which ports as-is. The colour wheel and style tiles appear in the <a href="#setup">character setup</a> tab.</div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════ SCREENS ═══════════════════════════════ -->
+
+<section id="setup">
+    <h2>character setup</h2>
+    <p class="sec-lede">The reference screen, live. Tabs switch panes. Sliders drive the stand-in model: skintone, height and fat. The colour wheel tints the hair styles. The model is a placeholder for the RenderTexture viewport.</p>
+    <div class="stage" id="cs-stage" data-cmp="setup">
+        <div class="spec__bar"><span class="spec__name">character-setup</span><span class="spec__src">1200 × 675</span><div class="spec__tools"><button class="chip-btn" data-fullscreen>full screen</button></div></div>
+        <div class="stage__viewport">
+            <div class="stage__canvas ui bd-menu cs" id="cs-canvas">
+                <!-- Positions measured on the screenshots: a centred layout with ~100 px side margins. -->
+                <div class="zone" style="left:102px;top:24px"><div class="screen-title">character setup</div></div>
+                <div class="zone screen-rule" style="left:97px;right:97px;top:74px"></div>
+
+                <div class="zone" style="left:105px;top:116px">
+                    <div class="menu-tabs" data-tabs>
+                        <div class="menu-tab menu-tab--selected" data-tab="settings">settings</div>
+                        <div class="menu-tab" data-tab="appearance">appearance</div>
+                        <div class="menu-tab" data-tab="hair">hair</div>
+                        <div class="menu-tab menu-tab--disabled" data-tab="beard">beard</div>
+                        <div class="menu-tab" data-tab="preview">preview</div>
+                    </div>
+                </div>
+
+                <div class="zone" style="left:297px;top:125.5px;width:248px">
+                    <div class="cs-pane" data-pane="settings">
+                        <div class="menu-field"><div class="menu-field__label">name</div><input class="menu-text-field" placeholder="Enter name" spellcheck="false" data-bind="name"></div>
+                        <div class="menu-segmented" style="margin-top:-21px;margin-bottom:30px" data-bind="sex"><div class="menu-segmented__option menu-segmented__option--selected">male</div><div class="menu-segmented__option">female</div></div>
+                        <div class="menu-field"><div class="menu-field__label">race</div>
+                            <div class="menu-dropdown"><div class="menu-dropdown__value">human</div><div class="menu-dropdown__arrow"></div><div class="menu-dropdown__list"><div class="menu-dropdown__item">human</div></div></div></div>
+                        <div class="menu-field"><div class="menu-field__label">job outfit preview</div>
+                            <div class="menu-dropdown"><div class="menu-dropdown__value">naked</div><div class="menu-dropdown__arrow"></div>
+                                <div class="menu-dropdown__list"><div class="menu-dropdown__item">naked</div><div class="menu-dropdown__item">assistant</div><div class="menu-dropdown__item">engineer</div><div class="menu-dropdown__item">security</div><div class="menu-dropdown__item">medical</div></div></div></div>
+                        <div class="screen-rule screen-rule--short" style="margin:7px 0 33px"></div>
+                        <div class="menu-field"><div class="menu-field__label">export code for testing</div><div class="menu-code" id="cs-code" style="margin-top:6.5px"></div></div>
+                    </div>
+
+                    <div class="cs-pane is-hidden" data-pane="appearance">
+                        <div class="menu-field"><div class="menu-field__label">skintone</div><div class="menu-slider" data-value="0.36" data-bind="skintone"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                        <div class="menu-field"><div class="menu-field__label">height</div><div class="menu-slider" data-value="0.84" data-bind="height"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                        <div class="menu-field"><div class="menu-field__label">fat</div><div class="menu-slider" data-value="0.04" data-bind="fat"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                        <div class="menu-field"><div class="menu-field__label">breasts</div><div class="menu-slider" data-value="0.62" data-bind="breasts"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                    </div>
+
+                    <div class="cs-pane is-hidden" data-pane="hair">
+                        <div class="menu-field__label">color</div>
+                        <div class="color-picker" id="cs-color">
+                            <div class="color-picker__ring"></div>
+                            <div class="color-picker__tri"></div>
+                            <div class="color-picker__hue-mark"></div>
+                            <div class="color-picker__mark"></div>
+                        </div>
+                        <div class="menu-field__label" style="margin-top:28px">style</div>
+                        <div class="cs-style-row">
+                            <div class="style-grid" id="cs-styles"></div>
+                            <div class="menu-scroller"><div class="menu-scroller__thumb"></div></div>
+                        </div>
+                    </div>
+
+                    <div class="cs-pane is-hidden" data-pane="beard"></div>
+
+                    <div class="cs-pane is-hidden" data-pane="preview">
+                        <div class="menu-field"><div class="menu-field__label">job outfit preview</div>
+                            <div class="menu-dropdown"><div class="menu-dropdown__value">assistant</div><div class="menu-dropdown__arrow"></div>
+                                <div class="menu-dropdown__list"><div class="menu-dropdown__item">naked</div><div class="menu-dropdown__item">assistant</div><div class="menu-dropdown__item">engineer</div><div class="menu-dropdown__item">security</div><div class="menu-dropdown__item">medical</div></div></div></div>
+                        <div class="menu-field"><div class="menu-field__label">turn</div><div class="menu-slider" data-value="0.5" data-bind="turn"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                    </div>
+                </div>
+
+                <div class="zone preview-frame" style="left:604px;top:124px;width:482px;height:444px">
+                    <div class="preview-frame__viewport">
+                        <div class="cs-dome"></div>
+                        <div class="cs-char" id="cs-char"><div class="cs-char__body"></div><div class="cs-char__hair"></div></div>
+                        <div class="cs-rt-note">render texture</div>
+                    </div>
+                </div>
+
+                <div class="zone" style="right:122px;bottom:28px">
+                    <div class="menu-button"><div class="menu-button__tip"></div><div class="menu-button__text">continue</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="editor">
+    <h2>map editor</h2>
+    <p class="sec-lede">The map editor (B), redrawn with nothing but the bible's parts. The layout, tools, tabs and palette are the shipped <code>MapEditorView</code>'s, and the palette is the real catalog. The station behind it is a drawn stand-in. Click tools, tabs and slots; the camera dial turns and zooms the station; layers, settings, save and load open their popovers. With the pointer over the screen, <b>1</b>–<b>5</b> pick a tool and <b>V</b> / <b>Shift+V</b> step a family's variant.</p>
+    <div class="stage" id="me-stage">
+        <div class="spec__bar"><span class="spec__name">map-editor</span><span class="spec__src">MapEditor.uss · 1200 × 675</span><div class="spec__tools"><button class="chip-btn" data-fullscreen>full screen</button></div></div>
+        <div class="stage__viewport">
+            <div class="stage__canvas ui" id="me-canvas"></div>
+        </div>
+    </div>
+
+    <h2>what changed</h2>
+    <p class="sec-lede">The same parts as the old editor, each swapped for the bible component that does the same job. This is now in Unity: <code>MapEditor.uss</code> on the token sheet <code>ui-tokens.uss</code>, built by <code>MapEditorView</code>. The sizes here are the game's: tool cells at 40 px and library cells at 78 px (25 % and 50 % up from the first draft), the regions 8 px from the top.</p>
+    <table class="port">
+        <tr><th>Part</th><th>Before</th><th>Now</th></tr>
+        <tr><td>Surfaces</td><td>Opaque <code>#171a1e</code> panels, 1 px border</td><td><code>--ui-editor-panel</code>, near-black at 92 %, with the storage panel's darker 2 px edge: denser than the HUD's panel, so the tools read over a busy station. Mode tabs sit on black at 80 %, the search field on black at 90 %, and cell outlines are white at 0.3 (0.5 on hover)</td></tr>
+        <tr><td>Active state</td><td>Rust fill and rust border</td><td>A 2 px outline and the glyph at full alpha, like the active hand. The outline takes the tool's or category's colour (below); elsewhere it is white</td></tr>
+        <tr><td>Colour coding</td><td>Rust for everything on</td><td>Two small palettes. Tools say what a click does: construct green, select and dropper blue, delete red, room amber. The active tool's outline, every tool's hotkey mark (dim until active) and the hint bar's edge take its colour. Categories say which layer you build on: upper sky, lower orange, items lime, scripts violet. Each category tab carries a 3 px stripe on its left edge, and the open sub-tab's underline and the picked slot's outline take the category's colour (C#: <code>map-editor-root--tool-*</code>, <code>map-editor-bottom-row--*</code>)</td></tr>
+        <tr><td>Tool strips</td><td>A column of 38 px buttons down the left, separator lines</td><td>A row at the top centre, with the hint bar under it (C#: <code>map-editor-region--top</code>, a horizontal strip). Storage cells at 40 px with 15 % corners, one panel per group. The hotkey sits in the cell's corner like a hand mark (C#: a label per tool). The view tools (layers, settings, atmos and power views) are a column at the top left, and reset view is a half-size cell (20 px) under the camera dial</td></tr>
+        <tr><td>Tool hints</td><td>A plate beside the button</td><td>The same plate with the storage caret turned to point at the button: under the top bar's buttons, beside the right column's. Keys as Disket chips. The bar's popovers (save, load) open under it too</td></tr>
+        <tr><td>Mode rail</td><td>108 px column, icon and label, rust when on</td><td>Character setup's tabs at 19 px tall and 76 wide, labels at 10 px: a white plate when selected, the category's stripe on the left edge. No icons</td></tr>
+        <tr><td>Sub-tabs</td><td>Rust plates with icons</td><td>Text tabs; the selected one gets a 2 px white line under its label. No icons (C#: drop the icon element)</td></tr>
+        <tr><td>Library</td><td>Titled window ("Object Library — UPPER / FLOORS"), 108 × 104 slots, about 9 in a row</td><td>No title, since the tabs say it (C#: drop <code>_windowTitle</code>). 78 px cells with the gear slot's 15 % corner, two-line names in Disket Mono Bold at 12 px; the whole library is 144 px tall. Floors drop the "Tile" prefix of their asset names ("grey dark", not "tile grey dark"; C#: in <code>MapEditorCatalog.DisplayLabel</code>)</td></tr>
+        <tr><td>Variant families</td><td>Family on line 1, variant on line 2 under the slot</td><td>The family's name takes both lines, as any name does, and the variant names itself on a strip along the cell's bottom edge, so "engineering airlock" isn't cut to "engineeri…" (C#: the variant label moves into the icon frame)</td></tr>
+        <tr><td>Empty icons</td><td>Blank: most tiles have no icon sprite</td><td>The sub-tab's glyph at the empty-slot alpha, as the equipment grid does</td></tr>
+        <tr><td>Camera dial</td><td>A ring with four buttons</td><td>The radial menu at 100 px: the quadrant under the pointer lights as a wedge, and the whole quadrant is the button. The hub has no plate, only a white camera glyph; it tints faintly on hover and brighter while camera options is open, which it opens</td></tr>
+        <tr><td>Map Check</td><td>Below the camera column, its own filter buttons</td><td>A warning cell at the foot of the view tools, with a dot in the worst severity's colour (red for errors, amber for warnings, none when clear). Clicking it opens Map Check beside the view tools as a popover (C#: a toggle in the view strip, the panel moves into the popover layer). The filter is the menu's segmented control at 18 px. Spacing separates its parts, not lines. Severity dots are the one place colour carries state</td></tr>
+        <tr><td>Popovers</td><td>Beside their anchor</td><td>The same, with a caret on the button that opened them. Switches are new: the slot outline, and a thumb that goes white when on</td></tr>
+        <tr><td>Type</td><td>Gurajada for the library title, the default font elsewhere</td><td>Labels (tabs, titles, tool and slot names, buttons, badges) in Disket Mono Bold capitals at 10–14 px; text (hints, toasts, issues, values, search) in Kode Mono</td></tr>
+        <tr><td>Hint bar, toast</td><td>Rust-bordered plates, 17–18 px text</td><td>The editor panel plate, Kode Mono, keys as chips. The hint bar's edge takes the active tool's colour; the toast gets the frame outline so it reads as news</td></tr>
+    </table>
+
+    <h2>open questions</h2>
+    <ol class="qs">
+        <li><b>Tile icons.</b> Most tile assets have an empty <code>icon</code>, so the shipped palette shows a name with no picture. The floor, wall, door and pipe pictures here are stand-ins; baked renders would replace them.</li>
+        <li><b>Icon colour.</b> The map editor SVGs are stroked <code>#d8d8d8</code>, not white. Re-exported white, alpha alone would set their state, as with the HUD's sprites.</li>
+        <li><b>Severity colours</b> (<code>--ui-danger</code>, <code>--ui-warn</code>, <code>--ui-ok</code>) are new; no reference shows them.</li>
+        <li><b>Idle mode tabs.</b> The plate is now black at 80 % and each tab carries its category's stripe, so the rail reads over space. The label is still the menu's idle text; an editor may want it brighter than a menu's.</li>
+        <li><b>Not drawn yet:</b> the systems legend and sim bar, the trace panel, the room properties and gas marker popovers, the show-UI button, and the side headings a long sub-tab (machines) gets.</li>
+    </ol>
+</section>
+
+<section id="mainmenu">
+    <h2>main menu</h2>
+    <p class="sec-lede">The main menu redrawn in the map editor's look. <b>design</b> switches to the shipped menu (<b>old</b>: <code>MainMenuPreviewWindow</code>'s sample states captured at 1920 × 1080; Settings shows the shipped panel from the lobby), or shows both side by side or overlaid. The layout, text and states are the shipped <code>MainMenu.uxml</code> and <code>MainMenuView</code>'s, the settings screen in the panel is <code>PlayerSettingsPanel</code>'s, and the wallpaper is Clownin, one of the stills and clips the game rotates. The chips jump to each state; it is also live: type a name, open Join or Settings, join a server, play locally. <b>Esc</b> is Back while the pointer is over the screen.</p>
+    <div class="stage" id="mm-stage" data-cmp="mainmenu">
+        <div class="spec__bar"><span class="spec__name">main-menu</span><span class="spec__src">MainMenu.uss · 1200 × 675</span><div class="spec__tools"><button class="chip-btn" data-fullscreen>full screen</button></div></div>
+        <div class="cmp-bar"><span>state</span><div class="cmp-bar__group mm-chips" data-mm-chips></div></div>
+        <div class="stage__viewport">
+            <div class="stage__canvas ui" id="mm-canvas"></div>
+        </div>
+    </div>
+
+    <h2>what changed</h2>
+    <p class="sec-lede">The same tree as the shipped menu, so the port is a rewrite of <code>MainMenu.uss</code> and <code>PlayerSettingsPanel.uss</code> on <code>ui-tokens.uss</code>, plus the C# changes marked. Behaviour and text are unchanged.</p>
+    <table class="port">
+        <tr><th>Part</th><th>Before</th><th>Now</th></tr>
+        <tr><td>Plates</td><td>A full-height sidebar (<code>#222</code> at 97 %), a <code>#353538</code> panel with a <code>#161616</code> header band</td><td>Floating plates 16 px from the screen's edges: <code>--ui-editor-panel</code> with the storage panel's 2 px edge and corner, as on the map editor. A header is a title on the plate, with no band</td></tr>
+        <tr><td>Sidebar rows</td><td>Dark plates, Join in rust, Gurajada at 20 px</td><td>A tab column, as on character setup. Rows are light tints (<code>--ui-editor-button</code>). The open screen's row is the white plate with the continue button's notch, and on the home screen Join holds it as the default action (C#: <code>--accent</code> on Join only while no screen is open, <code>--selected</code> on the open row)</td></tr>
+        <tr><td>Port</td><td>An "Advanced ▾" text button</td><td>A square at the end of the Play locally row: PORT over a caret</td></tr>
+        <tr><td>Music</td><td>Icon button, a "Next" text button, a round slider</td><td>Two storage cells at 28 px: the toggle outlined white when on, next track as a glyph (UXML: an icon in the Button), and the menu slider</td></tr>
+        <tr><td>Update banner</td><td>Blue edge, blue button</td><td>The info colour (<code>--ui-info</code>, new) on its edge and dot; Update and restart is the white primary</td></tr>
+        <tr><td>Servers</td><td>Outlined cards on <code>#2a2a2e</code>, rust Join, colours set in C#</td><td>Tints separated by spacing. The status dot and status text carry the state: ok, warn (full), info (needs an update), danger (offline). Join is white on the first joinable recent server, Update has the info outline, a button that can't be used fades (C#: the colours move from <code>MainMenuView</code> into dot and status classes)</td></tr>
+        <tr><td>Refusals, details</td><td>A red-tinted strip; inline fields</td><td>The same strip in the danger colour; details are label and field rows, Remove with the danger outline</td></tr>
+        <tr><td>Dialogs</td><td>A 440 px panel over a 55 % dim</td><td>The floating surface (<code>--ui-float</code>) over the blurred wallpaper and a 30 % dim. Steps are tints: OK in the ok colour, FAILED and the reason in the danger colour</td></tr>
+        <tr><td>Settings</td><td>Its own palette (<code>--sp-*</code>), Gurajada tabs, rust for the chosen option</td><td>The same plate and parts: the map editor's sub-tabs (a white line under the open one), rows as tints, segmented options as dark plates with the chosen one white, keys as the editor's chips at row size. The changed-from-default dot takes the info colour</td></tr>
+        <tr><td>Type</td><td>Gurajada titles, Liberation Sans text, Spessman for values, as raw TTFs</td><td>Disket Mono Bold for labels (titles, rows, buttons, column heads), Kode Mono for text (names, addresses, hints, values), both the baked font assets</td></tr>
+    </table>
+
+    <h2>decided</h2>
+    <ol class="qs">
+        <li><b>Where you are</b> is the white plate: Join holds it on the home screen and gives it up while Settings is open. The open row keeps the notch.</li>
+        <li><b>News</b> is <code>--ui-info</code> (sky): the update banner, a server that needs an update, a changed setting.</li>
+        <li><b>In this pass:</b> the settings panel (so the lobby's Settings tab changes too), the sidebar layout as drawn, Disket Mono Bold titles.</li>
+        <li><b>One wallpaper:</b> Clownin, always. The game no longer picks one at random, rotates every 60 s or plays video wallpapers.</li>
+        <li><b>Not drawn yet:</b> the admin-token prompt in the dialog and Settings' "Keep these settings?" prompt.</li>
+        <li><b>Scale:</b> the port draws the menu as this tab does. <code>UiReferenceScale</code> lays its root out at 1200 × 675 and scales it to the screen (1.6× at 1080p), times the UI scale, so <code>MainMenu.uss</code> keeps these numbers. Ported 2026-11-21.</li>
+    </ol>
+</section>
+
+<section id="lobby">
+    <h2>lobby</h2>
+    <p class="sec-lede">The lobby in the main menu's look. <b>design</b> switches to the shipped lobby (<b>old</b>, captured in the Editor at 1920 × 1080), or shows both side by side or overlaid; the state chips pick the old capture nearest each state. Layout, text and states are the shipped <code>Lobby.uxml</code> and <code>LobbyView</code>'s, with the tab views, the Join picker, the character switcher and the Last Round summary. Settings is the same <code>PlayerSettingsPanel</code> as the main menu's, without its header. A station render stands in for the live station behind it. The chips jump to each state; it is also live: ready up, open the tabs, switch characters, pick a job and join, chat, flip the admin switch. The clock runs. <b>Esc</b> closes the top thing while the pointer is over the screen. <b>layout</b> switches between B, the character stage below (chosen 2026-11-21), and A, the shipped layout; the page remembers your pick.</p>
+    <div class="stage" id="lb-stage" data-cmp="lobby">
+        <div class="spec__bar"><span class="spec__name">lobby</span><span class="spec__src">Lobby.uss · LobbyJoin.uss · CharacterSwitcher.uss · 1200 × 675</span><div class="spec__tools"><button class="chip-btn" data-fullscreen>full screen</button></div></div>
+        <div class="cmp-bar"><span>layout</span><div class="cmp-bar__group"><button class="chip-btn" data-lb-layout="b" title="A narrow sidebar and panel, the character large between them">B · character stage</button><button class="chip-btn" data-lb-layout="a" title="Today's layout: the character card in a wide sidebar">A · card in the sidebar</button></div></div>
+        <div class="cmp-bar"><span>state</span><div class="cmp-bar__group mm-chips" data-lb-chips></div></div>
+        <div class="stage__viewport">
+            <div class="stage__canvas ui" id="lb-canvas"></div>
+        </div>
+    </div>
+
+    <h2>layout b: the character stage</h2>
+    <p class="sec-lede">The owner's pick over A (2026-11-21): a narrow sidebar on the left, a narrow panel on the right, and the character you play large between them, about 47 % of the width. Everything else (states, colours, the Join picker, the prompt) is A's.</p>
+    <table class="port">
+        <tr><th>Part</th><th>Layout B</th></tr>
+        <tr><td>Sidebar</td><td>264 px instead of 360, full height: logo, round, Ready / Join, Observe (its reason wraps), music, and the footer's two buttons stacked. The character card moves to the stage</td></tr>
+        <tr><td>Stage</td><td>560 px between the plates, over the station. A plate with "Playing as", the name and the High job (its department's glyph and colour, and a bar under the plate); the model standing on a floor glow in the department's colour; under it Switch character and Edit character. Clicking the model opens the character window, as the card did. The switcher opens above its button, the notch pointing up</td></tr>
+        <tr><td>Model</td><td>In game the booth's live render texture (<code>CharacterPreviewBooth</code>, as the card's preview today); its 3 : 4 full-body frame fits the stage. Here a still of it, rendered in the Editor (<code>renders/lobby-character.png</code>), stands in for every character</td></tr>
+        <tr><td>Panel</td><td>360 px on the right: the server name and Back on one line, players, round and the admin switch on the next (map and mode stay in Info's server table); short tab names (Info, Chat, Settings, Last round, Server). Info runs in one scrolling column; Chat puts the channels over the field</td></tr>
+        <tr><td>Wide tabs</td><td>Settings, Last round and Server settings need the room, so the panel widens over the stage while they're open, and the stage hides</td></tr>
+    </table>
+    <ol class="qs">
+        <li><b>Chosen:</b> B over A (2026-11-21), with a compact name plate and a small switch bar near the screen's bottom.</li>
+        <li><b>Turning the model:</b> the booth turns the character in 90° steps today (<code>SetAngleIndex</code>). Drag to turn, arrows beside the model, or neither?</li>
+        <li><b>Wide tabs:</b> widening over the stage keeps Settings readable but hides the character. The other way is a narrow Settings (one column of rows), which Server settings would also need.</li>
+        <li><b>Scale:</b> the stage is the part the shell's scale question matters least for: the model fills whatever room is left.</li>
+    </ol>
+
+    <h2>what changed</h2>
+    <p class="sec-lede">The same trees as the shipped lobby, so the port is a rewrite of <code>Lobby.uss</code>, <code>LobbyJoin.uss</code> and <code>CharacterSwitcher.uss</code> on <code>ui-tokens.uss</code>, retiring <code>LobbyTokens.uss</code>, plus the C# changes marked. Behaviour and text are unchanged.</p>
+    <table class="port">
+        <tr><th>Part</th><th>Before</th><th>Now</th></tr>
+        <tr><td>Plates</td><td>A full-height 400 px sidebar at 97 %, a <code>#353538</code> panel with a <code>#161616</code> header band and tab strip</td><td>The sidebar runs the full height from the left edge, as today's, on <code>--ui-editor-panel</code> with an edge on its right; the logo sits above a rule across it. The panel is the main menu's floating plate. Header and tabs sit on the plate, with no band</td></tr>
+        <tr><td>Round</td><td>A section with a 48 px Spessman timer, green and amber status</td><td>A tint whose 3 px left edge, dot and word carry the round's state: info while it counts down, warn loading, starting, held or over, ok in progress (C#: <code>LobbyTone</code> gains <code>Info</code> for the running countdown). The readout in Kode Mono at 36 px, struck and dimmed while held. The header's round word takes the same colour</td></tr>
+        <tr><td>Character</td><td>An inset card, a 124 × 211 preview, Gurajada "EDIT CHARACTER"</td><td>A lighter plate than the round's, with a faint edge, the preview in a storage cell's outline inside, the name in Kode, the High job in its department's colour behind its swatch; the card's left edge takes that colour too (C#: <code>lobby__card--dept</code> and the department class from the High job). Switch character is a row; open, it is the white plate with the notch aimed at the switcher (C#: <code>lobby__switch--open</code> while the popover is up)</td></tr>
+        <tr><td>Ready / Join</td><td>A rust plate, green when ready</td><td>Ready up and Join are the white plate, the screen's call to action. Once ready it is the ok plate (green, dark text and check): done, click to cancel. Off, it fades (C#: <code>--disabled</code> in place of <code>:disabled</code>'s opacity rule). Observe is a tint with the ghost, its subtitle under the title (UXML: the two labels in <code>lobby__observe-text</code>)</td></tr>
+        <tr><td>Music, footer</td><td>The menu's old music row; quiet text buttons</td><td>The main menu's music row (two cells, the slider; Next as a glyph). Report a bug and Quit stay quiet buttons with Disket labels; Quit armed takes the danger outline</td></tr>
+        <tr><td>Header, tabs</td><td>Gurajada server name and tabs on dark bands; an amber ADMIN badge; a green switch</td><td>The server name in Disket, the meta as Disket keys over Kode values. Tabs are the menu's tab plates in a row, the open one white. Admin is amber, as now: the ADMIN badge's outline and text, the switch when on</td></tr>
+        <tr><td>Server Info</td><td>Banner, MOTD, key-value rows with hairlines, the change log</td><td>The same, the rows as tints; the change log in Kode with faint refs and links</td></tr>
+        <tr><td>Chat</td><td>An inset log, rust for the chosen channel, LOOC in blue</td><td>The log and composer near-black, as the editor's search. Each channel has a colour, as now: OOC white, LOOC info, Admin warn. It colours the line's tag, the chosen channel's plate (the settings' segmented control) and the field's left edge (C#: <code>lobby-chat__composer--&lt;channel&gt;</code> with the chosen button). Admin names stay warn</td></tr>
+        <tr><td>Settings</td><td>The shared panel in its own palette</td><td>The main menu's panel without its header (<code>showHeader: false</code>): its sub-tabs sit under the lobby's tab plates, so the two levels read apart</td></tr>
+        <tr><td>Server Settings</td><td>Cards with header bands, inset fields, rust Start and checkboxes</td><td>A tint for the round's state with its colour on the left edge, the settings' group titles, the main menu's buttons by consequence (Start white; Force Start, Cancel Countdown and Hold Summary outlined warn; Stop Round danger), near-black fields and dropdowns, rules as tints with a cell for a checkbox that turns white</td></tr>
+        <tr><td>Join picker</td><td>A 1280 × 800 panel, rust selection and Join, department tints</td><td>The floating surface over the lobby. Departments code everything, as the map editor's categories: each job row has its department's left edge, glyph cell and label; the picked one outlines in that colour, fills its ring and shows its description, and Join fills with it ("Join as Doctor" in medical). Manifest groups carry the edge and a coloured name. A gap in the manifest ("No Doctor aboard") is news, in info</td></tr>
+        <tr><td>Switcher</td><td>A dark popover, rows on <code>#2a2a2e</code></td><td>The floating surface; rows are tints with their High job's department edge and name, the character you play has the white outline and an ok check. Delete asks inline with the danger outline</td></tr>
+        <tr><td>Last Round</td><td>RoundEnd.uss: arcade and terminal fonts, the result in team colours</td><td>The same sections on the same parts. The result is a tint with the winning side as a 3 px left edge (crew info, operatives danger), the title in Disket; fates and objectives in ok and danger. Roster lines carry their department's edge and job colour, operatives a danger edge; you are the white chip</td></tr>
+        <tr><td>Colour</td><td>Rust accent, per-department fills, its own pastel palette</td><td>Colour coding, as on the map editor: four things, each with its colour in fixed places. Departments (<code>--ui-dept-*</code>, LobbyTokens' pastels as new tokens) as a 3 px left edge, a glyph, a name, a picked outline. The round's state, chat channels and admin, in <code>--ui-ok</code> / <code>--ui-warn</code> / <code>--ui-danger</code> / <code>--ui-info</code>. No rust: the call to action is the white plate, as on the main menu</td></tr>
+        <tr><td>Compact layout</td><td><code>LobbyView</code> adds <code>.lobby--compact</code> below 1600 px of panel width (1366 × 768)</td><td>Kept as a switch; its sizes are retuned once the scale question below is settled</td></tr>
+        <tr><td>Type</td><td>Gurajada, Liberation Sans, Spessman, as raw TTFs</td><td>Disket Mono Bold for labels, Kode Mono for text, the baked font assets</td></tr>
+    </table>
+
+    <h2>open questions</h2>
+    <ol class="qs">
+        <li><b>Scale (settled):</b> as the main menu's port, the lobby's root goes through <code>UiReferenceScale</code> (1200 × 675, scaled to the screen), so <code>Lobby.uss</code> keeps these numbers.</li>
+        <li><b>The call to action.</b> Ready up, Join and Start Round are the white plate, as Join on the main menu; everything else is colour-coded. The shipped lobby makes them rust. Keep white, or give the primary its own colour?</li>
+        <li><b>Last Round and the round-end overlay.</b> The tab is RoundEnd.uss, which also draws the in-round summary over the station. Restyling the tab restyles that overlay too: in this pass, or keep the arcade look for both until the overlay gets its own bible tab?</li>
+        <li><b>The character window</b> opens from the card. Its restyle belongs to the <a href="#setup">character setup</a> tab's look, but the window is the new Appearance / Jobs / Antags one, which the bible doesn't draw yet. Its own tab next, before the port?</li>
+        <li><b>Not drawn yet:</b> the map-load failure lines, the in-round Escape menu's own differences beyond Back to round, and the first-connect state (a random character, nothing set).</li>
+    </ol>
+</section>
+
+<section id="charwin">
+    <h2>character</h2>
+    <p class="sec-lede">The character window (Appearance, Jobs, Antags, opened from the lobby's character), redrawn in the old reference's look: the <a href="#setup">character setup</a> tab's title and rule, its column of tabs, labels centred over their controls and the framed viewport, with <b>return to lobby</b> as its continue button. The content is the shipped <code>CharacterWindowView</code>'s, and the style pictures and job icons are the game's own. <b>design</b> switches to the shipped window (<b>old</b>, captured in the Editor at 1920 × 1080). Tabs, sliders, swatches, styles, the job levels and the antag switch all work; the save state follows your changes.</p>
+    <div class="stage" id="cw-stage" data-cmp="charwin">
+        <div class="spec__bar"><span class="spec__name">character</span><span class="spec__src">CharacterWindow.uss · 1200 × 675</span><div class="spec__tools"><button class="chip-btn" data-fullscreen>full screen</button></div></div>
+        <div class="stage__viewport">
+            <div class="stage__canvas ui bd-menu cs cw" id="cw-canvas">
+                <div class="zone" style="left:102px;top:24px"><div class="screen-title">character setup</div></div>
+                <div class="zone screen-rule" style="left:97px;right:97px;top:74px"></div>
+
+                <!-- Who you're editing: the switcher as the reference's dropdown, at the end of the title line. -->
+                <div class="zone cw-who" style="right:97px;top:30px">
+                    <div class="cw-who__label">character</div>
+                    <div class="menu-dropdown cw-who__picker" data-cw-picker><div class="menu-dropdown__value">Omar Maddox</div><div class="menu-dropdown__arrow"></div><div class="menu-dropdown__list" data-cw-chars></div></div>
+                </div>
+
+                <div class="zone" style="left:105px;top:116px">
+                    <div class="menu-tabs" data-tabs data-cw-tabs>
+                        <div class="menu-tab menu-tab--selected" data-tab="profile">profile</div>
+                        <div class="menu-tab" data-tab="body">body</div>
+                        <div class="menu-tab" data-tab="skin">skin &amp; eyes</div>
+                        <div class="menu-tab" data-tab="hair">hair</div>
+                        <div class="menu-tab" data-tab="beard">facial hair</div>
+                        <div class="menu-tab" data-tab="jobs">jobs</div>
+                        <div class="menu-tab" data-tab="antags">antags</div>
+                    </div>
+                </div>
+
+                <!-- The centre column: labels over their controls, as the reference. -->
+                <div class="zone cw-column" style="left:297px;top:125.5px;width:248px">
+                    <div class="cs-pane" data-pane="profile">
+                        <div class="menu-field"><div class="menu-field__label">name</div><input class="menu-text-field" value="Omar Maddox" spellcheck="false" data-cw-name></div>
+                        <div class="cw-small-button cw-small-button--under" data-cw="random-name">randomize name</div>
+                        <div class="menu-field"><div class="menu-field__label">job outfit preview</div>
+                            <div class="menu-dropdown" data-cw-outfit><div class="menu-dropdown__value">high job (none: assistant)</div><div class="menu-dropdown__arrow"></div>
+                                <div class="menu-dropdown__list"><div class="menu-dropdown__item">high job (none: assistant)</div><div class="menu-dropdown__item">naked</div><div class="menu-dropdown__item">captain</div><div class="menu-dropdown__item">security</div><div class="menu-dropdown__item">engineer</div><div class="menu-dropdown__item">doctor</div></div></div></div>
+                        <div class="screen-rule screen-rule--short" style="margin:7px 0 30px"></div>
+                        <div class="menu-field"><div class="menu-field__label">everything else</div><div class="cw-small-button" data-cw="random-look">randomize appearance</div></div>
+                        <div class="cw-note">Everything here is visible to other players.</div>
+                    </div>
+
+                    <div class="cs-pane is-hidden" data-pane="body">
+                        <div class="menu-field"><div class="menu-field__label">height</div><div class="menu-slider" data-value="0.65"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                        <div class="menu-field"><div class="menu-field__label">female</div><div class="menu-slider" data-value="0.92"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                        <div class="menu-field"><div class="menu-field__label">fat</div><div class="menu-slider" data-value="0.26"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                        <div class="menu-field"><div class="menu-field__label">muscle</div><div class="menu-slider" data-value="0.02"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                        <div class="menu-field"><div class="menu-field__label">chest</div><div class="menu-slider" data-value="0.07"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                        <div class="menu-field"><div class="menu-field__label">jaw</div><div class="menu-slider" data-value="0.35"><div class="menu-slider__tracker"></div><div class="menu-slider__fill"></div><div class="menu-slider__dragger"></div></div></div>
+                    </div>
+
+                    <div class="cs-pane is-hidden" data-pane="skin">
+                        <div class="menu-field"><div class="menu-field__label">skin tone</div><div class="cw-swatches" data-cw-swatches="skin"></div></div>
+                        <div class="menu-field"><div class="menu-field__label">eye colour</div><div class="cw-swatches" data-cw-swatches="eyes"></div></div>
+                        <div class="menu-field__label">eyebrows</div>
+                        <div class="cw-styles cw-styles--short" data-cw-styles="eyebrows"></div>
+                        <div class="cw-style-name" data-cw-style-name="eyebrows"></div>
+                    </div>
+
+                    <div class="cs-pane is-hidden" data-pane="hair">
+                        <div class="menu-field"><div class="menu-field__label">colour</div><div class="cw-swatches" data-cw-swatches="hair"></div></div>
+                        <div class="menu-field__label">style</div>
+                        <div class="cw-styles" data-cw-styles="hair"></div>
+                        <div class="cw-style-name" data-cw-style-name="hair"></div>
+                    </div>
+
+                    <div class="cs-pane is-hidden" data-pane="beard">
+                        <div class="cw-note cw-note--top">Facial hair takes the hair's colour.</div>
+                        <div class="menu-field__label">style</div>
+                        <div class="cw-styles" data-cw-styles="beard"></div>
+                        <div class="cw-style-name" data-cw-style-name="beard"></div>
+                    </div>
+                </div>
+
+                <!-- Jobs and Antags need the width: they take the viewport's place while open. -->
+                <div class="zone cw-wide" style="left:297px;top:116px;width:789px;height:452px">
+                    <div class="cs-pane cw-jobs is-hidden" data-pane="jobs">
+                        <div class="cw-jobs__head">
+                            <div class="cw-note">Rank the jobs you want. One job can be high; medium and low take as many as you like. Everyone's choices are settled together when the round starts.</div>
+                        </div>
+                        <div class="cw-jobs__scroll"><div class="cw-jobs__grid" data-cw-jobs></div></div>
+                        <div class="cw-fallback">
+                            <div class="cw-fallback__label">if none of my jobs is open</div>
+                            <div class="menu-segmented cw-seg cw-seg--wide" data-cw-fallback><div class="menu-segmented__option menu-segmented__option--selected">become assistant</div><div class="menu-segmented__option">return to lobby</div></div>
+                        </div>
+                    </div>
+
+                    <div class="cs-pane cw-antags is-hidden" data-pane="antags">
+                        <div class="cw-antags__title">antagonist eligibility</div>
+                        <div class="cw-note">Switching a role on lets the round pick you for it. It is not a job: you still spawn in your job, and most rounds you will never be drawn. Every role starts off.</div>
+                        <div class="cw-info">These roles are only drawn if their gamemode is picked for the round. The lobby never shows which mode will run, so a "secret" round stays secret.</div>
+                        <div class="cw-antag">
+                            <div class="cw-antag__icon"></div>
+                            <div class="cw-antag__text">
+                                <div class="cw-antag__name">nuclear operative</div>
+                                <div class="cw-antag__copy">A member of a Syndicate strike team sent to destroy the station with a nuclear device.</div>
+                            </div>
+                            <div class="menu-segmented cw-seg" data-cw-antag><div class="menu-segmented__option menu-segmented__option--selected">off</div><div class="menu-segmented__option">on</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="zone preview-frame cw-frame" style="left:604px;top:124px;width:482px;height:444px" title="In game: drag to turn">
+                    <div class="preview-frame__viewport cw-viewport" data-cw-viewport>
+                        <div class="cs-dome"></div>
+                        <div class="cw-model" data-cw-model></div>
+                    </div>
+                </div>
+                <div class="zone cw-under" style="left:604px;top:580px;width:482px">
+                    <div class="menu-segmented cw-seg" data-cw-angle><div class="menu-segmented__option menu-segmented__option--selected">front</div><div class="menu-segmented__option">side</div><div class="menu-segmented__option">back</div></div>
+                    <div class="cw-hint">drag to turn</div>
+                </div>
+
+                <!-- Save state, then the continue button: back to the lobby. -->
+                <div class="zone cw-save" style="left:105px;bottom:32px" data-cw-save>
+                    <div class="cw-save__state" data-cw-state>saved</div>
+                    <div class="cw-small-button" data-cw="discard">discard</div>
+                    <div class="cw-small-button" data-cw="save">save</div>
+                </div>
+                <div class="zone" style="right:114px;bottom:28px">
+                    <div class="menu-button cw-continue" data-cw="lobby"><div class="menu-button__tip"></div><div class="menu-button__text">return to lobby</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2>what changed</h2>
+    <p class="sec-lede">The same content as the shipped window, in the reference's composition. The port is a rewrite of <code>CharacterWindow.uxml</code> / <code>.uss</code> (off <code>LobbyClassic.uss</code>) and of <code>CharacterWindowView</code>'s layout; the model and saving are unchanged.</p>
+    <table class="port">
+        <tr><th>Part</th><th>Before</th><th>Now</th></tr>
+        <tr><td>Frame</td><td>A full-screen panel with a header band: CHARACTER, the switcher, Saved, Discard, Save, Return to lobby</td><td>The reference's title and rule over the blurred station. The switcher is a dropdown at the end of the title line; save state, Discard and Save sit at the bottom left; Return to lobby is the continue button at the bottom right</td></tr>
+        <tr><td>Tabs</td><td>Appearance, Jobs, Antags across the top</td><td>The reference's tab column: profile, body, skin &amp; eyes, hair, facial hair, jobs, antags. Appearance splits into the first five, so each pane fits the centre column</td></tr>
+        <tr><td>Appearance</td><td>Two columns: name and body sliders with values; a 7-wide grid of hair and beard pictures with names</td><td>One control column, labels centred over their controls: name and randomize; body sliders without numbers; skin, eye and hair colours as swatch rows; styles as 3-wide grids of the game's pictures, the picked one named under the grid</td></tr>
+        <tr><td>Preview</td><td>A framed render on the left with Front / Side / Back and Show clothing</td><td>The reference's framed viewport on the right, Front / Side / Back under it, and drag to turn (as in the lobby). Show clothing becomes the reference's "job outfit preview" dropdown (high job, naked, or a job)</td></tr>
+        <tr><td>Jobs</td><td>Two columns of departments; per job a High / Medium / Low / Never control or "Not in the game yet"</td><td>The same, wide over the viewport while open: departments with their colour on the edge, glyph and name; the levels as the reference's segmented control; the fallback as one at the foot</td></tr>
+        <tr><td>Antags</td><td>A card with an Off switch</td><td>The same in the reference's parts: the role and its line, Off / On as a segmented control</td></tr>
+        <tr><td>Type</td><td>Liberation Sans, Gurajada</td><td>The reference's SquareDeal for labels and controls, as the character setup tab</td></tr>
+    </table>
+
+    <h2>open questions</h2>
+    <ol class="qs">
+        <li><b>Jobs over the viewport.</b> Jobs needs the width, so it covers the preview, and the High job's outfit can't be watched while ranking. Keep it, or a narrower one-column list beside the viewport?</li>
+        <li><b>Font (decided 2026-11-21):</b> the reference's SquareDeal, as drawn here, not the lobby's Disket / Kode. The project has it only as a raw TTF (<code>Assets/Art/Font/Fonts/SquareDeal.ttf</code>); the port bakes a static SDF asset beside <code>DisketMonoBoldSDF</code> and <code>KodeMonoSDF</code>, set to the standard text generator as they are.</li>
+        <li><b>Hair colour.</b> The reference picks it on a colour wheel; the game stores an index into a palette (saves keep indices), so this draws the palette's swatches.</li>
+    </ol>
+</section>
+
+<!-- ═══════════════════════════════ PORTING ═══════════════════════════════ -->
+
+<section id="port">
+    <h2>css → uss</h2>
+    <p class="sec-lede"><code>components.css</code> sticks to what USS can say, and every line that can't port carries a <code>web-only</code> comment. The <b>uxml</b> button on each specimen copies its markup as UXML.</p>
+    <table class="port">
+        <tr><th>Here</th><th>In UI Toolkit</th></tr>
+        <tr><td><code>.ui *</code> (flex column, border-box)</td><td>The VisualElement default. Drop it.</td></tr>
+        <tr><td><code>var(--ui-…)</code> in <code>tokens.css</code></td><td>Same names in a token USS on the UiShell root (next to <code>ss3d-tokens.uss</code>).</td></tr>
+        <tr><td><code>.sprite</code> (<code>background-size: contain</code>)</td><td><code>-unity-background-scale-mode: scale-to-fit</code></td></tr>
+        <tr><td><code>opacity</code> on a glyph element</td><td><code>-unity-background-image-tint-color: rgba(255,255,255,a)</code>, which also gives coloured glyphs for free</td></tr>
+        <tr><td><code>filter: brightness(…)</code> on the carets, pile shadow and silhouette</td><td>Tint colour: <code>var(--ui-panel)</code>, <code>var(--ui-float)</code> / black</td></tr>
+        <tr><td><code>rotate</code>, <code>scale</code>, <code>transition-*</code>, <code>white-space</code></td><td>Same property names</td></tr>
+        <tr><td><code>font-family: SquareDeal</code></td><td><code>.font-display</code>. Bake a static SDF asset first (<code>SS3D → Build → Bake Static UI Fonts</code>); SquareDeal has none yet</td></tr>
+        <tr><td><code>font-family: var(--ui-font-mark)</code> / <code>var(--ui-font-label)</code> / <code>var(--ui-font-text)</code></td><td><code>-unity-font-definition</code> on a static SDF asset. OdeToIdleGaming has one baked; Disket Mono and Kode Mono need their TTF in <code>Assets/Art/Font/Fonts/</code> and a bake first</td></tr>
+        <tr><td>Colour wheel (<code>conic-gradient</code> + <code>mask</code>)</td><td><code>generateVisualContent</code> with Painter2D, or a hue-ring texture plus a triangle mesh</td></tr>
+        <tr><td><code>bible.js</code> anchoring (caret <code>left</code> from the source's centre)</td><td>C#: <code>source.worldBound</code> → <code>panel.style.left/top</code> and <code>caret.style.left</code></td></tr>
+        <tr><td><code>bible.js</code> slot builder</td><td>One <code>InventorySlot</code> UXML template; the <b>uxml</b> button prints the tree it should match</td></tr>
+    </table>
+</section>
+
+<section id="questions">
+    <h2>open questions</h2>
+    <p class="sec-lede">Places where the references, the design docs and the shipped HUD disagree. The bible picks one answer for each so it can be judged on screen.</p>
+    <ol class="qs">
+        <li><b>Active colour.</b> The references use a neutral light hairline; the shipped HUD uses rust <code>#c54f30</code>. The bible defaults to the hairline; try rust by changing <code>--ui-line-active</code>.</li>
+        <li><b>Hand mark and label fonts.</b> The reference L / R are too blurry to name. Disket Mono (Bold by default) is on trial for them, and Kode Mono for the radial labels and export code; OdeToIdleGaming and LiberationSans are the project fonts they'd replace. The type tab shows them side by side. Neither trial font is in the project yet: Disket Mono's file carries no licence ("all rights reserved", Mariano Diez), so check its terms before shipping it; Kode Mono is on Google Fonts, under the OFL.</li>
+        <li><b>Strip contents.</b> The references show only ID and backpack beside the hands. The shipped strip and <code>main-hud.md</code> also carry belt and pockets.</li>
+        <li><b>Storage header.</b> The references show bare grids, while <code>inventory-storage.md</code> §6 wants weight and capacity at the top. The bible follows the references.</li>
+        <li><b>Item renders.</b> Only 13 rendered item sprites exist. The ID card, backpack and clothes fall back to line glyphs.</li>
+        <li><b>Titling font.</b> SquareDeal everywhere (references) or Gurajada for titles (current <code>ss3d-typography.uss</code>, lobby).</li>
+        <li><b>Duplicate icons.</b> 15 untracked PNGs under <code>Assets/Art/Graphics/UI/</code> duplicate <code>Assets/Art/Icons/Inventory/</code>. Keep only <code>Card.png</code> (move it to <code>Icons/Inventory/</code>) and drop the rest?</li>
+    </ol>
+</section>
+
+</main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// Shows script errors on the page itself, so a broken load is visible without opening the console.
+window.addEventListener('error', e => {
+    const b = document.getElementById('boot-error');
+    if (!b || /ResizeObserver loop/.test(e.message || '')) return;
+    b.classList.add('is-shown');
+    b.querySelector('[data-errors]').textContent += `${e.message || 'error'} (${(e.filename || '').split('/').pop()}:${e.lineno})\n`;
+});
+</script>
+<script src="bible.js"></script>
+</body>
+</html>

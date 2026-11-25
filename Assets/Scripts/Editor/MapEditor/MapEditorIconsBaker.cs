@@ -100,6 +100,7 @@ namespace SS3D.Editor.MapEditor
             ("_camera", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.Camera),
             ("_settings", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.Settings),
             ("_search", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.Search),
+            ("_warning", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.Warning),
             ("_modeUpper", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.ModeUpper),
             ("_modeLower", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.ModeLower),
             ("_modeItems", Systems.Tile.MapEditor.MapEditorIconsSo.Paths.ModeItems),

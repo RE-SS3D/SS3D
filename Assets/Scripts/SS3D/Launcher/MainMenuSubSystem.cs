@@ -24,7 +24,6 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
-using Random = UnityEngine.Random;
 
 namespace SS3D.Launcher
 {
@@ -46,6 +45,12 @@ namespace SS3D.Launcher
 
         private const int LoggingInStep = 3;
 
+        /// <summary>The Starting local session dialog's steps (MainMenuView): Starting host, Loading world, Opening lobby.</summary>
+        private const int HostingSteps = 3;
+
+        /// <summary>How long the held hosting dialog shows each of its last steps, in real seconds.</summary>
+        private const float HostingStepSeconds = 0.35f;
+
         private enum Operation { None = 0, Joining = 1, Hosting = 2, Updating = 3 }
 
         private readonly MainMenuPresentation _model = new();
@@ -65,15 +70,16 @@ namespace SS3D.Launcher
         private bool _updateCheckStarted;
         private DateTime? _checkedAt;
         private bool _presentPending;
+
+        /// <summary>The hosting dialog is held over the lobby while its last steps play; the menu takes no input.</summary>
+        private bool _holding;
         private MenuMusicSubSystem _music;
         private PlayerSettingsPanel _settingsPanel;
         private PlayerSettingsSubSystem _playerSettings;
         private (bool On, float Volume) _shownMusic;
-        private MainMenuVideoWallpaper _video;
-        private MainMenuWallpaperRotation _rotation;
+        private MainMenuAmbience _ambience;
         private AudioListener _listener;
         private float _nextListenerCheck;
-        private int _lastWallpaper = -1;
 #if UNITY_EDITOR
         private (NetworkType Type, string Ckey, string Address, ushort Port)? _editorNetworkSettings;
 #endif
@@ -137,9 +143,48 @@ namespace SS3D.Launcher
                     return;
                 }
 
+                bool hosting = _operation == Operation.Hosting;
                 CompleteOperation();
+                if (hosting)
+                {
+                    StartCoroutine(HoldHostingDialog());
+                    return;
+                }
+
                 Hide(true);
             }
+        }
+
+        /// <summary>
+        /// A local host starts its session and loads Game within one frame, so its dialog would show for that frame only.
+        /// Hold it over the lobby while its last steps play (about a second), then hand over to the lobby.
+        /// </summary>
+        private IEnumerator HoldHostingDialog()
+        {
+            _holding = true;
+            try
+            {
+                for (int step = Math.Max(_model.OperationStep, 1); step <= HostingSteps; step++)
+                {
+                    if (_view == null) yield break;
+                    _model.OperationStep = step;
+                    Present();
+                    float until = Time.realtimeSinceStartup + HostingStepSeconds;
+                    while (Time.realtimeSinceStartup < until)
+                    {
+                        if (_view == null) yield break;
+                        // The lobby attaches to the same layer once Game loads; stay above it.
+                        _view.Root.BringToFront();
+                        yield return null;
+                    }
+                }
+            }
+            finally
+            {
+                _holding = false;
+            }
+
+            if (_view != null) Hide(true);
         }
 
         private void HandleLoginAccepted()
@@ -185,7 +230,7 @@ namespace SS3D.Launcher
                 EnsureListener();
             }
 
-            TickWallpaper();
+            if (_ambience.Tick(_model, Time.unscaledTime)) _view.PresentWallpaper(_model);
 
             _query?.Tick();
             if (_presentPending && !IsEditingServerList())
@@ -234,15 +279,9 @@ namespace SS3D.Launcher
             _view.Attach(layer);
             _model.Screen = MainMenuScreen.Menu;
             AttachSettings();
-            _video ??= new MainMenuVideoWallpaper(gameObject);
-            ChangeWallpaper();
-            // A video opens on black: its fallback still would flash up before the first frame.
-            _rotation = new MainMenuWallpaperRotation(Time.unscaledTime);
-            _model.WallpaperVeiled = _catalog.WallpaperVideo(_model.Wallpaper) != null;
-            if (_model.WallpaperVeiled)
-            {
-                _rotation.Reveal(Time.unscaledTime);
-            }
+            _ambience ??= new MainMenuAmbience(gameObject, _catalog);
+            _ambience.Show(_model, Time.unscaledTime);
+
             // The music service outlives the menu (lobby effort Decision 15). A fresh launcher visit starts the
             // current track from the beginning.
             if (SubSystems.TryGet(out _music))
@@ -281,7 +320,7 @@ namespace SS3D.Launcher
                 _music = null;
             }
 
-            _video?.Stop();
+            _ambience?.Stop();
             RemoveListener();
             if (_query != null)
             {
@@ -304,6 +343,11 @@ namespace SS3D.Launcher
 
         private void HandleCommand(MainMenuCommand command, string id)
         {
+            if (_holding)
+            {
+                return;
+            }
+
             if (_operation != Operation.None && command != MainMenuCommand.Cancel)
             {
                 return;
@@ -856,7 +900,7 @@ namespace SS3D.Launcher
             }
 
             UpdateMusic();
-            UpdateVideo();
+            _ambience?.UpdateVideo(_model);
             if (_model.Screen != MainMenuScreen.Settings) _settingsPanel?.CancelTransient();
             _model.MusicOn = MusicOn;
             _model.MusicTitle = _music?.Title ?? "";
@@ -951,57 +995,6 @@ namespace SS3D.Launcher
             UpdateMusic();
             // The sidebar stays visible beside Settings: keep its music slider in step with the Music row.
             if (toggled || _model.Screen == MainMenuScreen.Settings) RequestPresent();
-        }
-
-        /// <summary>Video plays behind the menu; the operation dialogs hold its frame for their blurred backdrop.</summary>
-        private void UpdateVideo()
-        {
-            _video?.SetPlaying(IsBrowsing);
-            _model.VideoWallpaper = _video?.Frame;
-        }
-
-        private bool IsBrowsing => _model.Screen is MainMenuScreen.Menu or MainMenuScreen.Servers or MainMenuScreen.Settings;
-
-        private void ChangeWallpaper()
-        {
-            _lastWallpaper = _model.Wallpaper = PickOtherWallpaper(_catalog, _lastWallpaper, () => Random.value);
-            _video?.Load(_catalog.WallpaperVideo(_model.Wallpaper));
-        }
-
-        /// <summary>A random wallpaper other than <paramref name="previous"/>; -1 allows any.</summary>
-        public static int PickOtherWallpaper(MainMenuAssetCatalog catalog, int previous, Func<float> roll)
-        {
-            int pick = catalog.PickWallpaper(roll(), roll());
-            for (int attempt = 0; attempt < 16 && pick == previous; attempt++)
-            {
-                pick = catalog.PickWallpaper(roll(), roll());
-            }
-
-            return pick != previous ? pick : (previous + 1) % catalog.WallpaperCount;
-        }
-
-        private void TickWallpaper()
-        {
-            bool frameChanged = _video != null && _video.Tick();
-            bool ready = _catalog.WallpaperVideo(_model.Wallpaper) == null || _video?.Frame != null;
-            switch (_rotation.Tick(Time.unscaledTime, IsBrowsing, ready))
-            {
-                case MainMenuWallpaperStep.FadeOut:
-                    _model.WallpaperVeiled = true;
-                    break;
-                case MainMenuWallpaperStep.Swap:
-                    ChangeWallpaper();
-                    break;
-                case MainMenuWallpaperStep.FadeIn:
-                    _model.WallpaperVeiled = false;
-                    break;
-                default:
-                    if (!frameChanged) return;
-                    break;
-            }
-
-            UpdateVideo();
-            _view.PresentWallpaper(_model);
         }
 
         /// <summary>A failed join swaps the Launcher scene (and its camera's listener) for Empty; keep the music audible.</summary>

@@ -142,16 +142,16 @@ namespace SS3D.Tests.EditMode
         }
 
         [Test]
-        public void Departments_SplitIntoTwoColumnsOfAboutHalfTheJobs()
+        public void Departments_ListInDepartmentOrder_OneColumn()
         {
             List<JobSlotInfo> playtest = new()
             {
                 Job("Captain", Department.Command), Job("Security", Department.Security), Job("Engineer", Department.Engineering),
                 Job("Doctor", Department.Medical), Job("Assistant", Department.Civilian, 0),
             };
-            List<List<Department>> columns = CharacterJobsTab.SplitColumns(playtest);
-            CollectionAssert.AreEqual(new[] { Department.Command, Department.Security, Department.Engineering }, columns[0]);
-            CollectionAssert.AreEqual(new[] { Department.Medical, Department.Civilian }, columns[1]);
+            CollectionAssert.AreEqual(
+                new[] { Department.Command, Department.Security, Department.Engineering, Department.Medical, Department.Civilian },
+                CharacterJobsTab.DepartmentOrder(playtest));
         }
 
         [Test]

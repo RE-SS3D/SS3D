@@ -118,6 +118,16 @@ namespace SS3D.Tests.EditMode
             Assert.AreEqual(expected, MapEditorCatalog.PaletteLabel(assetName));
         }
 
+        [TestCase("TileGreyDark", MapEditorSubcategory.Floors, "Grey Dark")]
+        [TestCase("TilePlating", MapEditorSubcategory.Floors, "Plating")]
+        [TestCase("FancyCarpetRed", MapEditorSubcategory.Floors, "Fancy Carpet Red")]
+        [TestCase("TileGreyDark", MapEditorSubcategory.Machines, "Tile Grey Dark")]
+        public void DisplayLabel_DropsTheFloorsTilePrefix(string assetName, MapEditorSubcategory subTab, string expected)
+        {
+            MapEditorCatalogEntry entry = new() { AssetName = assetName, Subcategory = subTab };
+            Assert.AreEqual(expected, MapEditorCatalog.DisplayLabel(entry));
+        }
+
         [Test]
         public void LastTab_RoundTripsEverySubTab()
         {

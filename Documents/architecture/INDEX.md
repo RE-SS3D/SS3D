@@ -92,7 +92,7 @@ Infrastructure and gameplay maps, including the ones with no design doc (interac
 | [inputs](systems/inputs.md) | partial | Input arbitration, default scheme, pointer authority |
 | [interactions-framework](systems/interactions-framework.md) | shipped | `IInteraction` contracts, Discover, pipeline |
 | [interactions-runtime](systems/interactions-runtime.md) | shipped | `InteractionController`, radial/armed menus, outlines |
-| [inventory](systems/inventory.md) | partial | Items, containers, hands, Main HUD, StoragePanel, Syndicate hardsuit content |
+| [inventory](systems/inventory.md) | partial | Items, containers, hands, Main HUD, StoragePanel, garment body coverage, Syndicate hardsuit content |
 | [localization](systems/localization.md) | partial | `LocalizedTextService`, string tables |
 | [logging](systems/logging.md) | shipped | Serilog structured logging |
 | [machine-interface](systems/machine-interface.md) | shipped | Diegetic APC/SMES/atmos/vending UI, handheld health scanner |

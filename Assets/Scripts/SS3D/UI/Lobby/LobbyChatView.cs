@@ -4,6 +4,7 @@ using System.Linq;
 using SS3D.Permissions;
 using SS3D.Systems.Comms;
 using SS3D.Systems.Inputs;
+using SS3D.UI.Shell;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -16,16 +17,30 @@ namespace SS3D.UI.Lobby
     /// </summary>
     public sealed class LobbyChatView
     {
+        /// <summary>
+        /// More lines than this arriving in one snapshot are a history replay (connecting, the admin log), not someone
+        /// speaking: they appear without sliding in.
+        /// </summary>
+        private const int MaxSlidingLines = 4;
+
+        /// <summary>Lines arriving together slide in this far apart.</summary>
+        private const long SlideStepMilliseconds = 60;
+
         private readonly InputTextEntryScope _textEntry;
         private readonly ScrollView _log;
         private readonly TextField _input;
         private readonly Button _adminChannel;
+        private readonly VisualElement _composer;
         private readonly Dictionary<OocChannel, Button> _channels = new();
         private OocChannel _channel = OocChannel.Ooc;
         private OocChatMessage[] _messages = Array.Empty<OocChatMessage>();
         private int _version = -1;
         private bool _admin;
         private bool _connected;
+        /// <summary>A real snapshot has been painted; lines added after it are news and slide in.</summary>
+        private bool _painted;
+        /// <summary>"No messages yet." while the log shows no line; the first line replaces it.</summary>
+        private Label _empty;
 
         public event Action<OocChannel, string> Submitted;
 
@@ -42,31 +57,50 @@ namespace SS3D.UI.Lobby
             _log.AddToClassList("lobby-chat__log");
             Root.Add(_log);
 
-            VisualElement composer = LobbyUi.Box("lobby-chat__composer");
-            AddChannel(composer, OocChannel.Ooc, "OOC");
-            AddChannel(composer, OocChannel.Looc, "LOOC");
-            _adminChannel = AddChannel(composer, OocChannel.Admin, "Admin");
+            // The channels over the field, so the field keeps the narrow panel's width; the field's edge and the
+            // chosen channel take the channel's colour (lobby-chat__composer--<channel>).
+            _composer = LobbyUi.Box("lobby-chat__composer");
+            _composer.AddToClassList("lobby-chat__composer--stacked");
+            VisualElement composer = _composer;
+            VisualElement channels = LobbyUi.Box("lobby-chat__composer-row");
+            composer.Add(channels);
+            AddChannel(channels, OocChannel.Ooc, "OOC");
+            AddChannel(channels, OocChannel.Looc, "LOOC");
+            _adminChannel = AddChannel(channels, OocChannel.Admin, "Admin");
+            VisualElement line = LobbyUi.Box("lobby-chat__composer-row");
+            line.AddToClassList("lobby-chat__composer-row--field");
+            composer.Add(line);
             _adminChannel.style.display = DisplayStyle.None;
 
             _input = new TextField { name = "chat-input", maxLength = OocChatRules.MaxLength, label = string.Empty };
             _input.AddToClassList("lobby-chat__input");
             if (_input.textEdition != null) _input.textEdition.hidePlaceholderOnFocus = true;
             // TrickleDown: a real Return targets the inner text element, which consumes it before it bubbles to the field.
+            // Enter arrives as two key events, the key and then its '\n' character. A single-line field ends its edit on
+            // the character (focus moves to the field's root and typing stops), so both are taken here; the second
+            // Send finds the field empty.
             _input.RegisterCallback<KeyDownEvent>(evt =>
             {
-                if (evt.keyCode is not (KeyCode.Return or KeyCode.KeypadEnter)) return;
+                bool enterKey = evt.keyCode is KeyCode.Return or KeyCode.KeypadEnter;
+                bool enterCharacter = evt.keyCode == KeyCode.None && evt.character is '\n' or '\r' or '\u0003';
+                if (!enterKey && !enterCharacter) return;
                 Send();
                 evt.StopPropagation();
             }, TrickleDown.TrickleDown);
-            LobbyUi.DarkInput(_input);
+            // While typing, Enter's navigation submit has nothing to do either (on the field's root, it starts an edit).
+            _input.RegisterCallback<NavigationSubmitEvent>(evt =>
+            {
+                if (evt.target != _input) evt.StopPropagation();
+            }, TrickleDown.TrickleDown);
+            LobbyUi.EditorInput(_input);
             LobbyUi.HoldTextEntry(_input, _textEntry);
-            composer.Add(_input);
+            line.Add(_input);
 
             Button send = new(Send) { name = "chat-send", tooltip = "Send (Enter)" };
             send.AddToClassList("lobby-chat__send");
             send.Add(LobbyUi.Icon("send"));
             send.Add(LobbyUi.Titling("Send", "lobby-chat__send-label"));
-            composer.Add(send);
+            line.Add(send);
             Root.Add(composer);
 
             Root.Add(LobbyUi.Text("Enter sends to the selected channel. LOOC reaches players near your character.",
@@ -83,6 +117,7 @@ namespace SS3D.UI.Lobby
                 text = label.ToUpperInvariant(),
             };
             button.AddToClassList("lobby-chat__channel-button");
+            button.AddToClassList("lobby-chat__channel-button--" + channel.ToString().ToLowerInvariant());
             button.AddToClassList("lb-titling");
             _channels[channel] = button;
             parent.Add(button);
@@ -94,6 +129,8 @@ namespace SS3D.UI.Lobby
             _channel = channel;
             foreach ((OocChannel key, Button button) in _channels)
                 button.EnableInClassList("lobby-chat__channel-button--active", key == channel);
+            foreach (OocChannel each in new OocChannel[] { OocChannel.Ooc, OocChannel.Looc, OocChannel.Admin })
+                _composer.EnableInClassList("lobby-chat__composer--" + each.ToString().ToLowerInvariant(), each == channel);
             if (_input.textEdition != null)
                 _input.textEdition.placeholder = channel switch
                 {
@@ -110,47 +147,126 @@ namespace SS3D.UI.Lobby
             Debug.Log($"[Lobby] Chat send ({_channel.ToString().ToLowerInvariant()}): {text}");
             Submitted?.Invoke(_channel, text);
             _input.value = string.Empty;
+            KeepTyping();
         }
 
-        /// <summary>Replaces the log snapshot; the log rebuilds only when the version changes.</summary>
+        /// <summary>
+        /// The field stays ready for the next line, whether Enter or the Send button sent this one: focused again on the
+        /// next tick (the button takes focus on its click), unless the chat has gone from view by then.
+        /// </summary>
+        private void KeepTyping()
+        {
+            _input.schedule.Execute(() =>
+            {
+                if (_input.panel == null || !_input.enabledInHierarchy || _input.resolvedStyle.display == DisplayStyle.None)
+                {
+                    return;
+                }
+
+                _input.Focus();
+            });
+        }
+
+        /// <summary>
+        /// Replaces the log snapshot; the log changes only when the version does. Lines added at the end are appended,
+        /// and a few at a time (someone speaking) slide in; anything else rebuilds the log in place.
+        /// </summary>
         public void SetChat(IEnumerable<OocChatMessage> log, int version, bool admin, bool connected)
         {
             _connected = connected;
+            bool rebuild = false;
             if (admin != _admin)
             {
                 _admin = admin;
                 _adminChannel.style.display = admin ? DisplayStyle.Flex : DisplayStyle.None;
                 if (!admin && _channel == OocChannel.Admin) SelectChannel(OocChannel.Ooc);
                 _version = -1;
+                rebuild = true;
             }
 
             if (version == _version) return;
             _version = version;
+            OocChatMessage[] before = _messages;
             _messages = log.ToArray();
-            Rebuild();
+            if (!rebuild && _painted && Extends(before, _messages)) Append(before.Length);
+            else Rebuild();
+            _painted = true;
+        }
+
+        /// <summary>The new snapshot is the old one with lines added at its end (ids are unique and ordered).</summary>
+        private static bool Extends(OocChatMessage[] before, OocChatMessage[] after)
+        {
+            if (before.Length == 0) return true;
+            return after.Length >= before.Length && after[0].Id == before[0].Id
+                && after[before.Length - 1].Id == before[before.Length - 1].Id;
+        }
+
+        /// <summary>Adds the lines from <paramref name="from"/> on; a few slide in, a burst just appears.</summary>
+        private void Append(int from)
+        {
+            bool follow = AtBottom();
+            int added = 0;
+            for (int i = from; i < _messages.Length; i++)
+                if (Shows(_messages[i])) added++;
+            if (added == 0)
+            {
+                if (_empty != null) _empty.text = EmptyText;
+                return;
+            }
+
+            _empty?.RemoveFromHierarchy();
+            _empty = null;
+            bool slide = added <= MaxSlidingLines;
+            int index = 0;
+            for (int i = from; i < _messages.Length; i++)
+            {
+                if (!Shows(_messages[i])) continue;
+                VisualElement row = Line(_messages[i]);
+                _log.Add(row);
+                if (slide) UiMotion.Enter(row, index * SlideStepMilliseconds);
+                index++;
+            }
+
+            if (follow) FollowEnd();
         }
 
         private void Rebuild()
         {
-            // Follow new lines only while the reader is already at the bottom.
-            bool follow = _log.panel == null || _log.scrollOffset.y >= _log.verticalScroller.highValue - 4f;
+            bool follow = AtBottom();
             _log.Clear();
+            _empty = null;
             bool any = false;
             foreach (OocChatMessage message in _messages)
             {
-                if (message.Channel == OocChannel.Admin && !_admin) continue;
+                if (!Shows(message)) continue;
                 _log.Add(Line(message));
                 any = true;
             }
 
-            if (!any) _log.Add(LobbyUi.Text(_connected ? "No messages yet." : "Not connected.", "lobby-chat__empty"));
-            if (!follow) return;
-            _log.schedule.Execute(() => _log.scrollOffset = new Vector2(0f, float.MaxValue)).ExecuteLater(1);
+            if (!any)
+            {
+                _empty = LobbyUi.Text(EmptyText, "lobby-chat__empty");
+                _log.Add(_empty);
+            }
+
+            if (follow) FollowEnd();
         }
+
+        private string EmptyText => _connected ? "No messages yet." : "Not connected.";
+
+        private bool Shows(OocChatMessage message) => message.Channel != OocChannel.Admin || _admin;
+
+        /// <summary>Follow new lines only while the reader is already at the bottom.</summary>
+        private bool AtBottom() => _log.panel == null || _log.scrollOffset.y >= _log.verticalScroller.highValue - 4f;
+
+        private void FollowEnd() =>
+            _log.schedule.Execute(() => _log.scrollOffset = new Vector2(0f, float.MaxValue)).ExecuteLater(1);
 
         private static VisualElement Line(OocChatMessage message)
         {
             VisualElement row = LobbyUi.Box("lobby-chat__line");
+            // Admin lines are an area in the admin colour (Lobby.uss), so they stand out of the scroll.
+            row.EnableInClassList("lobby-chat__line--admin", message.Channel == OocChannel.Admin);
             string time = DateTimeOffset.FromUnixTimeSeconds(message.UnixSeconds).ToLocalTime().ToString("HH:mm");
             row.Add(LobbyUi.Mono(time, "lobby-chat__time"));
             Label channel = LobbyUi.Text(ChannelTag(message.Channel), "lobby-chat__channel");

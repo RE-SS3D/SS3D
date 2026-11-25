@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using SS3D.Systems.Settings;
+using SS3D.UI.Shell;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static SS3D.UI.SettingsPanel.SettingsUi;
@@ -251,17 +252,20 @@ namespace SS3D.UI.SettingsPanel
             });
         }
 
+        /// <summary>
+        /// A UiSelect rather than a DropdownField: Unity opens a DropdownField's list at the panel's root, and sizes it
+        /// wrongly when an ancestor is scaled, as the main menu's and the lobby's roots are (UiReferenceScale).
+        /// </summary>
         private void ResolutionRow(VisualElement group)
         {
             SettingRow row = Row(group, "resolution", "Resolution");
-            DropdownField dropdown = new() { name = "settings-resolution" };
-            dropdown.AddToClassList("settings-panel__select");
-            DarkInput(dropdown);
-            row.Control.Add(dropdown);
+            UiSelect select = new() { name = "settings-resolution" };
+            select.AddToClassList("settings-panel__select");
+            row.Control.Add(select);
             Vector2Int[] choices = Array.Empty<Vector2Int>();
-            dropdown.RegisterValueChangedCallback(_ =>
+            select.RegisterValueChangedCallback(_ =>
             {
-                int index = dropdown.index;
+                int index = select.Index;
                 if (index >= 0 && index < choices.Length && choices[index] != _settings.CurrentResolution)
                     _settings.SetResolution(choices[index]);
             });
@@ -271,41 +275,11 @@ namespace SS3D.UI.SettingsPanel
                 Vector2Int current = _settings.CurrentResolution;
                 choices = _settings.ResolutionChoices;
                 if (Array.IndexOf(choices, current) < 0) choices = choices.Prepend(current).ToArray();
-                dropdown.choices = choices.Select(ResolutionChoiceText).ToList();
-                dropdown.SetValueWithoutNotify(ResolutionChoiceText(current));
+                select.Choices = choices.Select(ResolutionChoiceText).ToList();
+                select.SetValueWithoutNotify(ResolutionChoiceText(current));
                 row.SetChanged(current != _settings.NativeResolution);
                 row.SetNote("Your monitor’s supported resolutions.", NoteTone.Secondary, false);
             });
-        }
-
-        /// <summary>The runtime theme's popup field outranks a stylesheet class, so the dark field is set inline (as the lobby does).</summary>
-        private static void DarkInput(DropdownField dropdown)
-        {
-            void Apply()
-            {
-                VisualElement input = dropdown.Q(className: "unity-base-field__input");
-                if (input != null)
-                {
-                    // The theme draws the light field as a background image over any colour.
-                    input.style.backgroundImage = new StyleBackground(StyleKeyword.None);
-                    input.style.backgroundColor = new Color(0.133f, 0.133f, 0.133f); // #222222
-                    Color border = new(0.847f, 0.847f, 0.847f, 0.18f);
-                    input.style.borderTopColor = border;
-                    input.style.borderBottomColor = border;
-                    input.style.borderLeftColor = border;
-                    input.style.borderRightColor = border;
-                    input.style.color = Color.white;
-                    // The input clips its text, and a rounded clipped element renders solid white on Linux.
-                    input.style.borderTopLeftRadius = 0f;
-                    input.style.borderTopRightRadius = 0f;
-                    input.style.borderBottomLeftRadius = 0f;
-                    input.style.borderBottomRightRadius = 0f;
-                }
-                if (dropdown.Q(className: "unity-base-popup-field__text") is { } text) text.style.color = Color.white;
-            }
-
-            Apply();
-            dropdown.RegisterCallback<AttachToPanelEvent>(_ => Apply());
         }
 
         private string ResolutionChoiceText(Vector2Int size) =>

@@ -62,13 +62,16 @@ namespace SS3D.Tests.EditMode
             Assert.AreSame(_layer, _view.Root.parent);
             Assert.Greater(_view.Root.styleSheets.count, 0, "CharacterWindow.uss is linked on the root");
             Assert.IsTrue(_view.IsVisible);
-            Assert.AreEqual(CharacterWindowView.TabAppearance, _view.ActiveTab);
+            Assert.AreEqual(CharacterWindowView.TabProfile, _view.ActiveTab);
+            Assert.IsFalse(_view.Root.Q("charwin-pane-profile").ClassListContains("charwin__pane--hidden"), "Profile is shown");
+            Assert.IsTrue(_view.Root.Q("charwin-jobs").ClassListContains("charwin__pane--hidden"), "The other panes are hidden");
             Assert.AreEqual("Rory Lindqvist", _view.Root.Q<Label>("charwin-switch-name").text);
-            Assert.AreEqual("Security", _view.Root.Q<Label>("charwin-switch-high-job").text);
-            Assert.IsTrue(_view.Root.Q("charwin-switch-high-job").ClassListContains("lb-dept--security"));
+            StringAssert.Contains("High: Security", _view.Root.Q<Button>("charwin-switch").tooltip);
             Assert.AreEqual("2/10", _view.Root.Q<Label>("charwin-switch-count").text);
+            Assert.AreEqual("high job, security", _view.Root.Q("charwin-outfit").Q<Label>(className: "ui-select__value").text,
+                "The job outfit preview names the High job");
             Assert.AreEqual("Rory Lindqvist", _view.Root.Q<TextField>("charwin-name").value);
-            Assert.AreEqual("Saved", Status);
+            Assert.AreEqual("saved", Status);
             Assert.IsFalse(_view.Root.Q<Button>("charwin-save").enabledSelf);
             Assert.IsFalse(_view.Root.Q<Button>("charwin-discard").enabledSelf);
             Assert.AreEqual("Wearing Security clothes, from your High job.", _view.Root.Q<Label>("charwin-outfit-caption").text);
@@ -81,13 +84,13 @@ namespace SS3D.Tests.EditMode
             _view.Saved += draft => stored = draft;
             _view.Model.Working.SetMorph("height", 0.9f);
             _view.Refresh();
-            Assert.AreEqual("Unsaved changes", Status);
+            Assert.AreEqual("unsaved changes", Status);
             Assert.IsTrue(_view.Root.Q<Button>("charwin-save").enabledSelf);
 
             Assert.IsTrue(_view.Save());
             Assert.IsNotNull(stored);
             Assert.AreEqual(0.9f, stored.GetMorph("height"), 0.0001f);
-            Assert.AreEqual("Saved", Status);
+            Assert.AreEqual("saved", Status);
         }
 
         [Test]
@@ -113,7 +116,7 @@ namespace SS3D.Tests.EditMode
             Assert.IsTrue(_view.PromptOpen, "Save / Discard / Keep editing");
 
             _view.Discard();
-            Assert.AreEqual("Saved", Status);
+            Assert.AreEqual("saved", Status);
             _view.RequestReturn();
             Assert.IsTrue(returned, "Nothing unsaved: return at once");
         }
@@ -122,6 +125,7 @@ namespace SS3D.Tests.EditMode
         public void JobsTab_ListsDepartments_TotalsAndTheFallback()
         {
             _view.SelectTab(CharacterWindowView.TabJobs);
+            Assert.IsTrue(_view.Root.ClassListContains("charwin--wide"), "Jobs opens wide, over the preview");
             VisualElement jobs = _view.Root.Q("charwin-jobs");
             Assert.IsNotNull(jobs.Q("charwin-dept-command"));
             Assert.IsNotNull(jobs.Q("charwin-dept-civilian"));

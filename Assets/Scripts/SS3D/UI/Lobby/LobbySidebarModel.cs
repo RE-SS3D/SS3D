@@ -8,6 +8,8 @@ namespace SS3D.UI.Lobby
         Neutral = 0,
         Live = 1,
         Warning = 2,
+        /// <summary>News, not a fault: the lobby counting down to a round (the UI bible's --ui-info).</summary>
+        Info = 3,
     }
 
     /// <summary>The look of an entry button (Ready / Join, Observe).</summary>
@@ -112,10 +114,10 @@ namespace SS3D.UI.Lobby
 
             // Stopped or Ended: the lobby's own countdown (Decision 8).
             if (info.AutoStartEnabled && info.AutoStartSecondsLeft > 0)
-                return new LobbyRoundStatus("Pre-round", LobbyTone.Neutral, "Round starts in",
+                return new LobbyRoundStatus("Pre-round", LobbyTone.Info, "Round starts in",
                     Clock(info.AutoStartSecondsLeft), false, "", LobbyTone.Neutral);
             if (info.AutoStartEnabled && info.AutoStartHeld)
-                return new LobbyRoundStatus("Pre-round", LobbyTone.Neutral, "Round starts in",
+                return new LobbyRoundStatus("Pre-round", LobbyTone.Warning, "Round starts in",
                     lastCountdownSeconds > 0 ? Clock(lastCountdownSeconds) : "--:--", true,
                     "Countdown held by an admin", LobbyTone.Warning);
             if (info.AutoStartEnabled)

@@ -4,6 +4,7 @@
     "references": [
         "SS3D.Core",
         "SS3D.Systems",
+        "SS3D.UI.Shell",
         "Unity.InputSystem"
     ],
     "includePlatforms": [],
