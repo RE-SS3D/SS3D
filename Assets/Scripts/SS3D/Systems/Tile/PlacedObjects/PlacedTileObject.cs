@@ -235,6 +235,8 @@ namespace SS3D.Systems.Tile
             base.OnStartClient();
             StampWorldDecalReceivers(gameObject);
             ApplySyncedIdentity();
+            if (ClientWallMounts.IsWallMount(this))
+                ClientWallMounts.Add(this);
             NotifyIntegrityPresentation(IntegrityStage);
             // Pure clients never hit OnStartServer; apply cover hide once identity/map are ready.
             if (!IsServer)
@@ -568,6 +570,7 @@ namespace SS3D.Systems.Tile
         public override void OnStopClient()
         {
             base.OnStopClient();
+            ClientWallMounts.Remove(this);
 
             if (!_clientRegistered
                 || NetworkObject == null

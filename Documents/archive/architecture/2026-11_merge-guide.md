@@ -57,7 +57,7 @@ the [coverage table](../../architecture/INDEX.md) is the live, project-wide view
 | [Body animation](../../architecture/systems/entities.md) | partial | Peaceful / melee / ranged stance; injured limp; Ragdoll owns collapsed/dead/critical presentation; ranged aim IK deferred |
 | [Screen effects](../../architecture/systems/screen-effects.md) | partial | Health overlays + hit/blast flash; turf temp/fire from `HealthSnapshot.Environment` |
 | [Audio](../../architecture/systems/audio.md) | partial | SFX occlusion, impact and machine sounds, department room tone, wind and sound needs air, personal heartbeat/breathing, alert cues, footsteps; music/volume categories pending |
-| [Vision / FOV](../../architecture/systems/rendering.md) | shipped | Hard black fog-of-war from viewpoint raycasts (hot-path GC cut) |
+| [Vision / FOV](../../architecture/systems/fov.md) | shipped | Black fog of war matching wall outlines; people shown or hidden whole; one Burst-backed raycast batch |
 | [Station lighting (URP)](../../architecture/systems/rendering.md) | partial | Fixture-driven half-toon Forward+ look; client SyncVar fixture visuals; visual plate polish still open |
 | [Areas + station power](../../architecture/systems/area.md) | partial | APC-seeded areas, kWh cells, channel shedding, area lights/switches; [solar panels + tracker](../../architecture/systems/electricity.md); live remesh pending |
 | [Machine interfaces](../../architecture/systems/machine-interface.md) | shipped | Diegetic UITK APC/SMES/atmos ports/vending; engineering ID swipe; host-echo TargetRpc gate |

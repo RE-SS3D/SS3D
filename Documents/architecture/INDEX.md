@@ -35,6 +35,7 @@ One row per gameplay domain that has, or should eventually have, a design doc. A
 | electricity | [electricity](../design/electricity.md) | [solar-generation](../archive/architecture/2026-07_solar-generation.md), [mi-area-electricity-debt](../archive/architecture/2026-07_mi-area-electricity-debt.md) — shipped | [electricity](systems/electricity.md) — partial |
 | examine | [examine](../design/examine.md) | [examine-and-action-feedback](2026-11_examine-and-action-feedback.md) — in-progress | [examine](systems/examine.md) — partial |
 | explosives-destruction | [explosives-destruction](../design/explosives-destruction.md) | [structural-destruction](2026-07_structural-destruction.md) — in-progress | [structural-destruction](systems/structural-destruction.md) — partial |
+| fov | [fov](../design/fov.md) | [fov-rework](../archive/architecture/2026-11_fov-rework.md) — shipped | [fov](systems/fov.md) — partial |
 | hacking-interface | [hacking-interface](../design/hacking-interface.md) | none yet | none yet |
 | health | [health](../design/health.md) | [health plan](../plans/health_implementation_plan.md) — in-progress; [body-presentation-authority](../archive/architecture/2026-07_body-presentation-authority.md), [health-env-feel](../archive/architecture/2026-07_health-env-feel.md) — shipped | [health](systems/health.md) — partial |
 | id-access | [id-access](../design/id-access.md) | none yet | [id-access](systems/id-access.md) — partial |
@@ -101,7 +102,8 @@ Infrastructure and gameplay maps, including the ones with no design doc (interac
 | [permissions](systems/permissions.md) | partial | Admin permission checks |
 | [persistence](systems/persistence.md) | partial | Station templates, server meta |
 | [player-control](systems/player-control.md) | partial | Connect/authorize/disconnect, reconnect-to-body |
-| [rendering](systems/rendering.md) | partial | URP features, selection pick, living-body Vision FOV, decals, world-only health blackout; [quality tiers](systems/rendering-quality-tiers.md) (AO and fixture-shadow cost per tier) |
+| [fov](systems/fov.md) | partial | Client fog of war: occluder layer and raycast batch, walls drawn whole, inward soft edge, whole-or-nothing people, items and wall mounts, `HasSight` |
+| [rendering](systems/rendering.md) | partial | URP features, selection pick, decals, world-only health blackout (FOV: [fov](systems/fov.md)); [quality tiers](systems/rendering-quality-tiers.md) (AO and fixture-shadow cost per tier) |
 | [rounds-lobby](systems/rounds-lobby.md) | partial | Round state machine, UITK lobby, character window and Join picker, Server Settings, pre-countdown map validation |
 | [scene-management](systems/scene-management.md) | partial | `SceneSubSystem`, scene transitions |
 | [screen-effects](systems/screen-effects.md) | partial | URP Volume overlays driven by health/atmos |

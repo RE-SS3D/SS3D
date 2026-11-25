@@ -1,7 +1,7 @@
 > Goal: Playtest 1 — eight players play Nuclear Operatives rounds on the 24/7 server: ops spawn geared and breach for the disk, a five-job crew fights back, keeps the hull and power up and patches the wounded, and every round ends with a summary and restarts
 > Status: in-progress
 > Depends on: —
-> Current focus: close M0 (engineering closet), M1c (stun baton hand test, physical magazines, M4 in an armory) and M12 (OOC column, prying unpowered airlocks), then M6 Playtest 1 — M1s, M3, M8, M9, M10 and M11 shipped 2026-11-16; session stability and smoke live on [test-server.md](test-server.md) T3
+> Current focus: close M0 (engineering closet), M1c (stun baton hand test, physical magazines, M4 in an armory), M12 (OOC column, prying unpowered airlocks) and M13 fog of war, then M6 Playtest 1 — M1s, M3, M8, M9, M10 and M11 shipped 2026-11-16; session stability and smoke live on [test-server.md](test-server.md) T3
 > Roadmap: Nuclear Operatives round — Play a full Nuke Ops round from spawn to end screen
 > Pillars: 2, 4, 6 (1 thin) — [vision.md](../design/vision.md) §2
 
@@ -62,6 +62,7 @@ flowchart TB
   server[Always_on_server_T8]
   lobby[Lobby_character_window]
   ready[OOC_column_pry_airlocks]
+  fov[Fog_of_war_matches_walls]
 
   mvp1 --> map
   mvp1 --> roles
@@ -76,6 +77,7 @@ flowchart TB
   mvp1 --> vacuum
   mvp1 --> power
   mvp1 --> server
+  mvp1 --> fov
   map --> access
   roles --> access
   roles --> identity
@@ -116,6 +118,7 @@ flowchart TB
 - **Nuke loop thin + floors (M3)** — device/disk interactions, vault breach, arm announce, examine state; disk pinpointing stays thin. Blasts break floor tiles and plating and wreck furniture ([antagonist-content.md](../design/antagonist-content.md) §6; [explosives-destruction.md](../design/explosives-destruction.md) §3, §6).
 - **Vacuum and hull (M8 thin)** — vacuum kills, suit seal ([armor.md](../design/armor.md) §3) and internals protect, an engineer seals a hull hole with plating ([construction.md](../design/construction.md) §3) ([health](../architecture/systems/health.md); [atmospherics](../architecture/systems/atmospherics.md)).
 - **Power and light (M9 thin)** — test-map APCs drive lights, so a cut cable or dead APC darkens a room ([electricity](../architecture/systems/electricity.md); [area](../architecture/systems/area.md)).
+- **Fog of war (M13)** — black, memoryless fog that lines up with the walls at any camera tilt, with people shown or hidden whole ([fov.md](../design/fov.md); [fov-rework](../archive/architecture/2026-11_fov-rework.md)).
 - **Construction (M10 thin)** — floors, hull, wall/window repair and rebuild, barricades, deconstruction and salvage, with "Construct X" interactions, a hull-hole placement ghost and a timed-action progress ring; no doors or fabrication ([construction.md](../design/construction.md)). Repair supersedes [station structural damage](../plans/station_structural_damage.plan.md) Phase 6's gate ([structural-destruction](../architecture/systems/structural-destruction.md); [tile](../architecture/systems/tile.md)).
 
 **On the test-server track (not duplicated as MVP1 slices):** doors for remote clients, admin force-end and teleport disk, nightly happy-path smoke, 8-client performance, the 24/7 server. See [test-server.md](test-server.md) **T3 / T8**.
@@ -138,6 +141,7 @@ flowchart TB
 | M10 | Construction (thin): re-lay floors, weld walls, windows and plating back to Intact, rebuild a destroyed wall (girder → plate → weld) or window (girder → glass), barricade on any floor, deconstruct plain walls, salvage wreckage. Done when a crew member can rebuild a blown wall and a patched room refills | shipped — [construction-mvp1](../architecture/2026-11_construction-mvp1.md) in [#254](https://github.com/henkhooft/SS3D/pull/254), owner-checked 2026-11-16: floors and hull patch, weld repair, girder → plate → weld and girder → glass, deconstruction, wreckage salvage, one tile item per laid floor; a patched room refills from the test station's supply network | [construction.md](../design/construction.md) §2–§11; [construction](../architecture/systems/construction.md); [structural-destruction](../architecture/systems/structural-destruction.md); [tile](../architecture/systems/tile.md) | Engineers repair and rebuild what the ops blow up, and the crew can barricade |
 | M11 | Lobby and character window to the revised lobby design. Done when a new player connects to a random character, sets job priorities and antag opt-ins on it, readies up on the connected-count countdown and spawns in their job; Observe and joining late (direct pick beside the crew manifest) work; the screens match the recoloured canvas | shipped in [#282](https://github.com/henkhooft/SS3D/pull/282), owner hand-tested 2026-11-16 — all seven phases: characters with preferences, connected-count countdown, menu music into the lobby, UXML shell, character window, Join picker | [lobby.md](../design/lobby.md) §2–§8; [lobby-character-window](../archive/architecture/2026-11_lobby-character-window.md); [visual brief](../archive/plans/lobby-character-window-visual-brief.md); [rounds-lobby](../architecture/systems/rounds-lobby.md) | Make your character once and keep it: name, look, the jobs you want and whether you'll play an antagonist, then ready up or join a round already running |
 | M12 | Playtest readiness: in-round OOC column; pry open an unpowered airlock. Done when a player reads and writes OOC during a round without opening the Escape screen, and a crew member with a crowbar can get through a closed airlock whose APC is dead | pending — the OOC column has a plan with every todo pending (server side done); a closed airlock without power can't be opened at all today (`AirLockDoorInteraction.CanInteract`), and prying needs a design rule first | [ooc-column plan](../plans/ooc-column.plan.md); [comms.md](../design/comms.md) §7; [main-hud.md](../design/main-hud.md) §4; [furniture](../architecture/systems/furniture.md) (airlocks); [electricity](../architecture/systems/electricity.md) | Chat out of character during a round without leaving the game, and pry your way out when the power dies |
+| M13 | Fog of war that matches the walls: walls in sight drawn whole, sharp edges that soften inward, people shown whole or hidden whole with no shadow, one raycast batch off the main thread. Done when the playtester's corner at 30° (the camera's lowest tilt), 45° and 80° shows black starting at wall outlines, a person half behind a door jamb is shown whole, and the cast stays under 0.5 ms on the Metastation | partial — built and owner-reviewed (minimum tilt raised to 30°); left: confirm the cast budget on the Metastation (MiniStation: under 0.02 ms) | [fov.md](../design/fov.md) §2–§6; [fov-rework](../archive/architecture/2026-11_fov-rework.md); [fov](../architecture/systems/fov.md) | What you can't see stays black, but the black lines up with the walls instead of floating in the room, and nobody is drawn cut in half at a doorway |
 | M6 | Playtest 1 | pending | depends M0–M5, M1m, M1c, M1s, M8, M9, M10, M11, M12; [test-server.md](test-server.md) T3, T8 | Finish line: eight players play Nuke Ops rounds together on the always-on server |
 
 ## Explicitly deferred

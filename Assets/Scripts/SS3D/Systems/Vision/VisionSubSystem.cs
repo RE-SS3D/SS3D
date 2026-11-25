@@ -1,128 +1,134 @@
 using System;
-using System.Collections.Generic;
 using FishNet;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Rendering;
-using SS3D.Core;
 using SS3D.Systems.Entities;
-using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Entities.Events;
-using SS3D.Systems.Tile;
+using SS3D.Systems.Tile.Connections;
 using SS3D.Rendering.URP;
 using Coimbra;
 using Coimbra.Services.Events;
 
 namespace SS3D.Systems.Vision
 {
+    /// <summary>Whether the client field of view is drawn (systems/fov.md State).</summary>
+    public enum VisionState
+    {
+        /// <summary>No living body to see from (ghost, lobby, server), or not set up yet.</summary>
+        Off,
+
+        /// <summary>A meta view (the map editor) has the screen; everything shows.</summary>
+        Suppressed,
+
+        /// <summary>The mask is drawn from the local body's eyes.</summary>
+        Active,
+    }
+
     /// <summary>
-    /// Client-side field-of-view producer. Casts rays from the player's
-    /// <see cref="Entity.ViewPoint"/> into a 1D polar <c>_VisionMap</c> depth texture
-    /// consumed by the URP vision render feature.
+    /// Client-side field of view (fov.md; map: systems/fov.md). Each frame casts one batch of level rays
+    /// from <see cref="Entity.ViewPoint"/> against the <see cref="VisionOccluder.LayerName"/> layer, then
+    /// writes the hit distances into the polar <c>_VisionMap</c> and the wall tiles they hit into
+    /// <c>_VisionTiles</c>. <c>VisionRendererFeature</c> draws the mask from those; <see cref="IsVisible"/>
+    /// answers the same question for gameplay. The only owner of the vision state.
     /// </summary>
     public class VisionSubSystem : Core.Behaviours.SubSystem
     {
         // Bootstrapped by SystemsBootstrap (process-wide DDOL). Scene VisionSystem GO must not
         // also exist — dual registration fights SubSystems.Register.
 
-        [SerializeField]
-        public bool showDebug;
+        /// <summary>Slack for rounding between the polar map and a pixel's distance, not a reach into walls.</summary>
+        public const float DepthEpsilon = 0.02f;
 
-        [SerializeField]
-        private Texture2D visionMap;
-
-        [SerializeField]
-        public Transform target = null;
-
-        [Space]
-        [SerializeField]
-        private float viewRange = 35;
-
-        [Range(0, 360)]
-        [SerializeField]
-        [Tooltip("The field of view width")]
-        private float viewConeWidth = 360;
-
-        // Left at 0 and filled in OnAwake: LayerMask.GetMask cannot run from a field initializer.
-        [SerializeField]
-        [Tooltip("Layers raycasts can hit. Hits are then filtered to walls/doors only so tall " +
-                 "furniture (lockers, vendors, etc.) does not occlude. Exclude Characters/BodyParts/Items.")]
-        private LayerMask obstacleMask;
-
-        [SerializeField]
-        [Tooltip("Raycasts per degree of the view cone. Higher reduces angular stripe jitter.")]
-        private float resolution = 3f;
+        /// <summary>Within this radius everything shows, even outside a narrow cone.</summary>
+        public const float NearBubble = 1f;
 
         /// <summary>
-        /// Cap on wave iterations that skip non-occluder colliders (furniture, props).
-        /// Each wave is one <see cref="RaycastCommand.ScheduleBatch"/> for all still-active rays.
+        /// Above the body's feet by this much, a point inside a wall tile a ray hit shows whole (D1); below it,
+        /// the floor of that tile keeps the depth test so nothing leaks past a door's leaves.
         /// </summary>
-        private const int MaxOccluderSkips = 64;
+        public const float WallMinHeight = 0.08f;
 
-        /// <summary>Radial slack added in <c>VisionSampleWallDepth</c> (Vision.hlsl). Keep the two equal.</summary>
-        public const float ShaderDepthSlack = 0.05f;
+        private static readonly int VisionMapId = Shader.PropertyToID("_VisionMap");
+        private static readonly int VisionMapTexelSizeId = Shader.PropertyToID("_VisionMap_TexelSize");
+        private static readonly int VisionTilesId = Shader.PropertyToID("_VisionTiles");
+        private static readonly int VisionTileOriginId = Shader.PropertyToID("_VisionTileOrigin");
+        private static readonly int PlayerPosId = Shader.PropertyToID("_PlayerPos");
+        private static readonly int PlayerAngleId = Shader.PropertyToID("_PlayerAngle");
+        private static readonly int ViewConeWidthId = Shader.PropertyToID("_ViewConeWidth");
+        private static readonly int ViewRangeId = Shader.PropertyToID("_ViewRange");
+        private static readonly int DepthEpsilonId = Shader.PropertyToID("_VisionDepthEpsilon");
+        private static readonly int NearBubbleId = Shader.PropertyToID("_VisionNearBubble");
+        private static readonly int WallMinYId = Shader.PropertyToID("_VisionWallMinY");
 
-        // With ShaderDepthSlack, 0.45 m into the occluder, about its centre line. Colliders are far
-        // thicker than what they draw: a wall's face is 0.28 m behind its near collider face and
-        // an airlock's far face 0.57 m past it, so this lights near faces and hides far ones.
-        private const float OccluderSlackPerpendicular = 0.4f;
+        private static readonly ProfilerMarker CastMarker = new("Vision.ViewPoints");
+        private static readonly ProfilerMarker MapMarker = new("Vision.VisionMap");
+        private static readonly ProfilerMarker CullMarker = new("Vision.Cull");
 
-        // Slack for a ray that glances along the wall, where a fixed depth would need a long ray.
-        // Also the most any ray gets.
-        private const float OccluderSlackMax = 1.1f;
+        private readonly VisionEntityCuller _culler = new();
 
-        // A collider thinner than this along the hit normal is a jamb cap, not the wall's thickness.
-        private const float ThinOccluder = 0.25f;
+        /// <summary>How far sight reaches, in metres. Balancing, not design (fov.md §2).</summary>
+        public const float ViewRange = 35f;
+
+        /// <summary>Width of sight in degrees: all around (fov.md §2); a narrower cone is out of scope (§9).</summary>
+        private const float ViewConeWidth = 360f;
+
+        private const float RaysPerDegree = 3f;
 
         [SerializeField]
-        [Tooltip("Fallback cast origin offset when the target has no Entity.ViewPoint")]
-        private Vector3 detectionOffset = Vector3.zero;
+        [Tooltip("Draw the last cast's rays in the Scene view.")]
+        private bool _showDebug;
 
-        [NonSerialized]
-        public NativeArray<Vector3> viewPoints;
+        private NativeArray<Vector3> _viewPoints;
 
-        [NonSerialized]
-        public int stepCount;
-
-        private ViewCastInfo[] _viewCastResults;
-        private float[] _angleBuffer;
-        /// <summary>Normalized view depth per angular bin (0–1), written into the R16 vision map.</summary>
-        private float[] _depthBuffer;
-        private float[] _dilateScratch;
-        private ushort[] _depthUpload;
         private Entity _targetEntity;
-        private int _wallsLayer = -1;
+        private bool _clientVisionInitialized;
+        private bool _suppressed;
 
-        // Batched Physics casts (one wave per prop-skip). Persistent to avoid per-frame TempJob alloc.
         private NativeArray<RaycastCommand> _rayCommands;
         private NativeArray<RaycastHit> _rayHits;
-        private NativeArray<Vector3> _rayDirections;
-        private float[] _rayTraveled;
-        private int[] _activeRayIndices;
+        private JobHandle _castHandle;
+        private bool _castPending;
+        private Vector3 _pendingCenter;
+        private float _pendingYaw;
+        private float _pendingFloorY;
 
-        /// <summary>
-        /// Collider instance-id → occluder. Walls/doors are stable; cleared when oversized so
-        /// recycled instance IDs cannot stick forever after destroy/respawn churn.
-        /// </summary>
-        private readonly Dictionary<int, bool> _occluderByColliderId = new(256);
+        // Written by VisionHitsJob; copied to the managed arrays IsVisible reads once the cast completes.
+        private NativeArray<float> _jobDepths;
+        private NativeArray<ushort> _jobDepthUpload;
+        private NativeArray<byte> _jobSeenTiles;
+        private NativeArray<Vector3> _jobPoints;
 
-        private const int OccluderCacheMaxEntries = 4096;
+        private Texture2D _visionMap;
+        private float[] _depths;
 
-        private static readonly ProfilerMarker MapPerformanceMarker = new("Vision.VisionMap");
-        private static readonly ProfilerMarker PointsPerformanceMarker = new("Vision.ViewPoints");
+        private Texture2D _tileMap;
+        private byte[] _seenTiles;
+        private int _tileSize;
+        private Vector2Int _pendingTileOrigin;
 
-        private bool _clientVisionInitialized;
-
-        // Pose of the rays behind _depthBuffer, for answering IsVisible between casts.
+        // Pose of the completed cast behind _depths and _seenTiles, for IsVisible between casts.
+        private bool _hasCast;
         private Vector3 _castCenter;
         private float _castYaw;
+        private float _castFloorY;
+        private Vector2Int _castTileOrigin;
 
-        /// <summary>
-        /// When true, FOV composite is dropped (map editor / other meta views). Cleared by the owner.
-        /// </summary>
-        private bool _suppressed;
+        public VisionState State { get; private set; }
+
+        /// <summary>The living body sight comes from, or null (no body, or a ghost).</summary>
+        public Transform Target { get; private set; }
+
+        /// <summary>Rays per cast: one per angular bin of <c>_VisionMap</c>.</summary>
+        public int StepCount { get; private set; }
+
+        /// <summary>Ray hit points from the last completed cast (editor gizmo).</summary>
+        public NativeArray<Vector3> ViewPoints => _viewPoints;
+
+        public bool ShowDebug => _showDebug;
+
 
         /// <summary>World-space origin used for casts and the shader's <c>_PlayerPos</c>.</summary>
         public Vector3 DetectionCenter
@@ -132,23 +138,13 @@ namespace SS3D.Systems.Vision
                 if (_targetEntity != null && _targetEntity.ViewPoint != null)
                     return _targetEntity.ViewPoint.transform.position;
 
-                return target != null ? target.position + detectionOffset : detectionOffset;
+                return Target != null ? Target.position + (Vector3.up * VisionOccluder.EyeHeight) : Vector3.zero;
             }
         }
 
         protected override void OnAwake()
         {
             base.OnAwake();
-
-            if (obstacleMask == 0)
-            {
-                obstacleMask = ~LayerMask.GetMask(
-                    "TransparentFX", "Ignore Raycast", "Water", "UI", "Items", "Characters", "BodyParts",
-                    StationBounds.CeilingLayerName);
-            }
-
-            _wallsLayer = LayerMask.NameToLayer("Walls");
-
             AddHandle(LocalPlayerObjectChanged.AddListener(HandlePlayerObjectChanged));
         }
 
@@ -161,104 +157,85 @@ namespace SS3D.Systems.Vision
             }
 
             if (InstanceFinder.IsServerOnly)
-            {
                 return;
-            }
 
             _clientVisionInitialized = true;
-
-            stepCount = Mathf.Max(1, Mathf.CeilToInt(viewConeWidth * resolution));
-            EnsureVisionMap(stepCount);
-            EnsureBuffers(stepCount);
+            EnsureBuffers(Mathf.Max(1, Mathf.CeilToInt(ViewConeWidth * RaysPerDegree)));
+            RenderPipelineManager.beginContextRendering += HandleBeginContextRendering;
         }
 
         protected override void OnDisabled()
         {
-            StopVisionRendering();
-            DisposeCastBuffers();
+            RenderPipelineManager.beginContextRendering -= HandleBeginContextRendering;
+            _castHandle.Complete();
+            _castPending = false;
+            SetState(VisionState.Off);
+            DisposeBuffers();
 
-            if (viewPoints.IsCreated)
-                viewPoints.Dispose();
+            if (_visionMap != null)
+                Destroy(_visionMap);
+            if (_tileMap != null)
+                Destroy(_tileMap);
 
-            if (visionMap != null)
-            {
-                Destroy(visionMap);
-                visionMap = null;
-            }
-
-            _occluderByColliderId.Clear();
+            _visionMap = null;
+            _tileMap = null;
             _clientVisionInitialized = false;
         }
 
-        private void HandlePlayerObjectChanged(ref EventContext context, in LocalPlayerObjectChanged e)
-        {
-            _targetEntity = e.PlayerObject != null ? e.PlayerObject.GetComponent<Entity>() : null;
-            target = _targetEntity != null && _targetEntity.GetComponent<HumanoidGhostController>() == null
-                ? _targetEntity.transform : null;
-            if (target == null)
-                StopVisionRendering();
-        }
-
-        private void LateUpdate()
-        {
-            if (VisionRenderContext.Suppressed || _suppressed || !_clientVisionInitialized || !target)
-            {
-                StopVisionRendering();
-                return;
-            }
-
-            transform.position = target.position;
-            float angle = target.rotation.eulerAngles.y * Mathf.Deg2Rad;
-            Vector3 center = DetectionCenter;
-
-            Shader.SetGlobalVector("_PlayerPos", center);
-            Shader.SetGlobalFloat("_PlayerAngle", angle);
-            Shader.SetGlobalFloat("_ViewConeWidth", viewConeWidth * Mathf.Deg2Rad);
-            Shader.SetGlobalFloat("_ViewRange", viewRange);
-
-            DrawVisionMap(center);
-
-            VisionRenderContext.Enabled = true;
-        }
-
-        /// <summary>
-        /// Pause client FOV composite (e.g. map editor). Owner must clear on exit.
-        /// </summary>
+        /// <summary>Pause the field of view for a meta view (the map editor). The caller clears it on exit.</summary>
         public void SetSuppressed(bool suppressed)
         {
             _suppressed = suppressed;
-            VisionRenderContext.Suppressed = suppressed;
-            if (suppressed)
-                StopVisionRendering();
+            UpdateState();
         }
 
         /// <summary>
-        /// Drops the URP composite and clears globals so a disabled/paused producer cannot
-        /// leave a frozen FOV shadow on the Game camera.
-        /// </summary>
-        private static void StopVisionRendering()
-        {
-            VisionRenderContext.Enabled = false;
-            Shader.SetGlobalFloat("_ViewRange", 0f);
-            Shader.SetGlobalTexture("_VisionMap", Texture2D.blackTexture);
-        }
-
-        /// <summary>
-        /// False when the FOV mask hides <paramref name="worldPoint"/>, using the depths the mask
-        /// draws from so gameplay agrees with what is on screen. Always true with no mask showing:
-        /// ghosts, the map editor, and before the first cast.
+        /// False when the mask hides <paramref name="worldPoint"/>: the same rule and depths the shader uses
+        /// (D1), so gameplay agrees with the screen. Always true with no mask showing: ghosts, the map
+        /// editor, and before the first cast.
         /// </summary>
         public bool IsVisible(Vector3 worldPoint)
         {
-            if (!VisionRenderContext.Enabled || _depthBuffer == null)
+            if (State != VisionState.Active || !_hasCast)
                 return true;
 
-            return IsWithinDepths(_depthBuffer, stepCount, viewRange, viewConeWidth, _castCenter, _castYaw, worldPoint);
+            return IsWithinDepths(_depths, StepCount, ViewRange, ViewConeWidth, _castCenter, _castYaw, worldPoint)
+                || IsPartOfSeenWall(_seenTiles, _tileSize, _castTileOrigin, _castFloorY, worldPoint);
         }
 
         /// <summary>
-        /// CPU side of <c>VisionIsVisibleWorld</c> in Vision.hlsl. Reads the nearest bin rather than
-        /// filtering, so the two can differ by a bin (a third of a degree) along a mask edge.
+        /// CPU side of the wall rule in <c>VisionIsVisibleWorld</c> (D1): a point above the floor inside a tile
+        /// a ray hit, given the cast's seen-tile grid (<paramref name="size"/> square, <paramref name="origin"/>
+        /// the world tile of entry 0).
+        /// </summary>
+        public static bool IsPartOfSeenWall(byte[] seenTiles, int size, Vector2Int origin, float floorY, Vector3 worldPoint)
+        {
+            if (worldPoint.y <= floorY + WallMinHeight)
+                return false;
+
+            int x = Mathf.FloorToInt(worldPoint.x + 0.5f) - origin.x;
+            int z = Mathf.FloorToInt(worldPoint.z + 0.5f) - origin.y;
+            return x >= 0 && z >= 0 && x < size && z < size && seenTiles[x + (z * size)] != 0;
+        }
+
+        /// <summary>
+        /// Distance the last cast's ray nearest to <paramref name="direction"/> travelled before a sight
+        /// blocker, or the view range. For scenarios.
+        /// </summary>
+        public float DepthAlong(Vector3 direction)
+        {
+            if (!_hasCast)
+                return ViewRange;
+
+            float angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
+            float fromConeStart = Mathf.Repeat(angle - _castYaw + (ViewConeWidth * 0.5f), 360f);
+            int bin = Mathf.Clamp(Mathf.FloorToInt(fromConeStart / ViewConeWidth * StepCount), 0, StepCount - 1);
+            return _depths[bin] * ViewRange;
+        }
+
+        /// <summary>
+        /// CPU side of the depth test in <c>VisionIsVisibleWorld</c> (Vision.hlsl): the bin holding the
+        /// point's angle, point-sampled like the shader's map.
         /// </summary>
         public static bool IsWithinDepths(
             float[] depths,
@@ -275,335 +252,223 @@ namespace SS3D.Systems.Vision
             float angle = Mathf.Atan2(offset.x, offset.y) * Mathf.Rad2Deg;
             float fromConeStart = Mathf.Repeat(angle - yaw + (coneWidth * 0.5f), 360f);
 
-            // Same bubble as the shader: a point this close shows even outside a narrow cone.
-            const float alwaysInConeDistance = 1f;
             if (fromConeStart >= coneWidth)
-                return distance <= alwaysInConeDistance;
+                return distance <= NearBubble;
 
             int bin = Mathf.Clamp(Mathf.FloorToInt(fromConeStart / coneWidth * count), 0, count - 1);
-            return distance <= (depths[bin] * range) + ShaderDepthSlack;
+            return distance <= (depths[bin] * range) + DepthEpsilon;
         }
 
-        public Vector3 DirectionFromAngle(float angleInDegrees, bool angleIsGlobal)
+        /// <summary>The tile a ray hit: the one just inside the surface, so a hit on a tile edge lands in the wall, not on the floor in front of it.</summary>
+        public static Vector2Int HitTile(Vector3 point, Vector3 normal)
         {
-            if (!angleIsGlobal && target != null)
-                angleInDegrees += target.eulerAngles.y;
-
-            return Quaternion.AngleAxis(angleInDegrees, Vector3.up) * Vector3.forward;
+            Vector3 inside = point - (normal * 0.01f);
+            return new Vector2Int(Mathf.FloorToInt(inside.x + 0.5f), Mathf.FloorToInt(inside.z + 0.5f));
         }
 
-        private void DrawVisionMap(Vector3 center)
+        private void HandlePlayerObjectChanged(ref EventContext context, in LocalPlayerObjectChanged e)
         {
-            PointsPerformanceMarker.Begin();
-            CalculateViewPoints(center);
-            PointsPerformanceMarker.End();
+            _targetEntity = e.PlayerObject != null ? e.PlayerObject.GetComponent<Entity>() : null;
+            Target = _targetEntity != null && _targetEntity.HasFieldOfView ? _targetEntity.transform : null;
+            UpdateState();
+        }
 
-            MapPerformanceMarker.Begin();
+        private void UpdateState()
+        {
+            if (!_clientVisionInitialized || Target == null)
+                SetState(VisionState.Off);
+            else
+                SetState(_suppressed ? VisionState.Suppressed : VisionState.Active);
+        }
 
-            EnsureVisionMap(stepCount);
-
-            for (int i = 0; i < stepCount; i++)
+        private void SetState(VisionState state)
+        {
+            if (state != VisionState.Active)
             {
-                Vector3 offset = viewPoints[i] - center;
-                offset.y = 0f;
-                _depthBuffer[i] = offset.magnitude / viewRange;
+                if (State == VisionState.Active)
+                    _culler.ShowAll();
+
+                _hasCast = false;
+                Shader.SetGlobalFloat(ViewRangeId, 0f);
+                Shader.SetGlobalTexture(VisionMapId, Texture2D.blackTexture);
             }
 
-            DilateSimilarDepthPixels();
-            UploadVisionMap();
-
-            MapPerformanceMarker.End();
+            State = state;
+            VisionRenderContext.Publish(state == VisionState.Active);
         }
 
-        private void CalculateViewPoints(Vector3 origin)
+        private void LateUpdate()
         {
-            int newStepCount = Mathf.Max(1, Mathf.CeilToInt(viewConeWidth * resolution));
-            if (newStepCount != stepCount)
+            UpdateState();
+            if (State != VisionState.Active)
             {
-                stepCount = newStepCount;
-                EnsureBuffers(stepCount);
-            }
-
-            float stepAngleSize = viewConeWidth / stepCount;
-            float halfCone = viewConeWidth * 0.5f;
-            float yaw = target.eulerAngles.y;
-            _castCenter = origin;
-            _castYaw = yaw;
-
-            // Sample bin centers so bilinear UV lookups align with ray angles (reduces
-            // crawling vertical stripes when rotating past flat walls).
-            for (int i = 0; i < stepCount; i++)
-                _angleBuffer[i] = (yaw - halfCone) + (stepAngleSize * (i + 0.5f));
-
-            ViewCastBatch(origin, _angleBuffer, stepCount, _viewCastResults);
-
-            for (int i = 0; i < stepCount; i++)
-                viewPoints[i] = _viewCastResults[i].Point;
-        }
-
-        /// <summary>
-        /// Fill 1° angular holes on continuous surfaces without extending into distant corridors.
-        /// Reads from <see cref="_dilateScratch"/> so neighbouring bins use pre-dilate depths.
-        /// </summary>
-        private void DilateSimilarDepthPixels()
-        {
-            const float similarMeters = 1.75f;
-            float similarNorm = similarMeters / viewRange;
-            Array.Copy(_depthBuffer, _dilateScratch, stepCount);
-
-            for (int i = 0; i < stepCount; i++)
-            {
-                float center = _dilateScratch[i];
-                float left = _dilateScratch[(i - 1 + stepCount) % stepCount];
-                float right = _dilateScratch[(i + 1) % stepCount];
-                float maxNeighbor = Mathf.Max(left, right);
-                if (Mathf.Abs(maxNeighbor - center) <= similarNorm)
-                    _depthBuffer[i] = Mathf.Max(center, maxNeighbor);
-            }
-        }
-
-        /// <summary>
-        /// Pack normalized depths into the R16 texture without Color[] / SetPixels allocs.
-        /// </summary>
-        private void UploadVisionMap()
-        {
-            for (int i = 0; i < stepCount; i++)
-            {
-                float depth = Mathf.Clamp01(_depthBuffer[i]);
-                _depthUpload[i] = (ushort)(depth * 65535f + 0.5f);
-            }
-
-            visionMap.SetPixelData(_depthUpload, 0);
-            visionMap.Apply(false);
-        }
-
-        private void ViewCastBatch(Vector3 origin, float[] angles, int count, ViewCastInfo[] resultArray)
-        {
-            if (resultArray.Length < count)
-                throw new ArgumentException("Results can't be smaller than count", nameof(resultArray));
-
-            const float skin = 0.05f;
-
-            QueryParameters query = new(obstacleMask, false, QueryTriggerInteraction.Ignore, false);
-
-            for (int i = 0; i < count; i++)
-            {
-                float rad = angles[i] * Mathf.Deg2Rad;
-                Vector3 direction = new(Mathf.Sin(rad), 0f, Mathf.Cos(rad));
-                _rayDirections[i] = direction;
-                _rayTraveled[i] = 0f;
-                _activeRayIndices[i] = i;
-                resultArray[i] = new ViewCastInfo(
-                    false,
-                    origin + (direction * viewRange),
-                    viewRange,
-                    angles[i],
-                    Vector3.zero);
-            }
-
-            int activeCount = count;
-
-            // Wave schedule: all active rays cast together, then only non-occluder hits stay
-            // active and advance. Same semantics as iterative single-hit Physics.Raycast, but
-            // one ScheduleBatch per skip layer instead of ~stepCount sync casts.
-            for (int skip = 0; skip < MaxOccluderSkips && activeCount > 0; skip++)
-            {
-                for (int a = 0; a < activeCount; a++)
-                {
-                    int ray = _activeRayIndices[a];
-                    float remaining = viewRange - _rayTraveled[ray];
-                    Vector3 from = origin + (_rayDirections[ray] * _rayTraveled[ray]);
-                    _rayCommands[a] = new RaycastCommand(from, _rayDirections[ray], query, remaining);
-                }
-
-                NativeArray<RaycastCommand> commands = _rayCommands.GetSubArray(0, activeCount);
-                NativeArray<RaycastHit> hits = _rayHits.GetSubArray(0, activeCount);
-                RaycastCommand.ScheduleBatch(commands, hits, 32, 1, default(JobHandle)).Complete();
-
-                int nextActive = 0;
-                for (int a = 0; a < activeCount; a++)
-                {
-                    int ray = _activeRayIndices[a];
-                    RaycastHit hit = hits[a];
-
-                    // Miss (or zero-distance sentinel): leave the default full-range result.
-                    if (hit.colliderInstanceID == 0)
-                        continue;
-
-                    float distanceFromOrigin = _rayTraveled[ray] + hit.distance;
-                    Collider collider = hit.collider;
-                    if (collider != null && IsVisionOccluder(collider))
-                    {
-                        Vector3 normal = OcclusionNormal(hit.normal, collider.bounds.size);
-                        float slack = OccluderSlack(_rayDirections[ray], normal);
-                        float visibleDistance = Mathf.Min(distanceFromOrigin + slack, viewRange);
-                        resultArray[ray] = new ViewCastInfo(
-                            true,
-                            origin + (_rayDirections[ray] * visibleDistance),
-                            visibleDistance,
-                            angles[ray],
-                            hit.normal);
-                        continue;
-                    }
-
-                    // Advance past this non-occluder and keep searching for a wall/door.
-                    _rayTraveled[ray] = distanceFromOrigin + skin;
-                    if (viewRange - _rayTraveled[ray] > skin)
-                        _activeRayIndices[nextActive++] = ray;
-                }
-
-                activeCount = nextActive;
-            }
-        }
-
-        /// <summary>
-        /// How far past a collider hit a ray stays lit, so the occluder's own mesh (well behind the
-        /// collider) does not paint black. A fixed depth into the wall along
-        /// <paramref name="occluderNormal"/>, so a glancing ray gets more length, which keeps the
-        /// recessed faces of a wall you hug lit while what is behind it stays hidden.
-        /// </summary>
-        public static float OccluderSlack(Vector3 rayDirection, Vector3 occluderNormal)
-        {
-            float cosine = Mathf.Abs(Vector3.Dot(rayDirection, occluderNormal));
-            if (cosine * OccluderSlackMax <= OccluderSlackPerpendicular)
-                return OccluderSlackMax;
-
-            return OccluderSlackPerpendicular / cosine;
-        }
-
-        /// <summary>
-        /// The axis to measure a hit's depth along. A door jamb's cap is thin along the wall, so a
-        /// ray hitting its side gets a normal that runs along the wall: measured that way, slack
-        /// would either cross the wall behind it or black out the wall beside the door. Such a hit
-        /// uses the other horizontal axis, the wall's thickness. Tile occluders are axis-aligned,
-        /// so <paramref name="occluderSize"/> is the collider's world bounds.
-        /// </summary>
-        public static Vector3 OcclusionNormal(Vector3 hitNormal, Vector3 occluderSize)
-        {
-            bool alongX = Mathf.Abs(hitNormal.x) >= Mathf.Abs(hitNormal.z);
-            float thickness = alongX ? occluderSize.x : occluderSize.z;
-            if (thickness >= ThinOccluder)
-                return hitNormal;
-
-            return alongX ? Vector3.forward : Vector3.right;
-        }
-
-        /// <summary>
-        /// True for wall/door tile objects and anything on the Walls layer. Windows are
-        /// intentionally see-through for FOV (same as SS13-style line of sight).
-        /// Results are cached by collider instance id — GetComponentInParent on ~1k rays
-        /// dominates ViewPoints when uncached.
-        /// </summary>
-        private bool IsVisionOccluder(Collider collider)
-        {
-            int id = collider.GetInstanceID();
-            if (_occluderByColliderId.TryGetValue(id, out bool cached))
-                return cached;
-
-            bool isOccluder = ClassifyVisionOccluder(collider);
-            if (_occluderByColliderId.Count >= OccluderCacheMaxEntries)
-                _occluderByColliderId.Clear();
-
-            _occluderByColliderId[id] = isOccluder;
-            return isOccluder;
-        }
-
-        private bool ClassifyVisionOccluder(Collider collider)
-        {
-            // Proximity / interaction triggers (e.g. airlock open volume) must never darken FOV.
-            if (collider.isTrigger)
-                return false;
-
-            PlacedTileObject placed = collider.GetComponentInParent<PlacedTileObject>();
-            // A bare girder sits on the Walls layer but is open framework (construction.md §6).
-            if (placed != null && placed.tileObjectSO != null && !placed.tileObjectSO.blocksVision)
-                return false;
-
-            if (_wallsLayer >= 0 && collider.gameObject.layer == _wallsLayer)
-                return true;
-
-            // Identity can still be unset on a pure client mid-spawn.
-            if (placed == null || placed.tileObjectSO == null)
-                return false;
-
-            return placed.GenericType switch
-            {
-                TileObjectGenericType.Door => true,
-                TileObjectGenericType.Wall => !TileOccupancyEvaluator.IsWindow(placed),
-                _ => false,
-            };
-        }
-
-        private void EnsureVisionMap(int width)
-        {
-            if (visionMap != null && visionMap.width == width)
-            {
-                Shader.SetGlobalTexture("_VisionMap", visionMap);
-                Shader.SetGlobalVector("_VisionMap_TexelSize", new Vector4(1f / width, 1f, width, 1f));
+                _castHandle.Complete();
+                _castPending = false;
                 return;
             }
 
-            if (visionMap != null)
-                Destroy(visionMap);
+            // A frame that never rendered (minimised, no camera) leaves its cast for this one.
+            CompleteCast();
 
-            visionMap = new Texture2D(width, 1, TextureFormat.R16, false)
+            using (CastMarker.Auto())
+                ScheduleCast();
+        }
+
+        private void HandleBeginContextRendering(ScriptableRenderContext context, System.Collections.Generic.List<Camera> cameras)
+        {
+            CompleteCast();
+        }
+
+        private void ScheduleCast()
+        {
+            int count = Mathf.Max(1, Mathf.CeilToInt(ViewConeWidth * RaysPerDegree));
+            if (count != StepCount)
+                EnsureBuffers(count);
+
+            Vector3 center = DetectionCenter;
+            float yaw = Target.eulerAngles.y;
+            float stepAngle = ViewConeWidth / StepCount;
+            int half = (_tileSize - 1) / 2;
+            Vector2Int tileOrigin = new(Mathf.FloorToInt(center.x + 0.5f) - half, Mathf.FloorToInt(center.z + 0.5f) - half);
+
+            VisionRayCommandsJob commands = new()
             {
-                wrapMode = TextureWrapMode.Repeat,
-                // Bilinear across neighbouring polar rays; point sampling caused vertical
-                // black stripes on flat walls (angle quantization). See Vision.hlsl for a
-                // similar-depth neighbor fill that limits corridor bleed at wall edges.
-                filterMode = FilterMode.Bilinear,
+                Center = center,
+                FirstAngle = (yaw - (ViewConeWidth * 0.5f) + (stepAngle * 0.5f)) * Mathf.Deg2Rad,
+                StepAngle = stepAngle * Mathf.Deg2Rad,
+                Range = ViewRange,
+                Query = new QueryParameters(VisionOccluder.Mask, false, QueryTriggerInteraction.Ignore, false),
+                Commands = _rayCommands,
             };
-            Shader.SetGlobalTexture("_VisionMap", visionMap);
-            Shader.SetGlobalVector("_VisionMap_TexelSize", new Vector4(1f / width, 1f, width, 1f));
+
+            VisionHitsJob hits = new()
+            {
+                Center = center,
+                Range = ViewRange,
+                TileOrigin = tileOrigin,
+                TileSize = _tileSize,
+                Commands = _rayCommands,
+                Hits = _rayHits,
+                Depths = _jobDepths,
+                DepthUpload = _jobDepthUpload,
+                Points = _jobPoints,
+                SeenTiles = _jobSeenTiles,
+            };
+
+            JobHandle filled = commands.Schedule(StepCount, 64);
+            JobHandle cast = RaycastCommand.ScheduleBatch(_rayCommands, _rayHits, 32, 1, filled);
+            _castHandle = hits.Schedule(cast);
+            JobHandle.ScheduleBatchedJobs();
+
+            _castPending = true;
+            _pendingCenter = center;
+            _pendingYaw = yaw;
+            _pendingFloorY = Target.position.y;
+            _pendingTileOrigin = tileOrigin;
+
+            Shader.SetGlobalVector(PlayerPosId, center);
+            Shader.SetGlobalFloat(PlayerAngleId, yaw * Mathf.Deg2Rad);
+            Shader.SetGlobalFloat(ViewConeWidthId, ViewConeWidth * Mathf.Deg2Rad);
+            Shader.SetGlobalFloat(ViewRangeId, ViewRange);
+            Shader.SetGlobalFloat(DepthEpsilonId, DepthEpsilon);
+            Shader.SetGlobalFloat(NearBubbleId, NearBubble);
+            Shader.SetGlobalFloat(WallMinYId, _pendingFloorY + WallMinHeight);
+            Shader.SetGlobalVector(VisionTileOriginId, new Vector4(tileOrigin.x, tileOrigin.y, _tileSize, 0f));
+        }
+
+        private void CompleteCast()
+        {
+            if (!_castPending)
+                return;
+
+            using (MapMarker.Auto())
+            {
+                _castHandle.Complete();
+                _castPending = false;
+
+                _jobDepths.CopyTo(_depths);
+                _jobPoints.CopyTo(_viewPoints);
+                _jobSeenTiles.CopyTo(_seenTiles);
+                _visionMap.SetPixelData(_jobDepthUpload, 0);
+                _visionMap.Apply(false);
+                _tileMap.SetPixelData(_jobSeenTiles, 0);
+                _tileMap.Apply(false);
+                Shader.SetGlobalTexture(VisionMapId, _visionMap);
+                Shader.SetGlobalVector(VisionMapTexelSizeId, new Vector4(1f / StepCount, 1f, StepCount, 1f));
+                Shader.SetGlobalTexture(VisionTilesId, _tileMap);
+
+                _castCenter = _pendingCenter;
+                _castYaw = _pendingYaw;
+                _castFloorY = _pendingFloorY;
+                _castTileOrigin = _pendingTileOrigin;
+                _hasCast = true;
+            }
+
+            using (CullMarker.Auto())
+                _culler.Cull(this, _targetEntity);
         }
 
         private void EnsureBuffers(int count)
         {
-            if (viewPoints.IsCreated)
-                viewPoints.Dispose();
+            _castHandle.Complete();
+            _castPending = false;
+            _hasCast = false;
+            DisposeBuffers();
 
-            DisposeCastBuffers();
+            StepCount = count;
+            _viewPoints = new NativeArray<Vector3>(count, Allocator.Persistent);
+            _rayCommands = new NativeArray<RaycastCommand>(count, Allocator.Persistent);
+            _rayHits = new NativeArray<RaycastHit>(count, Allocator.Persistent);
+            _jobDepths = new NativeArray<float>(count, Allocator.Persistent);
+            _jobPoints = new NativeArray<Vector3>(count, Allocator.Persistent);
+            _jobDepthUpload = new NativeArray<ushort>(count, Allocator.Persistent);
+            _depths = new float[count];
 
-            viewPoints = new NativeArray<Vector3>(count, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-            _rayCommands = new NativeArray<RaycastCommand>(count, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-            _rayHits = new NativeArray<RaycastHit>(count, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-            _rayDirections = new NativeArray<Vector3>(count, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-            _rayTraveled = new float[count];
-            _activeRayIndices = new int[count];
-            _viewCastResults = new ViewCastInfo[count];
-            _angleBuffer = new float[count];
-            _depthBuffer = new float[count];
-            _dilateScratch = new float[count];
-            _depthUpload = new ushort[count];
+            if (_visionMap != null)
+                Destroy(_visionMap);
+
+            _visionMap = new Texture2D(count, 1, TextureFormat.R16, false, true)
+            {
+                name = "VisionMap",
+                wrapMode = TextureWrapMode.Repeat,
+                // Point: the shader reads the bin a pixel's angle falls in, exactly as IsWithinDepths does.
+                filterMode = FilterMode.Point,
+            };
+
+            // One texel per tile, covering every tile a ray can reach.
+            _tileSize = (2 * (Mathf.CeilToInt(ViewRange) + 1)) + 1;
+            _seenTiles = new byte[_tileSize * _tileSize];
+            _jobSeenTiles = new NativeArray<byte>(_seenTiles.Length, Allocator.Persistent);
+            if (_tileMap == null || _tileMap.width != _tileSize)
+            {
+                if (_tileMap != null)
+                    Destroy(_tileMap);
+
+                _tileMap = new Texture2D(_tileSize, _tileSize, TextureFormat.R8, false, true)
+                {
+                    name = "VisionTiles",
+                    wrapMode = TextureWrapMode.Clamp,
+                    filterMode = FilterMode.Point,
+                };
+            }
         }
 
-        private void DisposeCastBuffers()
+        private void DisposeBuffers()
         {
+            if (_viewPoints.IsCreated)
+                _viewPoints.Dispose();
             if (_rayCommands.IsCreated)
                 _rayCommands.Dispose();
             if (_rayHits.IsCreated)
                 _rayHits.Dispose();
-            if (_rayDirections.IsCreated)
-                _rayDirections.Dispose();
-        }
-
-        public struct ViewCastInfo
-        {
-            public bool Hit;
-            public Vector3 Point;
-            public float Distance;
-            public float Angle;
-            public Vector3 Normal;
-
-            public ViewCastInfo(bool hit, Vector3 point, float distance, float angle, Vector3 normal)
-            {
-                Hit = hit;
-                Point = point;
-                Distance = distance;
-                Angle = angle;
-                Normal = normal;
-            }
+            if (_jobDepths.IsCreated)
+                _jobDepths.Dispose();
+            if (_jobPoints.IsCreated)
+                _jobPoints.Dispose();
+            if (_jobDepthUpload.IsCreated)
+                _jobDepthUpload.Dispose();
+            if (_jobSeenTiles.IsCreated)
+                _jobSeenTiles.Dispose();
         }
     }
 }

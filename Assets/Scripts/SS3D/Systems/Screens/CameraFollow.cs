@@ -111,7 +111,7 @@ namespace SS3D.Systems.Screens
         // Limits
         private const float MinTransitionSpeed = 3f;
         private const float MaxTransitionSpeed = 6f;
-        private const float MinVerticalAngle = 10f;
+        private const float MinVerticalAngle = 30f;
         private const float MaxVerticalAngle = 80f;
         private const float MinDistance = 3f;
         private const float MaxDistance = 15f;

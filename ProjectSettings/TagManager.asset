@@ -19,7 +19,7 @@ TagManager:
   - Characters
   - BodyParts
   - StationCeiling
-  - 
+  - VisionOccluder
   - 
   - 
   - 
@@ -44,3 +44,4 @@ TagManager:
   m_RenderingLayers:
   - Default
   - ReceiveWorldDecals
+  - VisionEntity

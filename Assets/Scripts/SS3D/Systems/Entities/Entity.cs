@@ -3,6 +3,7 @@ using Coimbra;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Entities.Humanoid;
@@ -40,6 +41,9 @@ namespace SS3D.Systems.Entities
         private HumanInventory _cachedHumanInventory;
 
         /// <summary>Cached inventory lookup for hot paths (airlock proximity, etc.).</summary>
+        /// <summary>Whether this body sees through a field of view; a ghost sees everything (observer.md §2, fov.md §5).</summary>
+        public bool HasFieldOfView => !TryGetComponent(out HumanoidGhostController _);
+
         public bool TryGetHumanInventory(out HumanInventory inventory)
         {
             if (_cachedHumanInventory == null)
@@ -82,6 +86,19 @@ namespace SS3D.Systems.Entities
 
             _lastObserverGridCell = gridCell;
             ServerManager.Objects.RebuildObservers(owner, timedOnly: false);
+        }
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            // Spawned bodies only: preview dummies never start, so the FOV culler never touches them.
+            SceneRegistry<Entity>.Register(this);
+        }
+
+        public override void OnStopClient()
+        {
+            SceneRegistry<Entity>.Unregister(this);
+            base.OnStopClient();
         }
 
         private void OnSpawn()

@@ -86,6 +86,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5929946332534067902}
+  - {fileID: 2284508755884364281}
   m_Father: {fileID: 4563380248793586510}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1065861983257982630
@@ -167,6 +168,112 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.5465079, y: 1.9270786, z: 0.8}
   m_Center: {x: 0.22674605, y: 0.9635393, z: 0.00000017136335}
+--- !u!1 &4478110584453448401
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2284508755884364281}
+  - component: {fileID: 396248054720618165}
+  m_Layer: 14
+  m_Name: VisionOccluder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2284508755884364281
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4478110584453448401}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3683177834036545491}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &396248054720618165
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4478110584453448401}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.5465081, y: 1.9270786, z: 0.34517688}
+  m_Center: {x: 0.22674607, y: 0.9635393, z: 0.0000001937151}
+--- !u!1 &5900304749973865596
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6125572768657280923}
+  - component: {fileID: 4072250321481430175}
+  m_Layer: 14
+  m_Name: VisionOccluder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6125572768657280923
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5900304749973865596}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3224739086463334044}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &4072250321481430175
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5900304749973865596}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.54650813, y: 1.9270786, z: 0.34517688}
+  m_Center: {x: -0.22674607, y: 0.9635393, z: -0.00000014156103}
 --- !u!1 &8030850231411627217
 GameObject:
   m_ObjectHideFlags: 0
@@ -274,6 +381,8 @@ MonoBehaviour:
   wallCapPrefab: {fileID: 3591147544166670882, guid: 9682b163cae64f74a93b6e84ce84ae5b, type: 3}
   doorType: 0
   floorPrefab: {fileID: 6767447678079105841, guid: 778e6f90a9ad89d4b856955961745b56, type: 3}
+  _frontFloorId: 65535
+  _backFloorId: 65535
 --- !u!95 &2037071437928213448
 Animator:
   serializedVersion: 7
@@ -324,6 +433,10 @@ MonoBehaviour:
   - {fileID: 3506846998566973888}
   - {fileID: 3611354790968222498}
   _doorLightMaterialIndex: 1
+  _opensOnApproach: 1
+  _autoCloseDelay: 2
+  _openSoundId: 
+  _closeSoundId: 
   _isOpen: 0
 --- !u!65 &8998970325069477866
 BoxCollider:
@@ -557,6 +670,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5836568406244491356}
+  - {fileID: 6125572768657280923}
   m_Father: {fileID: 4563380248793586510}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &6174060429236501560

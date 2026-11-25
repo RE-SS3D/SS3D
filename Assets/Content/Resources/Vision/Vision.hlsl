@@ -4,14 +4,20 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 
-TEXTURE2D(_VisionMap);
-SAMPLER(sampler_VisionMap);
+// Written by VisionSubSystem each frame (systems/fov.md Rule + Cast).
+TEXTURE2D(_VisionMap);      // R16: per angular bin, the distance a level ray went before a sight blocker / _ViewRange
+TEXTURE2D(_VisionTiles);    // R8: one texel per tile around the player; set where a ray hit a sight blocker
+float4 _VisionMap_TexelSize; // z = bin count
+float4 _VisionTileOrigin;    // xy = world tile of texel (0,0), z = texture size
 
 float4x4 _PlayerCameraInvViewProj;
 float4 _PlayerPos;
 float _PlayerAngle;
 float _ViewConeWidth;
 float _ViewRange;
+float _VisionDepthEpsilon;
+float _VisionNearBubble;
+float _VisionWallMinY;
 
 float VisionModulo(float x, float y)
 {
@@ -75,32 +81,27 @@ float3 VisionClipToWorld(float2 posClip)
     return VisionWorldFromScreenUV(posClip * 0.5 + 0.5);
 }
 
-float4 _VisionMap_TexelSize;
-
-float VisionSampleWallDepth(float2 viewUV)
+// The bin holding this angle, point-sampled: VisionSubSystem.IsWithinDepths reads the same one.
+float VisionWallDepth(float angleFromConeStart)
 {
-    // Center sample (bilinear via texture filterMode).
-    float center = SAMPLE_TEXTURE2D(_VisionMap, sampler_VisionMap, viewUV).r;
-
-    // Fill small angular holes on continuous surfaces (flat walls) without pulling in a
-    // distant corridor ray: only promote neighbors within ~2.5m of the center hit.
-    float texel = _VisionMap_TexelSize.x;
-    float left = SAMPLE_TEXTURE2D(_VisionMap, sampler_VisionMap, viewUV + float2(-texel, 0.0)).r;
-    float right = SAMPLE_TEXTURE2D(_VisionMap, sampler_VisionMap, viewUV + float2(texel, 0.0)).r;
-    float left2 = SAMPLE_TEXTURE2D(_VisionMap, sampler_VisionMap, viewUV + float2(-texel * 2.0, 0.0)).r;
-    float right2 = SAMPLE_TEXTURE2D(_VisionMap, sampler_VisionMap, viewUV + float2(texel * 2.0, 0.0)).r;
-
-    float maxNeighbor = max(max(left, right), max(left2, right2));
-    float centerWorld = center * _ViewRange;
-    float neighborWorld = maxNeighbor * _ViewRange;
-    if (abs(neighborWorld - centerWorld) < 2.5)
-        center = max(center, maxNeighbor);
-
-    // Covers rounding in the polar sample. The real occluder slack is angle-aware and lives in
-    // VisionSubSystem.OccluderSlack; this value is its ShaderDepthSlack, so keep the two equal.
-    return center * _ViewRange + 0.05;
+    int count = (int)_VisionMap_TexelSize.z;
+    int bin = clamp((int)floor(angleFromConeStart / _ViewConeWidth * count), 0, count - 1);
+    return LOAD_TEXTURE2D(_VisionMap, int2(bin, 0)).r * _ViewRange;
 }
 
+// Inside a wall or door tile that a ray hit (VisionSubSystem.HitTile and IsSeenOccluderTile).
+bool VisionInSeenOccluderTile(float3 posWorld)
+{
+    int2 tile = (int2)floor(posWorld.xz + 0.5) - (int2)_VisionTileOrigin.xy;
+    int size = (int)_VisionTileOrigin.z;
+    if (any(tile < 0) || any(tile >= size))
+        return false;
+
+    return LOAD_TEXTURE2D(_VisionTiles, tile).r > 0.5;
+}
+
+// fov.md §3, systems/fov.md Rule: a point shows when the ray at its angle went at least that far,
+// or when it is part of a wall a ray hit (inside that tile, above the floor), so walls show whole.
 bool VisionIsVisibleWorld(float3 posWorld)
 {
     float2 polarCoords = VisionWorldToFov(posWorld);
@@ -110,16 +111,14 @@ bool VisionIsVisibleWorld(float3 posWorld)
     float rawOffset = polarCoords.y - centerAngleWorld;
     float clampedOffset = VisionModulo(rawOffset, TWO_PI) - PI;
 
-    if (abs(clampedOffset) > centerAngle && polarCoords.x > 1.0)
-        return false;
+    if (abs(clampedOffset) > centerAngle)
+        return polarCoords.x <= _VisionNearBubble;
 
     float currentAngle = centerAngle + clampedOffset;
-    float2 viewUV = float2(currentAngle / _ViewConeWidth, 0.0);
+    if (polarCoords.x <= VisionWallDepth(currentAngle) + _VisionDepthEpsilon)
+        return true;
 
-    float currentDepth = polarCoords.x;
-    float wallDepth = VisionSampleWallDepth(viewUV);
-
-    return currentDepth <= wallDepth;
+    return posWorld.y > _VisionWallMinY && VisionInSeenOccluderTile(posWorld);
 }
 
 bool VisionIsVisibleScreenUV(float2 screenUV)

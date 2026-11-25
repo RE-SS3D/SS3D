@@ -6,42 +6,41 @@ using UnityEngine.Rendering.Universal;
 namespace SS3D.Rendering.URP
 {
     /// <summary>
-    /// URP fog-of-war fullscreen mask + hard composite for the player camera. Visibility comes
-    /// from the polar raycast map produced by <c>VisionSubSystem</c>; unseen areas are fully
-    /// opaque black - a mask, not a soft fog.
+    /// URP fog-of-war for the player camera (fov.md §3): a visibility mask from the polar raycast map and
+    /// seen-wall tiles produced by <c>VisionSubSystem</c>, softened inward and composited. Unseen areas are
+    /// fully opaque black - a mask, not a soft fog.
     /// </summary>
     public sealed class VisionRendererFeature : ScriptableRendererFeature
     {
         [SerializeField] private Shader _visionMaskShader;
-        [SerializeField] private Shader _visionBlurShader;
+        [SerializeField] private Shader _visionCompositeShader;
         [SerializeField] [Tooltip("Output the raw visibility mask to the screen and skip the composite (diagnostic).")] private bool _debugMask;
 
         VisionMaskRenderPass _maskPass;
-        VisionBlurRenderPass _blurPass;
+        VisionCompositeRenderPass _compositePass;
         Material _maskMaterial;
-        Material _blurMaterial;
+        Material _compositeMaterial;
 
         internal TextureHandle MaskTexture { get; set; }
 
         public override void Create()
         {
             _visionMaskShader ??= Shader.Find("Vision/VisionMask");
-            _visionBlurShader ??= Shader.Find("Vision/VisionMaskBlur");
+            _visionCompositeShader ??= Shader.Find("Vision/VisionComposite");
 
             if (_visionMaskShader != null && _maskMaterial == null)
                 _maskMaterial = CoreUtils.CreateEngineMaterial(_visionMaskShader);
 
-            if (_visionBlurShader != null && _blurMaterial == null)
-                _blurMaterial = CoreUtils.CreateEngineMaterial(_visionBlurShader);
+            if (_visionCompositeShader != null && _compositeMaterial == null)
+                _compositeMaterial = CoreUtils.CreateEngineMaterial(_visionCompositeShader);
 
             _maskPass = new VisionMaskRenderPass(_maskMaterial);
-            _blurPass = new VisionBlurRenderPass(_blurMaterial);
+            _compositePass = new VisionCompositeRenderPass(_compositeMaterial);
         }
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
-            if (_maskMaterial == null || _blurMaterial == null || !VisionRenderContext.Enabled ||
-                VisionRenderContext.Suppressed)
+            if (_maskMaterial == null || _compositeMaterial == null || !VisionRenderContext.Enabled)
                 return;
 
             Camera camera = renderingData.cameraData.camera;
@@ -63,16 +62,16 @@ namespace SS3D.Rendering.URP
             if (_debugMask)
                 return;
 
-            _blurPass.Setup(this);
-            renderer.EnqueuePass(_blurPass);
+            _compositePass.Setup(this);
+            renderer.EnqueuePass(_compositePass);
         }
 
         protected override void Dispose(bool disposing)
         {
             CoreUtils.Destroy(_maskMaterial);
-            CoreUtils.Destroy(_blurMaterial);
+            CoreUtils.Destroy(_compositeMaterial);
             _maskMaterial = null;
-            _blurMaterial = null;
+            _compositeMaterial = null;
         }
     }
 }

@@ -17,7 +17,7 @@ do end to end. Each goal is split into **slices**, the smaller pieces that have 
 |------|---------------------------|----------|
 | [Test server](#test-server) | Download a release, click join, play with others on a live server | 7 of 8 done, 1 partial |
 | [Map authoring](#map-authoring) | Build your own station in a release build and hand it in | 11 of 14 done, 3 partial |
-| [Nuclear Operatives round](#nuclear-operatives-round) | Play a full Nuke Ops round from spawn to end screen | 11 of 14 done, 2 partial |
+| [Nuclear Operatives round](#nuclear-operatives-round) | Play a full Nuke Ops round from spawn to end screen | 11 of 15 done, 3 partial |
 | [Station round](#station-round) | Play a short, bare-bones SS13 shift with jobs and antagonists | 1 of 7 done, 2 partial |
 
 What already works, system by system, is in the
@@ -81,6 +81,7 @@ What already works, system by system, is in the
 | ✅ | M10 | Engineers repair and rebuild what the ops blow up, and the crew can barricade |
 | ✅ | M11 | Make your character once and keep it: name, look, the jobs you want and whether you'll play an antagonist, then ready up or join a round already running |
 | ⬜ | M12 | Chat out of character during a round without leaving the game, and pry your way out when the power dies |
+| 🟡 | M13 | What you can't see stays black, but the black lines up with the walls instead of floating in the room, and nobody is drawn cut in half at a doorway |
 
 **Finish line (M6):** eight players play Nuke Ops rounds together on the always-on server.
 

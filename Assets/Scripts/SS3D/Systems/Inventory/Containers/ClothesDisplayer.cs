@@ -7,6 +7,7 @@ using SS3D.Systems.Inventory.Items;
 using UnityEngine;
 using FishNet.Object.Synchronizing;
 using FishNet.Object;
+using SS3D.Rendering.URP;
 
 
 namespace SS3D.Systems.Inventory.Containers
@@ -60,7 +61,7 @@ namespace SS3D.Systems.Inventory.Containers
                 {
                     if (cloth.Occludes(renderer))
                     {
-                        renderer.forceRenderingOff = true;
+                        RendererHiding.Set(renderer, RendererHiding.Reason.CoveredByClothes, true);
                         _occludedRenderers.Add(renderer);
                     }
 
@@ -82,7 +83,7 @@ namespace SS3D.Systems.Inventory.Containers
         {
             foreach (Renderer renderer in _occludedRenderers)
             {
-                if (renderer != null) renderer.forceRenderingOff = false;
+                RendererHiding.Set(renderer, RendererHiding.Reason.CoveredByClothes, false);
             }
             _occludedRenderers.Clear();
             foreach (KeyValuePair<SkinnedMeshRenderer, Mesh> entry in _uncoveredMeshes)

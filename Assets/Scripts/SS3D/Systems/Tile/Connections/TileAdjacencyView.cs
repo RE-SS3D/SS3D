@@ -12,6 +12,7 @@ namespace SS3D.Systems.Tile.Connections
         private AdjacencyMap _adjacencyMap;
         private IMeshAndDirectionResolver _resolver;
         private MeshFilter _filter;
+        private VisionOccluder _occluder;
 
         public void Configure(IMeshAndDirectionResolver resolver)
         {
@@ -32,6 +33,8 @@ namespace SS3D.Systems.Tile.Connections
 
             _adjacencyMap = new AdjacencyMap();
             _filter = GetComponent<MeshFilter>();
+            // On the root: a wall's own, or a plated girder's above its connector children.
+            _occluder = GetComponentInParent<VisionOccluder>(true);
         }
 
         private void UpdateMeshAndDirection()
@@ -42,7 +45,15 @@ namespace SS3D.Systems.Tile.Connections
             EnsureInitialized();
 
             MeshDirectionInfo info = _resolver.GetMeshAndDirection(_adjacencyMap);
+            ApplyMesh(info);
 
+            // After the root turns, so the occluder's holder ends up grid-aligned.
+            if (_occluder != null)
+                _occluder.ApplyConnections(_adjacencyMap);
+        }
+
+        private void ApplyMesh(MeshDirectionInfo info)
+        {
             if (_filter == null)
             {
                 Log.Warning(this, "Missing mesh filter for adjacency view", Logs.Generic);

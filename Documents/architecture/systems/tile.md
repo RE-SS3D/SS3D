@@ -33,7 +33,7 @@ Steel wall/table debris is separate from tile occupancy: `TileSubSystem.Wreckage
 - `Assets/Scripts/SS3D/Systems/Tile/Validation/` — offered-job/mode requirements; warnings on editor save, hard gate before countdown ([rounds-lobby](rounds-lobby.md)); only tracked map objects count
 - `Assets/Scripts/SS3D/Systems/Tile/SpawnPoints/` — `SpawnPointRegistry`, records, editor pin view
 - `Assets/Scripts/SS3D/Systems/Tile/Connections/AdjacencyEngine.cs` — queued adjacency recompute
-- `Assets/Scripts/SS3D/Systems/Tile/Connections/TileAdjacencyView.cs` — local mesh/direction visuals; refreshes structural damage overlays on adjacency mesh changes
+- `Assets/Scripts/SS3D/Systems/Tile/Connections/TileAdjacencyView.cs` — local mesh/direction visuals; refreshes structural damage overlays on adjacency mesh changes; switches a wall's sight-blocking arms (`Connections/VisionOccluder.cs`, built by `Editor/VisionOccluderRecipe.cs`; see [fov](fov.md))
 - `Assets/Scripts/SS3D/Systems/Tile/Connections/DoorAdjacencyConnector.cs` — door wall caps plus the airlock floor: server syncs the front/back floor asset ids (`RefreshSideFloors`), `CoversPlenum` feeds underfloor cover
 - `Assets/Scripts/SS3D/Systems/Tile/Connections/AirlockFloorSides.cs` / `AirlockFloorVisual.cs` — which floors a half tile may copy, half-mesh split, world-aligned NS/EW half tiles and track on the `AirlockTile` prefab
 - `Assets/Scripts/SS3D/Systems/Tile/ConstructionService.cs` — server-authoritative placement

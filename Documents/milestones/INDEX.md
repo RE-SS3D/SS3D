@@ -19,7 +19,8 @@ A 3D Space Station 13. Every gate names the [vision](../design/vision.md) pillar
 2. **M0** — test station and five jobs are in; open: an engineering closet with sheets, glass and floor tiles
 3. **M1c** — guns, C4/X4 and minibomb hand-tested; open: stun baton hand test, physical magazines, the M4 in an armory
 4. **M12** — playtest readiness: the in-round OOC column ([ooc-column plan](../plans/ooc-column.plan.md)) and prying open an unpowered airlock (needs a design rule)
-5. **M6** — Playtest 1 itself
+5. **M13** — fog of war that lines up with the walls: walls in sight drawn whole, inward-soft edges, people shown or hidden whole ([fov.md](../design/fov.md); built in [fov-rework](../archive/architecture/2026-11_fov-rework.md); Metastation cast budget left)
+6. **M6** — Playtest 1 itself
 
 Shipped 2026-11-16 after the owner's hand tests: M1s shock and Downed ([#272](https://github.com/henkhooft/SS3D/pull/272)), M3 nuke loop ([#260](https://github.com/henkhooft/SS3D/pull/260)), M8 vacuum and hull, M9 power and light ([#202](https://github.com/henkhooft/SS3D/pull/202)), M10 construction ([#254](https://github.com/henkhooft/SS3D/pull/254)), M11 lobby ([#282](https://github.com/henkhooft/SS3D/pull/282)).
 

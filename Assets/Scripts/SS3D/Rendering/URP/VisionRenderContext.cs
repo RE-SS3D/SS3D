@@ -1,16 +1,15 @@
 namespace SS3D.Rendering.URP
 {
     /// <summary>
-    /// Per-frame vision render state shared between renderer passes and <see cref="Systems.Vision.VisionSubSystem"/>.
+    /// What the vision render passes read each frame. Written only by <c>VisionSubSystem</c>, which owns the
+    /// vision state (systems/fov.md State); the rendering assembly can't reference it directly.
     /// </summary>
     public static class VisionRenderContext
     {
-        /// <summary>True while the FOV composite should run for the game camera.</summary>
-        public static bool Enabled { get; set; }
+        /// <summary>True while the FOV mask should be drawn for the game camera.</summary>
+        public static bool Enabled { get; private set; }
 
-        /// <summary>
-        /// Meta views (map editor) set this so FOV stays off even if the producer is late to start.
-        /// </summary>
-        public static bool Suppressed { get; set; }
+        /// <summary>Called by <c>VisionSubSystem</c> when its state changes.</summary>
+        public static void Publish(bool enabled) => Enabled = enabled;
     }
 }

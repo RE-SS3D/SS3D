@@ -1,4 +1,5 @@
 using FishNet;
+using SS3D.Rendering.URP;
 using SS3D.Systems.Tile.Connections;
 using UnityEngine;
 
@@ -179,7 +180,7 @@ namespace SS3D.Systems.Tile
                 // Items stored in the tile (a locker's contents) hide through forceRenderingOff themselves
                 // (Item.SetVisibility); clearing it here would lay them out loose in the locker.
                 if (renderers[i] != null && renderers[i].GetComponentInParent<Inventory.Items.Item>(true) == null)
-                    renderers[i].forceRenderingOff = hidden;
+                    RendererHiding.Set(renderers[i], RendererHiding.Reason.UnderfloorCover, hidden);
             }
         }
 
